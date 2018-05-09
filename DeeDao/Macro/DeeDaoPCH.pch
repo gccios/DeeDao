@@ -1,0 +1,44 @@
+//
+//  DeeDaoPCH.pch
+//  DeeDao
+//
+//  Created by 郭春城 on 2018/5/9.
+//  Copyright © 2018年 郭春城. All rights reserved.
+//
+
+#ifndef DeeDaoPCH_pch
+#define DeeDaoPCH_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+/*
+ 应用信息
+ */
+#define UMAppKey @"59cefdd3e88bad4c1a00008a"
+#define WeChatAPPKey @"wx72955abeea4e44e2"
+#define WeChatAPPSecret @"ecb245a2061fcf39e687e6141f60264f"
+
+#define DpToPxScale 1.15
+#define kMainBoundsHeight   ([UIScreen mainScreen].bounds).size.height //屏幕的高度
+#define kMainBoundsWidth    ([UIScreen mainScreen].bounds).size.width //屏幕的宽度
+
+/*
+ 网络
+ */
+#define kEncryptOrDecryptKey  @"z&-etago0n!"
+
+/*
+ 颜色
+ */
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
+/*
+ 字体
+ */
+#define kPingFangRegular(x) ([UIFont fontWithName:@"PingFangSC-Regular" size:x] ? [UIFont fontWithName:@"PingFangSC-Regular" size:x] : [UIFont systemFontOfSize:x])
+#define kPingFangThin(x) ([UIFont fontWithName:@"PingFangSC-Thin" size:x] ? [UIFont fontWithName:@"PingFangSC-Thin" size:x] : [UIFont systemFontOfSize:x])
+#define kPingFangLight(x) ([UIFont fontWithName:@"PingFangSC-Light" size:x] ? [UIFont fontWithName:@"PingFangSC-Light" size:x] : [UIFont systemFontOfSize:x])
+#define kPingFangMedium(x) ([UIFont fontWithName:@"PingFangSC-Medium" size:x] ? [UIFont fontWithName:@"PingFangSC-Medium" size:x] : [UIFont systemFontOfSize:x])
+
+#endif /* DeeDaoPCH_pch */

@@ -8,13 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F3320A28BD9007875A7 /* AppDelegate.m */; };
-		06733F3720A28BD9007875A7 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F3620A28BD9007875A7 /* ViewController.m */; };
-		06733F3A20A28BD9007875A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06733F3820A28BD9007875A7 /* Main.storyboard */; };
 		06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06733F3B20A28BDA007875A7 /* Assets.xcassets */; };
 		06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */; };
 		06733F4220A28BDA007875A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F4120A28BDA007875A7 /* main.m */; };
 		06733F4C20A28BDA007875A7 /* DeeDaoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F4B20A28BDA007875A7 /* DeeDaoTests.m */; };
 		06733F5720A28BDB007875A7 /* DeeDaoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F5620A28BDB007875A7 /* DeeDaoUITests.m */; };
+		06733F6B20A291C0007875A7 /* DDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F6A20A291C0007875A7 /* DDViewController.m */; };
+		06733F7020A29379007875A7 /* BG.png in Resources */ = {isa = PBXBuildFile; fileRef = 06733F6F20A29379007875A7 /* BG.png */; };
+		06733F7320A293B9007875A7 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F7220A293B9007875A7 /* LoginViewController.m */; };
+		06733F7920A29FDF007875A7 /* DDViewFactoryTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F7820A29FDF007875A7 /* DDViewFactoryTool.m */; };
+		06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F7A20A2A73B007875A7 /* DDTabBarController.m */; };
+		06733F8020A2A767007875A7 /* DDTabBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F7E20A2A767007875A7 /* DDTabBar.m */; };
+		06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8320A2C17D007875A7 /* DDNetworkConfiguration.m */; };
+		06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8920A2C423007875A7 /* ConverUtil.m */; };
+		06733F8D20A2C423007875A7 /* DesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8B20A2C423007875A7 /* DesUtil.m */; };
+		06733F9020A2CB26007875A7 /* DDTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8F20A2CB26007875A7 /* DDTool.m */; };
+		06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */; };
+		822B904317B24E8CB3084F2A /* libPods-DeeDao.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,9 +48,6 @@
 		06733F2F20A28BD9007875A7 /* DeeDao.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeeDao.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06733F3220A28BD9007875A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		06733F3320A28BD9007875A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		06733F3520A28BD9007875A7 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		06733F3620A28BD9007875A7 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		06733F3920A28BD9007875A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		06733F3B20A28BDA007875A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		06733F3E20A28BDA007875A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		06733F4020A28BDA007875A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,6 +58,31 @@
 		06733F5220A28BDB007875A7 /* DeeDaoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeeDaoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		06733F5620A28BDB007875A7 /* DeeDaoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeeDaoUITests.m; sourceTree = "<group>"; };
 		06733F5820A28BDB007875A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		06733F6920A291C0007875A7 /* DDViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDViewController.h; sourceTree = "<group>"; };
+		06733F6A20A291C0007875A7 /* DDViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDViewController.m; sourceTree = "<group>"; };
+		06733F6F20A29379007875A7 /* BG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BG.png; sourceTree = "<group>"; };
+		06733F7120A293B9007875A7 /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		06733F7220A293B9007875A7 /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
+		06733F7520A29715007875A7 /* DeeDaoPCH.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeeDaoPCH.pch; sourceTree = "<group>"; };
+		06733F7720A29FDF007875A7 /* DDViewFactoryTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDViewFactoryTool.h; sourceTree = "<group>"; };
+		06733F7820A29FDF007875A7 /* DDViewFactoryTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDViewFactoryTool.m; sourceTree = "<group>"; };
+		06733F7A20A2A73B007875A7 /* DDTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTabBarController.m; sourceTree = "<group>"; };
+		06733F7B20A2A73C007875A7 /* DDTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTabBarController.h; sourceTree = "<group>"; };
+		06733F7E20A2A767007875A7 /* DDTabBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDTabBar.m; sourceTree = "<group>"; };
+		06733F7F20A2A767007875A7 /* DDTabBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDTabBar.h; sourceTree = "<group>"; };
+		06733F8220A2C17D007875A7 /* DDNetworkConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDNetworkConfiguration.h; sourceTree = "<group>"; };
+		06733F8320A2C17D007875A7 /* DDNetworkConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDNetworkConfiguration.m; sourceTree = "<group>"; };
+		06733F8820A2C423007875A7 /* DesUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DesUtil.h; sourceTree = "<group>"; };
+		06733F8920A2C423007875A7 /* ConverUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConverUtil.m; sourceTree = "<group>"; };
+		06733F8A20A2C423007875A7 /* ConverUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConverUtil.h; sourceTree = "<group>"; };
+		06733F8B20A2C423007875A7 /* DesUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DesUtil.m; sourceTree = "<group>"; };
+		06733F8E20A2CB26007875A7 /* DDTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDTool.h; sourceTree = "<group>"; };
+		06733F8F20A2CB26007875A7 /* DDTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTool.m; sourceTree = "<group>"; };
+		06733F9220A2D042007875A7 /* MBProgressHUD+DDHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MBProgressHUD+DDHUD.h"; sourceTree = "<group>"; };
+		06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MBProgressHUD+DDHUD.m"; sourceTree = "<group>"; };
+		878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeeDao.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.debug.xcconfig"; sourceTree = "<group>"; };
+		F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.release.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				822B904317B24E8CB3084F2A /* libPods-DeeDao.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +111,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0542BC9313DD6CAF50653633 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		06733F2620A28BD9007875A7 = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +126,8 @@
 				06733F4A20A28BDA007875A7 /* DeeDaoTests */,
 				06733F5520A28BDB007875A7 /* DeeDaoUITests */,
 				06733F3020A28BD9007875A7 /* Products */,
+				C3BC52864BA7FA3B47109D40 /* Pods */,
+				0542BC9313DD6CAF50653633 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -103,9 +146,15 @@
 			children = (
 				06733F3220A28BD9007875A7 /* AppDelegate.h */,
 				06733F3320A28BD9007875A7 /* AppDelegate.m */,
-				06733F3520A28BD9007875A7 /* ViewController.h */,
-				06733F3620A28BD9007875A7 /* ViewController.m */,
-				06733F3820A28BD9007875A7 /* Main.storyboard */,
+				06733F6620A29170007875A7 /* Model */,
+				06733F6520A29168007875A7 /* View */,
+				06733F6420A2915F007875A7 /* Controller */,
+				06733F8120A2C163007875A7 /* NetWork */,
+				06733F7620A29F64007875A7 /* Tool */,
+				06733F9120A2D021007875A7 /* Category */,
+				06733F8620A2C40D007875A7 /* Helper */,
+				06733F7420A296DF007875A7 /* Macro */,
+				06733F6C20A29343007875A7 /* Resource */,
 				06733F3B20A28BDA007875A7 /* Assets.xcassets */,
 				06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */,
 				06733F4020A28BDA007875A7 /* Info.plist */,
@@ -132,6 +181,140 @@
 			path = DeeDaoUITests;
 			sourceTree = "<group>";
 		};
+		06733F6420A2915F007875A7 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				06733F6820A291AB007875A7 /* Base */,
+				06733F6720A29193007875A7 /* HomePage */,
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
+		06733F6520A29168007875A7 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				06733F7D20A2A755007875A7 /* HomePage */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		06733F6620A29170007875A7 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		06733F6720A29193007875A7 /* HomePage */ = {
+			isa = PBXGroup;
+			children = (
+				06733F7B20A2A73C007875A7 /* DDTabBarController.h */,
+				06733F7A20A2A73B007875A7 /* DDTabBarController.m */,
+				06733F7120A293B9007875A7 /* LoginViewController.h */,
+				06733F7220A293B9007875A7 /* LoginViewController.m */,
+			);
+			path = HomePage;
+			sourceTree = "<group>";
+		};
+		06733F6820A291AB007875A7 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				06733F6920A291C0007875A7 /* DDViewController.h */,
+				06733F6A20A291C0007875A7 /* DDViewController.m */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		06733F6C20A29343007875A7 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				06733F6D20A2934B007875A7 /* Image */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		06733F6D20A2934B007875A7 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				06733F6F20A29379007875A7 /* BG.png */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
+		06733F7420A296DF007875A7 /* Macro */ = {
+			isa = PBXGroup;
+			children = (
+				06733F7520A29715007875A7 /* DeeDaoPCH.pch */,
+			);
+			path = Macro;
+			sourceTree = "<group>";
+		};
+		06733F7620A29F64007875A7 /* Tool */ = {
+			isa = PBXGroup;
+			children = (
+				06733F7720A29FDF007875A7 /* DDViewFactoryTool.h */,
+				06733F7820A29FDF007875A7 /* DDViewFactoryTool.m */,
+				06733F8E20A2CB26007875A7 /* DDTool.h */,
+				06733F8F20A2CB26007875A7 /* DDTool.m */,
+			);
+			path = Tool;
+			sourceTree = "<group>";
+		};
+		06733F7D20A2A755007875A7 /* HomePage */ = {
+			isa = PBXGroup;
+			children = (
+				06733F7F20A2A767007875A7 /* DDTabBar.h */,
+				06733F7E20A2A767007875A7 /* DDTabBar.m */,
+			);
+			path = HomePage;
+			sourceTree = "<group>";
+		};
+		06733F8120A2C163007875A7 /* NetWork */ = {
+			isa = PBXGroup;
+			children = (
+				06733F8220A2C17D007875A7 /* DDNetworkConfiguration.h */,
+				06733F8320A2C17D007875A7 /* DDNetworkConfiguration.m */,
+			);
+			path = NetWork;
+			sourceTree = "<group>";
+		};
+		06733F8620A2C40D007875A7 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				06733F8720A2C423007875A7 /* DesUtil */,
+			);
+			path = Helper;
+			sourceTree = "<group>";
+		};
+		06733F8720A2C423007875A7 /* DesUtil */ = {
+			isa = PBXGroup;
+			children = (
+				06733F8820A2C423007875A7 /* DesUtil.h */,
+				06733F8920A2C423007875A7 /* ConverUtil.m */,
+				06733F8A20A2C423007875A7 /* ConverUtil.h */,
+				06733F8B20A2C423007875A7 /* DesUtil.m */,
+			);
+			path = DesUtil;
+			sourceTree = "<group>";
+		};
+		06733F9120A2D021007875A7 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				06733F9220A2D042007875A7 /* MBProgressHUD+DDHUD.h */,
+				06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		C3BC52864BA7FA3B47109D40 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */,
+				F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -139,6 +322,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 06733F5B20A28BDB007875A7 /* Build configuration list for PBXNativeTarget "DeeDao" */;
 			buildPhases = (
+				FCE0EA87E06CE425055AFD82 /* [CP] Check Pods Manifest.lock */,
 				06733F2B20A28BD9007875A7 /* Sources */,
 				06733F2C20A28BD9007875A7 /* Frameworks */,
 				06733F2D20A28BD9007875A7 /* Resources */,
@@ -237,7 +421,7 @@
 			files = (
 				06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
-				06733F3A20A28BD9007875A7 /* Main.storyboard in Resources */,
+				06733F7020A29379007875A7 /* BG.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,14 +441,44 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		FCE0EA87E06CE425055AFD82 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-DeeDao-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		06733F2B20A28BD9007875A7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06733F3720A28BD9007875A7 /* ViewController.m in Sources */,
+				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
+				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
+				06733F8020A2A767007875A7 /* DDTabBar.m in Sources */,
+				06733F7920A29FDF007875A7 /* DDViewFactoryTool.m in Sources */,
+				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
+				06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */,
+				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
+				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
+				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
 				06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */,
+				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,14 +514,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		06733F3820A28BD9007875A7 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				06733F3920A28BD9007875A7 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -431,34 +637,47 @@
 		};
 		06733F5C20A28BDB007875A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R3XS58GX4T;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 9U9L62FB58;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DeeDao/Macro/DeeDaoPCH.pch;
 				INFOPLIST_FILE = DeeDao/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.DeeDao.DeeDao;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "34b4ed69-bac3-4e71-a115-0dc9c1cb75bf";
+				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
 		06733F5D20A28BDB007875A7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = R3XS58GX4T;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = 9U9L62FB58;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = DeeDao/Macro/DeeDaoPCH.pch;
 				INFOPLIST_FILE = DeeDao/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.DeeDao.DeeDao;
+				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "a40516ea-ec78-4b03-97c1-2215a75dbf1f";
+				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreADHoc;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
