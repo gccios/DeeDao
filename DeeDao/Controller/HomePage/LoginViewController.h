@@ -10,4 +10,6 @@
 
 @interface LoginViewController : DDViewController
 
+@property (nonatomic, copy) void (^loginSucess)(void);
+
 @end

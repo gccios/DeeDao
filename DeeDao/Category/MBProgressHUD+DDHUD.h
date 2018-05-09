@@ -10,4 +10,8 @@
 
 @interface MBProgressHUD (DDHUD)
 
++ (MBProgressHUD *)showLoadingHUDWithText:(NSString *)text inView:(UIView *)view;
+
++ (void)showTextHUDWithText:(NSString *)text inView:(UIView *)view;
+
 @end

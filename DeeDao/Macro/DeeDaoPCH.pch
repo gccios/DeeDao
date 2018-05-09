@@ -9,6 +9,20 @@
 #ifndef DeeDaoPCH_pch
 #define DeeDaoPCH_pch
 
+/*
+ 服务器地址
+ */
+#define TEST_DEV_TYPE 0 //测试环境切换宏，1代表线上环境，0代表测试环境
+
+#if TEST_DEV_TYPE
+#define HOSTURL @"https://portal.deedao.com" //正式地址
+#define NSLog(...) {}
+
+#else
+#define HOSTURL @"https://portal.deedao.com"  //测试地址
+#define NSLog(...) NSLog(__VA_ARGS__)
+#endif
+
 // Include any system framework and library headers here that should be included in all compilation units.
 // You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
 
@@ -19,9 +33,20 @@
 #define WeChatAPPKey @"wx72955abeea4e44e2"
 #define WeChatAPPSecret @"ecb245a2061fcf39e687e6141f60264f"
 
-#define DpToPxScale 1.15
 #define kMainBoundsHeight   ([UIScreen mainScreen].bounds).size.height //屏幕的高度
 #define kMainBoundsWidth    ([UIScreen mainScreen].bounds).size.width //屏幕的宽度
+
+/*
+ 路径
+ */
+#define DDDocumentPath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]
+#define DDUserInfoPath [NSString stringWithFormat:@"%@/DDUserInfo.plist", DDDocumentPath]
+
+/*
+ 特需判断
+ */
+#define isNull(x)             (!x || [x isKindOfClass:[NSNull class]])
+#define isEmptyString(x)      (isNull(x) || [x isEqual:@""] || [x isEqual:@"(null)"])
 
 /*
  网络

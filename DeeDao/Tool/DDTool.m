@@ -7,14 +7,30 @@
 //
 
 #import "DDTool.h"
-#import <UMShare/UMSocialManager.h>
+#import "UserManager.h"
+#import <WechatOpenSDK/WXApi.h>
+#import <BGNetwork/BGNetworkManager.h>
+#import "DDNetworkConfiguration.h"
 
 @implementation DDTool
 
 + (void)configApplication
 {
-    [[UMSocialManager defaultManager] setUmSocialAppkey:UMAppKey];
-    [[UMSocialManager defaultManager] setPlaform:UMSocialPlatformType_WechatSession appKey:WeChatAPPKey appSecret:WeChatAPPSecret redirectURL:@"http://mobile.umeng.com/social"];
+    [[BGNetworkManager sharedManager] setNetworkConfiguration:[DDNetworkConfiguration configuration]];
+    
+    [WXApi registerApp:WeChatAPPKey];
+    
+    //配置用户信息
+    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
+        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
+        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
+            
+            [[UserManager shareManager] loginWithDictionary:userInfo];
+            
+        }else {
+            
+        }
+    }
 }
 
 @end

@@ -7,13 +7,17 @@
 //
 
 #import "LoginViewController.h"
-#import <UMShare/UMShare.h>
 #import "DDViewFactoryTool.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "UserManager.h"
+#import "WeChatManager.h"
+#import "UserLoginWXRequest.h"
 
 @interface LoginViewController ()
 
 @property (nonatomic, strong) UIButton * loginButton;
 
+@property (nonatomic, assign) BOOL hasDDObserver;
 @end
 
 @implementation LoginViewController
@@ -40,37 +44,108 @@
     
     [self.view addSubview:bgImageView];
     
-    CGFloat widthScale = DpToPxScale * kMainBoundsWidth / 414.f;
-    CGFloat heightScale = DpToPxScale * kMainBoundsHeight / 736.f;
-    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(20 + widthScale, kMainBoundsHeight - 204 * heightScale, 320 * widthScale, 48 * heightScale) font:kPingFangRegular(16 * widthScale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColorFromRGB(0x0ABB07) colorWithAlphaComponent:.82f] title:@"使用微信登录"];
-    [DDViewFactoryTool cornerRadius:4 * heightScale withView:self.loginButton];
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColorFromRGB(0x0ABB07) colorWithAlphaComponent:.82f] title:@"用微信直接登录"];
+    [self.loginButton setImage:[UIImage imageNamed:@"wxlogo"] forState:UIControlStateNormal];
+    [self.loginButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
+    [self.loginButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 5)];
+    [DDViewFactoryTool cornerRadius:6 withView:self.loginButton];
     self.loginButton.alpha = 0;
-    [self.view addSubview:self.loginButton];
-    [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
     [self.loginButton addTarget:self action:@selector(loginWithWeChat) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.loginButton];
+    [self.loginButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.bottom.mas_equalTo(-468 * scale);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
+    if ([UserManager shareManager].isLogin) {
+         [self performSelector:@selector(loginSuccess) withObject:nil afterDelay:.5f];
+    }else{
+        [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+    }
+}
+
+- (void)loginDDUserWithCode:(NSString *)code
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"登录中..." inView:self.view];
+    UserLoginWXRequest * request = [[UserLoginWXRequest alloc] initWithWeCode:code];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if ([response isKindOfClass:[NSDictionary class]]) {
+            
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (data && [data isKindOfClass:[NSDictionary class]]) {
+                [[UserManager shareManager] loginWithDictionary:data];
+                [[UserManager shareManager] saveUserInfo];
+                [self loginSuccess];
+                [MBProgressHUD showTextHUDWithText:@"登录成功" inView:[UIApplication sharedApplication].keyWindow];
+            }else{
+                [MBProgressHUD showTextHUDWithText:@"登录失败" inView:self.view];
+            }
+            
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"登录失败" inView:self.view];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"登录失败" inView:self.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"登录失败" inView:self.view];
+        
+    }];
+}
+
+- (void)loginSuccess
+{
+    if (self.loginSucess) {
+        self.loginSucess();
+    }
 }
 
 - (void)loginWithWeChat
 {
-    if ([[UMSocialManager defaultManager] isInstall:UMSocialPlatformType_WechatSession]) {
-        [[UMSocialManager defaultManager] getUserInfoWithPlatform:UMSocialPlatformType_WechatSession currentViewController:self completion:^(id result, NSError *error) {
-            
-            if (nil == error && [result isKindOfClass:[UMSocialUserInfoResponse class]]) {
-                
-//                [MBProgressHUD showTextHUDWithText:@"授权成功" inView:self.navigationController.view];
-//                [[UserManager shareManager] configWithUMengResponse:result];
-//                [[UserManager shareManager] saveUserInfo];
-//                [ZXTools weixinLoginUpdate];
-//                [[NSNotificationCenter defaultCenter] postNotificationName:ZXUserDidLoginSuccessNotification object:nil];
-                [self.navigationController popToRootViewControllerAnimated:YES];
-                
-            }else{
-//                [MBProgressHUD showTextHUDWithText:@"授权失败" inView:self.view];
-            }
-        }];
+    [[WeChatManager shareManager] loginWithWeChat];
+}
+
+- (void)userLoginWith:(NSNotification *)notification
+{
+    SendAuthResp * resp = notification.object;
+    if (resp.errCode) {
+        [MBProgressHUD showTextHUDWithText:@"授权失败" inView:self.view];
     }else{
-//        [MBProgressHUD showTextHUDWithText:@"请安装微信后使用" inView:self.view];
+        if (isEmptyString(resp.code)) {
+            [MBProgressHUD showTextHUDWithText:@"授权失败" inView:self.view];
+        }else{
+            [self loginDDUserWithCode:resp.code];
+        }
     }
+}
+
+- (void)addDDObserver
+{
+    self.hasDDObserver = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginWith:) name:DDUserDidGetWeChatCodeNotification object:nil];
+}
+
+- (void)removeDDObserver
+{
+    if (self.hasDDObserver) {
+        self.hasDDObserver = NO;
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserDidGetWeChatCodeNotification object:nil];
+    }
+}
+
+- (void)dealloc
+{
+    [self removeDDObserver];
 }
 
 - (void)showLoginWithWeChatButton
@@ -78,6 +153,7 @@
     [UIView animateWithDuration:.5f animations:^{
         self.loginButton.alpha = 1;
     }];
+    [self addDDObserver];
 }
 
 - (void)didReceiveMemoryWarning {

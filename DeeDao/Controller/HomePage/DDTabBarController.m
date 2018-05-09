@@ -8,6 +8,11 @@
 
 #import "DDTabBarController.h"
 #import "DDTabBar.h"
+#import "DDNavigationViewController.h"
+#import "DDDTieViewController.h"
+#import "DDFoundViewController.h"
+#import "DDMailViewController.h"
+#import "DDMineViewController.h"
 
 @interface DDTabBarController ()
 
@@ -25,23 +30,54 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    
 }
 
 - (void)customTabBarController
 {
+    [self setValue:[[DDTabBar alloc] init] forKey:@"tabBar"];
+    
+    [[UITabBarItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : UIColorFromRGB(0xB721FF)} forState:UIControlStateSelected];
+    
     NSMutableArray * vcArray = [NSMutableArray new];
-    for (NSInteger i = 0; i < 4; i++) {
-        UIViewController * vc = [[UIViewController alloc] init];
-        UITabBarItem * tabBarItem = [[UITabBarItem alloc] initWithTabBarSystemItem:UITabBarSystemItemContacts tag:i];
-        [vc setTabBarItem:tabBarItem];
-        [vcArray addObject:vc];
-    }
+    
+    DDDTieViewController * DTie = [[DDDTieViewController alloc] init];
+    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:DTie];
+    UITabBarItem * tabBarItem1 = [self tabBarItemWithImageName:@"Dtie" selectName:@"DtieSelect" title:@"D贴"];
+    [na setTabBarItem:tabBarItem1];
+    [vcArray addObject:na];
+    
+    DDFoundViewController * found = [[DDFoundViewController alloc] init];
+    DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+    UITabBarItem * tabBarItem2 = [self tabBarItemWithImageName:@"found" selectName:@"foundselect" title:@"发现"];
+    [foundNa setTabBarItem:tabBarItem2];
+    [vcArray addObject:foundNa];
+    
+    DDMailViewController * mail = [[DDMailViewController alloc] init];
+    DDNavigationViewController * mailNa = [[DDNavigationViewController alloc] initWithRootViewController:mail];
+    UITabBarItem * tabBarItem3 = [self tabBarItemWithImageName:@"mail" selectName:@"mailSelect" title:@"邮筒"];
+    tabBarItem3.imageInsets = UIEdgeInsetsMake(-4, 0, 0, 0);
+    [mailNa setTabBarItem:tabBarItem3];
+    [vcArray addObject:mailNa];
+    
+    DDMineViewController * mine = [[DDMineViewController alloc] init];
+    DDNavigationViewController * mineNa = [[DDNavigationViewController alloc] initWithRootViewController:mine];
+    UITabBarItem * tabBarItem4 = [self tabBarItemWithImageName:@"mine" selectName:@"mineSelect" title:@"我的"];
+    [mineNa setTabBarItem:tabBarItem4];
+    [vcArray addObject:mineNa];
     
     [self setViewControllers:vcArray];
+}
+
+- (UITabBarItem *)tabBarItemWithImageName:(NSString *)name selectName:(NSString *)selectName title:(NSString *)title
+{
+    UIImage * image = [[UIImage imageNamed:name] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
-    [self setValue:[[DDTabBar alloc] init] forKey:@"tabBar"];
+    UIImage * selectImage = [[UIImage imageNamed:selectName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    
+    UITabBarItem * item = [[UITabBarItem alloc] initWithTitle:title image:image selectedImage:selectImage];
+    item.titlePositionAdjustment = UIOffsetMake(0, -2);
+    
+    return item;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -24,6 +24,16 @@
 		06733F8D20A2C423007875A7 /* DesUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8B20A2C423007875A7 /* DesUtil.m */; };
 		06733F9020A2CB26007875A7 /* DDTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F8F20A2CB26007875A7 /* DDTool.m */; };
 		06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */; };
+		06733F9820A2D748007875A7 /* UserManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F9720A2D748007875A7 /* UserManager.m */; };
+		06733F9B20A2E82D007875A7 /* WeChatManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F9A20A2E82D007875A7 /* WeChatManager.m */; };
+		06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F9E20A2EB4D007875A7 /* UserLoginWXRequest.m */; };
+		06733FA220A2FD77007875A7 /* UserModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733FA120A2FD77007875A7 /* UserModel.m */; };
+		06733FA520A30D72007875A7 /* DDDTieViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733FA420A30D72007875A7 /* DDDTieViewController.m */; };
+		06733FA820A30DD5007875A7 /* DDNavigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733FA720A30DD5007875A7 /* DDNavigationViewController.m */; };
+		06733FAB20A316A8007875A7 /* DDTabHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733FAA20A316A8007875A7 /* DDTabHomeViewController.m */; };
+		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
+		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
+		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
 		822B904317B24E8CB3084F2A /* libPods-DeeDao.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */; };
 /* End PBXBuildFile section */
 
@@ -80,6 +90,26 @@
 		06733F8F20A2CB26007875A7 /* DDTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTool.m; sourceTree = "<group>"; };
 		06733F9220A2D042007875A7 /* MBProgressHUD+DDHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MBProgressHUD+DDHUD.h"; sourceTree = "<group>"; };
 		06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "MBProgressHUD+DDHUD.m"; sourceTree = "<group>"; };
+		06733F9620A2D748007875A7 /* UserManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserManager.h; sourceTree = "<group>"; };
+		06733F9720A2D748007875A7 /* UserManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserManager.m; sourceTree = "<group>"; };
+		06733F9920A2E82D007875A7 /* WeChatManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeChatManager.h; sourceTree = "<group>"; };
+		06733F9A20A2E82D007875A7 /* WeChatManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WeChatManager.m; sourceTree = "<group>"; };
+		06733F9D20A2EB4D007875A7 /* UserLoginWXRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserLoginWXRequest.h; sourceTree = "<group>"; };
+		06733F9E20A2EB4D007875A7 /* UserLoginWXRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserLoginWXRequest.m; sourceTree = "<group>"; };
+		06733FA020A2FD77007875A7 /* UserModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserModel.h; sourceTree = "<group>"; };
+		06733FA120A2FD77007875A7 /* UserModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserModel.m; sourceTree = "<group>"; };
+		06733FA320A30D72007875A7 /* DDDTieViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDDTieViewController.h; sourceTree = "<group>"; };
+		06733FA420A30D72007875A7 /* DDDTieViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDDTieViewController.m; sourceTree = "<group>"; };
+		06733FA620A30DD5007875A7 /* DDNavigationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDNavigationViewController.h; sourceTree = "<group>"; };
+		06733FA720A30DD5007875A7 /* DDNavigationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDNavigationViewController.m; sourceTree = "<group>"; };
+		06733FA920A316A8007875A7 /* DDTabHomeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDTabHomeViewController.h; sourceTree = "<group>"; };
+		06733FAA20A316A8007875A7 /* DDTabHomeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTabHomeViewController.m; sourceTree = "<group>"; };
+		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
+		06DAB76420A34C880055FA60 /* DDFoundViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFoundViewController.m; sourceTree = "<group>"; };
+		06DAB76620A3539A0055FA60 /* DDMailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMailViewController.h; sourceTree = "<group>"; };
+		06DAB76720A3539A0055FA60 /* DDMailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMailViewController.m; sourceTree = "<group>"; };
+		06DAB76920A35A120055FA60 /* DDMineViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMineViewController.h; sourceTree = "<group>"; };
+		06DAB76A20A35A120055FA60 /* DDMineViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMineViewController.m; sourceTree = "<group>"; };
 		878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeeDao.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.debug.xcconfig"; sourceTree = "<group>"; };
 		F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.release.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.release.xcconfig"; sourceTree = "<group>"; };
@@ -201,6 +231,7 @@
 		06733F6620A29170007875A7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				06733F9520A2D707007875A7 /* User */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -212,6 +243,14 @@
 				06733F7A20A2A73B007875A7 /* DDTabBarController.m */,
 				06733F7120A293B9007875A7 /* LoginViewController.h */,
 				06733F7220A293B9007875A7 /* LoginViewController.m */,
+				06733FA320A30D72007875A7 /* DDDTieViewController.h */,
+				06733FA420A30D72007875A7 /* DDDTieViewController.m */,
+				06DAB76320A34C880055FA60 /* DDFoundViewController.h */,
+				06DAB76420A34C880055FA60 /* DDFoundViewController.m */,
+				06DAB76620A3539A0055FA60 /* DDMailViewController.h */,
+				06DAB76720A3539A0055FA60 /* DDMailViewController.m */,
+				06DAB76920A35A120055FA60 /* DDMineViewController.h */,
+				06DAB76A20A35A120055FA60 /* DDMineViewController.m */,
 			);
 			path = HomePage;
 			sourceTree = "<group>";
@@ -221,6 +260,10 @@
 			children = (
 				06733F6920A291C0007875A7 /* DDViewController.h */,
 				06733F6A20A291C0007875A7 /* DDViewController.m */,
+				06733FA920A316A8007875A7 /* DDTabHomeViewController.h */,
+				06733FAA20A316A8007875A7 /* DDTabHomeViewController.m */,
+				06733FA620A30DD5007875A7 /* DDNavigationViewController.h */,
+				06733FA720A30DD5007875A7 /* DDNavigationViewController.m */,
 			);
 			path = Base;
 			sourceTree = "<group>";
@@ -274,6 +317,7 @@
 			children = (
 				06733F8220A2C17D007875A7 /* DDNetworkConfiguration.h */,
 				06733F8320A2C17D007875A7 /* DDNetworkConfiguration.m */,
+				06733F9C20A2EB30007875A7 /* User */,
 			);
 			path = NetWork;
 			sourceTree = "<group>";
@@ -304,6 +348,28 @@
 				06733F9320A2D042007875A7 /* MBProgressHUD+DDHUD.m */,
 			);
 			path = Category;
+			sourceTree = "<group>";
+		};
+		06733F9520A2D707007875A7 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				06733F9620A2D748007875A7 /* UserManager.h */,
+				06733F9720A2D748007875A7 /* UserManager.m */,
+				06733FA020A2FD77007875A7 /* UserModel.h */,
+				06733FA120A2FD77007875A7 /* UserModel.m */,
+				06733F9920A2E82D007875A7 /* WeChatManager.h */,
+				06733F9A20A2E82D007875A7 /* WeChatManager.m */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		06733F9C20A2EB30007875A7 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				06733F9D20A2EB4D007875A7 /* UserLoginWXRequest.h */,
+				06733F9E20A2EB4D007875A7 /* UserLoginWXRequest.m */,
+			);
+			path = User;
 			sourceTree = "<group>";
 		};
 		C3BC52864BA7FA3B47109D40 /* Pods */ = {
@@ -467,16 +533,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06733FAB20A316A8007875A7 /* DDTabHomeViewController.m in Sources */,
+				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
 				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
+				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				06733F8020A2A767007875A7 /* DDTabBar.m in Sources */,
 				06733F7920A29FDF007875A7 /* DDViewFactoryTool.m in Sources */,
+				06733FA220A2FD77007875A7 /* UserModel.m in Sources */,
+				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
+				06733F9B20A2E82D007875A7 /* WeChatManager.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
+				06733FA820A30DD5007875A7 /* DDNavigationViewController.m in Sources */,
 				06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */,
 				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
 				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
+				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
+				06733FA520A30D72007875A7 /* DDDTieViewController.m in Sources */,
+				06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */,
 				06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */,
 				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
 			);

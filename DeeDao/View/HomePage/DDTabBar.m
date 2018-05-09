@@ -27,16 +27,15 @@
 
 - (void)createTabBar
 {
-    self.centerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 65, 65)];
-    self.centerView.backgroundColor = [UIColor blueColor];
+    self.centerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
     [self addSubview:self.centerView];
     
     self.centerButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.centerButton.frame = self.centerView.frame;
-    self.centerButton.backgroundColor = [UIColor grayColor];
     [self.centerView addSubview:self.centerButton];
     self.centerButton.layer.cornerRadius = self.centerButton.frame.size.width / 2.f;
     self.centerButton.layer.masksToBounds = YES;
+    [self.centerButton setBackgroundImage:[UIImage imageNamed:@"tabAdd"] forState:UIControlStateNormal];
     [self.centerView addSubview:self.centerButton];
     [self.centerButton addTarget:self action:@selector(centerButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -69,7 +68,7 @@
         }
     }
     
-    self.centerView.center = CGPointMake((self.frame.size.width / 2.f), (self.frame.size.height - self.centerView.frame.size.height / 2.f));
+    self.centerView.center = CGPointMake((self.frame.size.width / 2.f), 0);
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -87,7 +86,10 @@
     // 1. 如果点击的位置到红色圆的圆心距离 大于 半径, 说明点击的位置不在圆上, 但是有可能在tabBar其他区域上
     // 2. 如果点击的位置在tabBar范围上, 那么middlePoint的y值就是 大于 self.middleView.height - self.height, 反之点击的位置就不在圆内
     // 所以: 综上两点, 当点击的位置即在圆外, 又不在tabBar上时, 直接返回, 此时中间视图上边两个蓝色角也无法响应事件
-    if (distance > self.centerButton.frame.size.width * 0.5 && middlePoint.y < self.centerView.frame.size.height - self.frame.size.height) {
+    BOOL temp1 = distance > self.centerButton.frame.size.width * 0.5;
+    CGFloat Y = self.centerView.frame.origin.y - self.frame.size.height;
+    BOOL temp2 = Y < middlePoint.y < self.frame.size.height;
+    if (temp1 && temp2) {
         return [super hitTest:point withEvent:event];
     }
     return self.centerButton;

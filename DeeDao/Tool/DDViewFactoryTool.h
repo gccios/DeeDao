@@ -18,6 +18,8 @@
 
 + (UIButton *)createButtonWithFrame:(CGRect)frame font:(UIFont *)font titleColor:(UIColor *)titleColor backgroundColor:(UIColor *)backgroundColor title:(NSString *)title;
 
++ (UIImageView *)createImageViewWithFrame:(CGRect)frame contentModel:(UIViewContentMode)model image:(UIImage *)image;
+
 + (void)cornerRadius:(CGFloat)radius withView:(UIView *)view;
 
 @end

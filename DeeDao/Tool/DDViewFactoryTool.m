@@ -44,6 +44,14 @@
     return button;
 }
 
++ (UIImageView *)createImageViewWithFrame:(CGRect)frame contentModel:(UIViewContentMode)model image:(UIImage *)image
+{
+    UIImageView * imageView = [[UIImageView alloc] initWithFrame:frame];
+    imageView.contentMode = model;
+    [imageView setImage:image];
+    return imageView;
+}
+
 + (void)cornerRadius:(CGFloat)radius withView:(UIView *)view
 {
     view.layer.cornerRadius = radius;

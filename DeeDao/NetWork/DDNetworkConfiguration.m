@@ -13,7 +13,7 @@
 @implementation DDNetworkConfiguration
 
 -(NSString *)baseURLString {
-    return @"";
+    return HOSTURL;
 }
 
 - (NSDictionary *)requestCommonHTTPHeaderFields {
@@ -64,12 +64,7 @@
 }
 
 - (BOOL)shouldBusinessSuccessWithResponseData:(NSDictionary *)responseData task:(NSURLSessionDataTask *)task request:(BGNetworkRequest *)request {
-    NSInteger code;
-    code = [responseData[@"code"] integerValue];
-    if(code == 10000){
-        return YES;
-    }
-    return NO;
+    return YES;
 }
 
 - (NSData *)decryptResponseData:(NSData *)responseData response:(NSURLResponse *)response request:(BGNetworkRequest *)request{
