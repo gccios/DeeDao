@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Masonry/Masonry.h>
+#import "DDViewFactoryTool.h"
 
 @interface DDViewController : UIViewController
 

@@ -7,7 +7,6 @@
 //
 
 #import "LoginViewController.h"
-#import "DDViewFactoryTool.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "UserManager.h"
 #import "WeChatManager.h"
@@ -63,7 +62,7 @@
     if ([UserManager shareManager].isLogin) {
          [self performSelector:@selector(loginSuccess) withObject:nil afterDelay:.5f];
     }else{
-        [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+        [self performSelector:@selector(loginSuccess) withObject:nil afterDelay:.5f];
     }
 }
 

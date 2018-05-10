@@ -10,7 +10,7 @@
 
 @interface DDFoundViewController ()
 
-@property (nonatomic, strong) UIImageView * topImageView;
+@property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UIButton * sourceButton;
 @property (nonatomic, strong) UIButton * timeButton;
@@ -28,21 +28,27 @@
 
 - (void)creatViews
 {
-    [self.navigationController setNavigationBarHidden:YES];
-    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.topImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"navBack"]];
-    self.topImageView.userInteractionEnabled = YES;
-    [self.view addSubview:self.topImageView];
-    [self.topImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.topView = [[UIView alloc] init];
+    self.topView.userInteractionEnabled = YES;
+    [self.view addSubview:self.topView];
+    [self.topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(240 * scale);
+        make.height.mas_equalTo((220 + kStatusBarHeight) * scale);
     }];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
+    [self.topView.layer addSublayer:gradientLayer];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
     titleLabel.text = @"发现";
-    [self.topImageView addSubview:titleLabel];
+    [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60.5 * scale);
         make.height.mas_equalTo(64 * scale);
@@ -53,7 +59,7 @@
     [self.sourceButton setImage:[UIImage imageNamed:@"source"] forState:UIControlStateNormal];
     [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.sourceButton.alpha = .4f;
-    [self.topImageView addSubview:self.sourceButton];
+    [self.topView addSubview:self.sourceButton];
     [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-40 * scale);
         make.bottom.mas_equalTo(-20 * scale);
@@ -64,7 +70,7 @@
     [self.timeButton setImage:[UIImage imageNamed:@"time"] forState:UIControlStateNormal];
     [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.timeButton.alpha = .4f;
-    [self.topImageView addSubview:self.timeButton];
+    [self.topView addSubview:self.timeButton];
     [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(self.sourceButton.mas_left).offset(-30 * scale);
         make.bottom.mas_equalTo(-20 * scale);

@@ -56,6 +56,10 @@
     CGFloat width = self.frame.size.width / (count + 1);
     CGFloat height = self.frame.size.height;
     
+    if (KIsiPhoneX) {
+        height -= 34;
+    }
+    
     // 遍历所有按钮, 调整按钮位置
     for (UIView *subView in self.subviews) {
         if ([subView isKindOfClass:NSClassFromString(@"UITabBarButton")]) {

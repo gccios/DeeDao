@@ -35,6 +35,7 @@
 
 #define kMainBoundsHeight   ([UIScreen mainScreen].bounds).size.height //屏幕的高度
 #define kMainBoundsWidth    ([UIScreen mainScreen].bounds).size.width //屏幕的宽度
+#define kStatusBarHeight    [UIApplication sharedApplication].statusBarFrame.size.height
 
 /*
  路径
@@ -47,6 +48,8 @@
  */
 #define isNull(x)             (!x || [x isKindOfClass:[NSNull class]])
 #define isEmptyString(x)      (isNull(x) || [x isEqual:@""] || [x isEqual:@"(null)"])
+
+#define KIsiPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125.f, 2436.f), [[UIScreen mainScreen] currentMode].size) : NO)
 
 /*
  网络

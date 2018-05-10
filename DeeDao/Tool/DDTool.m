@@ -31,6 +31,10 @@
             
         }
     }
+    
+    [[UITableView appearance] setEstimatedRowHeight:0];
+    [[UITableView appearance] setEstimatedSectionFooterHeight:0];
+    [[UITableView appearance] setEstimatedSectionHeaderHeight:0];
 }
 
 @end

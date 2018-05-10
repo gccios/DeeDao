@@ -75,7 +75,11 @@
     UIImage * selectImage = [[UIImage imageNamed:selectName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     
     UITabBarItem * item = [[UITabBarItem alloc] initWithTitle:title image:image selectedImage:selectImage];
-    item.titlePositionAdjustment = UIOffsetMake(0, -2);
+    if (KIsiPhoneX) {
+        item.titlePositionAdjustment = UIOffsetMake(0, 2);
+    }else{
+        item.titlePositionAdjustment = UIOffsetMake(0, -2);
+    }
     
     return item;
 }
