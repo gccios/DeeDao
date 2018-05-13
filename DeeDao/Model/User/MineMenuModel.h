@@ -18,6 +18,7 @@ typedef enum : NSUInteger {
 
 @interface MineMenuModel : NSObject
 
+@property (nonatomic, assign) MineMenuType type;
 @property (nonatomic, copy) NSString * imageName;
 @property (nonatomic, copy) NSString * title;
 

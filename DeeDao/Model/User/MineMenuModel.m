@@ -14,6 +14,8 @@
 {
     if (self = [super init]) {
         
+        self.type = type;
+        
         switch (type) {
             case MineMenuType_Wallet:
                 

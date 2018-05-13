@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <WechatOpenSDK/WXApi.h>
+#import <WXApi.h>
 
 extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功通知
 

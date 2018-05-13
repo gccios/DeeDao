@@ -10,6 +10,8 @@
 #import "MineHeaderView.h"
 #import "MainTableViewCell.h"
 #import "MineInfoViewController.h"
+#import "MYWalletViewController.h"
+#import "AchievementViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -63,6 +65,10 @@
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
     [self.topView.layer addSublayer:gradientLayer];
     
+    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.topView.layer.shadowOpacity = .24;
+    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+    
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
     titleLabel.text = @"个人中心";
     [self.topView addSubview:titleLabel];
@@ -103,6 +109,27 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+    MineMenuModel * model = [data objectAtIndex:indexPath.row];
+    switch (model.type) {
+        case MineMenuType_Wallet:
+        {
+            MYWalletViewController * wallet = [[MYWalletViewController alloc] init];
+            [self.navigationController pushViewController:wallet animated:YES];
+        }
+            break;
+            
+        case MineMenuType_Achievement:
+        {
+            AchievementViewController * achievement = [[AchievementViewController alloc] init];
+            [self.navigationController pushViewController:achievement animated:YES];
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

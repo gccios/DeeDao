@@ -8,7 +8,7 @@
 
 #import "MineHeaderView.h"
 #import "DDViewFactoryTool.h"
-#import <Masonry/Masonry.h>
+#import <Masonry.h>
 
 @interface MineHeaderView ()
 

@@ -7,7 +7,7 @@
 //
 
 #import "MBProgressHUD+DDHUD.h"
-#import <Masonry/Masonry.h>
+#import <Masonry.h>
 
 @implementation MBProgressHUD (DDHUD)
 

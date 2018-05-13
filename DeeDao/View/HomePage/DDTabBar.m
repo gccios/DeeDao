@@ -7,6 +7,7 @@
 //
 
 #import "DDTabBar.h"
+#import "DTieEditViewController.h"
 
 @interface DDTabBar ()
 
@@ -42,7 +43,10 @@
 
 - (void)centerButtonDidClicked
 {
-    NSLog(@"点击了中间按钮");
+    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DTieEditViewController * edit = [[DTieEditViewController alloc] init];
+    [na pushViewController:edit animated:YES];
 }
 
 - (void)layoutSubviews
@@ -77,6 +81,10 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+    if (self.isHidden) {
+        return [super hitTest:point withEvent:event];
+    }
+    
     // 将点击的 位置 转成在中心蓝色视图上的点
     CGPoint middlePoint = [self convertPoint:point toView:self.centerView];
     

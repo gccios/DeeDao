@@ -45,6 +45,10 @@
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
     [self.topView.layer addSublayer:gradientLayer];
     
+    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.topView.layer.shadowOpacity = .24;
+    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+    
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
     [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

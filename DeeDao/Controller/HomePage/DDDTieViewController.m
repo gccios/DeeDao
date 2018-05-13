@@ -8,6 +8,8 @@
 
 #import "DDDTieViewController.h"
 #import "DTieCollectionViewCell.h"
+#import "DTieEditViewController.h"
+#import <QiniuSDK.h>
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -177,6 +179,19 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
+    switch (model.type) {
+        case DTieType_Add:
+        {
+            DTieEditViewController * edit = [[DTieEditViewController alloc] init];
+            [self.navigationController pushViewController:edit animated:YES];
+        }
+            break;
+            
+        default:
+            break;
+    }
+    
     NSLog(@"点击了");
 }
 
@@ -228,6 +243,24 @@
     }
     
     return _dataSource;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        builder.useHttps = YES;
+//    }];
+//    
+//    NSString *token = @"从服务端SDK获取";
+//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+//    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+//    [upManager putData:data key:@"hello" token:token
+//              complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//                  NSLog(@"%@", info);
+//                  NSLog(@"%@", resp);
+//              } option:nil];
 }
 
 - (void)didReceiveMemoryWarning {

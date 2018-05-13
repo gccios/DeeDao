@@ -8,8 +8,8 @@
 
 #import "DDTool.h"
 #import "UserManager.h"
-#import <WechatOpenSDK/WXApi.h>
-#import <BGNetwork/BGNetworkManager.h>
+#import <WXApi.h>
+#import <BGNetworkManager.h>
 #import "DDNetworkConfiguration.h"
 
 @implementation DDTool

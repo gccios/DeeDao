@@ -46,6 +46,10 @@
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
     [self.topView.layer addSublayer:gradientLayer];
     
+    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.topView.layer.shadowOpacity = .24;
+    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+    
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
     titleLabel.text = @"发现";
     [self.topView addSubview:titleLabel];

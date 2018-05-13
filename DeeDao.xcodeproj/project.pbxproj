@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06301B4220A6D309003580CA /* XFCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3A20A6D309003580CA /* XFCameraButton.m */; };
+		06301B4320A6D309003580CA /* XFCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3C20A6D309003580CA /* XFCameraController.m */; };
+		06301B4420A6D309003580CA /* XFCameraController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06301B3D20A6D309003580CA /* XFCameraController.xib */; };
+		06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4120A6D309003580CA /* XFPhotoLibraryManager.m */; };
+		06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4720A6E07E003580CA /* DTieEditFooterView.m */; };
+		06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4A20A88242003580CA /* MYWalletViewController.m */; };
+		06301B4E20A89091003580CA /* AchievementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4D20A89091003580CA /* AchievementViewController.m */; };
+		06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B5020A89118003580CA /* AchievementCollectionCell.m */; };
 		064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B3E20A48233007C0A4F /* MineHeaderView.m */; };
 		064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B4220A4898C007C0A4F /* MainTableViewCell.m */; };
 		064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B4520A489BB007C0A4F /* MineMenuModel.m */; };
@@ -42,6 +50,13 @@
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
 		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
+		06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD62720A53F7300E6EAA4 /* DTieEditViewController.m */; };
+		06FCD62C20A54C8500E6EAA4 /* DTieEditModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD62B20A54C8500E6EAA4 /* DTieEditModel.m */; };
+		06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD63220A5528500E6EAA4 /* RDTextView.m */; };
+		06FCD63720A55C8F00E6EAA4 /* DTieEditTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD63620A55C8F00E6EAA4 /* DTieEditTableViewCell.m */; };
+		06FCD63A20A5844200E6EAA4 /* DTieEditTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD63920A5844200E6EAA4 /* DTieEditTextViewController.m */; };
+		06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD63C20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m */; };
+		06FCD64020A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06FCD63F20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m */; };
 		822B904317B24E8CB3084F2A /* libPods-DeeDao.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +78,21 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		06301B3A20A6D309003580CA /* XFCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraButton.m; sourceTree = "<group>"; };
+		06301B3B20A6D309003580CA /* XFCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraButton.h; sourceTree = "<group>"; };
+		06301B3C20A6D309003580CA /* XFCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraController.m; sourceTree = "<group>"; };
+		06301B3D20A6D309003580CA /* XFCameraController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = XFCameraController.xib; sourceTree = "<group>"; };
+		06301B3E20A6D309003580CA /* XFCameraController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraController.h; sourceTree = "<group>"; };
+		06301B4020A6D309003580CA /* XFPhotoLibraryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFPhotoLibraryManager.h; sourceTree = "<group>"; };
+		06301B4120A6D309003580CA /* XFPhotoLibraryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFPhotoLibraryManager.m; sourceTree = "<group>"; };
+		06301B4620A6E07E003580CA /* DTieEditFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditFooterView.h; sourceTree = "<group>"; };
+		06301B4720A6E07E003580CA /* DTieEditFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditFooterView.m; sourceTree = "<group>"; };
+		06301B4920A88242003580CA /* MYWalletViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MYWalletViewController.h; sourceTree = "<group>"; };
+		06301B4A20A88242003580CA /* MYWalletViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MYWalletViewController.m; sourceTree = "<group>"; };
+		06301B4C20A89091003580CA /* AchievementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementViewController.h; sourceTree = "<group>"; };
+		06301B4D20A89091003580CA /* AchievementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementViewController.m; sourceTree = "<group>"; };
+		06301B4F20A89118003580CA /* AchievementCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementCollectionCell.h; sourceTree = "<group>"; };
+		06301B5020A89118003580CA /* AchievementCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementCollectionCell.m; sourceTree = "<group>"; };
 		064F0B3D20A48233007C0A4F /* MineHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MineHeaderView.h; sourceTree = "<group>"; };
 		064F0B3E20A48233007C0A4F /* MineHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MineHeaderView.m; sourceTree = "<group>"; };
 		064F0B4120A4898C007C0A4F /* MainTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainTableViewCell.h; sourceTree = "<group>"; };
@@ -134,6 +164,20 @@
 		06DAB76720A3539A0055FA60 /* DDMailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMailViewController.m; sourceTree = "<group>"; };
 		06DAB76920A35A120055FA60 /* DDMineViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMineViewController.h; sourceTree = "<group>"; };
 		06DAB76A20A35A120055FA60 /* DDMineViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMineViewController.m; sourceTree = "<group>"; };
+		06FCD62620A53F7300E6EAA4 /* DTieEditViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditViewController.h; sourceTree = "<group>"; };
+		06FCD62720A53F7300E6EAA4 /* DTieEditViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditViewController.m; sourceTree = "<group>"; };
+		06FCD62A20A54C8500E6EAA4 /* DTieEditModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditModel.h; sourceTree = "<group>"; };
+		06FCD62B20A54C8500E6EAA4 /* DTieEditModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditModel.m; sourceTree = "<group>"; };
+		06FCD63220A5528500E6EAA4 /* RDTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDTextView.m; sourceTree = "<group>"; };
+		06FCD63320A5528500E6EAA4 /* RDTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDTextView.h; sourceTree = "<group>"; };
+		06FCD63520A55C8F00E6EAA4 /* DTieEditTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditTableViewCell.h; sourceTree = "<group>"; };
+		06FCD63620A55C8F00E6EAA4 /* DTieEditTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditTableViewCell.m; sourceTree = "<group>"; };
+		06FCD63820A5844200E6EAA4 /* DTieEditTextViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditTextViewController.h; sourceTree = "<group>"; };
+		06FCD63920A5844200E6EAA4 /* DTieEditTextViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditTextViewController.m; sourceTree = "<group>"; };
+		06FCD63B20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditTextTableViewCell.h; sourceTree = "<group>"; };
+		06FCD63C20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditTextTableViewCell.m; sourceTree = "<group>"; };
+		06FCD63E20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieEditImageTableViewCell.h; sourceTree = "<group>"; };
+		06FCD63F20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieEditImageTableViewCell.m; sourceTree = "<group>"; };
 		878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DeeDao.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.debug.xcconfig"; sourceTree = "<group>"; };
 		F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DeeDao.release.xcconfig"; path = "Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao.release.xcconfig"; sourceTree = "<group>"; };
@@ -173,6 +217,44 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		06301B3720A6D2FE003580CA /* XFAVFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				06301B3820A6D309003580CA /* XFAVFoundation */,
+				06301B3F20A6D309003580CA /* XFPhotoLibraryManager */,
+			);
+			path = XFAVFoundation;
+			sourceTree = "<group>";
+		};
+		06301B3820A6D309003580CA /* XFAVFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				06301B3920A6D309003580CA /* XFCameraButton */,
+				06301B3E20A6D309003580CA /* XFCameraController.h */,
+				06301B3C20A6D309003580CA /* XFCameraController.m */,
+				06301B3D20A6D309003580CA /* XFCameraController.xib */,
+			);
+			path = XFAVFoundation;
+			sourceTree = "<group>";
+		};
+		06301B3920A6D309003580CA /* XFCameraButton */ = {
+			isa = PBXGroup;
+			children = (
+				06301B3A20A6D309003580CA /* XFCameraButton.m */,
+				06301B3B20A6D309003580CA /* XFCameraButton.h */,
+			);
+			path = XFCameraButton;
+			sourceTree = "<group>";
+		};
+		06301B3F20A6D309003580CA /* XFPhotoLibraryManager */ = {
+			isa = PBXGroup;
+			children = (
+				06301B4020A6D309003580CA /* XFPhotoLibraryManager.h */,
+				06301B4120A6D309003580CA /* XFPhotoLibraryManager.m */,
+			);
+			path = XFPhotoLibraryManager;
+			sourceTree = "<group>";
+		};
 		064F0B4020A4896D007C0A4F /* tableView */ = {
 			isa = PBXGroup;
 			children = (
@@ -182,8 +264,16 @@
 				064F0B4220A4898C007C0A4F /* MainTableViewCell.m */,
 				064F0B4C20A49A59007C0A4F /* MineEditTableViewCell.h */,
 				064F0B4D20A49A59007C0A4F /* MineEditTableViewCell.m */,
+				06FCD63520A55C8F00E6EAA4 /* DTieEditTableViewCell.h */,
+				06FCD63620A55C8F00E6EAA4 /* DTieEditTableViewCell.m */,
+				06FCD63B20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.h */,
+				06FCD63C20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m */,
+				06FCD63E20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.h */,
+				06FCD63F20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m */,
 				064F0B4F20A49ADC007C0A4F /* DDEditTextField.h */,
 				064F0B5020A49ADC007C0A4F /* DDEditTextField.m */,
+				06301B4620A6E07E003580CA /* DTieEditFooterView.h */,
+				06301B4720A6E07E003580CA /* DTieEditFooterView.m */,
 			);
 			path = tableView;
 			sourceTree = "<group>";
@@ -193,6 +283,14 @@
 			children = (
 				064F0B4920A49682007C0A4F /* MineInfoViewController.h */,
 				064F0B4A20A49682007C0A4F /* MineInfoViewController.m */,
+				06FCD62620A53F7300E6EAA4 /* DTieEditViewController.h */,
+				06FCD62720A53F7300E6EAA4 /* DTieEditViewController.m */,
+				06FCD63820A5844200E6EAA4 /* DTieEditTextViewController.h */,
+				06FCD63920A5844200E6EAA4 /* DTieEditTextViewController.m */,
+				06301B4920A88242003580CA /* MYWalletViewController.h */,
+				06301B4A20A88242003580CA /* MYWalletViewController.m */,
+				06301B4C20A89091003580CA /* AchievementViewController.h */,
+				06301B4D20A89091003580CA /* AchievementViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -262,6 +360,7 @@
 		06733F6420A2915F007875A7 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				06FCD62520A53F4C00E6EAA4 /* DTie */,
 				064F0B4820A49672007C0A4F /* Mine */,
 				06733F6820A291AB007875A7 /* Base */,
 				06733F6720A29193007875A7 /* HomePage */,
@@ -282,6 +381,7 @@
 		06733F6620A29170007875A7 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				06FCD62920A54C7000E6EAA4 /* DTie */,
 				06790B3B20A4417900929228 /* NetWorkModel */,
 				06733F9520A2D707007875A7 /* User */,
 			);
@@ -377,6 +477,8 @@
 		06733F8620A2C40D007875A7 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				06301B3720A6D2FE003580CA /* XFAVFoundation */,
+				06FCD63120A5528500E6EAA4 /* RDTextView */,
 				06733F8720A2C423007875A7 /* DesUtil */,
 			);
 			path = Helper;
@@ -431,6 +533,8 @@
 			children = (
 				06790B3520A3ECEE00929228 /* DTieCollectionViewCell.h */,
 				06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */,
+				06301B4F20A89118003580CA /* AchievementCollectionCell.h */,
+				06301B5020A89118003580CA /* AchievementCollectionCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -442,6 +546,31 @@
 				06790B3D20A4418A00929228 /* DTieModel.m */,
 			);
 			path = NetWorkModel;
+			sourceTree = "<group>";
+		};
+		06FCD62520A53F4C00E6EAA4 /* DTie */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = DTie;
+			sourceTree = "<group>";
+		};
+		06FCD62920A54C7000E6EAA4 /* DTie */ = {
+			isa = PBXGroup;
+			children = (
+				06FCD62A20A54C8500E6EAA4 /* DTieEditModel.h */,
+				06FCD62B20A54C8500E6EAA4 /* DTieEditModel.m */,
+			);
+			path = DTie;
+			sourceTree = "<group>";
+		};
+		06FCD63120A5528500E6EAA4 /* RDTextView */ = {
+			isa = PBXGroup;
+			children = (
+				06FCD63320A5528500E6EAA4 /* RDTextView.h */,
+				06FCD63220A5528500E6EAA4 /* RDTextView.m */,
+			);
+			path = RDTextView;
 			sourceTree = "<group>";
 		};
 		C3BC52864BA7FA3B47109D40 /* Pods */ = {
@@ -559,6 +688,7 @@
 			files = (
 				06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
+				06301B4420A6D309003580CA /* XFCameraController.xib in Resources */,
 				06733F7020A29379007875A7 /* BG.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -609,9 +739,14 @@
 				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
+				06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */,
+				06FCD63720A55C8F00E6EAA4 /* DTieEditTableViewCell.m in Sources */,
+				06301B4320A6D309003580CA /* XFCameraController.m in Sources */,
+				06FCD62C20A54C8500E6EAA4 /* DTieEditModel.m in Sources */,
+				06FCD64020A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m in Sources */,
 				064F0B5120A49ADC007C0A4F /* DDEditTextField.m in Sources */,
 				06733F8020A2A767007875A7 /* DDTabBar.m in Sources */,
 				06733F7920A29FDF007875A7 /* DDViewFactoryTool.m in Sources */,
@@ -622,15 +757,24 @@
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
+				06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */,
 				064F0B4B20A49682007C0A4F /* MineInfoViewController.m in Sources */,
+				06FCD63A20A5844200E6EAA4 /* DTieEditTextViewController.m in Sources */,
+				06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */,
+				06301B4E20A89091003580CA /* AchievementViewController.m in Sources */,
 				06733FA820A30DD5007875A7 /* DDNavigationViewController.m in Sources */,
 				06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */,
 				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
 				064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */,
 				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
+				06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
+				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
+				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
+				06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */,
 				064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */,
+				06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */,
 				06733FA520A30D72007875A7 /* DDDTieViewController.m in Sources */,
 				06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */,
 				06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */,

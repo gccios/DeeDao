@@ -8,7 +8,7 @@
 
 #import "MineEditTableViewCell.h"
 #import "DDViewFactoryTool.h"
-#import <Masonry/Masonry.h>
+#import <Masonry.h>
 
 @interface MineEditTableViewCell ()
 

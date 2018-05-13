@@ -16,10 +16,14 @@
 
 #if TEST_DEV_TYPE
 #define HOSTURL @"https://portal.deedao.com" //正式地址
+#define QNBucketName @"deedao-test"
+#define QNEndPoint @"https://ow57gfs34.bkt.clouddn.com/"
 #define NSLog(...) {}
 
 #else
 #define HOSTURL @"https://portal.deedao.com"  //测试地址
+#define QNBucketName @"deedao-test"
+#define QNEndPoint @"https://ow57gfs34.bkt.clouddn.com/"
 #define NSLog(...) NSLog(__VA_ARGS__)
 #endif
 
@@ -32,6 +36,9 @@
 #define UMAppKey @"59cefdd3e88bad4c1a00008a"
 #define WeChatAPPKey @"wx72955abeea4e44e2"
 #define WeChatAPPSecret @"ecb245a2061fcf39e687e6141f60264f"
+
+#define QNAccessKeyID @"AkUua6ZyU6aRUlKIUzE3oC-zin8KiJe0GWuuqeM_"
+#define QNAccessKeySecret @"qmhjZQc5PMFyDIs4iarab56l25Fa-1999QvxZMTz"
 
 #define kMainBoundsHeight   ([UIScreen mainScreen].bounds).size.height //屏幕的高度
 #define kMainBoundsWidth    ([UIScreen mainScreen].bounds).size.width //屏幕的宽度
