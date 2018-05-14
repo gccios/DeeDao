@@ -11,8 +11,11 @@
 #import "DDTool.h"
 #import "WeChatManager.h"
 #import "DDTabBarController.h"
+#import <BaiduMapAPI_Base/BMKMapManager.h>
 
 @interface AppDelegate ()
+
+@property (nonatomic, strong) BMKMapManager * mapManager;
 
 @end
 
@@ -25,6 +28,17 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     [DDTool configApplication];
+    
+    //百度地图
+    self.mapManager = [[BMKMapManager alloc] init];
+    BOOL temp = [self.mapManager start:BMK_KEY generalDelegate:nil];
+    if (temp) {
+        NSLog(@"百度地图调起成功");
+    }else{
+        NSLog(@"百度地图调起失败");
+    }
+    temp = [BMKMapManager setCoordinateTypeUsedInBaiduMapSDK:BMK_COORDTYPE_COMMON];
+    
     [self createRootViewController];
     
     [self.window makeKeyAndVisible];

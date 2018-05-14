@@ -14,6 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.0.4)
   - AFNetworking/UIKit (3.0.4):
     - AFNetworking/NSURLSession
+  - BaiduMapKit (3.4.4)
   - BGNetwork (0.2.6):
     - AFNetworking (~> 3.0.2)
   - HappyDNS (0.3.13)
@@ -25,6 +26,7 @@ PODS:
   - WechatOpenSDK (1.8.2)
 
 DEPENDENCIES:
+  - BaiduMapKit
   - BGNetwork
   - Masonry (~> 1.1.0)
   - MBProgressHUD (~> 1.1.0)
@@ -35,6 +37,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - AFNetworking
+    - BaiduMapKit
     - BGNetwork
     - HappyDNS
     - Masonry
@@ -45,6 +48,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: a0075feb321559dc78d9d85b55d11caa19eabb93
+  BaiduMapKit: 4ac88f5a363500760392825b69709f4a0125f81e
   BGNetwork: 66986f143548bb5308bffd85dfb2bfd544de1450
   HappyDNS: 17732b07a75bb9756bd6fe04452609e8da8c663e
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -53,6 +57,6 @@ SPEC CHECKSUMS:
   Qiniu: ae0fea1cc379fae1560d8748ac537e0fbeb8626e
   WechatOpenSDK: 676feec516a11173eafd1fe64b10d27babf28701
 
-PODFILE CHECKSUM: b63efab60cba11de2e472d8ab756eb911c93a853
+PODFILE CHECKSUM: 7b6a02fc0dcdd85591ac44bbf933a7f81267002f
 
 COCOAPODS: 1.5.0

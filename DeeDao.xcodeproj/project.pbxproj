@@ -15,6 +15,15 @@
 		06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4A20A88242003580CA /* MYWalletViewController.m */; };
 		06301B4E20A89091003580CA /* AchievementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4D20A89091003580CA /* AchievementViewController.m */; };
 		06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B5020A89118003580CA /* AchievementCollectionCell.m */; };
+		064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B349A20A9289800B7D0E4 /* AchievementDetailViewController.m */; };
+		064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 064B349C20A92C5500B7D0E4 /* chengjiuBG.png */; };
+		064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B349F20A9374100B7D0E4 /* DDSystemViewController.m */; };
+		064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34AF20A941A600B7D0E4 /* DDSystemTableViewCell.m */; };
+		064B34B320A9580800B7D0E4 /* DDFriendViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34B220A9580800B7D0E4 /* DDFriendViewController.m */; };
+		064B34B620A95CC100B7D0E4 /* DDFriendTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34B520A95CC100B7D0E4 /* DDFriendTableViewCell.m */; };
+		064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34B820A96D5200B7D0E4 /* DDFriendTableHeaderView.m */; };
+		064B34C020A99A6B00B7D0E4 /* DDPrivateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34BF20A99A6B00B7D0E4 /* DDPrivateViewController.m */; };
+		064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B34C220A99E1300B7D0E4 /* DDPrivateTableViewCell.m */; };
 		064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B3E20A48233007C0A4F /* MineHeaderView.m */; };
 		064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B4220A4898C007C0A4F /* MainTableViewCell.m */; };
 		064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 064F0B4520A489BB007C0A4F /* MineMenuModel.m */; };
@@ -93,6 +102,25 @@
 		06301B4D20A89091003580CA /* AchievementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementViewController.m; sourceTree = "<group>"; };
 		06301B4F20A89118003580CA /* AchievementCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementCollectionCell.h; sourceTree = "<group>"; };
 		06301B5020A89118003580CA /* AchievementCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementCollectionCell.m; sourceTree = "<group>"; };
+		064B349920A9289800B7D0E4 /* AchievementDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementDetailViewController.h; sourceTree = "<group>"; };
+		064B349A20A9289800B7D0E4 /* AchievementDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementDetailViewController.m; sourceTree = "<group>"; };
+		064B349C20A92C5500B7D0E4 /* chengjiuBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chengjiuBG.png; sourceTree = "<group>"; };
+		064B349E20A9374100B7D0E4 /* DDSystemViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDSystemViewController.h; sourceTree = "<group>"; };
+		064B349F20A9374100B7D0E4 /* DDSystemViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDSystemViewController.m; sourceTree = "<group>"; };
+		064B34AE20A941A600B7D0E4 /* DDSystemTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDSystemTableViewCell.h; sourceTree = "<group>"; };
+		064B34AF20A941A600B7D0E4 /* DDSystemTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDSystemTableViewCell.m; sourceTree = "<group>"; };
+		064B34B120A9580800B7D0E4 /* DDFriendViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFriendViewController.h; sourceTree = "<group>"; };
+		064B34B220A9580800B7D0E4 /* DDFriendViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFriendViewController.m; sourceTree = "<group>"; };
+		064B34B420A95CC100B7D0E4 /* DDFriendTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFriendTableViewCell.h; sourceTree = "<group>"; };
+		064B34B520A95CC100B7D0E4 /* DDFriendTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFriendTableViewCell.m; sourceTree = "<group>"; };
+		064B34B720A96D5200B7D0E4 /* DDFriendTableHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFriendTableHeaderView.h; sourceTree = "<group>"; };
+		064B34B820A96D5200B7D0E4 /* DDFriendTableHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFriendTableHeaderView.m; sourceTree = "<group>"; };
+		064B34BA20A9845500B7D0E4 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = Pods/BaiduMapKit/BaiduMapKit/thirdlibs/libssl.a; sourceTree = "<group>"; };
+		064B34BC20A9846600B7D0E4 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = Pods/BaiduMapKit/BaiduMapKit/thirdlibs/libcrypto.a; sourceTree = "<group>"; };
+		064B34BE20A99A6B00B7D0E4 /* DDPrivateViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDPrivateViewController.h; sourceTree = "<group>"; };
+		064B34BF20A99A6B00B7D0E4 /* DDPrivateViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDPrivateViewController.m; sourceTree = "<group>"; };
+		064B34C120A99E1300B7D0E4 /* DDPrivateTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDPrivateTableViewCell.h; sourceTree = "<group>"; };
+		064B34C220A99E1300B7D0E4 /* DDPrivateTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDPrivateTableViewCell.m; sourceTree = "<group>"; };
 		064F0B3D20A48233007C0A4F /* MineHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MineHeaderView.h; sourceTree = "<group>"; };
 		064F0B3E20A48233007C0A4F /* MineHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MineHeaderView.m; sourceTree = "<group>"; };
 		064F0B4120A4898C007C0A4F /* MainTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainTableViewCell.h; sourceTree = "<group>"; };
@@ -212,6 +240,8 @@
 		0542BC9313DD6CAF50653633 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				064B34BC20A9846600B7D0E4 /* libcrypto.a */,
+				064B34BA20A9845500B7D0E4 /* libssl.a */,
 				878A1AB71FF79C284E55F448 /* libPods-DeeDao.a */,
 			);
 			name = Frameworks;
@@ -270,6 +300,14 @@
 				06FCD63C20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m */,
 				06FCD63E20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.h */,
 				06FCD63F20A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m */,
+				064B34AE20A941A600B7D0E4 /* DDSystemTableViewCell.h */,
+				064B34AF20A941A600B7D0E4 /* DDSystemTableViewCell.m */,
+				064B34B420A95CC100B7D0E4 /* DDFriendTableViewCell.h */,
+				064B34B520A95CC100B7D0E4 /* DDFriendTableViewCell.m */,
+				064B34C120A99E1300B7D0E4 /* DDPrivateTableViewCell.h */,
+				064B34C220A99E1300B7D0E4 /* DDPrivateTableViewCell.m */,
+				064B34B720A96D5200B7D0E4 /* DDFriendTableHeaderView.h */,
+				064B34B820A96D5200B7D0E4 /* DDFriendTableHeaderView.m */,
 				064F0B4F20A49ADC007C0A4F /* DDEditTextField.h */,
 				064F0B5020A49ADC007C0A4F /* DDEditTextField.m */,
 				06301B4620A6E07E003580CA /* DTieEditFooterView.h */,
@@ -291,6 +329,14 @@
 				06301B4A20A88242003580CA /* MYWalletViewController.m */,
 				06301B4C20A89091003580CA /* AchievementViewController.h */,
 				06301B4D20A89091003580CA /* AchievementViewController.m */,
+				064B349920A9289800B7D0E4 /* AchievementDetailViewController.h */,
+				064B349A20A9289800B7D0E4 /* AchievementDetailViewController.m */,
+				064B349E20A9374100B7D0E4 /* DDSystemViewController.h */,
+				064B349F20A9374100B7D0E4 /* DDSystemViewController.m */,
+				064B34B120A9580800B7D0E4 /* DDFriendViewController.h */,
+				064B34B220A9580800B7D0E4 /* DDFriendViewController.m */,
+				064B34BE20A99A6B00B7D0E4 /* DDPrivateViewController.h */,
+				064B34BF20A99A6B00B7D0E4 /* DDPrivateViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -431,6 +477,7 @@
 		06733F6D20A2934B007875A7 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				064B349C20A92C5500B7D0E4 /* chengjiuBG.png */,
 				06733F6F20A29379007875A7 /* BG.png */,
 			);
 			path = Image;
@@ -593,6 +640,7 @@
 				06733F2B20A28BD9007875A7 /* Sources */,
 				06733F2C20A28BD9007875A7 /* Frameworks */,
 				06733F2D20A28BD9007875A7 /* Resources */,
+				9D8ABCA360DF18ACEF733DCF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -688,6 +736,7 @@
 			files = (
 				06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
+				064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */,
 				06301B4420A6D309003580CA /* XFCameraController.xib in Resources */,
 				06733F7020A29379007875A7 /* BG.png in Resources */,
 			);
@@ -710,6 +759,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		9D8ABCA360DF18ACEF733DCF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao-resources.sh",
+				"${PODS_ROOT}/BaiduMapKit/BaiduMapKit/BaiduMapAPI_Map.framework/Resources/mapapi.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mapapi.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DeeDao/Pods-DeeDao-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FCE0EA87E06CE425055AFD82 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -740,6 +807,7 @@
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
 				06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */,
+				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */,
@@ -753,25 +821,32 @@
 				06733FA220A2FD77007875A7 /* UserModel.m in Sources */,
 				064F0B4E20A49A59007C0A4F /* MineEditTableViewCell.m in Sources */,
 				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
+				064B34B320A9580800B7D0E4 /* DDFriendViewController.m in Sources */,
 				06733F9B20A2E82D007875A7 /* WeChatManager.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
+				064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
+				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
+				064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */,
 				06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */,
 				064F0B4B20A49682007C0A4F /* MineInfoViewController.m in Sources */,
 				06FCD63A20A5844200E6EAA4 /* DTieEditTextViewController.m in Sources */,
 				06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */,
 				06301B4E20A89091003580CA /* AchievementViewController.m in Sources */,
+				064B34B620A95CC100B7D0E4 /* DDFriendTableViewCell.m in Sources */,
 				06733FA820A30DD5007875A7 /* DDNavigationViewController.m in Sources */,
 				06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */,
 				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
 				064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */,
 				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
 				06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */,
+				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
 				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
 				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
+				064B34C020A99A6B00B7D0E4 /* DDPrivateViewController.m in Sources */,
 				06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */,
 				064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */,
 				06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */,
@@ -950,6 +1025,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/BaiduMapKit/BaiduMapKit/thirdlibs",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "34b4ed69-bac3-4e71-a115-0dc9c1cb75bf";
@@ -973,6 +1052,10 @@
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Pods/BaiduMapKit/BaiduMapKit/thirdlibs",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";

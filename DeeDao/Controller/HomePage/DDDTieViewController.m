@@ -39,6 +39,69 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
+    layout.itemSize = CGSizeMake(kMainBoundsWidth / 2, 360 * scale);
+    layout.minimumLineSpacing = 30 * scale;
+    layout.minimumInteritemSpacing = 0;
+    
+    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
+    self.collectionView.backgroundColor = self.view.backgroundColor;
+    self.collectionView.delegate = self;
+    self.collectionView.dataSource = self;
+    [self.view addSubview:self.collectionView];
+    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
+    /*
+     D贴顶部下拉资源管理
+     */
+    CGFloat managerViewHeight = 288 * scale;
+    self.DTieManagerView = [[UIView alloc] initWithFrame:CGRectMake(0, -managerViewHeight, kMainBoundsWidth, managerViewHeight)];
+    self.DTieManagerView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(managerViewDidClicked)];
+    tap.numberOfTapsRequired = 1;
+    [self.collectionView.panGestureRecognizer requireGestureRecognizerToFail:tap];
+    [self.DTieManagerView addGestureRecognizer:tap];
+    
+    [self.collectionView addSubview:self.DTieManagerView];
+    
+    UIImageView * managerImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"sourceManager"]];
+    [self.DTieManagerView addSubview:managerImageView];
+    [managerImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(144 * scale);
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(263 * scale);
+    }];
+    
+    UILabel * managerTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+    managerTitleLabel.text = @"D贴素材管理";
+    [self.DTieManagerView addSubview:managerTitleLabel];
+    [managerTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(-50 * scale / 2);
+        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
+        make.height.mas_equalTo(50 * scale);
+    }];
+    
+    UILabel * managerSubtitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+    managerSubtitleLabel.text = @"展开所有D贴照片和视频";
+    [self.DTieManagerView addSubview:managerSubtitleLabel];
+    [managerSubtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(managerTitleLabel.mas_bottom).offset(10 * scale);
+        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
+        make.height.mas_equalTo(36 * scale);
+    }];
+    
+    [self createTopView];
+}
+
+- (void)createTopView
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
     self.topView = [[UIView alloc] init];
     self.topView.userInteractionEnabled = YES;
     [self.view addSubview:self.topView];
@@ -49,8 +112,8 @@
     
     CAGradientLayer *gradientLayer = [CAGradientLayer layer];
     gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-    gradientLayer.startPoint = CGPointMake(0, 0);
-    gradientLayer.endPoint = CGPointMake(1, 1);
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
     gradientLayer.locations = @[@0, @1.0];
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
     [self.topView.layer addSublayer:gradientLayer];
@@ -97,64 +160,6 @@
         make.bottom.mas_equalTo(-20 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];
-    
-    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(kMainBoundsWidth / 2, 360 * scale);
-    layout.minimumLineSpacing = 30 * scale;
-    layout.minimumInteritemSpacing = 0;
-    
-    self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
-    self.collectionView.backgroundColor = self.view.backgroundColor;
-    self.collectionView.delegate = self;
-    self.collectionView.dataSource = self;
-    [self.view addSubview:self.collectionView];
-    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.topView.mas_bottom).offset(0);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-    
-    /*
-     D贴顶部下拉资源管理
-     */
-    CGFloat managerViewHeight = 288 * scale;
-    self.DTieManagerView = [[UIView alloc] initWithFrame:CGRectMake(0, -managerViewHeight, kMainBoundsWidth, managerViewHeight)];
-    self.DTieManagerView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(managerViewDidClicked)];
-    tap.numberOfTapsRequired = 1;
-    [self.collectionView.panGestureRecognizer requireGestureRecognizerToFail:tap];
-    [self.DTieManagerView addGestureRecognizer:tap];
-    
-    [self.collectionView addSubview:self.DTieManagerView];
-    
-    UIImageView * managerImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"sourceManager"]];
-    [self.DTieManagerView addSubview:managerImageView];
-    [managerImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(144 * scale);
-        make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(263 * scale);
-    }];
-    
-    UILabel * managerTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    managerTitleLabel.text = @"D贴素材管理";
-    [self.DTieManagerView addSubview:managerTitleLabel];
-    [managerTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(-50 * scale / 2);
-        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
-        make.height.mas_equalTo(50 * scale);
-    }];
-    
-    UILabel * managerSubtitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    managerSubtitleLabel.text = @"展开所有D贴照片和视频";
-    [self.DTieManagerView addSubview:managerSubtitleLabel];
-    [managerSubtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(managerTitleLabel.mas_bottom).offset(10 * scale);
-        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
-        make.height.mas_equalTo(36 * scale);
-    }];
-    
-    [self.view bringSubviewToFront:self.topView];
 }
 
 - (void)managerViewDidClicked

@@ -87,4 +87,20 @@
     self.chengjiuLabel.attributedText = string;
 }
 
+- (void)setAchievementEnable:(BOOL)enable
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (enable) {
+        [self.chengjiuImageView setImage:[UIImage imageNamed:@"chengjiu"]];
+        self.baseView.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.baseView.layer.borderWidth = 3 * scale;
+    }else{
+        [self.chengjiuImageView setImage:[UIImage imageNamed:@"chengjiuwu"]];
+        self.baseView.layer.borderColor = UIColorFromRGB(0xCCCCCC).CGColor;
+        self.baseView.layer.borderWidth = 3 * scale;
+    }
+    
+}
+
 @end

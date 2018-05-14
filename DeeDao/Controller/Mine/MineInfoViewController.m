@@ -29,6 +29,29 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.backgroundColor = self.view.backgroundColor;
+    self.tableView.rowHeight = 144 * scale;
+    [self.tableView registerClass:[MineEditTableViewCell class] forCellReuseIdentifier:@"MineEditTableViewCell"];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 60 * scale)];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
+    [self createTopViews];
+}
+
+- (void)createTopViews
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
     self.topView = [[UIView alloc] init];
     self.topView.userInteractionEnabled = YES;
     [self.view addSubview:self.topView];
@@ -79,22 +102,6 @@
         make.height.mas_equalTo(72 * scale);
         make.centerY.mas_equalTo(titleLabel);
         make.right.mas_equalTo(-60 * scale);
-    }];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.tableView.backgroundColor = self.view.backgroundColor;
-    self.tableView.rowHeight = 144 * scale;
-    [self.tableView registerClass:[MineEditTableViewCell class] forCellReuseIdentifier:@"MineEditTableViewCell"];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    
-    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 60 * scale)];
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    
-    [self.view addSubview:self.tableView];
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.topView.mas_bottom).offset(0);
-        make.left.bottom.right.mas_equalTo(0);
     }];
 }
 

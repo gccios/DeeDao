@@ -10,6 +10,7 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import "AchievementCollectionCell.h"
+#import "AchievementDetailViewController.h"
 
 @interface AchievementViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -30,8 +31,6 @@
 
 - (void)createViews
 {
-    [self createTopView];
-    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.layout = [[UICollectionViewFlowLayout alloc] init];
@@ -49,9 +48,11 @@
     self.collectionView.contentInset = UIEdgeInsetsMake(self.layout.minimumInteritemSpacing, self.layout.minimumInteritemSpacing, self.layout.minimumInteritemSpacing, self.layout.minimumInteritemSpacing);
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.topView.mas_bottom).offset(0);
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    
+    [self createTopView];
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -67,6 +68,12 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     AchievementCollectionCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"AchievementCollectionCell" forIndexPath:indexPath];
+    
+    if (indexPath.section == 0) {
+        [cell setAchievementEnable:YES];
+    }else{
+        [cell setAchievementEnable:NO];
+    }
     
     return cell;
 }
@@ -90,6 +97,12 @@
         
     }
     return [UICollectionReusableView new];
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    AchievementDetailViewController * detail = [[AchievementDetailViewController alloc] init];
+    [self.navigationController pushViewController:detail animated:YES];
 }
 
 - (void)createTopView

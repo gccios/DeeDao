@@ -28,8 +28,6 @@
 
 - (void)createViews
 {
-    [self createTopView];
-    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
@@ -40,7 +38,7 @@
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.topView.mas_bottom).offset(0);
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
     
@@ -135,6 +133,8 @@
     self.tableView.tableFooterView = tableFooterView;
     
     self.tableView.contentInset = UIEdgeInsetsMake(60 * scale, 0, 0, 0);
+    
+    [self createTopView];
 }
 
 - (void)payButtonDidClicked

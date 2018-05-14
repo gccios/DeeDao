@@ -10,4 +10,6 @@
 
 @interface AchievementCollectionCell : UICollectionViewCell
 
+- (void)setAchievementEnable:(BOOL)enable;
+
 @end

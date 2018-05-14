@@ -12,6 +12,9 @@
 #import "MineInfoViewController.h"
 #import "MYWalletViewController.h"
 #import "AchievementViewController.h"
+#import "DDSystemViewController.h"
+#import "DDFriendViewController.h"
+#import "DDPrivateViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -49,6 +52,34 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    [self.tableView registerClass:[MainTableViewCell class] forCellReuseIdentifier:@"MainTableViewCell"];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundColor = self.view.backgroundColor;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    
+    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 288 * scale)];
+    self.tableView.tableHeaderView = headerView;
+    
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    self.tableView.contentInset = UIEdgeInsetsMake(60 * scale, 0, 0, 0);
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mineInfoDidClcked)];
+    tap.numberOfTapsRequired = 1;
+    [headerView addGestureRecognizer:tap];
+    
+    [self createTopViews];
+}
+
+- (void)createTopViews
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
     self.topView = [[UIView alloc] init];
     self.topView.userInteractionEnabled = YES;
     [self.view addSubview:self.topView];
@@ -77,27 +108,6 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
-    
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
-    [self.tableView registerClass:[MainTableViewCell class] forCellReuseIdentifier:@"MainTableViewCell"];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.backgroundColor = self.view.backgroundColor;
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    
-    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 288 * scale)];
-    self.tableView.tableHeaderView = headerView;
-    
-    [self.view addSubview:self.tableView];
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.topView.mas_bottom).offset(0);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-    self.tableView.contentInset = UIEdgeInsetsMake(60 * scale, 0, 0, 0);
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mineInfoDidClcked)];
-    tap.numberOfTapsRequired = 1;
-    [headerView addGestureRecognizer:tap];
 }
 
 - (void)mineInfoDidClcked
@@ -124,6 +134,27 @@
         {
             AchievementViewController * achievement = [[AchievementViewController alloc] init];
             [self.navigationController pushViewController:achievement animated:YES];
+        }
+            break;
+            
+        case MineMenuType_System:
+        {
+            DDSystemViewController * system = [[DDSystemViewController alloc] init];
+            [self.navigationController pushViewController:system animated:YES];
+        }
+            break;
+            
+        case MineMenuType_Address:
+        {
+            DDFriendViewController * friend = [[DDFriendViewController alloc] init];
+            [self.navigationController pushViewController:friend animated:YES];
+        }
+            break;
+            
+        case MineMenuType_Private:
+        {
+            DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
+            [self.navigationController pushViewController:private animated:YES];
         }
             break;
             

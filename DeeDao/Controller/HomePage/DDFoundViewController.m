@@ -7,13 +7,20 @@
 //
 
 #import "DDFoundViewController.h"
+#import <BaiduMapAPI_Map/BMKMapView.h>
+#import <BaiduMapAPI_Location/BMKLocationComponent.h>
+#import <BaiduMapAPI_Utils/BMKGeometry.h>
 
-@interface DDFoundViewController ()
+@interface DDFoundViewController () <BMKMapViewDelegate, BMKLocationServiceDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UIButton * sourceButton;
 @property (nonatomic, strong) UIButton * timeButton;
+
+@property (nonatomic, strong) BMKMapView * mapView;
+
+@property (nonatomic, strong) BMKLocationService * locationSerivice;
 
 @end
 
@@ -27,6 +34,48 @@
 }
 
 - (void)creatViews
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.locationSerivice = [[BMKLocationService alloc] init];
+    self.locationSerivice.delegate = self;
+    self.locationSerivice.distanceFilter = 10.f;
+    self.locationSerivice.desiredAccuracy = kCLLocationAccuracyBest;
+    [self.locationSerivice startUserLocationService];
+    
+    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.mapView.delegate = self;
+    //设置定位图层自定义样式
+    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
+    //精度圈是否显示
+    userlocationStyle.isRotateAngleValid = YES;
+    //跟随态旋转角度是否生效
+    userlocationStyle.isAccuracyCircleShow = YES;
+    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
+    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+    [self.mapView updateLocationViewWithParam:userlocationStyle];
+    self.mapView.showsUserLocation = YES;
+    self.mapView.userTrackingMode = BMKUserTrackingModeFollow;
+    [self.view addSubview:self.mapView];
+    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
+    [self creatTopView];
+}
+
+- (void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation
+{
+    [self.mapView updateLocationData:userLocation];
+    
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+    BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
+    [_mapView setRegion:adjustedRegion animated:YES];
+    [self.locationSerivice stopUserLocationService];
+}
+
+- (void)creatTopView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
