@@ -37,4 +37,32 @@
     [[UITableView appearance] setEstimatedSectionHeaderHeight:0];
 }
 
++ (NSString *)getTimeStampMS
+{
+    NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+    NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+    return timeString;
+}
+
++ (NSString *)getCurrentTimeWithFormat:(NSString *)format
+{
+    NSDate * date = [NSDate date];
+    NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:format];
+    return [formatter stringFromDate:date];
+}
+
++ (NSString *)getImageURLWithHtml:(NSString *)html
+{
+    NSString * str;
+    NSArray * array = [html componentsSeparatedByString:@"src=\""];
+    str = array.lastObject;
+    NSArray * resultArray = [str componentsSeparatedByString:@"\""];
+    str = resultArray.firstObject;
+    if (isEmptyString(str)) {
+        str = @"";
+    }
+    return str;
+}
+
 @end

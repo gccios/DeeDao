@@ -12,6 +12,7 @@
 #import "WeChatManager.h"
 #import "DDTabBarController.h"
 #import <BaiduMapAPI_Base/BMKMapManager.h>
+#import "DDLocationManager.h"
 
 @interface AppDelegate ()
 
@@ -38,6 +39,9 @@
         NSLog(@"百度地图调起失败");
     }
     temp = [BMKMapManager setCoordinateTypeUsedInBaiduMapSDK:BMK_COORDTYPE_COMMON];
+    
+    //开始定位
+    [[DDLocationManager shareManager] performSelector:@selector(startLocationService) withObject:nil afterDelay:.5f];
     
     [self createRootViewController];
     

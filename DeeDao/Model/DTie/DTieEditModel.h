@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MJExtension.h>
 
 typedef enum : NSUInteger {
     DTieEditType_Title,
@@ -20,14 +21,21 @@ typedef enum : NSUInteger {
 //@property (nonatomic, copy) void (^needUpdateHeight)();
 
 @property (nonatomic, assign) DTieEditType type;
-@property (nonatomic, copy) NSString * text;
 
 @property (nonatomic, strong) UIImage * image;
 @property (nonatomic, copy) NSString * imageURL;
-@property (nonatomic, copy) NSString * imageQiniuURL;
 @property (nonatomic, strong) UIImage * videoImage;
-@property (nonatomic, copy) NSString * videoURL;
-@property (nonatomic, copy) NSString * videoQiniuURL;
+@property (nonatomic, strong) NSURL * videoURL;
+
+@property (nonatomic, copy) NSString * detailsContent;
+@property (nonatomic, assign) NSInteger detailNumber;
+@property (nonatomic, copy) NSString * detailContent;
+@property (nonatomic, copy) NSString * textInformation;
+@property (nonatomic, assign) NSInteger createTime;
+@property (nonatomic, copy) NSString * datadictionaryType;
+@property (nonatomic, copy) NSString * cid;
+@property (nonatomic, assign) NSInteger pFlag;
+@property (nonatomic, assign) NSInteger postId;
 
 //@property (nonatomic, assign) CGFloat height;
 

@@ -21,7 +21,7 @@
 #define iSiPhoneX ([UIScreen instancesRespondToSelector:@selector(currentMode)] ? CGSizeEqualToSize(CGSizeMake(1125, 2436), [[UIScreen mainScreen] currentMode].size) : NO)
 #define VIDEO_FILEPATH                                              @"video"
 #define TIMER_INTERVAL 0.01f                                        //定时器记录视频间隔
-#define VIDEO_RECORDER_MAX_TIME 20.0f                               //视频最大时长 (单位/秒)
+#define VIDEO_RECORDER_MAX_TIME 15.0f                               //视频最大时长 (单位/秒)
 #define VIDEO_RECORDER_MIN_TIME 1.0f                                //最短视频时长 (单位/秒)
 #define START_VIDEO_ANIMATION_DURATION 0.1f                         //录制视频前的动画时间
 

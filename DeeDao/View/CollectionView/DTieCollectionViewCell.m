@@ -9,6 +9,7 @@
 #import "DTieCollectionViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import <UIImageView+WebCache.h>
 
 @interface DTieCollectionViewCell ()
 
@@ -144,15 +145,16 @@
 
 - (void)configWithDTieModel:(DTieModel *)model
 {
-    if (!isEmptyString(model.title)) {
-        self.DTieTitleLabel.text = model.title;
+    if (!isEmptyString(model.postSummary)) {
+        self.DTieTitleLabel.text = model.postSummary;
     }else{
         self.DTieTitleLabel.text = @"";
     }
     
-    [self.contenImageView setImage:[UIImage imageNamed:@"test"]];
+    NSURL * imageURL = [NSURL URLWithString:model.postFirstPicture];
+    [self.contenImageView sd_setImageWithURL:imageURL];
     
-    switch (model.type) {
+    switch (model.dTieType) {
         case DTieType_Add:
             
         {

@@ -73,10 +73,10 @@
 {
     if (model.type == DTieEditType_Text) {
         self.textView.placeholder = @"说点让你感到不同或惊艳的...";
-        if (isEmptyString(model.text)) {
+        if (isEmptyString(model.detailsContent)) {
             self.textView.text = @"";
         }else{
-            self.textView.text = model.text;
+            self.textView.text = model.detailsContent;
         }
     }
 }

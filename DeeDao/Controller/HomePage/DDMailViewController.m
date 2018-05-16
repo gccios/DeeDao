@@ -7,13 +7,16 @@
 //
 
 #import "DDMailViewController.h"
+#import "MailShareTableViewCell.h"
 
-@interface DDMailViewController ()
+@interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UIButton * searchButton;
 @property (nonatomic, strong) UIButton * messageButton;
+
+@property (nonatomic, strong) UITableView * tableView;
 
 @end
 
@@ -27,6 +30,44 @@
 }
 
 - (void)creatViews
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.backgroundColor = self.view.backgroundColor;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.rowHeight = 540 * scale;
+    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
+    [self createTopView];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MailShareTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailShareTableViewCell" forIndexPath:indexPath];
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    return 550 * scale;
+}
+
+- (void)createTopView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     

@@ -7,8 +7,6 @@
 //
 
 #import "DTieEditTextViewController.h"
-#import "DDViewFactoryTool.h"
-#import <Masonry.h>
 #import "RDTextView.h"
 
 @interface DTieEditTextViewController ()
@@ -96,7 +94,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"发布"];
+    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
     [DDViewFactoryTool cornerRadius:12 * scale withView:self.saveButton];
     self.saveButton.layer.borderWidth = .5f;
     self.saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;

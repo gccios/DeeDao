@@ -60,9 +60,9 @@
     }];
     
     if ([UserManager shareManager].isLogin) {
-         [self performSelector:@selector(loginSuccess) withObject:nil afterDelay:.5f];
+         [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
     }else{
-        [self performSelector:@selector(loginSuccess) withObject:nil afterDelay:.5f];
+        [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
     }
 }
 

@@ -18,7 +18,7 @@
 
 - (NSDictionary *)requestCommonHTTPHeaderFields {
     return @{
-             @"Content-Type":@"application/json",
+             @"Content-Type":@"application/json;charset:utf-8",
              @"User-Agent":@"iPhone",
              };
 }

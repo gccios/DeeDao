@@ -7,8 +7,6 @@
 //
 
 #import "AchievementDetailViewController.h"
-#import <Masonry.h>
-#import "DDViewFactoryTool.h"
 
 @interface AchievementDetailViewController () <UITableViewDelegate, UITableViewDataSource>
 

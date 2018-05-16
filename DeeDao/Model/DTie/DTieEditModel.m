@@ -10,14 +10,31 @@
 
 @implementation DTieEditModel
 
-- (void)setType:(DTieEditType)type
+- (instancetype)init
 {
-    _type = type;
+    if (self = [super init]) {
+        self.detailsContent = @"";
+    }
+    return self;
 }
 
-- (void)setText:(NSString *)text
++ (NSDictionary *)mj_replacedKeyFromPropertyName
 {
-    _text = text;
+    return @{
+             @"cid" : @"id"//前边的是你想用的key，后边的是返回的key
+             };
+}
+
+- (void)setDatadictionaryType:(NSString *)datadictionaryType
+{
+    _datadictionaryType = datadictionaryType;
+    if ([_datadictionaryType isEqualToString:@"CONTENT_TEXT"]) {
+        _type = DTieEditType_Text;
+    }else if ([_datadictionaryType isEqualToString:@"CONTENT_IMG"]){
+        _type = DTieEditType_Image;
+    }else if ([_datadictionaryType isEqualToString:@"CONTENT_VIDEO"]){
+        _type = DTieEditType_Video;
+    }
 }
 
 @end

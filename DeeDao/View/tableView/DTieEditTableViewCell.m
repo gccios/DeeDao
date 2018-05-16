@@ -60,10 +60,10 @@
 {
     if (model.type == DTieEditType_Title) {
         self.textView.placeholder = @"写个标题...";
-        if (isEmptyString(model.text)) {
+        if (isEmptyString(model.detailsContent)) {
             self.textView.text = @"";
         }else{
-            self.textView.text = model.text;
+            self.textView.text = model.detailsContent;
         }
     }
 }

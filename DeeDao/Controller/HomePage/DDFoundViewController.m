@@ -10,8 +10,10 @@
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Search/BMKSearchComponent.h>
+#import "DDLocationManager.h"
 
-@interface DDFoundViewController () <BMKMapViewDelegate, BMKLocationServiceDelegate>
+@interface DDFoundViewController () <BMKMapViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -19,8 +21,6 @@
 @property (nonatomic, strong) UIButton * timeButton;
 
 @property (nonatomic, strong) BMKMapView * mapView;
-
-@property (nonatomic, strong) BMKLocationService * locationSerivice;
 
 @end
 
@@ -31,17 +31,12 @@
     // Do any additional setup after loading the view.
     
     [self creatViews];
+    [self creatTopView];
 }
 
 - (void)creatViews
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    
-    self.locationSerivice = [[BMKLocationService alloc] init];
-    self.locationSerivice.delegate = self;
-    self.locationSerivice.distanceFilter = 10.f;
-    self.locationSerivice.desiredAccuracy = kCLLocationAccuracyBest;
-    [self.locationSerivice startUserLocationService];
     
     self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.mapView.delegate = self;
@@ -56,23 +51,27 @@
     [self.mapView updateLocationViewWithParam:userlocationStyle];
     self.mapView.showsUserLocation = YES;
     self.mapView.userTrackingMode = BMKUserTrackingModeFollow;
+    
     [self.view addSubview:self.mapView];
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    [self creatTopView];
+    if ([DDLocationManager shareManager].userLocation) {
+        [self updateUserLocation];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUserLocation) name:DDUserLocationDidUpdateNotification object:nil];
 }
 
-- (void)didUpdateBMKUserLocation:(BMKUserLocation *)userLocation
+- (void)updateUserLocation
 {
-    [self.mapView updateLocationData:userLocation];
+    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
     
-    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
     BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
     [_mapView setRegion:adjustedRegion animated:YES];
-    [self.locationSerivice stopUserLocationService];
 }
 
 - (void)creatTopView
@@ -141,6 +140,11 @@
 {
     self.timeButton.alpha = .4f;
     self.sourceButton.alpha = 1.f;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -9,7 +9,10 @@
 #import "DDDTieViewController.h"
 #import "DTieCollectionViewCell.h"
 #import "DTieEditViewController.h"
-#import <QiniuSDK.h>
+#import "QNDDUploadManager.h"
+#import "DTieListRequest.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "DDCollectionViewController.h"
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -25,6 +28,9 @@
 
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
+@property (nonatomic, assign) NSInteger start;
+@property (nonatomic, assign) NSInteger length;
+
 @end
 
 @implementation DDDTieViewController
@@ -32,7 +38,49 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.start = 0;
+    self.length = 10;
+    
     [self createViews];
+    
+    [self getMoreList];
+}
+
+- (void)getMoreList
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    
+    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                
+                for (NSDictionary * dict in data) {
+                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                    [self.dataSource addObject:model];
+                }
+                [self.collectionView reloadData];
+                
+                return;
+                
+            }
+        }
+        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        
+    }];
 }
 
 - (void)createViews
@@ -185,7 +233,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
-    switch (model.type) {
+    switch (model.dTieType) {
         case DTieType_Add:
         {
             DTieEditViewController * edit = [[DTieEditViewController alloc] init];
@@ -193,11 +241,22 @@
         }
             break;
             
+        case DTieType_Edit:
+        {
+            DTieEditViewController * edit = [[DTieEditViewController alloc] init];
+            [self.navigationController pushViewController:edit animated:YES];
+        }
+            break;
+            
         default:
+        {
+            NSMutableArray * array = [[NSMutableArray alloc] initWithArray:self.dataSource];
+            [array removeObjectAtIndex:0];
+            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:array index:indexPath.row - 1];
+            [self.navigationController pushViewController:collection animated:YES];
+        }
             break;
     }
-    
-    NSLog(@"点击了");
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -234,38 +293,13 @@
     if (!_dataSource) {
         _dataSource = [[NSMutableArray alloc] init];
         
-        for (NSInteger i = 0; i < 50; i++) {
-            DTieModel * model = [[DTieModel alloc] init];
-            model.type = i % 4 + 1;
-            model.title = @"如果我不曾见过太阳";
-            [_dataSource addObject:model];
-        }
-        
         DTieModel * model = [[DTieModel alloc] init];
-        model.type = DTieType_Add;
-        [_dataSource insertObject:model atIndex:0];
+        model.dTieType = DTieType_Add;
+        [_dataSource addObject:model];
         
     }
     
     return _dataSource;
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-//        builder.useHttps = YES;
-//    }];
-//    
-//    NSString *token = @"从服务端SDK获取";
-//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-//    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-//    [upManager putData:data key:@"hello" token:token
-//              complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-//                  NSLog(@"%@", info);
-//                  NSLog(@"%@", resp);
-//              } option:nil];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -7,8 +7,6 @@
 //
 
 #import "DDFriendViewController.h"
-#import "DDViewFactoryTool.h"
-#import <Masonry.h>
 #import "DDFriendTableViewCell.h"
 #import "DDFriendTableHeaderView.h"
 

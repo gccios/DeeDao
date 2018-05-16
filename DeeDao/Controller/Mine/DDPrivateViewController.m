@@ -7,8 +7,6 @@
 //
 
 #import "DDPrivateViewController.h"
-#import "DDViewFactoryTool.h"
-#import <Masonry.h>
 #import "DDPrivateTableViewCell.h"
 
 @interface DDPrivateViewController () <UITableViewDelegate, UITableViewDataSource>

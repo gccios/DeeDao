@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MJExtension.h>
+#import "DTieEditModel.h"
+#import "UserModel.h"
 
 typedef enum : NSUInteger {
     DTieType_Add,
@@ -18,7 +21,38 @@ typedef enum : NSUInteger {
 
 @interface DTieModel : NSObject
 
-@property (nonatomic, copy) NSString * title;
-@property (nonatomic, assign) DTieType type;
+@property (nonatomic, assign) DTieType dTieType;
+
+@property (nonatomic, assign) NSInteger cid;
+@property (nonatomic, assign) NSInteger authorId;
+@property (nonatomic, assign) NSInteger collectCount;
+@property (nonatomic, assign) NSInteger collectFlg;
+@property (nonatomic, assign) NSInteger dzfCount;
+@property (nonatomic, assign) NSInteger dzfFlg;
+@property (nonatomic, assign) NSInteger messageCount;
+@property (nonatomic, copy) NSString * nickname;
+@property (nonatomic, copy) NSString * portraituri;
+@property (nonatomic, copy) NSString * postFirstPicture;
+@property (nonatomic, assign) NSInteger postId;
+@property (nonatomic, copy) NSString * postSummary;
+@property (nonatomic, copy) NSString * postTypeName;
+@property (nonatomic, copy) NSString * sceneAddress;
+@property (nonatomic, assign) double sceneAddressLat;
+@property (nonatomic, assign) double sceneAddressLng;
+@property (nonatomic, assign) NSInteger sceneTime;
+@property (nonatomic, assign) NSInteger status;
+@property (nonatomic, assign) NSInteger thankCount;
+@property (nonatomic, assign) NSInteger thankFlg;
+@property (nonatomic, assign) NSInteger type;
+@property (nonatomic, assign) NSInteger updateTime;
+@property (nonatomic, assign) NSInteger wyyCount;
+@property (nonatomic, assign) NSInteger wyyFlg;
+@property (nonatomic, assign) NSInteger createTime;
+
+@property (nonatomic, strong) NSArray * postPictureList;
+@property (nonatomic, strong) NSArray * wyyList;
+@property (nonatomic, strong) NSArray * thankList;
+@property (nonatomic, strong) NSArray * collectList;
+@property (nonatomic, strong) NSArray * details;
 
 @end

@@ -7,8 +7,6 @@
 //
 
 #import "MYWalletViewController.h"
-#import "DDViewFactoryTool.h"
-#import <Masonry.h>
 
 @interface MYWalletViewController () <UITableViewDelegate, UITableViewDataSource>
 

@@ -12,4 +12,11 @@
 
 + (void)configApplication;
 
+//获取当前13位时间戳
++(NSString *)getTimeStampMS;
+
++ (NSString *)getCurrentTimeWithFormat:(NSString *)format;
+
++ (NSString *)getImageURLWithHtml:(NSString *)html;
+
 @end

@@ -9,6 +9,8 @@
 #import "DTieEditFooterView.h"
 #import <Masonry.h>
 #import "DDViewFactoryTool.h"
+#import "DDLocationManager.h"
+#import "DDTool.h"
 
 @implementation DTieEditFooterView
 
@@ -35,7 +37,7 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"2018年5月12日 16:52";
+    self.timeLabel.text = [DDTool getCurrentTimeWithFormat:@"yyyy年MM月dd日 HH:mm"];
     [self addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(24 * scale);
@@ -45,7 +47,7 @@
     }];
     
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.locationLabel.text = @"北京市朝阳区将台路新港大厦6606";
+    self.locationLabel.text = [DDLocationManager shareManager].result.address;
     [self addSubview:self.locationLabel];
     [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(0);
