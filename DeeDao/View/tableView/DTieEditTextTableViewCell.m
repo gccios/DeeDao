@@ -59,11 +59,12 @@
     }];
     
     self.seeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"设置到地可见"];
-    [self.seeButton setImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+    [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
+    [self.seeButton addTarget:self action:@selector(seeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.contentView addSubview:self.seeButton];
     [self.seeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(lineView.mas_bottom).offset(20 * scale);
-        make.bottom.mas_equalTo(-40 * scale);
+        make.top.mas_equalTo(lineView.mas_bottom).offset(10 * scale);
+        make.bottom.mas_equalTo(-30 * scale);
         make.right.mas_equalTo(-30 * scale);
         make.width.mas_equalTo(350 * scale);
     }];
@@ -71,6 +72,7 @@
 
 - (void)configWithEditModel:(DTieEditModel *)model
 {
+    self.model = model;
     if (model.type == DTieEditType_Text) {
         self.textView.placeholder = @"说点让你感到不同或惊艳的...";
         if (isEmptyString(model.detailsContent)) {
@@ -78,6 +80,22 @@
         }else{
             self.textView.text = model.detailsContent;
         }
+    }
+    
+    if (self.model.pFlag) {
+        [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
+    }else{
+        [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)seeButtonDidClicked
+{
+    self.model.pFlag = !self.model.pFlag;
+    if (self.model.pFlag) {
+        [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
+    }else{
+        [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
     }
 }
 

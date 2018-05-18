@@ -12,8 +12,6 @@
 
 @interface DTieEditTextTableViewCell : UITableViewCell
 
-@property (nonatomic, assign) BOOL canSee;
-
 - (void)configWithEditModel:(DTieEditModel *)model;
 
 @end

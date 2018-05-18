@@ -21,6 +21,7 @@
 @property (nonatomic, strong) UIButton * timeButton;
 
 @property (nonatomic, strong) BMKMapView * mapView;
+@property (nonatomic, assign) BOOL isFirst;
 
 @end
 
@@ -28,6 +29,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.isFirst = YES;
     // Do any additional setup after loading the view.
     
     [self creatViews];
@@ -69,9 +72,12 @@
 {
     [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
     
-    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
-    BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
-    [_mapView setRegion:adjustedRegion animated:YES];
+    if (self.isFirst) {
+        BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+        BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
+        [_mapView setRegion:adjustedRegion animated:YES];
+        self.isFirst = NO;
+    }
 }
 
 - (void)creatTopView

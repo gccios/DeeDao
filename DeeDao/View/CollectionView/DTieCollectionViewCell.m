@@ -214,15 +214,4 @@
     }
 }
 
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
-{
-    CGPoint tempPoint = [self convertPoint:point toView:self.BGImageView];
-    
-    if (tempPoint.x < 0 || tempPoint.y < 0) {
-        return NO;
-    }
-    
-    return YES;
-}
-
 @end

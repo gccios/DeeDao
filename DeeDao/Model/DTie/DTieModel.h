@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <MJExtension.h>
 #import "DTieEditModel.h"
 #import "UserModel.h"
 

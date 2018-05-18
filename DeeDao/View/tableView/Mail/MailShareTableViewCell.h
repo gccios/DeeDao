@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MailModel.h"
 
 @interface MailShareTableViewCell : UITableViewCell
+
+- (void)configWithModel:(MailModel *)model;
 
 @end

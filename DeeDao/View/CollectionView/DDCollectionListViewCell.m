@@ -10,17 +10,19 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import <UIImageView+WebCache.h>
+#import <UIView+WebCache.h>
 #import "DTieDetailRequest.h"
 #import "DDCollectionTableViewCell.h"
+#import "TYCyclePagerView.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) NSDictionary * dataDict;
 
 @property (nonatomic, strong) UIImageView * baseImageView;
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, assign) BOOL isFirstRead;
+@property (nonatomic, assign) NSIndexPath * firestIndex;
 
 @end
 
@@ -62,20 +64,25 @@
     }];
 }
 
-- (void)configWithModel:(DTieModel *)model
+- (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag
 {
+    self.tableView.tag = tag;
     self.isFirstRead = YES;
+    [self.baseImageView sd_cancelCurrentAnimationImagesLoad];
+    [self.baseImageView sd_cancelCurrentImageLoad];
     [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
     self.tableView.hidden = YES;
     
     if (model.details) {
         self.model = model;
+        [self.tableView setContentOffset:CGPointZero animated:NO];
         self.tableView.hidden = NO;
         [self.tableView reloadData];
         return;
     }
     
     self.tableView.hidden = YES;
+    [DTieDetailRequest cancelRequest];
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -84,6 +91,7 @@
             if (KIsDictionary(data)) {
                 [model mj_setKeyValues:data];
                 self.model = model;
+                [self.tableView setContentOffset:CGPointZero animated:NO];
                 self.tableView.hidden = NO;
                 [self.tableView reloadData];
             }
@@ -107,6 +115,7 @@
     
     if (indexPath.row == 0) {
         DTieEditModel * model = [[DTieEditModel alloc] init];
+        model.type = DTieEditType_Image;
         model.detailContent = self.model.postFirstPicture;
         [cell configWithModel:model];
         return cell;
@@ -114,20 +123,60 @@
     
     DTieEditModel * model = [self.model.details objectAtIndex:indexPath.row - 1];
     
-    if (self.isFirstRead) {
-        
-        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.createTime]];
-        NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime]];
-        [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+    if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
+        [cell configWithModel:model];
+        return cell;
     }
     
-    if (model.type == DTieEditType_Text) {
+    if (self.isFirstRead) {
         self.isFirstRead = NO;
+        self.firestIndex = indexPath;
+        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.createTime / 1000]];
+        NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
+        [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+    }else{
+        
+        if (self.firestIndex && [indexPath isEqual:self.firestIndex]) {
+            NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+            [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+            NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.createTime / 1000]];
+            NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
+            [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+        }else{
+            [cell configWithModel:model];
+        }
     }
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UIView * view = tableView.superview;
+    if ([view isKindOfClass:[TYCyclePagerView class]]) {
+        TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
+        [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
+    }else{
+        view = view.superview;
+        if ([view isKindOfClass:[TYCyclePagerView class]]) {
+            TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
+            [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
+        }else{
+            view = view.superview;
+            if ([view isKindOfClass:[TYCyclePagerView class]]) {
+                TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
+                [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
+            }else{
+                view = view.superview;
+                if ([view isKindOfClass:[TYCyclePagerView class]]) {
+                    TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
+                    [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
+                }
+            }
+        }
+    }
 }
 
 @end

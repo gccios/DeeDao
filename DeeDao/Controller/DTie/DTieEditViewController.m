@@ -18,8 +18,12 @@
 #import "QNDDUploadManager.h"
 #import "CreateDTieRequest.h"
 #import "DTieEditReadViewController.h"
+#import "DTieChooseLocationController.h"
+#import "DTieModel.h"
 
-@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
+
+@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ChooseLocationDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UIButton * putButton;
@@ -27,6 +31,8 @@
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, strong) NSMutableArray * moduleSource;
+
+@property (nonatomic, strong) BMKPoiInfo * choosePOI;
 
 @property (nonatomic, strong) UILongPressGestureRecognizer * longPressGesture;
 @property (nonatomic, strong) NSIndexPath * selectIndexPath;
@@ -45,6 +51,7 @@
 @property (nonatomic, assign) BOOL PYQEnable;
 @property (nonatomic, assign) BOOL WXEnable;
 
+@property (nonatomic, strong) DTieEditFooterView * footerView;
 
 @end
 
@@ -79,6 +86,10 @@
 - (void)createViews
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.footerView = [[DTieEditFooterView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 370 * scale)];
+    [self.footerView.locationButton addTarget:self action:@selector(chooseLocation) forControlEvents:UIControlEventTouchUpInside];
+    [self.footerView.AddButton addTarget:self action:@selector(addMoudle) forControlEvents:UIControlEventTouchUpInside];
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     [self.tableView registerClass:[DTieEditTableViewCell class] forCellReuseIdentifier:@"DTieEditTableViewCell"];
@@ -142,6 +153,19 @@
     [self.tableView endUpdates];
     
     [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+}
+
+- (void)chooseLocation
+{
+    DTieChooseLocationController * chosse = [[DTieChooseLocationController alloc] init];
+    chosse.delegate = self;
+    [self.navigationController pushViewController:chosse animated:YES];
+}
+
+- (void)chooseLocationDidChoose:(BMKPoiInfo *)poi
+{
+    self.choosePOI = poi;
+    self.footerView.locationLabel.text = [NSString stringWithFormat:@"%@%@", poi.address, poi.name];
 }
 
 - (void)yulanButtonDidClicked
@@ -417,7 +441,7 @@
         if (model.image) {
             UIImage * image = model.image;
             CGFloat scale = image.size.height / image.size.width;
-            return kMainBoundsWidth * scale + 170 * kMainBoundsWidth / 1080.f;;
+            return kMainBoundsWidth * scale + 170 * kMainBoundsWidth / 1080.f;
         }
         
     }
@@ -442,9 +466,7 @@
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     if (section == 0) {
-        DTieEditFooterView * view = [[DTieEditFooterView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 370 * kMainBoundsWidth / 1080.f)];
-        [view.AddButton addTarget:self action:@selector(addMoudle) forControlEvents:UIControlEventTouchUpInside];
-        return view;
+        return self.footerView;
     }
     
     return nil;
@@ -870,7 +892,7 @@
                                @"datadictionaryType":@"CONTENT_TEXT",
                                @"detailsContent":@"",
                                @"textInformation":@"",
-                               @"pFlg":[NSNumber numberWithInteger:0]}];
+                               @"pFlg":[NSNumber numberWithBool:model.pFlag]}];
         
         switch (model.type) {
             case DTieEditType_Text:
@@ -891,7 +913,7 @@
                                         @"datadictionaryType":@"CONTENT_TEXT",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":@"",
-                                        @"pFlg":[NSNumber numberWithInteger:0]};
+                                        @"pFlg":[NSNumber numberWithBool:model.pFlag]};
                 [listArray replaceObjectAtIndex:i withObject:dict];
                 tempCount++;
                 if (tempCount == self.moduleSource.count) {
@@ -927,7 +949,7 @@
                                             @"datadictionaryType":@"CONTENT_IMG",
                                             @"detailsContent":model.detailsContent,
                                             @"textInformation":@"",
-                                            @"pFlg":[NSNumber numberWithInteger:0]};
+                                            @"pFlg":[NSNumber numberWithBool:model.pFlag]};
                     [listArray replaceObjectAtIndex:i withObject:dict];
                     tempCount++;
                     if (tempCount == self.moduleSource.count) {
@@ -978,7 +1000,7 @@
                                                 @"datadictionaryType":@"CONTENT_VIDEO",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
-                                                @"pFlg":[NSNumber numberWithInteger:0]};
+                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
                         [listArray replaceObjectAtIndex:i withObject:dict];
                         tempCount++;
                         if (tempCount == self.moduleSource.count) {
@@ -1025,7 +1047,29 @@
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在创建Dtie" inView:self.view];
     
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title];
+    //获取参数配置
+    NSString * address = self.footerView.locationLabel.text;
+    double lon;
+    NSInteger lat;
+    if (self.choosePOI) {
+        lon = self.choosePOI.pt.longitude;
+        lat = self.choosePOI.pt.longitude;
+    }else{
+        lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
+        lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;
+    }
+    NSString * firstPic = @"";
+    for (NSInteger i = 0; i < array.count; i++) {
+        NSDictionary * dict = [array objectAtIndex:i];
+        NSString * type = [dict objectForKey:@"datadictionaryType"];
+        if ([type isEqualToString:@"CONTENT_IMG"] || [type isEqualToString:@"CONTENT_VIDEO"]) {
+            firstPic = [dict objectForKey:@"detailsContent"];
+            break;
+        }
+    }
+    
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -1033,6 +1077,11 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 [MBProgressHUD showTextHUDWithText:@"创建成功" inView:self.view];
+                
+                DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
+                DTie.dTieType = DTieType_MyDtie;
+                [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:DTie];
+                [self.navigationController popViewControllerAnimated:YES];
             }
         }
         
@@ -1062,7 +1111,7 @@
         _imagePickerController = [[UIImagePickerController alloc] init];
         _imagePickerController.delegate = self;
         _imagePickerController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
-        _imagePickerController.allowsEditing = YES;
+        _imagePickerController.allowsEditing = NO;
     }
     return _imagePickerController;
 }

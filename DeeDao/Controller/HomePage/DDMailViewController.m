@@ -8,6 +8,9 @@
 
 #import "DDMailViewController.h"
 #import "MailShareTableViewCell.h"
+#import "MailSmallTableViewCell.h"
+#import "MailBigTableViewCell.h"
+#import "MailDetailViewController.h"
 
 @interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -38,6 +41,8 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 540 * scale;
     [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
+    [self.tableView registerClass:[MailSmallTableViewCell class] forCellReuseIdentifier:@"MailSmallTableViewCell"];
+    [self.tableView registerClass:[MailBigTableViewCell class] forCellReuseIdentifier:@"MailBigTableViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -49,6 +54,12 @@
     [self createTopView];
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    MailDetailViewController * detail = [[MailDetailViewController alloc] init];
+    [self.navigationController pushViewController:detail animated:YES];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 10;
@@ -56,6 +67,16 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.row % 3 == 0) {
+        MailBigTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailBigTableViewCell" forIndexPath:indexPath];
+        
+        return cell;
+    }else if (indexPath.row % 3 == 1){
+        MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
+        
+        return cell;
+    }
+    
     MailShareTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailShareTableViewCell" forIndexPath:indexPath];
     
     return cell;
@@ -64,6 +85,13 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (indexPath.row % 3 == 0) {
+        return 550 * scale;
+    }else if (indexPath.row % 3 == 1){
+        return 300 * scale;
+    }
+    
     return 550 * scale;
 }
 

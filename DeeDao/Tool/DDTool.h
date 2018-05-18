@@ -17,6 +17,12 @@
 
 + (NSString *)getCurrentTimeWithFormat:(NSString *)format;
 
++ (NSString *)DDGetExpectTimeYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day;
+
++ (NSString *)getTimeWithFormat:(NSString *)format time:(NSInteger)time;
+
 + (NSString *)getImageURLWithHtml:(NSString *)html;
+
++ (NSString *)getTextWithHtml:(NSString *)html;
 
 @end

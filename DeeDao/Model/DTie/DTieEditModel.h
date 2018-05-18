@@ -34,7 +34,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger createTime;
 @property (nonatomic, copy) NSString * datadictionaryType;
 @property (nonatomic, copy) NSString * cid;
-@property (nonatomic, assign) NSInteger pFlag;
+@property (nonatomic, assign) BOOL pFlag;
 @property (nonatomic, assign) NSInteger postId;
 
 //@property (nonatomic, assign) CGFloat height;

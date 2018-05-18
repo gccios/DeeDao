@@ -11,6 +11,8 @@
 
 @interface DDCollectionListViewCell : UICollectionViewCell
 
-- (void)configWithModel:(DTieModel *)model;
+@property (nonatomic, strong) UITableView * tableView;
+
+- (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag;
 
 @end

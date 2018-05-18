@@ -8,6 +8,8 @@
 
 #import "DDViewController.h"
 
+extern NSString * const DTieDidCreateNotification;
+
 @interface DTieEditViewController : DDViewController
 
 @end

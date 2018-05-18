@@ -28,19 +28,28 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
-    [self addSubview:imageView];
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
+    self.locationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@""];
+    [self addSubview:self.locationButton];
+    [self.locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(15 * scale);
         make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(105 * scale);
+    }];
+    
+    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
+    [self.locationButton addSubview:imageView];
+    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(9 * scale);
+        make.left.mas_equalTo(0);
         make.width.height.mas_equalTo(72 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.timeLabel.text = [DDTool getCurrentTimeWithFormat:@"yyyy年MM月dd日 HH:mm"];
-    [self addSubview:self.timeLabel];
+    [self.locationButton addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
+        make.top.mas_equalTo(9 * scale);
         make.left.mas_equalTo(imageView.mas_right).offset(12 * scale);
         make.height.mas_equalTo(48 * scale);
         make.right.mas_equalTo(-60 * scale);
@@ -48,7 +57,7 @@
     
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.locationLabel.text = [DDLocationManager shareManager].result.address;
-    [self addSubview:self.locationLabel];
+    [self.locationButton addSubview:self.locationLabel];
     [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(0);
         make.left.mas_equalTo(self.timeLabel);

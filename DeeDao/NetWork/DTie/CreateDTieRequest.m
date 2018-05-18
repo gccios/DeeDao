@@ -12,22 +12,21 @@
 
 @implementation CreateDTieRequest
 
-- (instancetype)initWithList:(NSArray *)array title:(NSString *)title
+- (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic;
 {
     if (self = [super init]) {
         
         self.methodName = @"post/savePost";
         self.httpMethod = BGNetworkRequestHTTPPost;
-        [self setValue:[DDLocationManager shareManager].result.address forParamKey:@"createAddress"];
-        [self setValue:@"113.655554" forParamKey:@"createAddressLng"];
-        [self setValue:@"34.756926" forParamKey:@"createAddressLat"];
+        [self setValue:address forParamKey:@"createAddress"];
+        [self setDoubleValue:addressLng forParamKey:@"createAddressLng"];
+        [self setDoubleValue:addressLat forParamKey:@"createAddressLat"];
         [self setValue:title forParamKey:@"postSummary"];
         [self setValue:array forParamKey:@"postDetailList"];
-        [self setValue:@[@(166.62),@(39.9)] forParamKey:@"position"];
-        [self setIntegerValue:1 forParamKey:@"status"];
-//        [self setValue:@"" forParamKey:@"postTagList"];
-//        [self setValue:@"" forParamKey:@"allowToSeeList"];
-        [self setIntegerValue:0 forParamKey:@"remindFlg"];
+        [self setValue:@[@(addressLng),@(addressLat)] forParamKey:@"position"];
+        [self setIntegerValue:status forParamKey:@"status"];
+        [self setIntegerValue:remindFlg forParamKey:@"remindFlg"];
+        [self setValue:firstPic forParamKey:@"postFirstPicture"];
         
     }
     return self;

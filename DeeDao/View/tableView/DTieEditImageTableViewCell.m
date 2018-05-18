@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) UIButton * seeButton;
 
+@property (nonatomic, strong) DTieEditModel * model;
+
 @end
 
 @implementation DTieEditImageTableViewCell
@@ -44,11 +46,12 @@
     }];
     
     self.seeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"设置到地可见"];
-    [self.seeButton setImage:[UIImage imageNamed:@""] forState:UIControlStateNormal];
+    [self.seeButton addTarget:self action:@selector(seeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
     [self.contentView addSubview:self.seeButton];
     [self.seeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.tieImageView.mas_bottom).offset(20 * scale);
-        make.bottom.mas_equalTo(-40 * scale);
+        make.top.mas_equalTo(self.tieImageView.mas_bottom).offset(10 * scale);
+        make.bottom.mas_equalTo(-30 * scale);
         make.right.mas_equalTo(-30 * scale);
         make.width.mas_equalTo(350 * scale);
     }];
@@ -56,22 +59,26 @@
 
 - (void)configWithEditModel:(DTieEditModel *)model
 {
+    self.model = model;
     if (model.image) {
         [self.tieImageView setImage:model.image];
     }
-}
-
-- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
-{
-    CGPoint tempPoint = [self convertPoint:point toView:self.tieImageView];
-    
-    if (tempPoint.x < 0 || tempPoint.y < 0) {
-        return NO;
+    if (self.model.pFlag) {
+        [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
+    }else{
+        [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
     }
-    
-    return YES;
 }
 
+- (void)seeButtonDidClicked
+{
+    self.model.pFlag = !self.model.pFlag;
+    if (self.model.pFlag) {
+        [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
+    }else{
+        [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
+    }
+}
 
 - (void)awakeFromNib {
     [super awakeFromNib];

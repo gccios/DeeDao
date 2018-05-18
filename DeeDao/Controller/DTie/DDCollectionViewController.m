@@ -9,11 +9,20 @@
 #import "DDCollectionViewController.h"
 #import "TYCyclePagerView.h"
 #import "DDCollectionListViewCell.h"
+#import "DTieDetailViewController.h"
+#import "DDHandleButton.h"
+#import <UIImageView+WebCache.h>
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
+@property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * titleLabel;
+@property (nonatomic, strong) UILabel * nameLabel;
+@property (nonatomic, strong) UILabel * locationLabel;
+@property (nonatomic, strong) DDHandleButton * yaoyueButton;
+@property (nonatomic, strong) DDHandleButton * shoucangButton;
+@property (nonatomic, strong) DDHandleButton * dazhaohuButton;
 
 @property (nonatomic, strong) TYCyclePagerView *pagerView;
 
@@ -38,6 +47,7 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    [self createTopView];
 }
 
 - (void)createViews
@@ -62,7 +72,91 @@
         [self.pagerView scrollToItemAtIndex:self.index animate:NO];
     });
     
-    [self createTopView];
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    [self.view addSubview:self.logoImageView];
+    [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((244 + kStatusBarHeight) * scale);
+        make.left.mas_equalTo(120 * scale);
+        make.width.height.mas_equalTo(96 *scale);
+    }];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:self.logoImageView];
+    
+    self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
+    [self.view addSubview:self.nameLabel];
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.logoImageView);
+        make.left.mas_equalTo(self.logoImageView.mas_right).offset(15 * scale);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
+    [self.view addSubview:locationImageView];
+    [locationImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(40 * scale);
+        make.left.mas_equalTo(self.logoImageView);
+        make.width.height.mas_equalTo(50 * scale);
+    }];
+    
+    self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    self.locationLabel.numberOfLines = 0;
+    [self.view addSubview:self.locationLabel];
+    [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
+        make.left.mas_equalTo(locationImageView.mas_right).offset(25 * scale);
+        make.width.mas_equalTo(450 * scale);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    
+    self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyue"]];
+    [self.yaoyueButton configTitle:@"0"];
+    [self.view addSubview:self.yaoyueButton];
+    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
+        make.left.mas_equalTo(self.locationLabel.mas_right).offset(30 * scale);
+        make.width.mas_equalTo(96 * scale);
+        make.height.mas_equalTo(96 * scale);
+    }];
+    
+    self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [self.shoucangButton configImage:[UIImage imageNamed:@"yaoyue"]];
+    [self.shoucangButton configTitle:@"0"];
+    [self.view addSubview:self.shoucangButton];
+    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
+        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(10 * scale);
+        make.width.mas_equalTo(96 * scale);
+        make.height.mas_equalTo(96 * scale);
+    }];
+    
+    self.dazhaohuButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
+    [self.dazhaohuButton configTitle:@"0"];
+    [self.view addSubview:self.dazhaohuButton];
+    [self.dazhaohuButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
+        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(10 * scale);
+        make.width.mas_equalTo(96 * scale);
+        make.height.mas_equalTo(96 * scale);
+    }];
+}
+
+- (void)pagerView:(TYCyclePagerView *)pageView didScrollFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
+{
+    DTieModel * model = [self.dataSource objectAtIndex:toIndex];
+    if (model) {
+        [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        self.nameLabel.text = model.nickname;
+        
+        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.createTime / 1000]];
+        self.locationLabel.text = [NSString stringWithFormat:@"%@\n%@", createTime, model.sceneAddress];
+        
+        [self.yaoyueButton configTitle:[NSString stringWithFormat:@"%ld", model.wyyCount]];
+        [self.shoucangButton configTitle:[NSString stringWithFormat:@"%ld", model.collectCount]];
+        [self.dazhaohuButton configTitle:[NSString stringWithFormat:@"%ld", model.dzfCount]];
+    }
 }
 
 - (NSInteger)numberOfItemsInPagerView:(TYCyclePagerView *)pageView {
@@ -73,7 +167,7 @@
     DDCollectionListViewCell *cell = [pagerView dequeueReusableCellWithReuseIdentifier:@"DDCollectionListViewCell" forIndex:index];
     
     DTieModel * model = [self.dataSource objectAtIndex:index];
-    [cell configWithModel:model];
+    [cell configWithModel:model tag:index];
     
     return cell;
 }
@@ -87,6 +181,13 @@
     layout.itemSpacing = 15;
     
     return layout;
+}
+
+- (void)pagerView:(TYCyclePagerView *)pageView didSelectedItemCell:(__kindof UICollectionViewCell *)cell atIndex:(NSInteger)index
+{
+    DTieModel * model = [self.dataSource objectAtIndex:index];
+    DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
+    [self.navigationController pushViewController:detail animated:NO];
 }
 
 - (void)createTopView
