@@ -12,4 +12,6 @@ extern NSString * const DTieDidCreateNotification;
 
 @interface DTieEditViewController : DDViewController
 
+- (instancetype)initWithTitle:(NSString *)title address:(NSString *)address;
+
 @end

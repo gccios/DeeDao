@@ -9,6 +9,8 @@
 #import "MineHeaderView.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import "UserManager.h"
+#import <UIImageView+WebCache.h>
 
 @interface MineHeaderView ()
 
@@ -43,10 +45,10 @@
     }];
     self.headerImageView.layer.cornerRadius = 144 * scale / 2;
     self.headerImageView.layer.masksToBounds = YES;
-    [self.headerImageView setImage:[UIImage imageNamed:@"test"]];
+    [self.headerImageView sd_setImageWithURL:[NSURL URLWithString:[UserManager shareManager].user.portraituri]];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    self.nameLabel.text = @"Your name";
+    self.nameLabel.text = [UserManager shareManager].user.nickname;
     [self addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(-40 * scale);
@@ -55,7 +57,7 @@
     }];
     
     self.IDLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.IDLabel.text = @"Dee Dao ID:20180510";
+    self.IDLabel.text = [NSString stringWithFormat:@"Dee Dao ID:%ld", [UserManager shareManager].user.cid];
     [self addSubview:self.IDLabel];
     [self.IDLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(15 * scale);
@@ -63,13 +65,13 @@
         make.height.mas_equalTo(58 * scale);
     }];
     
-    self.QRCodeImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"test"]];
-    [self addSubview:self.QRCodeImageView];
-    [self.QRCodeImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(72 * scale);
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
-    }];
+//    self.QRCodeImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"test"]];
+//    [self addSubview:self.QRCodeImageView];
+//    [self.QRCodeImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.height.mas_equalTo(72 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.right.mas_equalTo(-60 * scale);
+//    }];
 }
 
 @end

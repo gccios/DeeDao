@@ -7,6 +7,7 @@
 //
 
 #import "MailDetailViewController.h"
+#import "MainInfoTableViewCell.h"
 
 @interface MailDetailViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -31,7 +32,8 @@
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
+    [self.tableView registerClass:[MainInfoTableViewCell class] forCellReuseIdentifier:@"MainInfoTableViewCell"];
+    self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -39,6 +41,20 @@
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 210 * scale, 0);
+    
+    UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"返回列表"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:backButton];
+    backButton.layer.borderColor = UIColorFromRGB(0xDB5282).CGColor;
+    backButton.layer.borderWidth = 3 * scale;
+    [self.view addSubview:backButton];
+    [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-63 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     [self createTableHeaderFooter];
     [self createTopView];
@@ -74,7 +90,7 @@
     [headerView addSubview:logoImageView];
     [logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(115 * scale);
-        make.bottom.mas_equalTo(-55 * scale);
+        make.bottom.mas_equalTo(-65 * scale);
         make.width.height.mas_equalTo(150 * scale);
     }];
     [DDViewFactoryTool cornerRadius:150 * scale / 2 withView:logoImageView];
@@ -107,7 +123,9 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
+    MainInfoTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MainInfoTableViewCell" forIndexPath:indexPath];
+    
+    [cell configInfo:@"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试" time:@"2018-05-19 6:55PM"];
     
     return cell;
 }
@@ -147,7 +165,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"我的圈子";
+    titleLabel.text = @"消息详情";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

@@ -10,6 +10,7 @@
 #import <AFNetworking/AFNetworking.h>
 #import "MBProgressHUD+DDHUD.h"
 
+NSString * const DDUserDidLoginOutNotification = @"DDUserDidLoginOutNotification";
 
 @implementation UserManager
 

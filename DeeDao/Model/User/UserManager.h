@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "UserModel.h"
 
+extern NSString * const DDUserDidLoginOutNotification; //用户退出通知
+
 @interface UserManager : NSObject
 
 @property (nonatomic, assign) BOOL isLogin;

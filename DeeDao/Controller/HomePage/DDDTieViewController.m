@@ -13,28 +13,19 @@
 #import "DTieListRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DDCollectionViewController.h"
-#import <BaiduMapAPI_Map/BMKMapView.h>
-#import <BaiduMapAPI_Utils/BMKGeometry.h>
-#import <BaiduMapAPI_Search/BMKSearchComponent.h>
-#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
-#import "DDLocationManager.h"
-#import "DTieSearchRequest.h"
-#import "DDTool.h"
 #import <UIImageView+WebCache.h>
+#import "SeriesViewController.h"
+#import "DTieMapViewController.h"
 
-@interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource, BMKMapViewDelegate>
+@interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) UIView * DTieManagerView;
 
-@property (nonatomic, strong) UIView * topView;
-
 @property (nonatomic, strong) UIButton * searchButton;
-@property (nonatomic, assign) BOOL isSearch;
 @property (nonatomic, strong) UIButton * mapButton;
-@property (nonatomic, assign) BOOL isMap;
 @property (nonatomic, strong) UIButton * seriesButton;
-@property (nonatomic, assign) BOOL isSeries;
-@property (nonatomic, strong) UIButton * homeButton;
+
+@property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UICollectionView * collectionView;
 
@@ -43,10 +34,6 @@
 @property (nonatomic, assign) NSInteger start;
 @property (nonatomic, assign) NSInteger length;
 
-@property (nonatomic, strong) BMKMapView * mapView;
-@property (nonatomic, strong) NSMutableArray * mapSource;
-@property (nonatomic, assign) BOOL isFirst;
-
 @end
 
 @implementation DDDTieViewController
@@ -54,7 +41,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.isFirst = YES;
     self.start = 0;
     self.length = 30;
     
@@ -165,81 +151,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate:) name:DTieDidCreateNotification object:nil];
 }
 
-- (void)updateUserLocation
-{
-    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
-    
-    if (self.isFirst) {
-        BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
-        BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
-        [_mapView setRegion:adjustedRegion animated:YES];
-        self.isFirst = NO;
-    }
-    
-    [self requestMapViewLocations];
-}
-
-- (void)requestMapViewLocations
-{
-    CGFloat centerLongitude = self.mapView.region.center.longitude;
-    CGFloat centerLatitude = self.mapView.region.center.latitude;
-    
-    //当前屏幕显示范围的经纬度
-    CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
-    CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
-    //左上角
-    CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
-    CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
-    //右下角
-    CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
-    CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
-    [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetExpectTimeYear:-1 month:0 day:0] endDate:[DDTool DDGetExpectTimeYear:0 month:0 day:0] sortType:2 dataSources:3 type:1 pageStart:0 pageSize:100];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-        if (KIsDictionary(response)) {
-            NSArray * data = [response objectForKey:@"data"];
-            if (KIsArray(data)) {
-                [self.mapSource removeAllObjects];
-                NSMutableArray * pointArray = [NSMutableArray new];
-                for (NSDictionary * dict in data) {
-                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    [self.mapSource addObject:model];
-                    
-                    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
-                    annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
-                    [pointArray addObject:annotation];
-                }
-                [self.mapView addAnnotations:pointArray];
-            }
-        }
-        
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
-    }];
-}
-
-- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
-{
-    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
-    view.annotation = annotation;
-    view.image = [UIImage imageNamed:@"touxiangkuang"];
-    
-    UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-    imageView.backgroundColor = [UIColor redColor];
-    [view addSubview:imageView];
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(2);
-        make.centerX.mas_equalTo(0);
-        make.width.height.mas_equalTo(50);
-    }];
-    [DDViewFactoryTool cornerRadius:25 withView:imageView];
-    
-    return view;
-}
-
 - (void)newDTieDidCreate:(NSNotification *)notification
 {
     DTieModel * model = notification.object;
@@ -291,17 +202,6 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    self.homeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [self.homeButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
-    [self.homeButton addTarget:self action:@selector(homeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:self.homeButton];
-    [self.homeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-40 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
-    self.homeButton.hidden = YES;
-    
     self.mapButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
     [self.mapButton setImage:[UIImage imageNamed:@"map"] forState:UIControlStateNormal];
     [self.mapButton addTarget:self action:@selector(mapButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -323,18 +223,6 @@
     }];
 }
 
-- (void)homeButtonDidClicked
-{
-    self.homeButton.hidden = YES;
-    self.mapButton.hidden = NO;
-    self.searchButton.hidden = NO;
-    self.seriesButton.hidden = NO;
-    if (self.isMap) {
-        self.mapView.delegate = nil;
-        [self.mapView removeFromSuperview];
-    }
-}
-
 - (void)managerViewDidClicked
 {
     NSLog(@"下拉资源管理");
@@ -342,27 +230,14 @@
 
 - (void)seriesButtonDidClicked
 {
-    NSLog(@"系列");
+    SeriesViewController * series = [[SeriesViewController alloc] init];
+    [self.navigationController pushViewController:series animated:YES];
 }
 
 - (void)mapButtonDidClicked
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    
-    self.homeButton.hidden = NO;
-    self.mapButton.hidden = YES;
-    self.searchButton.hidden = YES;
-    self.seriesButton.hidden = YES;
-    self.isMap = YES;
-    [self.view addSubview:self.mapView];
-    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-    self.mapView.delegate = self;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUserLocation) name:DDUserLocationDidUpdateNotification object:nil];
-    [[DDLocationManager shareManager] startLocationService];
+    DTieMapViewController * map = [[DTieMapViewController alloc] init];
+    [self.navigationController pushViewController:map animated:YES];
 }
 
 - (void)searchButtonDidClicked
@@ -442,37 +317,9 @@
     return _dataSource;
 }
 
-- (NSMutableArray *)mapSource
-{
-    if (!_mapSource) {
-        _mapSource = [NSMutableArray new];
-    }
-    return _mapSource;
-}
-
-- (BMKMapView *)mapView
-{
-    if (!_mapView) {
-        _mapView = [[BMKMapView alloc] init];
-        //设置定位图层自定义样式
-        BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
-        //精度圈是否显示
-        userlocationStyle.isRotateAngleValid = YES;
-        //跟随态旋转角度是否生效
-        userlocationStyle.isAccuracyCircleShow = YES;
-        userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
-        userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
-        [_mapView updateLocationViewWithParam:userlocationStyle];
-        _mapView.showsUserLocation = YES;
-        _mapView.userTrackingMode = BMKUserTrackingModeFollow;
-    }
-    return _mapView;
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

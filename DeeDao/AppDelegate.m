@@ -13,6 +13,7 @@
 #import "DDTabBarController.h"
 #import <BaiduMapAPI_Base/BMKMapManager.h>
 #import "DDLocationManager.h"
+#import "UserManager.h"
 
 @interface AppDelegate ()
 
@@ -47,7 +48,16 @@
     
     [self.window makeKeyAndVisible];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:DDUserDidLoginOutNotification object:nil];
+    
     return YES;
+}
+
+//用户登出
+- (void)userDidLogout
+{
+    [[UserManager shareManager] logoutAccount];
+    [self createRootViewController];
 }
 
 - (void)createRootViewController

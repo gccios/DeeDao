@@ -28,6 +28,9 @@
 
 - (void)createTabBar
 {
+    self.translucent = NO;
+    self.backgroundColor = UIColorFromRGB(0xF5F5F5);
+    
     self.centerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
     [self addSubview:self.centerView];
     

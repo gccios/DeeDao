@@ -11,9 +11,6 @@
 
 @interface DDHandleButton ()
 
-@property (nonatomic, strong) UIImageView * handleImageView;
-@property (nonatomic, strong) UILabel * handleLabel;
-
 @end
 
 @implementation DDHandleButton

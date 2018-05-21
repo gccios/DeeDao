@@ -10,6 +10,9 @@
 
 @interface DDHandleButton : UIButton
 
+@property (nonatomic, strong) UIImageView * handleImageView;
+@property (nonatomic, strong) UILabel * handleLabel;
+
 - (void)configImage:(UIImage *)image;
 
 - (void)configTitle:(NSString *)title;

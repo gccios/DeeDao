@@ -53,9 +53,21 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 @property (nonatomic, strong) DTieEditFooterView * footerView;
 
+@property (nonatomic, copy) NSString * editTitle;
+@property (nonatomic, copy) NSString * editLocation;
+
 @end
 
 @implementation DTieEditViewController
+
+- (instancetype)initWithTitle:(NSString *)title address:(NSString *)address
+{
+    if (self = [super init]) {
+        self.editTitle = title;
+        self.editLocation = address;
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,6 +75,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     
     [self createDataSource];
     [self createViews];
+    
+    if (!isEmptyString(self.editLocation)) {
+        self.footerView.locationLabel.text = self.editLocation;
+    }
 }
 
 - (void)createDataSource
@@ -228,11 +244,6 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     DTieEditTableViewCell * cell = [self.tableView cellForRowAtIndexPath:self.selectIndexPath];
     cell.hidden = NO;
     self.selectIndexPath = nil;
-    
-//    if (_edgeScrollTimer) {
-//        [_edgeScrollTimer invalidate];
-//        _edgeScrollTimer = nil;
-//    }
 }
 
 - (void)longGestureChanged:(UILongPressGestureRecognizer *)longGesture
@@ -285,57 +296,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         [self.tableView addSubview:self.longPressView];
         cell.hidden = YES;
     }
-    
-//    _edgeScrollTimer = [CADisplayLink displayLinkWithTarget:self selector:@selector(processEdgeScroll)];
-//    [_edgeScrollTimer addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
-
-//- (void)processEdgeScroll
-//{
-//    [self longGestureChanged:self.longPressGesture];
-//
-//    CGFloat minOffsetY = self.tableView.contentOffset.y + 100.f;
-//    CGFloat maxOffsetY = self.tableView.contentOffset.y + self.tableView.bounds.size.height - 100.f;
-//    CGPoint touchPoint = self.longPressView.center;
-//
-//    //处理上下达到极限之后不再滚动tableView，其中处理了滚动到最边缘的时候，当前处于edgeScrollRange内，但是tableView还未显示完，需要显示完tableView才停止滚动
-//    if (touchPoint.y < 100.f) {
-//        if (self.tableView.contentOffset.y <= 0) {
-//            return;
-//        }else {
-//            if (self.tableView.contentOffset.y - 1 < 0) {
-//                return;
-//            }
-//            [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, self.tableView.contentOffset.y - 1) animated:NO];
-//            self.longPressView.center = CGPointMake(self.longPressView.center.x, [self tempViewYToFitTargetY:self.longPressView.center.y - 1]);
-//        }
-//    }
-//    if (touchPoint.y > self.tableView.contentSize.height - 100.f) {
-//        if (self.tableView.contentOffset.y >= self.tableView.contentSize.height - self.tableView.bounds.size.height) {
-//            return;
-//        }else {
-//            if (self.tableView.contentOffset.y + 1 > self.tableView.contentSize.height - self.tableView.bounds.size.height) {
-//                return;
-//            }
-//            [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, self.tableView.contentOffset.y + 1) animated:NO];
-//            self.longPressView.center = CGPointMake(self.longPressView.center.x, [self tempViewYToFitTargetY:self.longPressView.center.y + 1]);
-//        }
-//    }
-//
-//    //处理滚动
-//    CGFloat maxMoveDistance = 5;
-//    if (touchPoint.y < minOffsetY) {
-//        //cell在往上移动
-//        CGFloat moveDistance = (minOffsetY - touchPoint.y)/100.f*maxMoveDistance;
-//        [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, self.tableView.contentOffset.y - moveDistance) animated:NO];
-//        self.longPressView.center = CGPointMake(self.longPressView.center.x, [self tempViewYToFitTargetY:self.longPressView.center.y - moveDistance]);
-//    }else if (touchPoint.y > maxOffsetY) {
-//        //cell在往下移动
-//        CGFloat moveDistance = (touchPoint.y - maxOffsetY)/100.f*maxMoveDistance;
-//        [self.tableView setContentOffset:CGPointMake(self.tableView.contentOffset.x, self.tableView.contentOffset.y + moveDistance) animated:NO];
-//        self.longPressView.center = CGPointMake(self.longPressView.center.x, [self tempViewYToFitTargetY:self.longPressView.center.y + moveDistance]);
-//    }
-//}
 
 - (void)DTEditTextDidFinished:(NSString *)text
 {
@@ -375,6 +336,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             if ([self.selectIndexPath isEqual:indexPath]) {
                 cell.hidden = YES;
             }
+            if (!isEmptyString(self.editTitle)) {
+                model.detailsContent = self.editTitle;
+            }
+            
             [cell configWithEditModel:model];
             return cell;
         }
@@ -1050,7 +1015,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     //获取参数配置
     NSString * address = self.footerView.locationLabel.text;
     double lon;
-    NSInteger lat;
+    double lat;
     if (self.choosePOI) {
         lon = self.choosePOI.pt.longitude;
         lat = self.choosePOI.pt.longitude;

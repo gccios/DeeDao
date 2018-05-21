@@ -11,6 +11,7 @@
 #import <WXApi.h>
 #import <BGNetworkManager.h>
 #import "DDNetworkConfiguration.h"
+#import <IQKeyboardManager.h>
 
 @implementation DDTool
 
@@ -35,6 +36,9 @@
     [[UITableView appearance] setEstimatedRowHeight:0];
     [[UITableView appearance] setEstimatedSectionFooterHeight:0];
     [[UITableView appearance] setEstimatedSectionHeaderHeight:0];
+    
+    [[IQKeyboardManager sharedManager] setEnable:YES];
+    [[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
 }
 
 + (NSString *)getTimeStampMS
@@ -50,6 +54,12 @@
     NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:format];
     return [formatter stringFromDate:date];
+}
+
++ (double)getTimeCurrentWithDouble
+{
+    NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+    return time;
 }
 
 ///< 获取当前时间的: 前一周(day:-7)丶前一个月(month:-30)丶前一年(year:-1)的时间
@@ -75,7 +85,45 @@
     NSString *calculateStr = [formatter stringFromDate:calculatedate];
     
     return calculateStr;
-}  
+}
+
++ (double)DDGetDoubleTimeWithDisYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day
+{
+    ///< 当前时间
+    NSDate *currentdata = [NSDate date];
+    
+    ///< NSCalendar -- 日历类，它提供了大部分的日期计算接口，并且允许您在NSDate和NSDateComponents之间转换
+    NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    
+    NSDateComponents *datecomps = [[NSDateComponents alloc] init];
+    [datecomps setYear:year?:0];
+    [datecomps setMonth:month?:0];
+    [datecomps setDay:day?:0];
+    
+    ///< dateByAddingComponents: 在参数date基础上，增加一个NSDateComponents类型的时间增量
+    NSDate *calculatedate = [calendar dateByAddingComponents:datecomps toDate:currentdata options:0];
+    
+    return [calculatedate timeIntervalSince1970] * 1000;
+}
+
++ (double)DDGetDoubleWithYear:(NSInteger)year mouth:(NSInteger)mouth day:(NSInteger)day
+{
+    NSCalendar *gregorian = [[NSCalendar alloc]
+                             initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    
+    NSDateComponents* comp2 = [[NSDateComponents alloc]
+                               init];
+    // 设置各时间字段的数值
+    comp2.year = year;
+    comp2.month = mouth;
+    comp2.day = day;
+    comp2.hour = 0;
+    comp2.minute = 0;
+    // 通过NSDateComponents所包含的时间字段的数值来恢复NSDate对象
+    NSDate *date = [gregorian dateFromComponents:comp2];
+    
+    return [date timeIntervalSince1970] * 1000;
+}
 
 + (NSString *)getTimeWithFormat:(NSString *)format time:(NSInteger)time
 {

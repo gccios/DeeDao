@@ -14,10 +14,14 @@
 
 //获取当前13位时间戳
 +(NSString *)getTimeStampMS;
++(double)getTimeCurrentWithDouble;
 
 + (NSString *)getCurrentTimeWithFormat:(NSString *)format;
 
 + (NSString *)DDGetExpectTimeYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day;
++ (double)DDGetDoubleTimeWithDisYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day;
+
++ (double)DDGetDoubleWithYear:(NSInteger)year mouth:(NSInteger)mouth day:(NSInteger)day;
 
 + (NSString *)getTimeWithFormat:(NSString *)format time:(NSInteger)time;
 

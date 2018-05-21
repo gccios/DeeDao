@@ -8,6 +8,10 @@
 
 #import "DDSystemViewController.h"
 #import "DDSystemTableViewCell.h"
+#import "DDSystemAlertController.h"
+#import "UserManager.h"
+#import "UserLogoutRequest.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DDSystemViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -23,7 +27,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"信息提示设置", @"修改密码", @"帮助与反馈", @"切换账号/退出登录"]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"信息提示设置", @"帮助与反馈", @"切换账号/退出登录"]];
     [self createViews];
 }
 
@@ -107,6 +111,41 @@
     cell.nameLabel.text = [self.dataSource objectAtIndex:indexPath.row];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
+    if (indexPath.row == 0) {
+        DDSystemAlertController * alert = [[DDSystemAlertController alloc] init];
+        [self.navigationController pushViewController:alert animated:YES];
+    }else if (indexPath.row == 1){
+        
+    }else if(indexPath.row == 2){
+        [self logoutUser];
+    }
+}
+
+- (void)logoutUser
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在退出登录" inView:self.view];
+    
+    UserLogoutRequest * logout = [[UserLogoutRequest alloc] init];
+    [logout sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationName:DDUserDidLoginOutNotification object:nil];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        
+    }];
 }
 
 - (void)createTopView
