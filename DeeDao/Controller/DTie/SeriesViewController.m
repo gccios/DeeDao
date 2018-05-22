@@ -7,33 +7,165 @@
 //
 
 #import "SeriesViewController.h"
+#import "SeriesTableViewCell.h"
+#import "SeriesTableHeaderView.h"
+#import "GetSeriesRequest.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "AddSeriesViewController.h"
 
-@interface SeriesViewController ()
+@interface SeriesViewController ()<UITableViewDelegate, UITableViewDataSource, AddSeriesDelegate>
 
 @property (nonatomic, strong) UIView * topView;
+@property (nonatomic, strong) UITableView * tableView;
+
+@property (nonatomic, strong) NSMutableArray * dataSource;
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end
 
 @implementation SeriesViewController
-
-//- (instancetype)init
-//{
-//    if (self = [super init]) {
-//        self.hidesBottomBarWhenPushed = NO;
-//    }
-//    return self;
-//}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     [self createViews];
+    [self requestData];
+}
+
+- (void)seriesNeedUpdate
+{
+    [self requestData];
+}
+
+#pragma mark - 请求数据
+- (void)requestData
+{
+    GetSeriesRequest * request = [[GetSeriesRequest alloc] init];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取系列" inView:self.view];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self analysisData:data];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
+}
+
+- (void)analysisData:(NSArray *)data
+{
+    [self.dataSource removeAllObjects];
+    NSMutableArray * topArray = [[NSMutableArray alloc] init];
+    NSMutableArray * seriesArray = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < data.count; i++) {
+        NSDictionary * info = [data objectAtIndex:i];
+        NSDictionary * dict = [info objectForKey:@"series"];
+        SeriesModel * model = [SeriesModel mj_objectWithKeyValues:dict];
+        model.seriesFirstPicture = [info objectForKey:@"seriesFirstPicture"];
+        if (model.stickyFlag) {
+            [topArray addObject:model];
+        }else{
+            [seriesArray addObject:model];
+        }
+    }
+    
+    if (topArray.count > 0) {
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"stickyTime" ascending:NO];
+        [topArray sortUsingDescriptors:@[sort]];
+        
+        [self.dataSource addObject:topArray];
+    }
+    [self.dataSource addObject:seriesArray];
+    [self.tableView reloadData];
+}
+
+- (void)addSeriesDidClicked
+{
+    AddSeriesViewController * addSeries = [[AddSeriesViewController alloc] init];
+    addSeries.delegate = self;
+    [self.navigationController pushViewController:addSeries animated:YES];
 }
 
 - (void)createViews
 {
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.tableView.backgroundColor = self.view.backgroundColor;
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.rowHeight = 540 * scale;
+    [self.tableView registerClass:[SeriesTableViewCell class] forCellReuseIdentifier:@"SeriesTableViewCell"];
+    [self.tableView registerClass:[SeriesTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"SeriesTableHeaderView"];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
     [self createTopView];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return self.dataSource.count;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    NSArray * data = [self.dataSource objectAtIndex:section];
+    return data.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    SeriesTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"SeriesTableViewCell" forIndexPath:indexPath];
+    
+    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+    SeriesModel * model = [data objectAtIndex:indexPath.row];
+    [cell configWithModel:model];
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 330 * kMainBoundsWidth / 1080.f;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    SeriesTableHeaderView * view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"SeriesTableHeaderView"];
+    
+    [view configWithSetTop:NO];
+    __weak typeof(self) weakSelf = self;
+    view.addSeriesHandle = ^{
+        [weakSelf addSeriesDidClicked];
+    };
+    
+    return view;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if (self.dataSource.count == 1) {
+        return 340 * kMainBoundsWidth / 1080.f;
+    }else{
+        if (section == 0) {
+            return 120 * kMainBoundsWidth / 1080.f;
+        }else{
+            return 340 * kMainBoundsWidth / 1080.f;
+        }
+    }
 }
 
 - (void)createTopView
@@ -71,7 +203,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"系列";
+    titleLabel.text = @"D贴系列";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -82,7 +214,15 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:NO];
+}
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [[NSMutableArray alloc] init];
+    }
+    return _dataSource;
 }
 
 - (void)didReceiveMemoryWarning {

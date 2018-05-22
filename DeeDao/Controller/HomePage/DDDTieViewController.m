@@ -16,6 +16,7 @@
 #import <UIImageView+WebCache.h>
 #import "SeriesViewController.h"
 #import "DTieMapViewController.h"
+#import "DTieDetailRequest.h"
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -231,13 +232,13 @@
 - (void)seriesButtonDidClicked
 {
     SeriesViewController * series = [[SeriesViewController alloc] init];
-    [self.navigationController pushViewController:series animated:YES];
+    [self.navigationController pushViewController:series animated:NO];
 }
 
 - (void)mapButtonDidClicked
 {
     DTieMapViewController * map = [[DTieMapViewController alloc] init];
-    [self.navigationController pushViewController:map animated:YES];
+    [self.navigationController pushViewController:map animated:NO];
 }
 
 - (void)searchButtonDidClicked
@@ -258,8 +259,25 @@
             
         case DTieType_Edit:
         {
-            DTieEditViewController * edit = [[DTieEditViewController alloc] init];
-            [self.navigationController pushViewController:edit animated:YES];
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+            
+            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                [hud hideAnimated:YES];
+                
+                if (KIsDictionary(response)) {
+                    NSDictionary * data = [response objectForKey:@"data"];
+                    if (KIsDictionary(data)) {
+                        DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                        DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
+                        [self.navigationController pushViewController:edit animated:YES];
+                    }
+                }
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                [hud hideAnimated:YES];
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                [hud hideAnimated:YES];
+            }];
         }
             break;
             

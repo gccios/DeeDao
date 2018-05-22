@@ -22,4 +22,8 @@
 
 + (void)cornerRadius:(CGFloat)radius withView:(UIView *)view;
 
++ (void)addBorderToLayer:(UIView *)view;
+
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
+
 @end

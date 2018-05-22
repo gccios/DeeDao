@@ -7,11 +7,14 @@
 //
 
 #import "DDViewController.h"
+#import "DTieModel.h"
 
 extern NSString * const DTieDidCreateNotification;
 
 @interface DTieEditViewController : DDViewController
 
 - (instancetype)initWithTitle:(NSString *)title address:(NSString *)address;
+
+- (instancetype)initWithDtieModel:(DTieModel *)model;
 
 @end

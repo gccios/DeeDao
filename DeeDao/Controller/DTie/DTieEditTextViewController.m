@@ -8,6 +8,7 @@
 
 #import "DTieEditTextViewController.h"
 #import "RDTextView.h"
+#import <IQKeyboardManager.h>
 
 @interface DTieEditTextViewController ()
 
@@ -138,6 +139,26 @@
     [super viewDidAppear:animated];
     if (self.textView.canBecomeFirstResponder) {
         [self.textView becomeFirstResponder];
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [[IQKeyboardManager sharedManager] setEnable:NO];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [[IQKeyboardManager sharedManager] setEnable:YES];
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    if ([self.textView canResignFirstResponder]) {
+        [self.textView resignFirstResponder];
     }
 }
 

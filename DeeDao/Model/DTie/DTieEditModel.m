@@ -37,4 +37,10 @@
     }
 }
 
+- (void)setDetailContent:(NSString *)detailContent
+{
+    _detailContent = detailContent;
+    _detailsContent = detailContent;
+}
+
 @end

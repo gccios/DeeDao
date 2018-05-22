@@ -58,4 +58,44 @@
     view.layer.masksToBounds = YES;
 }
 
+
++ (void)addBorderToLayer:(UIView *)view
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    CAShapeLayer *border = [CAShapeLayer layer];
+    //  线条颜色
+    border.strokeColor = UIColorFromRGB(0xDB6283).CGColor;
+    
+    border.fillColor = nil;
+    
+    border.path = [UIBezierPath bezierPathWithRect:view.bounds].CGPath;
+    
+    border.frame = view.bounds;
+    
+    // 不要设太大 不然看不出效果
+    border.lineWidth = 3 * scale;
+    
+    border.lineCap = @"square";
+    
+    //  第一个是 线条长度   第二个是间距    nil时为实线
+    border.lineDashPattern = @[@(3*scale), @(9*scale)];
+    
+    [view.layer addSublayer:border];
+}
+
++ (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size {
+    CGRect rect = CGRectMake(0.0f, 0.0f, size.width, size.height); //宽高 1.0只要有值就够了
+    UIGraphicsBeginImageContext(rect.size); //在这个范围内开启一段上下文
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);//在这段上下文中获取到颜色UIColor
+    CGContextFillRect(context, rect);//用这个颜色填充这个上下文
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();//从这段上下文中获取Image属性,,,结束
+    UIGraphicsEndImageContext();
+    
+    return image;
+}
+
 @end

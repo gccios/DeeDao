@@ -12,7 +12,7 @@
 
 @implementation CreateDTieRequest
 
-- (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic;
+- (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic postID:(NSInteger)postId;
 {
     if (self = [super init]) {
         
@@ -27,6 +27,10 @@
         [self setIntegerValue:status forParamKey:@"status"];
         [self setIntegerValue:remindFlg forParamKey:@"remindFlg"];
         [self setValue:firstPic forParamKey:@"postFirstPicture"];
+        
+        if (postId) {
+            [self setIntegerValue:postId forParamKey:@"postId"];
+        }
         
     }
     return self;

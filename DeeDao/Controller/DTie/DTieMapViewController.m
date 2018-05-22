@@ -223,7 +223,7 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (BMKMapView *)mapView

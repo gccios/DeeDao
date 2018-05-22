@@ -20,6 +20,7 @@
 #import "DTieEditReadViewController.h"
 #import "DTieChooseLocationController.h"
 #import "DTieModel.h"
+#import <UIImageView+WebCache.h>
 
 NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
@@ -56,6 +57,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 @property (nonatomic, copy) NSString * editTitle;
 @property (nonatomic, copy) NSString * editLocation;
 
+@property (nonatomic, assign) NSInteger status;
+
+@property (nonatomic, strong) DTieModel * editModel;
+
 @end
 
 @implementation DTieEditViewController
@@ -69,6 +74,14 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     return self;
 }
 
+- (instancetype)initWithDtieModel:(DTieModel *)model
+{
+    if (self = [super init]) {
+        self.editModel = model;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -78,6 +91,18 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     
     if (!isEmptyString(self.editLocation)) {
         self.footerView.locationLabel.text = self.editLocation;
+    }
+    
+    if (self.editModel) {
+        [self.dataSource removeAllObjects];
+        [self.dataSource addObject:[[NSArray alloc] initWithArray:self.editModel.details]];
+        
+        DTieEditModel * model = [[DTieEditModel alloc] init];
+        model.type = DTieEditType_Title;
+        model.detailsContent = self.editModel.postSummary;
+        [self.dataSource insertObject:@[model] atIndex:0];
+        
+        [self.tableView reloadData];
     }
 }
 
@@ -186,6 +211,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 - (void)yulanButtonDidClicked
 {
+    self.status = 1;
     [self putDTie];
 }
 
@@ -206,7 +232,8 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 - (void)saveButtonDidClicked
 {
-    NSLog(@"保存草稿");
+    self.status = 0;
+    [self putDTie];
 }
 
 #pragma mark - 长按移动cell
@@ -407,6 +434,27 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             UIImage * image = model.image;
             CGFloat scale = image.size.height / image.size.width;
             return kMainBoundsWidth * scale + 170 * kMainBoundsWidth / 1080.f;
+        }else if (!isEmptyString(model.detailContent)){
+            UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
+            
+            // 没有找到已下载的图片就使用默认的占位图，当然高度也是默认的高度了，除了高度不固定的文字部分。
+            if (!image) {
+                image = [UIImage imageNamed:@"test"];
+                
+                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:model.detailContent] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                    
+                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:model.detailContent toDisk:YES completion:nil];
+                    model.image = image;
+                    [self.tableView beginUpdates];
+                    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.tableView endUpdates];
+                }];
+            }
+            
+            CGFloat scale = image.size.height / image.size.width;
+            return kMainBoundsWidth * scale + 170 * kMainBoundsWidth / 1080.f;
+            
         }
         
     }
@@ -1033,8 +1081,11 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         }
     }
     
-    
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic];
+    NSInteger postId = 0;
+    if (self.editModel) {
+        postId = self.editModel.postId;
+    }
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:self.status remindFlg:1 firstPic:firstPic postID:postId];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -1044,7 +1095,11 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                 [MBProgressHUD showTextHUDWithText:@"创建成功" inView:self.view];
                 
                 DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
-                DTie.dTieType = DTieType_MyDtie;
+                if (self.status) {
+                    DTie.dTieType = DTieType_MyDtie;
+                }else{
+                    DTie.dTieType = DTieType_Edit;
+                }
                 [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:DTie];
                 [self.navigationController popViewControllerAnimated:YES];
             }
