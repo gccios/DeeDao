@@ -9,11 +9,16 @@
 #import "DDFriendViewController.h"
 #import "DDFriendTableViewCell.h"
 #import "DDFriendTableHeaderView.h"
+#import "SelectFriendRequest.h"
+#import "UserInfoViewController.h"
 
 @interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
+
+@property (nonatomic, strong) NSMutableDictionary * dataDict;
+@property (nonatomic, strong) NSArray * nameKeys;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
 @end
@@ -23,6 +28,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    self.dataSource = [[NSMutableArray alloc] init];
+    self.dataDict = [[NSMutableDictionary alloc] init];
     
     [self createViews];
 }
@@ -46,16 +53,104 @@
     }];
     
     [self creatTopView];
+    
+    [self requestFriendList];
+}
+
+- (void)requestFriendList
+{
+    SelectFriendRequest * request = [[SelectFriendRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                    [self.dataSource addObject:model];
+                }
+                [self sortFriends];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)sortFriends
+{
+    // 将耗时操作放到子线程
+    dispatch_queue_t queue = dispatch_queue_create("DDFriends.infoDict", DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        
+        for (UserModel * model in self.dataSource) {
+            // 获取并返回首字母
+            NSString * firstLetterString =model.firstLetter;
+            
+            //如果该字母对应的联系人模型不为空,则将此联系人模型添加到此数组中
+            if (self.dataDict[firstLetterString])
+            {
+                [self.dataDict[firstLetterString] addObject:model];
+            }
+            //没有出现过该首字母，则在字典中新增一组key-value
+            else
+            {
+                //创建新发可变数组存储该首字母对应的联系人模型
+                NSMutableArray *arrGroupNames = [[NSMutableArray alloc] init];
+                
+                [arrGroupNames addObject:model];
+                //将首字母-姓名数组作为key-value加入到字典中
+                [self.dataDict setObject:arrGroupNames forKey:firstLetterString];
+            }
+        }
+        
+        // 将addressBookDict字典中的所有Key值进行排序: A~Z
+        NSArray *nameKeys = [[self.dataDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+        self.nameKeys = [[NSArray alloc] initWithArray:nameKeys];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+        
+    });
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString * key = [self.nameKeys objectAtIndex:indexPath.section];
+    NSArray * data = [self.dataDict objectForKey:key];
+    UserModel * model = [data objectAtIndex:indexPath.row];
+    
+    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.cid];
+    [self.navigationController pushViewController:info animated:YES];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return self.nameKeys.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 10;
+    NSString * key = [self.nameKeys objectAtIndex:section];
+    NSArray * data = [self.dataDict objectForKey:key];
+    
+    return data.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DDFriendTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDFriendTableViewCell" forIndexPath:indexPath];
+    
+    NSString * key = [self.nameKeys objectAtIndex:indexPath.section];
+    NSArray * data = [self.dataDict objectForKey:key];
+    UserModel * model = [data objectAtIndex:indexPath.row];
+    
+    [cell configWithModel:model];
     
     return cell;
 }
@@ -63,7 +158,10 @@
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     DDFriendTableHeaderView * view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"DDFriendTableHeaderView"];
-    [view configWithPre:@"J"];
+    
+    NSString * key = [self.nameKeys objectAtIndex:section];
+    [view configWithPre:key];
+    
     return view;
 }
 
@@ -116,26 +214,26 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
-    
-    UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
-    [searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:searchButton];
-    [searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-40 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
-    
-    UIButton * addButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [addButton setImage:[UIImage imageNamed:@"addFriend"] forState:UIControlStateNormal];
-    [addButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:addButton];
-    [addButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(searchButton.mas_left).offset(-30 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
+//    
+//    UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//    [searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
+//    [searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:searchButton];
+//    [searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(-40 * scale);
+//        make.bottom.mas_equalTo(-20 * scale);
+//        make.width.height.mas_equalTo(100 * scale);
+//    }];
+//    
+//    UIButton * addButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//    [addButton setImage:[UIImage imageNamed:@"addFriend"] forState:UIControlStateNormal];
+//    [addButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:addButton];
+//    [addButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(searchButton.mas_left).offset(-30 * scale);
+//        make.bottom.mas_equalTo(-20 * scale);
+//        make.width.height.mas_equalTo(100 * scale);
+//    }];
 }
 
 - (void)searchButtonDidClicked

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MJExtension.h>
+#import "DTieModel.h"
 
 @interface UserModel : NSObject
 
@@ -19,11 +20,21 @@
 @property (nonatomic, copy) NSString * openid;
 @property (nonatomic, copy) NSString * unionid;
 @property (nonatomic, copy) NSString * nickname;
+@property (nonatomic, copy) NSString * secondNickname;
 @property (nonatomic, copy) NSString * sex;
 @property (nonatomic, copy) NSString * portraituri;
 @property (nonatomic, assign) NSInteger createdat;
 @property (nonatomic, assign) NSInteger updatedat;
 @property (nonatomic, copy) NSString * rongcloudtoken;
 @property (nonatomic, assign) NSInteger timestamp;
+@property (nonatomic, copy) NSString * phone;
+@property (nonatomic, copy) NSString * signature;
+@property (nonatomic, strong) NSArray * postBeanList;
+
+@property (nonatomic, copy) NSString * firstLetter;
+
+@property (nonatomic, assign) NSInteger concernFlg; //关注
+@property (nonatomic, assign) NSInteger friendFlg; //好友
+@property (nonatomic, assign) NSInteger selfFlg; //本人
 
 @end

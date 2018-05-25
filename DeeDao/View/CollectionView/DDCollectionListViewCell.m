@@ -82,8 +82,14 @@
     }
     
     self.tableView.hidden = YES;
-    [DTieDetailRequest cancelRequest];
-    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+//    [DTieDetailRequest cancelRequest];
+    
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
+    
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {

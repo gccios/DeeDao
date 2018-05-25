@@ -15,7 +15,30 @@
 		060F005C20AC1AE700C810A1 /* DDCollectionListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 060F005B20AC1AE700C810A1 /* DDCollectionListViewCell.m */; };
 		060F005F20AC2F8F00C810A1 /* DDCollectionTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 060F005E20AC2F8F00C810A1 /* DDCollectionTableViewCell.m */; };
 		060F006220AC493A00C810A1 /* DTieDetailRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 060F006120AC493A00C810A1 /* DTieDetailRequest.m */; };
+		06102AC820B465A200FF3278 /* DTieCollectionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AC720B465A200FF3278 /* DTieCollectionRequest.m */; };
+		06102ACB20B4685600FF3278 /* DTieCancleCollectRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102ACA20B4685600FF3278 /* DTieCancleCollectRequest.m */; };
+		06102ACE20B46A8500FF3278 /* DTieCancleWYYRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102ACD20B46A8500FF3278 /* DTieCancleWYYRequest.m */; };
+		06102AD120B46CB800FF3278 /* LiuYanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AD020B46CB800FF3278 /* LiuYanViewController.m */; };
+		06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AD320B46D2700FF3278 /* LiuYanTableViewCell.m */; };
+		06102AD820B470F700FF3278 /* UIView+LayerCurve.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AD620B470F700FF3278 /* UIView+LayerCurve.m */; };
+		06102ADB20B4790400FF3278 /* CommentModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102ADA20B4790400FF3278 /* CommentModel.m */; };
+		06102AE120B47BA100FF3278 /* CommentRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AE020B47BA100FF3278 /* CommentRequest.m */; };
+		06102AE420B47E5A00FF3278 /* AddCommentRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AE320B47E5A00FF3278 /* AddCommentRequest.m */; };
 		06137A5720AE881200D1183A /* DDHandleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06137A5620AE881200D1183A /* DDHandleButton.m */; };
+		061994A720B5091700AD64AB /* SecurityGroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994A620B5091700AD64AB /* SecurityGroupModel.m */; };
+		061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994A920B509F500AD64AB /* SecurityRequest.m */; };
+		061994AD20B5106500AD64AB /* EditSecurityController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994AC20B5106500AD64AB /* EditSecurityController.m */; };
+		061994B020B5195300AD64AB /* SecurityHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994AF20B5195300AD64AB /* SecurityHeaderView.m */; };
+		061994B320B5196600AD64AB /* SecurityFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994B220B5196600AD64AB /* SecurityFooterView.m */; };
+		061994B620B51EFC00AD64AB /* SecurityUserCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994B520B51EFC00AD64AB /* SecurityUserCollectionViewCell.m */; };
+		061994B920B5301D00AD64AB /* SeriesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994B820B5301D00AD64AB /* SeriesDetailViewController.m */; };
+		061994BC20B53F1900AD64AB /* DTieSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994BB20B53F1900AD64AB /* DTieSearchViewController.m */; };
+		061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994BE20B578F300AD64AB /* MailMessageRequest.m */; };
+		062048D020B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048CF20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m */; };
+		062048D320B7B912008DDF25 /* SecurityDTieViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048D220B7B912008DDF25 /* SecurityDTieViewController.m */; };
+		062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048D520B7E399008DDF25 /* AddOrUpdateSecurityRequest.m */; };
+		062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048D820B7F2EF008DDF25 /* SelectSecurityRequest.m */; };
+		062048DC20B7F960008DDF25 /* DeleteSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048DB20B7F960008DDF25 /* DeleteSecurityRequest.m */; };
 		06301B4220A6D309003580CA /* XFCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3A20A6D309003580CA /* XFCameraButton.m */; };
 		06301B4320A6D309003580CA /* XFCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3C20A6D309003580CA /* XFCameraController.m */; };
 		06301B4420A6D309003580CA /* XFCameraController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06301B3D20A6D309003580CA /* XFCameraController.xib */; };
@@ -37,6 +60,16 @@
 		0641711220B3FE3F0075ECB6 /* SeriesChoosDTieController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711120B3FE3F0075ECB6 /* SeriesChoosDTieController.m */; };
 		0641711520B419800075ECB6 /* CreateOrUpdateSeriesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711420B419800075ECB6 /* CreateOrUpdateSeriesRequest.m */; };
 		0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711720B42F360075ECB6 /* DraftSeriesRequest.m */; };
+		0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30620B66132009B7C27 /* SeriesDetailModel.m */; };
+		0647F30A20B661D6009B7C27 /* SeriesDetailRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */; };
+		0647F30D20B6780F009B7C27 /* UserInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30C20B6780F009B7C27 /* UserInfoViewController.m */; };
+		0647F31020B67B0D009B7C27 /* UserInfoRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30F20B67B0D009B7C27 /* UserInfoRequest.m */; };
+		0647F31320B67E20009B7C27 /* UserInfoCollectionHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F31220B67E20009B7C27 /* UserInfoCollectionHeader.m */; };
+		0647F31620B698BE009B7C27 /* AddFriendRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F31520B698BE009B7C27 /* AddFriendRequest.m */; };
+		0647F31C20B69A92009B7C27 /* SaveFriendOrConcernRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F31B20B69A92009B7C27 /* SaveFriendOrConcernRequest.m */; };
+		0647F31F20B6A3AB009B7C27 /* SelectFriendRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F31E20B6A3AB009B7C27 /* SelectFriendRequest.m */; };
+		0647F32220B6B1DF009B7C27 /* SaveUserRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F32120B6B1DF009B7C27 /* SaveUserRequest.m */; };
+		0647F33420B6DD51009B7C27 /* SecurityFriendController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F33320B6DD51009B7C27 /* SecurityFriendController.m */; };
 		064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B349A20A9289800B7D0E4 /* AchievementDetailViewController.m */; };
 		064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 064B349C20A92C5500B7D0E4 /* chengjiuBG.png */; };
 		064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 064B349F20A9374100B7D0E4 /* DDSystemViewController.m */; };
@@ -110,6 +143,7 @@
 		06BB78F720A9C9100049F28F /* MailShareTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78F620A9C9100049F28F /* MailShareTableViewCell.m */; };
 		06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78F920A9C91F0049F28F /* MailSmallTableViewCell.m */; };
 		06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */; };
+		06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
 		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
@@ -161,8 +195,54 @@
 		060F005E20AC2F8F00C810A1 /* DDCollectionTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDCollectionTableViewCell.m; sourceTree = "<group>"; };
 		060F006020AC493A00C810A1 /* DTieDetailRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieDetailRequest.h; sourceTree = "<group>"; };
 		060F006120AC493A00C810A1 /* DTieDetailRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieDetailRequest.m; sourceTree = "<group>"; };
+		06102AC620B465A200FF3278 /* DTieCollectionRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieCollectionRequest.h; sourceTree = "<group>"; };
+		06102AC720B465A200FF3278 /* DTieCollectionRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCollectionRequest.m; sourceTree = "<group>"; };
+		06102AC920B4685600FF3278 /* DTieCancleCollectRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieCancleCollectRequest.h; sourceTree = "<group>"; };
+		06102ACA20B4685600FF3278 /* DTieCancleCollectRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCancleCollectRequest.m; sourceTree = "<group>"; };
+		06102ACC20B46A8500FF3278 /* DTieCancleWYYRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieCancleWYYRequest.h; sourceTree = "<group>"; };
+		06102ACD20B46A8500FF3278 /* DTieCancleWYYRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCancleWYYRequest.m; sourceTree = "<group>"; };
+		06102ACF20B46CB800FF3278 /* LiuYanViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiuYanViewController.h; sourceTree = "<group>"; };
+		06102AD020B46CB800FF3278 /* LiuYanViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LiuYanViewController.m; sourceTree = "<group>"; };
+		06102AD220B46D2700FF3278 /* LiuYanTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LiuYanTableViewCell.h; sourceTree = "<group>"; };
+		06102AD320B46D2700FF3278 /* LiuYanTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LiuYanTableViewCell.m; sourceTree = "<group>"; };
+		06102AD620B470F700FF3278 /* UIView+LayerCurve.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayerCurve.m"; sourceTree = "<group>"; };
+		06102AD720B470F700FF3278 /* UIView+LayerCurve.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayerCurve.h"; sourceTree = "<group>"; };
+		06102AD920B4790400FF3278 /* CommentModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommentModel.h; sourceTree = "<group>"; };
+		06102ADA20B4790400FF3278 /* CommentModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommentModel.m; sourceTree = "<group>"; };
+		06102ADF20B47BA100FF3278 /* CommentRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommentRequest.h; sourceTree = "<group>"; };
+		06102AE020B47BA100FF3278 /* CommentRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommentRequest.m; sourceTree = "<group>"; };
+		06102AE220B47E5A00FF3278 /* AddCommentRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddCommentRequest.h; sourceTree = "<group>"; };
+		06102AE320B47E5A00FF3278 /* AddCommentRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddCommentRequest.m; sourceTree = "<group>"; };
 		06137A5520AE881200D1183A /* DDHandleButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDHandleButton.h; sourceTree = "<group>"; };
 		06137A5620AE881200D1183A /* DDHandleButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDHandleButton.m; sourceTree = "<group>"; };
+		061994A520B5091700AD64AB /* SecurityGroupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityGroupModel.h; sourceTree = "<group>"; };
+		061994A620B5091700AD64AB /* SecurityGroupModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityGroupModel.m; sourceTree = "<group>"; };
+		061994A820B509F500AD64AB /* SecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityRequest.h; sourceTree = "<group>"; };
+		061994A920B509F500AD64AB /* SecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityRequest.m; sourceTree = "<group>"; };
+		061994AB20B5106500AD64AB /* EditSecurityController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditSecurityController.h; sourceTree = "<group>"; };
+		061994AC20B5106500AD64AB /* EditSecurityController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditSecurityController.m; sourceTree = "<group>"; };
+		061994AE20B5195300AD64AB /* SecurityHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityHeaderView.h; sourceTree = "<group>"; };
+		061994AF20B5195300AD64AB /* SecurityHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityHeaderView.m; sourceTree = "<group>"; };
+		061994B120B5196600AD64AB /* SecurityFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityFooterView.h; sourceTree = "<group>"; };
+		061994B220B5196600AD64AB /* SecurityFooterView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityFooterView.m; sourceTree = "<group>"; };
+		061994B420B51EFC00AD64AB /* SecurityUserCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityUserCollectionViewCell.h; sourceTree = "<group>"; };
+		061994B520B51EFC00AD64AB /* SecurityUserCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityUserCollectionViewCell.m; sourceTree = "<group>"; };
+		061994B720B5301D00AD64AB /* SeriesDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesDetailViewController.h; sourceTree = "<group>"; };
+		061994B820B5301D00AD64AB /* SeriesDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeriesDetailViewController.m; sourceTree = "<group>"; };
+		061994BA20B53F1900AD64AB /* DTieSearchViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieSearchViewController.h; sourceTree = "<group>"; };
+		061994BB20B53F1900AD64AB /* DTieSearchViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSearchViewController.m; sourceTree = "<group>"; };
+		061994BD20B578F300AD64AB /* MailMessageRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MailMessageRequest.h; sourceTree = "<group>"; };
+		061994BE20B578F300AD64AB /* MailMessageRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailMessageRequest.m; sourceTree = "<group>"; };
+		062048CE20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieChooseCollectionViewCell.h; sourceTree = "<group>"; };
+		062048CF20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieChooseCollectionViewCell.m; sourceTree = "<group>"; };
+		062048D120B7B912008DDF25 /* SecurityDTieViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityDTieViewController.h; sourceTree = "<group>"; };
+		062048D220B7B912008DDF25 /* SecurityDTieViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityDTieViewController.m; sourceTree = "<group>"; };
+		062048D420B7E399008DDF25 /* AddOrUpdateSecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddOrUpdateSecurityRequest.h; sourceTree = "<group>"; };
+		062048D520B7E399008DDF25 /* AddOrUpdateSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddOrUpdateSecurityRequest.m; sourceTree = "<group>"; };
+		062048D720B7F2EF008DDF25 /* SelectSecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectSecurityRequest.h; sourceTree = "<group>"; };
+		062048D820B7F2EF008DDF25 /* SelectSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectSecurityRequest.m; sourceTree = "<group>"; };
+		062048DA20B7F960008DDF25 /* DeleteSecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeleteSecurityRequest.h; sourceTree = "<group>"; };
+		062048DB20B7F960008DDF25 /* DeleteSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeleteSecurityRequest.m; sourceTree = "<group>"; };
 		06301B3A20A6D309003580CA /* XFCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraButton.m; sourceTree = "<group>"; };
 		06301B3B20A6D309003580CA /* XFCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraButton.h; sourceTree = "<group>"; };
 		06301B3C20A6D309003580CA /* XFCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraController.m; sourceTree = "<group>"; };
@@ -204,6 +284,26 @@
 		0641711420B419800075ECB6 /* CreateOrUpdateSeriesRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateOrUpdateSeriesRequest.m; sourceTree = "<group>"; };
 		0641711620B42F360075ECB6 /* DraftSeriesRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DraftSeriesRequest.h; sourceTree = "<group>"; };
 		0641711720B42F360075ECB6 /* DraftSeriesRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DraftSeriesRequest.m; sourceTree = "<group>"; };
+		0647F30520B66132009B7C27 /* SeriesDetailModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesDetailModel.h; sourceTree = "<group>"; };
+		0647F30620B66132009B7C27 /* SeriesDetailModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeriesDetailModel.m; sourceTree = "<group>"; };
+		0647F30820B661D6009B7C27 /* SeriesDetailRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesDetailRequest.h; sourceTree = "<group>"; };
+		0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeriesDetailRequest.m; sourceTree = "<group>"; };
+		0647F30B20B6780F009B7C27 /* UserInfoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserInfoViewController.h; sourceTree = "<group>"; };
+		0647F30C20B6780F009B7C27 /* UserInfoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserInfoViewController.m; sourceTree = "<group>"; };
+		0647F30E20B67B0D009B7C27 /* UserInfoRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserInfoRequest.h; sourceTree = "<group>"; };
+		0647F30F20B67B0D009B7C27 /* UserInfoRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserInfoRequest.m; sourceTree = "<group>"; };
+		0647F31120B67E20009B7C27 /* UserInfoCollectionHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserInfoCollectionHeader.h; sourceTree = "<group>"; };
+		0647F31220B67E20009B7C27 /* UserInfoCollectionHeader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserInfoCollectionHeader.m; sourceTree = "<group>"; };
+		0647F31420B698BE009B7C27 /* AddFriendRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AddFriendRequest.h; sourceTree = "<group>"; };
+		0647F31520B698BE009B7C27 /* AddFriendRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddFriendRequest.m; sourceTree = "<group>"; };
+		0647F31A20B69A92009B7C27 /* SaveFriendOrConcernRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveFriendOrConcernRequest.h; sourceTree = "<group>"; };
+		0647F31B20B69A92009B7C27 /* SaveFriendOrConcernRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaveFriendOrConcernRequest.m; sourceTree = "<group>"; };
+		0647F31D20B6A3AB009B7C27 /* SelectFriendRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectFriendRequest.h; sourceTree = "<group>"; };
+		0647F31E20B6A3AB009B7C27 /* SelectFriendRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectFriendRequest.m; sourceTree = "<group>"; };
+		0647F32020B6B1DF009B7C27 /* SaveUserRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SaveUserRequest.h; sourceTree = "<group>"; };
+		0647F32120B6B1DF009B7C27 /* SaveUserRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SaveUserRequest.m; sourceTree = "<group>"; };
+		0647F33220B6DD51009B7C27 /* SecurityFriendController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityFriendController.h; sourceTree = "<group>"; };
+		0647F33320B6DD51009B7C27 /* SecurityFriendController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityFriendController.m; sourceTree = "<group>"; };
 		064B349920A9289800B7D0E4 /* AchievementDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementDetailViewController.h; sourceTree = "<group>"; };
 		064B349A20A9289800B7D0E4 /* AchievementDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementDetailViewController.m; sourceTree = "<group>"; };
 		064B349C20A92C5500B7D0E4 /* chengjiuBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = chengjiuBG.png; sourceTree = "<group>"; };
@@ -354,6 +454,8 @@
 		06BB78F920A9C91F0049F28F /* MailSmallTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailSmallTableViewCell.m; sourceTree = "<group>"; };
 		06BB78FB20A9C9290049F28F /* MailBigTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MailBigTableViewCell.h; sourceTree = "<group>"; };
 		06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailBigTableViewCell.m; sourceTree = "<group>"; };
+		06BBF91C20B71A220065B8C0 /* DDCollectionHandleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDCollectionHandleView.h; sourceTree = "<group>"; };
+		06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDCollectionHandleView.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
 		06DAB76420A34C880055FA60 /* DDFoundViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFoundViewController.m; sourceTree = "<group>"; };
 		06DAB76620A3539A0055FA60 /* DDMailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMailViewController.h; sourceTree = "<group>"; };
@@ -434,6 +536,15 @@
 			path = TYCyclePagerView;
 			sourceTree = "<group>";
 		};
+		06102AD520B470F700FF3278 /* GCCLayerCurve */ = {
+			isa = PBXGroup;
+			children = (
+				06102AD720B470F700FF3278 /* UIView+LayerCurve.h */,
+				06102AD620B470F700FF3278 /* UIView+LayerCurve.m */,
+			);
+			path = GCCLayerCurve;
+			sourceTree = "<group>";
+		};
 		06137A5420AE87FB00D1183A /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -507,6 +618,18 @@
 				060F006120AC493A00C810A1 /* DTieDetailRequest.m */,
 				0674E68520AEBC1B006961E1 /* DTieSearchRequest.h */,
 				0674E68620AEBC1B006961E1 /* DTieSearchRequest.m */,
+				06102AC620B465A200FF3278 /* DTieCollectionRequest.h */,
+				06102AC720B465A200FF3278 /* DTieCollectionRequest.m */,
+				06102AC920B4685600FF3278 /* DTieCancleCollectRequest.h */,
+				06102ACA20B4685600FF3278 /* DTieCancleCollectRequest.m */,
+				06102ACC20B46A8500FF3278 /* DTieCancleWYYRequest.h */,
+				06102ACD20B46A8500FF3278 /* DTieCancleWYYRequest.m */,
+				06102ADF20B47BA100FF3278 /* CommentRequest.h */,
+				06102AE020B47BA100FF3278 /* CommentRequest.m */,
+				06102AE220B47E5A00FF3278 /* AddCommentRequest.h */,
+				06102AE320B47E5A00FF3278 /* AddCommentRequest.m */,
+				0647F30820B661D6009B7C27 /* SeriesDetailRequest.h */,
+				0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -554,6 +677,14 @@
 				064B34B220A9580800B7D0E4 /* DDFriendViewController.m */,
 				064B34BE20A99A6B00B7D0E4 /* DDPrivateViewController.h */,
 				064B34BF20A99A6B00B7D0E4 /* DDPrivateViewController.m */,
+				061994AB20B5106500AD64AB /* EditSecurityController.h */,
+				061994AC20B5106500AD64AB /* EditSecurityController.m */,
+				0647F33220B6DD51009B7C27 /* SecurityFriendController.h */,
+				0647F33320B6DD51009B7C27 /* SecurityFriendController.m */,
+				062048D120B7B912008DDF25 /* SecurityDTieViewController.h */,
+				062048D220B7B912008DDF25 /* SecurityDTieViewController.m */,
+				0647F30B20B6780F009B7C27 /* UserInfoViewController.h */,
+				0647F30C20B6780F009B7C27 /* UserInfoViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -825,6 +956,7 @@
 		06733F8620A2C40D007875A7 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				06102AD520B470F700FF3278 /* GCCLayerCurve */,
 				066033C220B2BDB600A54D81 /* SCSafariPageController */,
 				060F004D20AC11A800C810A1 /* TYCyclePagerView */,
 				0641496D20AA7F4F00460CB3 /* Shared */,
@@ -868,6 +1000,8 @@
 				06733F9A20A2E82D007875A7 /* WeChatManager.m */,
 				064F0B4420A489BB007C0A4F /* MineMenuModel.h */,
 				064F0B4520A489BB007C0A4F /* MineMenuModel.m */,
+				061994A520B5091700AD64AB /* SecurityGroupModel.h */,
+				061994A620B5091700AD64AB /* SecurityGroupModel.m */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -879,6 +1013,26 @@
 				06733F9E20A2EB4D007875A7 /* UserLoginWXRequest.m */,
 				066033BF20B2AD7C00A54D81 /* UserLogoutRequest.h */,
 				066033C020B2AD7C00A54D81 /* UserLogoutRequest.m */,
+				061994A820B509F500AD64AB /* SecurityRequest.h */,
+				061994A920B509F500AD64AB /* SecurityRequest.m */,
+				062048D420B7E399008DDF25 /* AddOrUpdateSecurityRequest.h */,
+				062048D520B7E399008DDF25 /* AddOrUpdateSecurityRequest.m */,
+				062048D720B7F2EF008DDF25 /* SelectSecurityRequest.h */,
+				062048D820B7F2EF008DDF25 /* SelectSecurityRequest.m */,
+				062048DA20B7F960008DDF25 /* DeleteSecurityRequest.h */,
+				062048DB20B7F960008DDF25 /* DeleteSecurityRequest.m */,
+				061994BD20B578F300AD64AB /* MailMessageRequest.h */,
+				061994BE20B578F300AD64AB /* MailMessageRequest.m */,
+				0647F30E20B67B0D009B7C27 /* UserInfoRequest.h */,
+				0647F30F20B67B0D009B7C27 /* UserInfoRequest.m */,
+				0647F31420B698BE009B7C27 /* AddFriendRequest.h */,
+				0647F31520B698BE009B7C27 /* AddFriendRequest.m */,
+				0647F31A20B69A92009B7C27 /* SaveFriendOrConcernRequest.h */,
+				0647F31B20B69A92009B7C27 /* SaveFriendOrConcernRequest.m */,
+				0647F31D20B6A3AB009B7C27 /* SelectFriendRequest.h */,
+				0647F31E20B6A3AB009B7C27 /* SelectFriendRequest.m */,
+				0647F32020B6B1DF009B7C27 /* SaveUserRequest.h */,
+				0647F32120B6B1DF009B7C27 /* SaveUserRequest.m */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -897,12 +1051,24 @@
 			children = (
 				06790B3520A3ECEE00929228 /* DTieCollectionViewCell.h */,
 				06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */,
+				062048CE20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.h */,
+				062048CF20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m */,
 				06301B4F20A89118003580CA /* AchievementCollectionCell.h */,
 				06301B5020A89118003580CA /* AchievementCollectionCell.m */,
 				060F005A20AC1AE700C810A1 /* DDCollectionListViewCell.h */,
 				060F005B20AC1AE700C810A1 /* DDCollectionListViewCell.m */,
 				060F005D20AC2F8F00C810A1 /* DDCollectionTableViewCell.h */,
 				060F005E20AC2F8F00C810A1 /* DDCollectionTableViewCell.m */,
+				061994B420B51EFC00AD64AB /* SecurityUserCollectionViewCell.h */,
+				061994B520B51EFC00AD64AB /* SecurityUserCollectionViewCell.m */,
+				061994AE20B5195300AD64AB /* SecurityHeaderView.h */,
+				061994AF20B5195300AD64AB /* SecurityHeaderView.m */,
+				061994B120B5196600AD64AB /* SecurityFooterView.h */,
+				061994B220B5196600AD64AB /* SecurityFooterView.m */,
+				0647F31120B67E20009B7C27 /* UserInfoCollectionHeader.h */,
+				0647F31220B67E20009B7C27 /* UserInfoCollectionHeader.m */,
+				06BBF91C20B71A220065B8C0 /* DDCollectionHandleView.h */,
+				06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -979,6 +1145,8 @@
 				0641710420B3D8F30075ECB6 /* SeriesTableHeaderView.m */,
 				0641710D20B3F1590075ECB6 /* SeriesDetailTableViewCell.h */,
 				0641710E20B3F1590075ECB6 /* SeriesDetailTableViewCell.m */,
+				06102AD220B46D2700FF3278 /* LiuYanTableViewCell.h */,
+				06102AD320B46D2700FF3278 /* LiuYanTableViewCell.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1024,6 +1192,12 @@
 				0641710B20B3EB9C0075ECB6 /* AddSeriesViewController.m */,
 				0641711020B3FE3F0075ECB6 /* SeriesChoosDTieController.h */,
 				0641711120B3FE3F0075ECB6 /* SeriesChoosDTieController.m */,
+				061994B720B5301D00AD64AB /* SeriesDetailViewController.h */,
+				061994B820B5301D00AD64AB /* SeriesDetailViewController.m */,
+				06102ACF20B46CB800FF3278 /* LiuYanViewController.h */,
+				06102AD020B46CB800FF3278 /* LiuYanViewController.m */,
+				061994BA20B53F1900AD64AB /* DTieSearchViewController.h */,
+				061994BB20B53F1900AD64AB /* DTieSearchViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1037,6 +1211,10 @@
 				06FCD62B20A54C8500E6EAA4 /* DTieEditModel.m */,
 				0641710020B3B9580075ECB6 /* SeriesModel.h */,
 				0641710120B3B9580075ECB6 /* SeriesModel.m */,
+				0647F30520B66132009B7C27 /* SeriesDetailModel.h */,
+				0647F30620B66132009B7C27 /* SeriesDetailModel.m */,
+				06102AD920B4790400FF3278 /* CommentModel.h */,
+				06102ADA20B4790400FF3278 /* CommentModel.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1236,20 +1414,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06102ACB20B4685600FF3278 /* DTieCancleCollectRequest.m in Sources */,
 				06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */,
 				06733FAB20A316A8007875A7 /* DDTabHomeViewController.m in Sources */,
 				0674E68E20AEDC34006961E1 /* MailModel.m in Sources */,
 				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
+				0647F31320B67E20009B7C27 /* UserInfoCollectionHeader.m in Sources */,
+				061994B020B5195300AD64AB /* SecurityHeaderView.m in Sources */,
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
+				06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */,
 				066033D520B2BDC800A54D81 /* SCCardsPageLayouter.m in Sources */,
 				066033D720B2BDC800A54D81 /* SCPageViewControllerView.m in Sources */,
+				0647F31020B67B0D009B7C27 /* UserInfoRequest.m in Sources */,
 				066033E420B2BE0400A54D81 /* SCScrollView.m in Sources */,
+				061994B320B5196600AD64AB /* SecurityFooterView.m in Sources */,
+				06102AC820B465A200FF3278 /* DTieCollectionRequest.m in Sources */,
 				0674E68720AEBC1B006961E1 /* DTieSearchRequest.m in Sources */,
 				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
 				06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */,
 				06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */,
+				0647F30A20B661D6009B7C27 /* SeriesDetailRequest.m in Sources */,
 				064170FF20B3B8FA0075ECB6 /* SeriesTableViewCell.m in Sources */,
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
@@ -1257,12 +1443,14 @@
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
 				066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
+				062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */,
 				0650A9F920AD391C005A5E76 /* ChooseLocationCell.m in Sources */,
 				060F005920AC11DC00C810A1 /* DDCollectionViewController.m in Sources */,
 				0650A9FF20AD6E00005A5E76 /* DTieDetailTextTableViewCell.m in Sources */,
 				0674E69120AEE809006961E1 /* MailDetailViewController.m in Sources */,
 				064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */,
 				06FCD63720A55C8F00E6EAA4 /* DTieEditTableViewCell.m in Sources */,
+				0647F31C20B69A92009B7C27 /* SaveFriendOrConcernRequest.m in Sources */,
 				0641711220B3FE3F0075ECB6 /* SeriesChoosDTieController.m in Sources */,
 				0650A9F620AD26D4005A5E76 /* DTieChooseLocationController.m in Sources */,
 				060F004C20ABFAC800C810A1 /* DTieEditReadViewController.m in Sources */,
@@ -1274,6 +1462,11 @@
 				06137A5720AE881200D1183A /* DDHandleButton.m in Sources */,
 				06FCD64020A5B03A00E6EAA4 /* DTieEditImageTableViewCell.m in Sources */,
 				0650AA0220AD6E0F005A5E76 /* DTieDetailVideoTableViewCell.m in Sources */,
+				061994B620B51EFC00AD64AB /* SecurityUserCollectionViewCell.m in Sources */,
+				06102AE120B47BA100FF3278 /* CommentRequest.m in Sources */,
+				0647F31F20B6A3AB009B7C27 /* SelectFriendRequest.m in Sources */,
+				06102AD120B46CB800FF3278 /* LiuYanViewController.m in Sources */,
+				06102AE420B47E5A00FF3278 /* AddCommentRequest.m in Sources */,
 				064F0B5120A49ADC007C0A4F /* DDEditTextField.m in Sources */,
 				06733F8020A2A767007875A7 /* DDTabBar.m in Sources */,
 				06733F7920A29FDF007875A7 /* DDViewFactoryTool.m in Sources */,
@@ -1281,6 +1474,9 @@
 				066033D220B2BDC800A54D81 /* SCPageViewController.m in Sources */,
 				06733FA220A2FD77007875A7 /* UserModel.m in Sources */,
 				064F0B4E20A49A59007C0A4F /* MineEditTableViewCell.m in Sources */,
+				062048D320B7B912008DDF25 /* SecurityDTieViewController.m in Sources */,
+				061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */,
+				0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */,
 				066033BE20B29BB200A54D81 /* DTieMapViewController.m in Sources */,
 				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
 				064B34B320A9580800B7D0E4 /* DDFriendViewController.m in Sources */,
@@ -1288,15 +1484,24 @@
 				0650A9FC20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */,
+				062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */,
 				066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
+				061994AD20B5106500AD64AB /* EditSecurityController.m in Sources */,
 				06E209DB20B035BB00EA541B /* MainInfoTableViewCell.m in Sources */,
+				061994A720B5091700AD64AB /* SecurityGroupModel.m in Sources */,
 				06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
+				062048D020B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m in Sources */,
 				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
 				066033B820B26BAC00A54D81 /* DDHandleView.m in Sources */,
+				0647F32220B6B1DF009B7C27 /* SaveUserRequest.m in Sources */,
 				064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */,
+				06102AD820B470F700FF3278 /* UIView+LayerCurve.m in Sources */,
+				0647F30D20B6780F009B7C27 /* UserInfoViewController.m in Sources */,
 				060F005F20AC2F8F00C810A1 /* DDCollectionTableViewCell.m in Sources */,
+				062048DC20B7F960008DDF25 /* DeleteSecurityRequest.m in Sources */,
+				06102ACE20B46A8500FF3278 /* DTieCancleWYYRequest.m in Sources */,
 				0641710520B3D8F30075ECB6 /* SeriesTableHeaderView.m in Sources */,
 				06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */,
 				066033D420B2BDC800A54D81 /* SCSlidingPageLayouter.m in Sources */,
@@ -1310,12 +1515,15 @@
 				06733FA820A30DD5007875A7 /* DDNavigationViewController.m in Sources */,
 				06733F8C20A2C423007875A7 /* ConverUtil.m in Sources */,
 				0641497020AA7F8500460CB3 /* QNDDUploadManager.m in Sources */,
+				061994B920B5301D00AD64AB /* SeriesDetailViewController.m in Sources */,
 				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
 				064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */,
 				066033D620B2BDC800A54D81 /* SCPageLayouter.m in Sources */,
+				061994BC20B53F1900AD64AB /* DTieSearchViewController.m in Sources */,
 				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
 				06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */,
 				066033F120B2BE6000A54D81 /* SCSafariPageWrapperViewController.m in Sources */,
+				061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */,
 				0641710220B3B9580075ECB6 /* SeriesModel.m in Sources */,
 				066033F020B2BE6000A54D81 /* SCSafariPageController.m in Sources */,
 				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
@@ -1334,13 +1542,17 @@
 				064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */,
 				06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */,
 				0641710920B3E5650075ECB6 /* GetSeriesRequest.m in Sources */,
+				06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */,
 				066033E520B2BE0400A54D81 /* SCWeakObjectWrapper.m in Sources */,
+				0647F31620B698BE009B7C27 /* AddFriendRequest.m in Sources */,
 				060F006220AC493A00C810A1 /* DTieDetailRequest.m in Sources */,
 				066033E320B2BE0400A54D81 /* easing.c in Sources */,
 				06733FA520A30D72007875A7 /* DDDTieViewController.m in Sources */,
 				06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */,
+				0647F33420B6DD51009B7C27 /* SecurityFriendController.m in Sources */,
 				06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */,
 				0650AA0520AD71B3005A5E76 /* DTieDetailViewController.m in Sources */,
+				06102ADB20B4790400FF3278 /* CommentModel.m in Sources */,
 				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
 				0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */,
 				066033C120B2AD7C00A54D81 /* UserLogoutRequest.m in Sources */,

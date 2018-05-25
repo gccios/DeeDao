@@ -13,4 +13,6 @@
 
 - (void)configWithModel:(DTieEditModel *)model;
 
+- (void)yulanWithModel:(DTieEditModel *)model;
+
 @end

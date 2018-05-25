@@ -9,6 +9,8 @@
 #import "MailShareTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import "DDTool.h"
+#import <UIImageView+WebCache.h>
 
 @interface MailShareTableViewCell ()
 
@@ -40,6 +42,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.baseView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.contentView addSubview:self.baseView];
@@ -70,7 +73,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0XFFFFFF) alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"这是一个标题";
+//    self.titleLabel.text = @"这是一个标题";
     [blackView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(30 * scale);
@@ -107,7 +110,7 @@
     [DDViewFactoryTool cornerRadius:96 * scale / 2 withView:self.logoImageView];
     
     self.InfoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-    self.InfoLabel.text = @"分享了一个D贴/系列给你";
+//    self.InfoLabel.text = @"分享了一个D贴/系列给你";
     [self.userView addSubview:self.InfoLabel];
     [self.InfoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(25 * scale);
@@ -116,7 +119,7 @@
     }];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.nameLabel.text = @"Just丶DeeDao";
+//    self.nameLabel.text = @"Just丶DeeDao";
     [self.userView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
@@ -125,7 +128,7 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"22:36 PM";
+//    self.timeLabel.text = @"22:36 PM";
     [self.userView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel);
@@ -136,7 +139,11 @@
 
 - (void)configWithModel:(MailModel *)model
 {
-    
+    self.titleLabel.text = model.mailTitle;
+    self.InfoLabel.text = model.mailContent;
+    self.nameLabel.text = model.nickName;
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:model.updateTime];
+    [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
 }
 
 - (void)awakeFromNib {

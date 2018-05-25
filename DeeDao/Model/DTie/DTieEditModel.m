@@ -7,6 +7,7 @@
 //
 
 #import "DTieEditModel.h"
+#import "DDTool.h"
 
 @implementation DTieEditModel
 
@@ -39,8 +40,14 @@
 
 - (void)setDetailContent:(NSString *)detailContent
 {
-    _detailContent = detailContent;
+    if ([detailContent hasPrefix:@"<p></p><img"]) {
+        detailContent = [DDTool getImageURLWithHtml:detailContent];
+    }else if ([detailContent hasPrefix:@"<p><font"]) {
+        detailContent = [DDTool getTextWithHtml:detailContent];
+    }
+    
     _detailsContent = detailContent;
+    _detailContent = detailContent;
 }
 
 @end

@@ -32,6 +32,14 @@
 
 @implementation DTieMapViewController
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.hidesBottomBarWhenPushed = NO;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -223,7 +231,7 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:NO];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (BMKMapView *)mapView

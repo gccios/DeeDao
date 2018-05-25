@@ -7,6 +7,7 @@
 //
 
 #import "DTieModel.h"
+#import "DDTool.h"
 
 @implementation DTieModel
 
@@ -46,6 +47,14 @@
     if (_wyyFlg == 1) {
         self.dTieType = DTieType_BeFondOf;
     }
+}
+
+- (void)setPostFirstPicture:(NSString *)postFirstPicture
+{
+    if ([postFirstPicture hasPrefix:@"<p></p><img"]) {
+        postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
+    }
+    _postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
 }
 
 @end

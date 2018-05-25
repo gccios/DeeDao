@@ -15,6 +15,8 @@
 
 @property (nonatomic, strong) UIImageView * detailImageView;
 
+//@property (nonatomic, strong) UIVisualEffectView * effectView;
+
 @end
 
 @implementation DTieDetailImageTableViewCell
@@ -37,6 +39,14 @@
     [self.detailImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
+    
+//    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+//    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+//    self.effectView.alpha = .98f;
+//    [self.contentView addSubview:self.effectView];
+//    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.mas_equalTo(0);
+//    }];
 }
 
 - (void)configWithModel:(DTieEditModel *)model
@@ -45,6 +55,15 @@
     
     if (image) {
         [self.detailImageView setImage:image];
+    }else{
+        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+    }
+}
+
+- (void)yulanWithModel:(DTieEditModel *)model
+{
+    if (model.image) {
+        [self.detailImageView setImage:model.image];
     }else{
         [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
     }

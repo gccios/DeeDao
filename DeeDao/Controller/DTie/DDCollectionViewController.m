@@ -12,6 +12,14 @@
 #import "DTieDetailViewController.h"
 #import "DDHandleButton.h"
 #import <UIImageView+WebCache.h>
+#import "DTieCollectionRequest.h"
+#import "DTieCancleCollectRequest.h"
+#import "DTieCancleWYYRequest.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "DTieDetailRequest.h"
+#import "DTieDetailViewController.h"
+#import "DTieEditViewController.h"
+#import "UserInfoViewController.h"
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
@@ -79,15 +87,21 @@
         make.left.mas_equalTo(120 * scale);
         make.width.height.mas_equalTo(96 *scale);
     }];
-    [DDViewFactoryTool cornerRadius:60 * scale withView:self.logoImageView];
+    [DDViewFactoryTool cornerRadius:48 * scale withView:self.logoImageView];
+    UITapGestureRecognizer * tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
+    self.logoImageView.userInteractionEnabled = YES;
+    [self.logoImageView addGestureRecognizer:tap1];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
+    self.nameLabel.userInteractionEnabled = YES;
     [self.view addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.logoImageView);
         make.left.mas_equalTo(self.logoImageView.mas_right).offset(15 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
+    [self.nameLabel addGestureRecognizer:tap2];
     
     UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
     [self.view addSubview:locationImageView];
@@ -110,6 +124,7 @@
     self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyue"]];
     [self.yaoyueButton configTitle:@"0"];
+    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
@@ -121,6 +136,7 @@
     self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.shoucangButton configImage:[UIImage imageNamed:@"yaoyue"]];
     [self.shoucangButton configTitle:@"0"];
+    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.shoucangButton];
     [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
@@ -132,6 +148,7 @@
     self.dazhaohuButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
     [self.dazhaohuButton configTitle:@"0"];
+    [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
@@ -141,9 +158,118 @@
     }];
 }
 
+- (void)lookUserInfo
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.authorId];
+    [self.navigationController pushViewController:info animated:YES];
+}
+
+- (void)yaoyueButtonDidClicked
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    self.yaoyueButton.enabled = NO;
+    if (model.wyyFlg) {
+        
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.postId];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.wyyFlg = 0;
+            model.wyyCount--;
+            [self reloadPageWithIndex:self.pagerView.curIndex];
+            
+            self.yaoyueButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.yaoyueButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.yaoyueButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:1 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.wyyFlg = 1;
+            model.wyyCount++;
+            [self reloadPageWithIndex:self.pagerView.curIndex];
+            
+            self.yaoyueButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.yaoyueButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.yaoyueButton.enabled = YES;
+        }];
+    }
+}
+
+- (void)shoucangButtonDidClicked
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    self.shoucangButton.enabled = NO;
+    if (model.collectFlg) {
+        
+        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.postId];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.collectFlg = 0;
+            model.collectCount--;
+            [self reloadPageWithIndex:self.pagerView.curIndex];
+            
+            self.shoucangButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.shoucangButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.shoucangButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:0 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.collectFlg = 1;
+            model.collectCount++;
+            [self reloadPageWithIndex:self.pagerView.curIndex];
+            
+            self.shoucangButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.shoucangButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.shoucangButton.enabled = YES;
+        }];
+    }
+}
+
+- (void)dazhaohuButtonDidClicked
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    self.dazhaohuButton.enabled = NO;
+    
+    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:0 subType:1 remark:@""];
+    
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        model.dzfFlg = 1;
+        model.dzfCount++;
+        [self reloadPageWithIndex:self.pagerView.curIndex];
+        
+        self.shoucangButton.enabled = YES;
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        self.shoucangButton.enabled = YES;
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        self.shoucangButton.enabled = YES;
+    }];
+}
+
 - (void)pagerView:(TYCyclePagerView *)pageView didScrollFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
 {
-    DTieModel * model = [self.dataSource objectAtIndex:toIndex];
+    [self reloadPageWithIndex:toIndex];
+}
+
+- (void)reloadPageWithIndex:(NSInteger)index
+{
+    DTieModel * model = [self.dataSource objectAtIndex:index];
     if (model) {
         [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
         self.nameLabel.text = model.nickname;
@@ -186,6 +312,31 @@
 - (void)pagerView:(TYCyclePagerView *)pageView didSelectedItemCell:(__kindof UICollectionViewCell *)cell atIndex:(NSInteger)index
 {
     DTieModel * model = [self.dataSource objectAtIndex:index];
+    
+    if (model.dTieType == DTieType_Edit) {
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+        
+        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
+            
+            if (KIsDictionary(response)) {
+                NSDictionary * data = [response objectForKey:@"data"];
+                if (KIsDictionary(data)) {
+                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                    dtieModel.postId = model.postId;
+                    DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
+                    [self.navigationController pushViewController:edit animated:YES];
+                }
+            }
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            [hud hideAnimated:YES];
+        }];
+        return;
+    }
+    
     DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
     [self.navigationController pushViewController:detail animated:NO];
 }
@@ -237,6 +388,12 @@
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self reloadPageWithIndex:self.pagerView.curIndex];
 }
 
 - (void)didReceiveMemoryWarning {

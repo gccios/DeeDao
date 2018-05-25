@@ -6,7 +6,7 @@
 //  Copyright © 2018年 郭春城. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface DDTool : NSObject
 
@@ -24,6 +24,8 @@
 + (double)DDGetDoubleWithYear:(NSInteger)year mouth:(NSInteger)mouth day:(NSInteger)day;
 
 + (NSString *)getTimeWithFormat:(NSString *)format time:(NSInteger)time;
+
++ (CGFloat)getHeightByWidth:(CGFloat)width title:(NSString *)title font:(UIFont *)font;
 
 + (NSString *)getImageURLWithHtml:(NSString *)html;
 

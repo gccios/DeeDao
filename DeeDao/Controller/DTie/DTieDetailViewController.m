@@ -14,8 +14,13 @@
 #import "DDTool.h"
 #import "DDHandleView.h"
 #import "DDTool.h"
+#import "DTieCollectionRequest.h"
+#import "DTieCancleCollectRequest.h"
+#import "DTieCancleWYYRequest.h"
+#import "LiuYanViewController.h"
+#import "UserInfoViewController.h"
 
-@interface DTieDetailViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface DTieDetailViewController () <UITableViewDelegate, UITableViewDataSource, DDHandleViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
@@ -79,6 +84,130 @@
     
     [self createHandleView];
     [self createTopView];
+    
+    [self reloadHandleView];
+}
+
+#pragma mark - 用户主要交互事件
+- (void)handleViewDidClickedYaoyue
+{
+    self.handleView.yaoyueButton.enabled = NO;
+    if (self.model.wyyFlg) {
+        
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.postId];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.wyyFlg = 0;
+            self.model.wyyCount--;
+            [self reloadHandleView];
+            
+            self.handleView.yaoyueButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.handleView.yaoyueButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.handleView.yaoyueButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:1 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.wyyFlg = 1;
+            self.model.wyyCount++;
+            [self reloadHandleView];
+            
+            self.handleView.yaoyueButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.handleView.yaoyueButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.handleView.yaoyueButton.enabled = YES;
+        }];
+    }
+}
+
+- (void)handleViewDidClickedShoucang
+{
+    self.handleView.shoucangButton.enabled = NO;
+    if (self.model.collectFlg) {
+        
+        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:self.model.postId];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.collectFlg = 0;
+            self.model.collectCount--;
+            [self reloadHandleView];
+            
+            self.handleView.shoucangButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.handleView.shoucangButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.handleView.shoucangButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.collectFlg = 1;
+            self.model.collectCount++;
+            [self reloadHandleView];
+            
+            self.handleView.shoucangButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.handleView.shoucangButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.handleView.shoucangButton.enabled = YES;
+        }];
+    }
+}
+
+- (void)handleViewDidClickedDazhaohu
+{
+    self.handleView.dazhaohuButton.enabled = NO;
+    
+    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:@""];
+    
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.model.dzfFlg = 1;
+        self.model.dzfCount++;
+        [self reloadHandleView];
+        
+        self.handleView.shoucangButton.enabled = YES;
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        self.handleView.shoucangButton.enabled = YES;
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        self.handleView.shoucangButton.enabled = YES;
+    }];
+}
+
+- (void)liuyanButtonDidClicked
+{
+    LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.postId];
+    [self presentViewController:liuyan animated:YES completion:nil];
+}
+
+- (void)reloadHandleView
+{
+    NSString * wyy = @"99+";
+    if (self.model.wyyCount < 100) {
+        wyy = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
+    }
+    [self.handleView.yaoyueButton configTitle:wyy];
+    
+    NSString * shoucang = @"99+";
+    if (self.model.collectCount < 100) {
+        shoucang = [NSString stringWithFormat:@"%ld", self.model.collectCount];
+    }
+    [self.handleView.shoucangButton configTitle:shoucang];
+    
+    NSString * dazhoahu = @"99+";
+    if (self.model.dzfCount < 100) {
+        dazhoahu = [NSString stringWithFormat:@"%ld", self.model.dzfCount];
+    }
+    [self.handleView.dazhaohuButton configTitle:dazhoahu];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -191,6 +320,10 @@
         make.left.mas_equalTo(60 * scale);
         make.width.height.mas_equalTo(96 * scale);
     }];
+    [DDViewFactoryTool cornerRadius:48 * scale withView:logoImageView];
+    UITapGestureRecognizer * tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
+    logoImageView.userInteractionEnabled = YES;
+    [logoImageView addGestureRecognizer:tap1];
     
     UILabel * nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
     nameLabel.text = self.model.nickname;
@@ -201,6 +334,9 @@
         make.width.mas_equalTo(kMainBoundsWidth - 240 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
+    nameLabel.userInteractionEnabled = YES;
+    [nameLabel addGestureRecognizer:tap2];
     
     UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     detailLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd" time:self.model.createTime];
@@ -211,6 +347,9 @@
         make.width.mas_equalTo(kMainBoundsWidth - 240 * scale);
         make.height.mas_equalTo(40* scale);
     }];
+    UITapGestureRecognizer * tap3 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
+    detailLabel.userInteractionEnabled = YES;
+    [detailLabel addGestureRecognizer:tap3];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
     titleLabel.text = self.model.postSummary;
@@ -245,6 +384,12 @@
     headerView.frame = CGRectMake(0, 0, kMainBoundsWidth, height);
     
     self.tableView.tableHeaderView = headerView;
+}
+
+- (void)lookUserInfo
+{
+    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.authorId];
+    [self.navigationController pushViewController:info animated:YES];
 }
 
 - (void)createFooterView
@@ -303,6 +448,7 @@
     }];
     
     DDHandleButton * pinglunButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [pinglunButton addTarget:self action:@selector(liuyanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [pinglunButton configImage:[UIImage imageNamed:@"liuyan"]];
     [pinglunButton configTitle:@"96"];
     [footerView addSubview:pinglunButton];
@@ -348,6 +494,7 @@
     
     UIButton * messageButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0XDB6283) title:@"查看留言"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:messageButton];
+    [messageButton addTarget:self action:@selector(liuyanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     messageButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     messageButton.layer.borderWidth = 3 * scale;
     [footerView addSubview:messageButton];
@@ -366,6 +513,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.handleView = [[DDHandleView alloc] init];
+    self.handleView.delegate = self;
     [self.view addSubview:self.handleView];
     [self.handleView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);

@@ -17,6 +17,7 @@
 #import "UserManager.h"
 #import "CreateOrUpdateSeriesRequest.h"
 #import "DraftSeriesRequest.h"
+#import "SeriesDetailViewController.h"
 
 @interface AddSeriesViewController ()<UITableViewDelegate, UITableViewDataSource, SeriesChoosDTieDelegate>
 
@@ -27,14 +28,30 @@
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, strong) DTieModel * currentHandleModel;
 
+@property (nonatomic, strong) SeriesDetailModel * model;
+@property (nonatomic, assign) NSInteger seriesID;
+
+@property (nonatomic, strong) NSMutableArray * seriesSource;
+
 @end
 
 @implementation AddSeriesViewController
+
+- (instancetype)initWithSeriesModel:(SeriesDetailModel *)model seriesID:(NSInteger)seriesID
+{
+    if (self = [super init]) {
+        self.model = model;
+        self.seriesID = seriesID;
+        self.dataSource = [[NSMutableArray alloc] initWithArray:model.postShowDetailRes];
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.seriesSource = [[NSMutableArray alloc] init];
     [self createViews];
 }
 
@@ -126,6 +143,9 @@
     self.titleField.placeholder = @"请输入系列标题";
     self.titleField.font = kPingFangRegular(54 * scale);
     [headerView addSubview:self.titleField];
+    if (self.model) {
+        self.titleField.text = self.model.seriesTitle;
+    }
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectMake(60 * scale, 160 * scale, kMainBoundsWidth - 120 * scale, 3 * scale)];
     lineView.backgroundColor = [UIColorFromRGB(0x000000) colorWithAlphaComponent:.12f];
@@ -214,14 +234,22 @@
 
 - (void)seriesWillInsertWith:(DTieModel *)model
 {
-    [self.dataSource addObject:model];
-    [self.tableView reloadData];
+    int tempID = (int)model.cid;
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", tempID];
+    NSArray * tempArray = [self.dataSource filteredArrayUsingPredicate:predicate];
+    if (tempArray && tempArray.count > 0) {
+        [MBProgressHUD showTextHUDWithText:@"系列中已经存在该Dtie" inView:self.navigationController.view];
+    }else{
+        [self.dataSource addObject:model];
+        [self.tableView reloadData];
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 #pragma mark - 用户交互事件
 - (void)addButtonDidClicked
 {
-    SeriesChoosDTieController * add = [[SeriesChoosDTieController alloc] init];
+    SeriesChoosDTieController * add = [[SeriesChoosDTieController alloc] initWithSource:self.seriesSource];
     add.delegate = self;
     [self.navigationController pushViewController:add animated:YES];
 }
@@ -254,7 +282,18 @@
 
 - (void)yulanButtonDidClicked
 {
+    if (isEmptyString(self.titleField.text)) {
+        [MBProgressHUD showTextHUDWithText:@"请输入标题" inView:self.view];
+        return;
+    }
     
+    if (self.dataSource.count == 0) {
+        [MBProgressHUD showTextHUDWithText:@"至少需要一个D贴" inView:self.view];
+        return;
+    }
+    
+    SeriesDetailViewController * detail = [[SeriesDetailViewController alloc] initWithTitle:self.titleField.text source:self.dataSource];
+    [self.navigationController pushViewController:detail animated:YES];
 }
 
 - (void)saveButtonDidClicked
@@ -275,10 +314,14 @@
         [array addObject:@(model.postId)];
     }
     
-    [self requestDTieWithStatus:1 seriesId:0 seriesTitle:title seriesType:0 stickyFlag:0 seriesOwnerId:[UserManager shareManager].user.cid createPerson:[UserManager shareManager].user.cid seriesDesc:@"" deleteFlg:0 seriesCollectionId:0 postIdList:array];
+    NSInteger seriesID = 0;
+    if (self.model) {
+        seriesID = self.seriesID;
+    }
+    [self requestDTieWithStatus:1 seriesId:seriesID seriesTitle:title seriesType:0 stickyFlag:0 seriesOwnerId:[UserManager shareManager].user.cid createPerson:[UserManager shareManager].user.cid seriesDesc:@"" deleteFlg:0 seriesCollectionId:0 postIdList:array];
 }
 
-//创建或者更新帖子
+//创建或者更新系列
 - (void)requestDTieWithStatus:(NSInteger)status seriesId:(NSInteger)seriesId seriesTitle:(NSString *)seriesTitle seriesType:(NSInteger)seriesType stickyFlag:(NSInteger)stickyFlag seriesOwnerId:(NSInteger)seriesOwnerId createPerson:(NSInteger)createPerson seriesDesc:(NSString *)seriesDesc deleteFlg:(NSInteger)deleteFlg seriesCollectionId:(NSInteger)seriesCollectionId postIdList:(NSArray *)postIdList
 {
     if (status) {
@@ -351,7 +394,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"D贴系列";
+    titleLabel.text = @"新增系列";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

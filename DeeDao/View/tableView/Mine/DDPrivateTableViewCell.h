@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SecurityGroupModel.h"
 
 @interface DDPrivateTableViewCell : UITableViewCell
+
+- (void)configWithModel:(SecurityGroupModel *)model;
 
 @end

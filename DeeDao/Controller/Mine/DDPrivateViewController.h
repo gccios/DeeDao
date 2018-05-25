@@ -7,7 +7,16 @@
 //
 
 #import "DDViewController.h"
+#import "SecurityGroupModel.h"
+
+@protocol DDPrivateViewSelectDelegate <NSObject>
+
+- (void)securityDidSelectWith:(SecurityGroupModel *)model;
+
+@end
 
 @interface DDPrivateViewController : DDViewController
+
+@property (nonatomic, weak) id<DDPrivateViewSelectDelegate> delegate;
 
 @end

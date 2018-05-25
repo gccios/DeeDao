@@ -39,7 +39,7 @@
         make.top.mas_equalTo(0);
         make.left.mas_equalTo(120 * scale);
         make.right.mas_equalTo(-120 * scale);
-        make.bottom.mas_equalTo(-50 * scale);
+        make.bottom.mas_equalTo(-70 * scale);
     }];
     imageView.layer.borderColor = UIColorFromRGB(0xCCCCCC).CGColor;
     imageView.layer.borderWidth = 3 * scale;
@@ -50,7 +50,7 @@
     [self.infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(38 * scale);
         make.left.mas_equalTo(180 * scale);
-        make.bottom.mas_equalTo(-88 * scale);
+        make.bottom.mas_equalTo(-118 * scale);
         make.right.mas_equalTo(-180 * scale);
     }];
     
@@ -66,7 +66,11 @@
 
 - (void)configInfo:(NSString *)info time:(NSString *)time
 {
-    self.infoLabel.text = info;
+    if (isEmptyString(info)) {
+        self.infoLabel.text = @"暂无消息内容";
+    }else{
+        self.infoLabel.text = info;
+    }
     self.timeLabel.text = time;
 }
 

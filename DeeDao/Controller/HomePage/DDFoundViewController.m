@@ -22,6 +22,7 @@
 #import <UIImageView+WebCache.h>
 #import "DTieFoundEditView.h"
 #import "DTieEditViewController.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate>
 
@@ -35,6 +36,9 @@
 
 @property (nonatomic, strong) SCSafariPageController * safariPageController;
 @property (nonatomic, strong) NSMutableArray * mapVCSource;
+
+@property (nonatomic, assign) NSInteger pageType;
+@property (nonatomic, assign) NSInteger sourceType;
 
 @property (nonatomic, strong) NSMutableArray * mapSource;
 @property (nonatomic, strong) NSMutableArray * pointArray;
@@ -62,6 +66,9 @@
     
     self.isFirst = YES;
     // Do any additional setup after loading the view.
+    
+    self.pageType = 1;
+    self.sourceType = 1;
     
     [self creatViews];
     [self creatTopView];
@@ -120,6 +127,8 @@
 
 - (void)requestMapViewLocations
 {
+    [DTieSearchRequest cancelRequest];
+    
     CGFloat centerLongitude = self.mapView.region.center.longitude;
     CGFloat centerLatitude = self.mapView.region.center.latitude;
     
@@ -133,7 +142,13 @@
     CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
     CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
     [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:3 type:1 pageStart:0 pageSize:100];
+    
+    NSInteger dataSourceType = 3;
+    if (self.pageType == 2) {
+        dataSourceType = self.sourceType;
+    }
+    
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:dataSourceType type:1 pageStart:0 pageSize:100];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
@@ -150,9 +165,9 @@
                     [self.pointArray addObject:annotation];
                 }
                 [self.mapView addAnnotations:self.pointArray];
+                [self meterDistance];
             }
         }
-        [self meterDistance];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -284,7 +299,6 @@
     self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
     [self.sourceButton setImage:[UIImage imageNamed:@"source"] forState:UIControlStateNormal];
     [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.sourceButton.alpha = .4f;
     [self.topView addSubview:self.sourceButton];
     [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-40 * scale);
@@ -295,7 +309,6 @@
     self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
     [self.timeButton setImage:[UIImage imageNamed:@"time"] forState:UIControlStateNormal];
     [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    self.timeButton.alpha = .4f;
     [self.topView addSubview:self.timeButton];
     [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(self.sourceButton.mas_left).offset(-30 * scale);
@@ -306,9 +319,6 @@
 
 - (void)timeButtonDidClicked
 {
-    self.timeButton.alpha = 1.f;
-    self.sourceButton.alpha = .4f;
-    
     UIView * tempView = [self.view snapshotViewAfterScreenUpdates:NO];
     [self.mapVCSource makeObjectsPerformSelector:@selector(addOnlyMapWith:) withObject:tempView];
     
@@ -316,12 +326,38 @@
     [self.safariPageController.view setFrame:self.view.bounds];
     [self.safariPageController didMoveToParentViewController:self];
     [self.safariPageController zoomOutAnimated:YES completion:nil];
+    self.pageType = 1;
 }
 
 - (void)sourceButtonDidClicked
 {
-    self.timeButton.alpha = .4f;
-    self.sourceButton.alpha = 1.f;
+    if (self.pageType == 1) {
+        self.pageType = 2;
+        [MBProgressHUD showTextHUDWithText:@"切换至来源" inView:self.view];
+    }else{
+        
+        if (self.sourceType == 3) {
+            self.sourceType = 6;
+        }else{
+            self.sourceType++;
+            if (self.sourceType > 6) {
+                self.sourceType = 1;
+            }
+        }
+        
+        
+        if (self.sourceType == 1) {
+            [MBProgressHUD showTextHUDWithText:@"切换至自己的帖子" inView:self.view];
+        }else if (self.sourceType == 2){
+            [MBProgressHUD showTextHUDWithText:@"切换至收藏的帖子" inView:self.view];
+        }else if (self.sourceType == 3){
+            [MBProgressHUD showTextHUDWithText:@"切换至自己+收藏的帖子" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"切换至公开帖" inView:self.view];
+        }
+    }
+    [self.mapView removeAnnotations:self.pointArray];
+    [self requestMapViewLocations];
 }
 
 - (NSUInteger)numberOfPagesInPageController:(SCSafariPageController *)pageController

@@ -133,6 +133,17 @@
     return [formatter stringFromDate:date];
 }
 
++ (CGFloat)getHeightByWidth:(CGFloat)width title:(NSString *)title font:(UIFont *)font
+{
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, width, 0)];
+    label.text = title;
+    label.font = font;
+    label.numberOfLines = 0;
+    [label sizeToFit];
+    CGFloat height = label.frame.size.height;
+    return height;
+}
+
 + (NSString *)getImageURLWithHtml:(NSString *)html
 {
     NSString * str;

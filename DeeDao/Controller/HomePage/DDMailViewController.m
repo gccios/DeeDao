@@ -7,10 +7,14 @@
 //
 
 #import "DDMailViewController.h"
-#import "MailShareTableViewCell.h"
+//#import "MailShareTableViewCell.h"
 #import "MailSmallTableViewCell.h"
 #import "MailBigTableViewCell.h"
 #import "MailDetailViewController.h"
+#import "MailMessageRequest.h"
+#import <BGUploadRequest.h>
+#import <MJRefresh.h>
+#import <AFHTTPSessionManager.h>
 
 @interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -20,6 +24,7 @@
 @property (nonatomic, strong) UIButton * messageButton;
 
 @property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) NSMutableArray * dataSource;
 
 @end
 
@@ -29,6 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.dataSource = [[NSMutableArray alloc] init];
     [self creatViews];
 }
 
@@ -40,7 +46,7 @@
     self.tableView.backgroundColor = self.view.backgroundColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 540 * scale;
-    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
+//    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
     [self.tableView registerClass:[MailSmallTableViewCell class] forCellReuseIdentifier:@"MailSmallTableViewCell"];
     [self.tableView registerClass:[MailBigTableViewCell class] forCellReuseIdentifier:@"MailBigTableViewCell"];
     self.tableView.delegate = self;
@@ -50,49 +56,147 @@
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestMailMessage)];
+    
+    UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
+    swipe.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.tableView addGestureRecognizer:swipe];
     
     [self createTopView];
+    
+    [self requestMailMessage];
+}
+
+- (void)tableViewDidSwipe:(UISwipeGestureRecognizer *)swipe
+{
+    CGPoint point = [swipe locationInView:self.tableView];
+    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:point];
+    
+    if (indexPath && indexPath.row < self.dataSource.count) {
+        
+        MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
+        NSInteger mailId = model.cid;
+        [self deleteMailWithID:mailId];
+        
+        [self.dataSource removeObjectAtIndex:indexPath.row];
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView endUpdates];
+    }
+}
+
+- (void)deleteMailWithID:(NSInteger)mailId
+{
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSString * url = [NSString stringWithFormat:@"%@/mailbox/deleteMailMsg", HOSTURL];
+    [manager POST:url parameters:@{@"id":@(mailId)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+}
+
+-(void)requestMailMessage
+{
+    MailMessageRequest * request = [[MailMessageRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.dataSource removeAllObjects];
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    MailModel * model = [MailModel mj_objectWithKeyValues:dict];
+                    NSDictionary * mailBox = [dict objectForKey:@"mailbox"];
+                    [model mj_setKeyValues:mailBox];
+                    [self.dataSource addObject:model];
+                }
+                [self.tableView reloadData];
+            }
+        }
+        
+        [self.tableView.mj_header endRefreshing];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.tableView.mj_header endRefreshing];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [self.tableView.mj_header endRefreshing];
+        
+    }];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MailDetailViewController * detail = [[MailDetailViewController alloc] init];
+    MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    
+    MailDetailViewController * detail = [[MailDetailViewController alloc] initMailModel:model];
     [self.navigationController pushViewController:detail animated:YES];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 10;
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row % 3 == 0) {
-        MailBigTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailBigTableViewCell" forIndexPath:indexPath];
+    MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
         
-        return cell;
-    }else if (indexPath.row % 3 == 1){
         MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
         
+        [cell configWithModel:model];
+        
         return cell;
+        
+    }else if (model.type == MailModelType_DTie) {
+        
+        MailBigTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailBigTableViewCell" forIndexPath:indexPath];
+        
+        [cell configWithModel:model];
+        
+        return cell;
+        
     }
     
-    MailShareTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailShareTableViewCell" forIndexPath:indexPath];
+    MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
+    
+    [cell configWithModel:model];
     
     return cell;
+    
+//    MailShareTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailShareTableViewCell" forIndexPath:indexPath];
+    
+//    return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    if (indexPath.row % 3 == 0) {
-        return 550 * scale;
-    }else if (indexPath.row % 3 == 1){
+    MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
+        
         return 300 * scale;
+        
+    }else if (model.type == MailModelType_DTie) {
+        
+        return 550 * scale;
+        
     }
     
-    return 550 * scale;
+    return 300 * scale;
 }
 
 - (void)createTopView
@@ -127,26 +231,26 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
-    
-    self.searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [self.searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
-    [self.searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:self.searchButton];
-    [self.searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-40 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
-    
-    self.messageButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [self.messageButton setImage:[UIImage imageNamed:@"message"] forState:UIControlStateNormal];
-    [self.messageButton addTarget:self action:@selector(messageButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:self.messageButton];
-    [self.messageButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(self.searchButton.mas_left).offset(-30 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
+//    
+//    self.searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//    [self.searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
+//    [self.searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:self.searchButton];
+//    [self.searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(-40 * scale);
+//        make.bottom.mas_equalTo(-20 * scale);
+//        make.width.height.mas_equalTo(100 * scale);
+//    }];
+//    
+//    self.messageButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//    [self.messageButton setImage:[UIImage imageNamed:@"message"] forState:UIControlStateNormal];
+//    [self.messageButton addTarget:self action:@selector(messageButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:self.messageButton];
+//    [self.messageButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(self.searchButton.mas_left).offset(-30 * scale);
+//        make.bottom.mas_equalTo(-20 * scale);
+//        make.width.height.mas_equalTo(100 * scale);
+//    }];
 }
 
 - (void)messageButtonDidClicked

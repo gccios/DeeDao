@@ -8,15 +8,28 @@
 
 #import "MailDetailViewController.h"
 #import "MainInfoTableViewCell.h"
+#import "DDTool.h"
+#import <UIImageView+WebCache.h>
+#import "SaveFriendOrConcernRequest.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface MailDetailViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) MailModel * model;
 
 @end
 
 @implementation MailDetailViewController
+
+- (instancetype)initMailModel:(MailModel *)model
+{
+    if (self = [super init]) {
+        self.model = model;
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -44,6 +57,7 @@
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 210 * scale, 0);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"返回列表"];
+    backButton.backgroundColor = UIColorFromRGB(0xFFFFFF);
     [DDViewFactoryTool cornerRadius:24 * scale withView:backButton];
     backButton.layer.borderColor = UIColorFromRGB(0xDB5282).CGColor;
     backButton.layer.borderWidth = 3 * scale;
@@ -54,10 +68,36 @@
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(144 * scale);
     }];
-    [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    if (self.model.mailTypeId == 8) {
+        [backButton setTitle:@"同意添加" forState:UIControlStateNormal];
+        [backButton addTarget:self action:@selector(addFriendOK:) forControlEvents:UIControlEventTouchUpInside];
+    }else{
+        [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    }
     
     [self createTableHeaderFooter];
     [self createTopView];
+}
+
+- (void)addFriendOK:(UIButton *)button
+{
+    SaveFriendOrConcernRequest * request = [[SaveFriendOrConcernRequest alloc] initWithHandleFriendId:self.model.createPerson andIsAdd:YES];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [button removeTarget:self action:@selector(addFriendOK:) forControlEvents:UIControlEventTouchUpInside];
+        [button setTitle:@"返回列表" forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [MBProgressHUD showTextHUDWithText:@"添加成功" inView:self.view];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"添加失败" inView:self.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [MBProgressHUD showTextHUDWithText:@"添加失败" inView:self.view];
+        
+    }];
 }
 
 - (void)createTableHeaderFooter
@@ -87,6 +127,7 @@
     coverView.layer.shadowOffset = CGSizeMake(0, -12 * scale);
     
     UIImageView * logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    [logoImageView sd_setImageWithURL:[NSURL URLWithString:self.model.portraitUri]];
     [headerView addSubview:logoImageView];
     [logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(115 * scale);
@@ -96,7 +137,7 @@
     [DDViewFactoryTool cornerRadius:150 * scale / 2 withView:logoImageView];
     
     UILabel * nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    nameLabel.text = @"Just丶DeeDao";
+    nameLabel.text = self.model.nickName;
     [headerView addSubview:nameLabel];
     [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(logoImageView.mas_top).offset(15 * scale);
@@ -105,7 +146,7 @@
     }];
     
     UILabel * infoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    infoLabel.text = @"在你D贴的位置向你打招呼";
+    infoLabel.text = [MailModel getTitleWithMailTypeId:self.model.mailTypeId];
     [headerView addSubview:infoLabel];
     [infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(nameLabel.mas_bottom).offset(15 * scale);
@@ -125,7 +166,7 @@
 {
     MainInfoTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MainInfoTableViewCell" forIndexPath:indexPath];
     
-    [cell configInfo:@"测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试" time:@"2018-05-19 6:55PM"];
+    [cell configInfo:self.model.mailContent time:[DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.createTime]];
     
     return cell;
 }

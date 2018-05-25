@@ -21,10 +21,13 @@
 #import "DTieChooseLocationController.h"
 #import "DTieModel.h"
 #import <UIImageView+WebCache.h>
+#import "DTieDetailViewController.h"
+#import "DDTool.h"
+#import "DDPrivateViewController.h"
 
 NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
-@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ChooseLocationDelegate>
+@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ChooseLocationDelegate, DDPrivateViewSelectDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UIButton * putButton;
@@ -61,6 +64,8 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 @property (nonatomic, strong) DTieModel * editModel;
 
+@property (nonatomic, strong) SecurityGroupModel * model;
+
 @end
 
 @implementation DTieEditViewController
@@ -95,7 +100,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     
     if (self.editModel) {
         [self.dataSource removeAllObjects];
-        [self.dataSource addObject:[[NSArray alloc] initWithArray:self.editModel.details]];
+        [self.moduleSource removeAllObjects];
+        
+        [self.moduleSource addObjectsFromArray:self.editModel.details];
+        [self.dataSource addObject:self.moduleSource];
         
         DTieEditModel * model = [[DTieEditModel alloc] init];
         model.type = DTieEditType_Title;
@@ -225,7 +233,14 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         return;
     }
     
-    DTieEditReadViewController * read = [[DTieEditReadViewController alloc] initWithData:self.moduleSource title:title];
+    DTieModel * dtie = [[DTieModel alloc] init];
+    dtie.postSummary = title;
+    dtie.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    dtie.sceneTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    dtie.updateTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    dtie.details = [NSArray arrayWithArray:self.moduleSource];
+    dtie.sceneAddress = self.footerView.locationLabel.text;
+    DTieEditReadViewController * read = [[DTieEditReadViewController alloc] initWithDTie:dtie];
     [self.navigationController pushViewController:read animated:YES];
     
 }
@@ -775,12 +790,20 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 - (void)QXButtonDidClicked
 {
-    self.QXEnable = !self.QXEnable;
-    if (self.QXEnable) {
-        [self.QXImageView setImage:[UIImage imageNamed:@"qx"]];
-    }else{
-        [self.QXImageView setImage:[UIImage imageNamed:@"qxno"]];
-    }
+    DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
+    private.delegate = self;
+    [self.navigationController pushViewController:private animated:YES];
+}
+
+- (void)securityDidSelectWith:(SecurityGroupModel *)model
+{
+    self.model = model;
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"当前D贴权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    NSString * name = model.securitygroupName;
+    [string appendAttributedString:[[NSAttributedString alloc] initWithString:name attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}]];
+    [string appendAttributedString:[[NSAttributedString alloc] initWithString:@"，点击更改" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}]];
+    self.QXLabel.attributedText = string;
 }
 
 - (void)PYQButtonDidClicked
@@ -911,15 +934,22 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             case DTieEditType_Text:
             {
                 if (isEmptyString(model.detailsContent)) {
-                    [tempArray removeObjectAtIndex:i];
-                    [listArray removeObjectAtIndex:i];
-                    i--;
-                    tempCount++;
-                    if (tempCount == self.moduleSource.count) {
-                        [hud hideAnimated:YES];
-                        [self uploadDtieWithList:listArray withTitle:title];
+                    
+                    if (isEmptyString(model.detailContent)) {
+                        [tempArray removeObjectAtIndex:i];
+                        [listArray removeObjectAtIndex:i];
+                        i--;
+                        tempCount++;
+                        if (tempCount == self.moduleSource.count) {
+                            [hud hideAnimated:YES];
+                            [self uploadDtieWithList:listArray withTitle:title];
+                        }
+                        continue;
+                        
+                    }else{
+                        model.detailsContent = model.detailContent;
                     }
-                    continue;
+                    
                 }
                 
                 NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
@@ -940,13 +970,27 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             case DTieEditType_Image:
             {
                 if (!model.image) {
-                    [tempArray removeObjectAtIndex:i];
-                    [listArray removeObjectAtIndex:i];
-                    i--;
-                    tempCount++;
-                    if (tempCount == self.moduleSource.count) {
-                        [hud hideAnimated:YES];
-                        [self uploadDtieWithList:listArray withTitle:title];
+                    if (model.detailContent) {
+                        NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                                @"datadictionaryType":@"CONTENT_IMG",
+                                                @"detailsContent":model.detailsContent,
+                                                @"textInformation":@"",
+                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                        [listArray replaceObjectAtIndex:i withObject:dict];
+                        tempCount++;
+                        if (tempCount == self.moduleSource.count) {
+                            [hud hideAnimated:YES];
+                            [self uploadDtieWithList:listArray withTitle:title];
+                        }
+                    }else{
+                        [tempArray removeObjectAtIndex:i];
+                        [listArray removeObjectAtIndex:i];
+                        i--;
+                        tempCount++;
+                        if (tempCount == self.moduleSource.count) {
+                            [hud hideAnimated:YES];
+                            [self uploadDtieWithList:listArray withTitle:title];
+                        }
                     }
                     continue;
                 }
@@ -987,13 +1031,27 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             {
                 
                 if (!model.image) {
-                    [tempArray removeObjectAtIndex:i];
-                    [listArray removeObjectAtIndex:i];
-                    i--;
-                    tempCount++;
-                    if (tempCount == self.moduleSource.count) {
-                        [hud hideAnimated:YES];
-                        [self uploadDtieWithList:listArray withTitle:title];
+                    if (model.detailContent) {
+                        NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                                @"datadictionaryType":@"CONTENT_VIDEO",
+                                                @"detailsContent":model.detailsContent,
+                                                @"textInformation":model.textInformation,
+                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                        [listArray replaceObjectAtIndex:i withObject:dict];
+                        tempCount++;
+                        if (tempCount == self.moduleSource.count) {
+                            [hud hideAnimated:YES];
+                            [self uploadDtieWithList:listArray withTitle:title];
+                        }
+                    }else{
+                        [tempArray removeObjectAtIndex:i];
+                        [listArray removeObjectAtIndex:i];
+                        i--;
+                        tempCount++;
+                        if (tempCount == self.moduleSource.count) {
+                            [hud hideAnimated:YES];
+                            [self uploadDtieWithList:listArray withTitle:title];
+                        }
                     }
                     continue;
                 }
@@ -1066,7 +1124,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     double lat;
     if (self.choosePOI) {
         lon = self.choosePOI.pt.longitude;
-        lat = self.choosePOI.pt.longitude;
+        lat = self.choosePOI.pt.latitude;
+    }else if (self.editModel){
+        lon = self.editModel.sceneAddressLng;
+        lat = self.editModel.sceneAddressLat;
     }else{
         lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
         lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;

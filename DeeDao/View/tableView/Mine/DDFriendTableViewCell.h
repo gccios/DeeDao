@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UserModel.h"
 
 @interface DDFriendTableViewCell : UITableViewCell
+
+- (void)configWithModel:(UserModel *)model;
 
 @end

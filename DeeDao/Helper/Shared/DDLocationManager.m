@@ -7,6 +7,7 @@
 //
 
 #import "DDLocationManager.h"
+#import <BaiduMapAPI_Utils/BMKGeometry.h>
 
 NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdateNotification";
 
@@ -79,6 +80,23 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 - (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error
 {
     self.result = result;
+}
+
+- (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel
+{
+    if (detailModel.pFlag == 0) {
+        return YES;
+    }
+    
+    BMKMapPoint userPoint = BMKMapPointForCoordinate(self.userLocation.location.coordinate);
+    BMKMapPoint point = BMKMapPointForCoordinate(CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng));
+    CLLocationDistance distance = BMKMetersBetweenMapPoints(userPoint, point);
+    
+    if (distance > 500) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 @end

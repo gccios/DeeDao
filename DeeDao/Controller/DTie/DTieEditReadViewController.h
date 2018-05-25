@@ -7,9 +7,10 @@
 //
 
 #import "DDViewController.h"
+#import "DTieModel.h"
 
 @interface DTieEditReadViewController : DDViewController
 
-- (instancetype)initWithData:(NSMutableArray *)dataSource title:(NSString *)title;
+- (instancetype)initWithDTie:(DTieModel *)model;
 
 @end

@@ -15,8 +15,6 @@
 
 @property (nonatomic, strong) UIImageView * BGImageView;
 
-@property (nonatomic, strong) UIImageView * contenImageView;
-
 @property (nonatomic, strong) UILabel * DTieTitleLabel;
 
 @property (nonatomic, strong) UIImageView * markImageView;

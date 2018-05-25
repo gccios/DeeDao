@@ -9,7 +9,17 @@
 #import <UIKit/UIKit.h>
 #import "DDHandleButton.h"
 
+@protocol DDHandleViewDelegate <NSObject>
+
+- (void)handleViewDidClickedYaoyue;
+- (void)handleViewDidClickedShoucang;
+- (void)handleViewDidClickedDazhaohu;
+
+@end
+
 @interface DDHandleView : UIView
+
+@property (nonatomic, weak) id<DDHandleViewDelegate> delegate;
 
 @property (nonatomic, strong) DDHandleButton * yaoyueButton;
 @property (nonatomic, strong) DDHandleButton * shoucangButton;

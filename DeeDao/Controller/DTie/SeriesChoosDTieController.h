@@ -7,8 +7,8 @@
 //
 
 #import "DDViewController.h"
-#import "DTieModel.h"
 
+@class DTieModel;
 @protocol SeriesChoosDTieDelegate <NSObject>
 
 - (void)seriesWillInsertWith:(DTieModel *)model;
@@ -18,5 +18,7 @@
 @interface SeriesChoosDTieController : DDViewController
 
 @property (nonatomic, weak) id<SeriesChoosDTieDelegate> delegate;
+
+- (instancetype)initWithSource:(NSMutableArray *)source;
 
 @end

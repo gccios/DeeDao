@@ -50,6 +50,15 @@
     }
 }
 
+- (void)yulanWithModel:(DTieEditModel *)model
+{
+    if (model.image) {
+        [self.detailImageView setImage:model.image];
+    }else{
+        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+    }
+}
+
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code

@@ -123,7 +123,20 @@
     }else if (indexPath.row == 1){
         
     }else if(indexPath.row == 2){
-        [self logoutUser];
+        
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alert addAction:action1];
+        
+        UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self logoutUser];
+        }];
+        [alert addAction:action2];
+        
+        [self presentViewController:alert animated:YES completion:nil];
     }
 }
 

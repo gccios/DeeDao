@@ -113,7 +113,7 @@
 - (void)mineInfoDidClcked
 {
     MineInfoViewController * info = [[MineInfoViewController alloc] init];
-    [self.navigationController pushViewController:info animated:YES];
+    [self presentViewController:info animated:YES completion:nil];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

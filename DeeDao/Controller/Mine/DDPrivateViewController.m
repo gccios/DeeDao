@@ -8,13 +8,19 @@
 
 #import "DDPrivateViewController.h"
 #import "DDPrivateTableViewCell.h"
+#import "SecurityRequest.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "EditSecurityController.h"
+#import "SelectSecurityRequest.h"
+#import "UserModel.h"
+#import "DTieModel.h"
+#import "UserManager.h"
 
-@interface DDPrivateViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface DDPrivateViewController () <UITableViewDelegate, UITableViewDataSource, EditSecurityDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) NSMutableArray * dataSource;
-
 
 @end
 
@@ -25,6 +31,59 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    
+    [self requestSecuritySource];
+}
+
+- (void)requestSecuritySource
+{
+    SecurityRequest * request = [[SecurityRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.dataSource removeAllObjects];
+                
+                if (self.delegate) {
+                    [self createChooseBaseModel];
+                }
+                
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    NSDictionary * result = [dict objectForKey:@"securityGroup"];
+                    SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:result];
+                    [self.dataSource addObject:model];
+                }
+                [self.tableView reloadData];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)createChooseBaseModel
+{
+    SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+    model1.landAccountFlg = 1;
+    model1.securitygroupName = @"公开";
+    model1.securitygroupPropName = @"所有用户都可见，包括陌生人";
+    model1.createPerson = [UserManager shareManager].user.cid;
+    model1.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    
+    SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+    model2.landAccountFlg = 0;
+    model2.securitygroupName = @"设为隐私";
+    model2.securitygroupPropName = @"只有自己可见";
+    model2.createPerson = [UserManager shareManager].user.cid;
+    model2.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    
+    [self.dataSource addObject:model1];
+    [self.dataSource addObject:model2];
 }
 
 - (void)createViews
@@ -49,16 +108,116 @@
     [self createTopView];
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    SecurityGroupModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    
+    if (self.delegate && [self.delegate respondsToSelector:@selector(securityDidSelectWith:)]) {
+        [self.delegate securityDidSelectWith:model];
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+    
+    __block NSInteger count = 0;
+    __block NSMutableArray * friends = [[NSMutableArray alloc] init];
+    __block NSMutableArray * Dties = [[NSMutableArray alloc] init];
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载小密圈" inView:self.view];
+    
+    SelectSecurityRequest * friendRequest = [[SelectSecurityRequest alloc] initWithSelectUserWith:model.cid];
+    [friendRequest sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            for (NSDictionary * dict in data) {
+                UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                [friends addObject:model];
+            }
+        }
+        
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [self editWithFriends:friends posts:Dties model:model];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"用户列表获取失败" inView:self.view];
+        }
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"用户列表获取失败" inView:self.view];
+        }
+        
+    }];
+    
+    SelectSecurityRequest * postRequest = [[SelectSecurityRequest alloc] initWithSelectPostWith:model.cid];
+    [postRequest sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            for (NSDictionary * dict in data) {
+                DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                [Dties addObject:model];
+            }
+        }
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [self editWithFriends:friends posts:Dties model:model];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"D贴列表获取失败" inView:self.view];
+        }
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        count++;
+        if (count == 2) {
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"D贴列表获取失败" inView:self.view];
+        }
+        
+    }];
+    
+}
+
+- (void)editWithFriends:(NSArray *)friends posts:(NSArray *)posts model:(SecurityGroupModel *)model
+{
+    EditSecurityController * edit = [[EditSecurityController alloc] initWithModel:model friends:friends posts:posts];
+    edit.delegate = self;
+    [self.navigationController pushViewController:edit animated:YES];
+}
+
+- (void)securityGroupDidEdit
+{
+    [self requestSecuritySource];
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DDPrivateTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDPrivateTableViewCell" forIndexPath:indexPath];
     
-    
+    SecurityGroupModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    [cell configWithModel:model];
     
     return cell;
 }
@@ -127,7 +286,16 @@
 
 - (void)createButtonDidClicked
 {
-    NSLog(@"新建");
+    EditSecurityController * edit = [[EditSecurityController alloc] init];
+    [self.navigationController pushViewController:edit animated:YES];
+}
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [[NSMutableArray alloc] init];
+    }
+    return _dataSource;
 }
 
 - (void)didReceiveMemoryWarning {

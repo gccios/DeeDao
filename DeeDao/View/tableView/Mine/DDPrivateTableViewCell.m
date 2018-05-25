@@ -29,6 +29,12 @@
     return self;
 }
 
+- (void)configWithModel:(SecurityGroupModel *)model
+{
+    self.titleLabel.text = model.securitygroupName;
+    self.subTitleLabel.text = model.securitygroupPropName;
+}
+
 - (void)createPrivateCell
 {
     self.backgroundColor = UIColorFromRGB(0xEFEFF4);

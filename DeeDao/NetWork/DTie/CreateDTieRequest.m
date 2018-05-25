@@ -27,6 +27,7 @@
         [self setIntegerValue:status forParamKey:@"status"];
         [self setIntegerValue:remindFlg forParamKey:@"remindFlg"];
         [self setValue:firstPic forParamKey:@"postFirstPicture"];
+        [self setIntegerValue:5 forParamKey:@"postTypeId"];
         
         if (postId) {
             [self setIntegerValue:postId forParamKey:@"postId"];

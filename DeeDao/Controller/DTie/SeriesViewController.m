@@ -12,11 +12,18 @@
 #import "GetSeriesRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "AddSeriesViewController.h"
+#import "SeriesDetailRequest.h"
+#import "SeriesDetailModel.h"
+#import "SeriesDetailViewController.h"
+#import <AFHTTPSessionManager.h>
 
 @interface SeriesViewController ()<UITableViewDelegate, UITableViewDataSource, AddSeriesDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
+
+@property (nonatomic, strong) NSMutableArray * topArray;
+@property (nonatomic, strong) NSMutableArray * seriesArray;
 
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, assign) NSInteger currentIndex;
@@ -24,6 +31,14 @@
 @end
 
 @implementation SeriesViewController
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.hidesBottomBarWhenPushed = NO;
+    }
+    return self;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -63,27 +78,26 @@
 - (void)analysisData:(NSArray *)data
 {
     [self.dataSource removeAllObjects];
-    NSMutableArray * topArray = [[NSMutableArray alloc] init];
-    NSMutableArray * seriesArray = [[NSMutableArray alloc] init];
+    self.topArray = [[NSMutableArray alloc] init];
+    self.seriesArray = [[NSMutableArray alloc] init];
     for (NSInteger i = 0; i < data.count; i++) {
         NSDictionary * info = [data objectAtIndex:i];
         NSDictionary * dict = [info objectForKey:@"series"];
         SeriesModel * model = [SeriesModel mj_objectWithKeyValues:dict];
         model.seriesFirstPicture = [info objectForKey:@"seriesFirstPicture"];
         if (model.stickyFlag) {
-            [topArray addObject:model];
+            [self.topArray addObject:model];
         }else{
-            [seriesArray addObject:model];
+            [self.seriesArray addObject:model];
         }
     }
     
-    if (topArray.count > 0) {
+    if (self.topArray.count > 0) {
         NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"stickyTime" ascending:NO];
-        [topArray sortUsingDescriptors:@[sort]];
-        
-        [self.dataSource addObject:topArray];
+        [self.topArray sortUsingDescriptors:@[sort]];
+        [self.dataSource addObject:self.topArray];
     }
-    [self.dataSource addObject:seriesArray];
+    [self.dataSource addObject:self.seriesArray];
     [self.tableView reloadData];
 }
 
@@ -112,7 +126,126 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
+    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    [self.tableView addGestureRecognizer:longPress];
+    
     [self createTopView];
+}
+
+- (void)longPress:(UILongPressGestureRecognizer *)longPress
+{
+    CGPoint point = [longPress locationInView:self.tableView];
+    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:point];
+    
+    if (indexPath) {
+        NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+        SeriesModel * model = [data objectAtIndex:indexPath.row];
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"选择" message:@"请选择需要进行的操作" preferredStyle:UIAlertControllerStyleActionSheet];
+        
+        //进行了置顶操作
+        UIAlertAction * action1;
+        
+        if (model.stickyFlag) {
+            action1 = [UIAlertAction actionWithTitle:@"取消置顶" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+                AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+                manager.requestSerializer = [AFJSONRequestSerializer serializer];
+                manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+                
+                NSString * url = [NSString stringWithFormat:@"%@/series/cancelStickySeries", HOSTURL];
+                [manager POST:url parameters:@{@"seriesId":@(model.cid)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                    
+                } progress:^(NSProgress * _Nonnull uploadProgress) {
+                    
+                } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    [self requestData];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    
+                }];
+                
+            }];
+        }else{
+            action1 = [UIAlertAction actionWithTitle:@"置顶系列" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                
+                AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+                manager.requestSerializer = [AFJSONRequestSerializer serializer];
+                manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+                
+                NSString * url = [NSString stringWithFormat:@"%@/series/stickySeries", HOSTURL];
+                [manager POST:url parameters:@{@"seriesId":@(model.cid)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                    
+                } progress:^(NSProgress * _Nonnull uploadProgress) {
+                    
+                } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    [self requestData];
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    
+                }];
+                
+            }];
+        }
+        
+        
+        UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"删除系列" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+            manager.requestSerializer = [AFJSONRequestSerializer serializer];
+            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+            
+            NSString * url = [NSString stringWithFormat:@"%@/series/deleteSeries", HOSTURL];
+            [manager POST:url parameters:@{@"id":@(model.cid)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                
+            } progress:^(NSProgress * _Nonnull uploadProgress) {
+                
+            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [self requestData];
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                
+            }];
+            
+        }];
+        
+        [alert addAction:action1];
+        [alert addAction:action2];
+        
+        UIAlertAction * cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alert addAction:cancelAction];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray * result = [self.dataSource objectAtIndex:indexPath.section];
+    SeriesModel * model = [result objectAtIndex:indexPath.row];
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"获取系列" inView:self.view];
+    SeriesDetailRequest * request = [[SeriesDetailRequest alloc] initWithSeriesID:model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                SeriesDetailModel * tempModel = [SeriesDetailModel mj_objectWithKeyValues:data];
+                if (model.seriesStatus) {
+                    AddSeriesViewController * detail = [[AddSeriesViewController alloc] initWithSeriesModel:tempModel seriesID:model.cid];
+                    [self.navigationController pushViewController:detail animated:YES];
+                }else{
+                    SeriesDetailViewController * detail = [[SeriesDetailViewController alloc] initWithSeriesModel:tempModel];
+                    [self.navigationController pushViewController:detail animated:YES];
+                }
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -123,6 +256,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray * data = [self.dataSource objectAtIndex:section];
+    
+//    if (data == self.seriesArray && self.seriesArray.count == 0) {
+//        return 1;
+//    }
+    
     return data.count;
 }
 
@@ -131,6 +269,11 @@
     SeriesTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"SeriesTableViewCell" forIndexPath:indexPath];
     
     NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+    
+//    if (data == self.seriesArray && self.seriesArray.count == 0) {
+//        return cell;
+//    }
+    
     SeriesModel * model = [data objectAtIndex:indexPath.row];
     [cell configWithModel:model];
     
@@ -139,6 +282,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+//    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+//
+//    if (data == self.seriesArray && self.seriesArray.count == 0) {
+//        return .1f;
+//    }
+    
     return 330 * kMainBoundsWidth / 1080.f;
 }
 
@@ -146,11 +295,23 @@
 {
     SeriesTableHeaderView * view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"SeriesTableHeaderView"];
     
-    [view configWithSetTop:NO];
-    __weak typeof(self) weakSelf = self;
-    view.addSeriesHandle = ^{
-        [weakSelf addSeriesDidClicked];
-    };
+    if (self.dataSource.count == 2) {
+        if (section == 0) {
+            [view configWithSetTop:YES];
+        }else{
+            [view configWithSetTop:NO];
+            __weak typeof(self) weakSelf = self;
+            view.addSeriesHandle = ^{
+                [weakSelf addSeriesDidClicked];
+            };
+        }
+    }else{
+        [view configWithSetTop:NO];
+        __weak typeof(self) weakSelf = self;
+        view.addSeriesHandle = ^{
+            [weakSelf addSeriesDidClicked];
+        };
+    }
     
     return view;
 }
@@ -214,7 +375,7 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:NO];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (NSMutableArray *)dataSource

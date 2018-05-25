@@ -122,7 +122,12 @@
         self.firstReadView.hidden = YES;
         self.baseReadView.hidden = YES;
         self.baseImageView.hidden = NO;
-        [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.detailContent]]];
+        
+        if (isEmptyString(model.detailContent)) {
+            [self.baseImageView setImage:[UIImage imageNamed:@"test"]];
+        }else{
+            [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.detailContent]]];
+        }
     }else if (model.type == DTieEditType_Text){
         self.firstReadView.hidden = YES;
         self.baseReadView.hidden = NO;

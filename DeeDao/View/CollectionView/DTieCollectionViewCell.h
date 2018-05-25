@@ -11,6 +11,8 @@
 
 @interface DTieCollectionViewCell : UICollectionViewCell
 
+@property (nonatomic, strong) UIImageView * contenImageView;
+
 @property (nonatomic, strong) NSIndexPath * indexPath;
 
 - (void)configWithDTieModel:(DTieModel *)model;

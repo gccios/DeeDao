@@ -9,6 +9,8 @@
 #import "MailSmallTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import "DDTool.h"
+#import <UIImageView+WebCache.h>
 
 @interface MailSmallTableViewCell ()
 
@@ -37,6 +39,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.baseView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.contentView addSubview:self.baseView];
@@ -73,7 +76,7 @@
     }];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.nameLabel.text = @"Just丶DeeDao";
+//    self.nameLabel.text = @"Just丶DeeDao";
     [self.baseView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
@@ -82,7 +85,7 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"22:36 PM";
+//    self.timeLabel.text = @"22:36 PM";
     [self.baseView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel);
@@ -104,7 +107,20 @@
 
 - (void)configWithModel:(MailModel *)model
 {
+    self.InfoLabel.text = [MailModel getTitleWithMailTypeId:model.mailTypeId];
+    self.nameLabel.text = model.nickName;
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:model.createTime];
+//    [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
     
+    if (model.type == MailModelType_System) {
+        [self.logoImageView setImage:[UIImage imageNamed:@"yt_shoucang"]];
+        UIImage * bgImage = [UIImage imageNamed:@"kuang_blue"];
+        [self.coverImageView setImage:[bgImage resizableImageWithCapInsets:UIEdgeInsetsMake(bgImage.size.height*0.9, bgImage.size.width*0.9, bgImage.size.height*0.9, bgImage.size.width*0.9) resizingMode:UIImageResizingModeStretch]];
+    }else{
+        UIImage * bgImage = [UIImage imageNamed:@"smallkuang"];
+        [self.coverImageView setImage:[bgImage resizableImageWithCapInsets:UIEdgeInsetsMake(bgImage.size.height*0.9, bgImage.size.width*0.9, bgImage.size.height*0.9, bgImage.size.width*0.9) resizingMode:UIImageResizingModeStretch]];
+        [self.logoImageView setImage:[UIImage imageNamed:@"yt-dazhaohu"]];
+    }
 }
 
 - (void)awakeFromNib {

@@ -1,0 +1,23 @@
+//
+//  DeleteSecurityRequest.m
+//  DeeDao
+//
+//  Created by 郭春城 on 2018/5/25.
+//  Copyright © 2018年 郭春城. All rights reserved.
+//
+
+#import "DeleteSecurityRequest.h"
+
+@implementation DeleteSecurityRequest
+
+- (instancetype)initWithGroupID:(NSInteger)groupId
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"scyGroup/delScyGroup";
+        [self setIntegerValue:groupId forParamKey:@"ScyGroupId"];
+    }
+    return self;
+}
+
+@end

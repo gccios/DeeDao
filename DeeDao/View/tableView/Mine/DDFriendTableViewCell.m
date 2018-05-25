@@ -9,6 +9,7 @@
 #import "DDFriendTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import <UIImageView+WebCache.h>
 
 @interface DDFriendTableViewCell ()
 
@@ -29,9 +30,17 @@
     return self;
 }
 
+- (void)configWithModel:(UserModel *)model
+{
+    [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+    self.nameLabel.text = model.nickname;
+}
+
 - (void)createFriendCell
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     self.starImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"starFull"]];
     [self.contentView addSubview:self.starImageView];
     [self.starImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -47,6 +56,7 @@
         make.centerY.mas_equalTo(0 * scale);
         make.width.height.mas_equalTo(120 * scale);
     }];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:self.logoImageView];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
     self.nameLabel.text = @"Just丶Dee Dao";

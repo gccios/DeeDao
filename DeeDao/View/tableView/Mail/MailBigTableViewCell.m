@@ -9,6 +9,8 @@
 #import "MailBigTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import "DDTool.h"
+#import <UIImageView+WebCache.h>
 
 @interface MailBigTableViewCell ()
 
@@ -38,6 +40,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.baseView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.contentView addSubview:self.baseView];
@@ -77,7 +80,7 @@
     }];
     
     self.InfoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-    self.InfoLabel.text = @"在你的D贴的位置向你打招呼";
+//    self.InfoLabel.text = @"在你的D贴的位置向你打招呼";
     [self.baseView addSubview:self.InfoLabel];
     [self.InfoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.topImageView.mas_bottom).offset(20 * scale);
@@ -86,7 +89,7 @@
     }];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.nameLabel.text = @"Just丶DeeDao";
+//    self.nameLabel.text = @"Just丶DeeDao";
     [self.baseView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
@@ -95,7 +98,7 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"22:36 PM";
+//    self.timeLabel.text = @"22:36 PM";
     [self.baseView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel);
@@ -117,7 +120,10 @@
 
 - (void)configWithModel:(MailModel *)model
 {
-    
+    self.InfoLabel.text = [MailModel getTitleWithMailTypeId:model.mailTypeId];
+    self.nameLabel.text = model.nickName;
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:model.createTime];
+//    [self.topImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
 }
 
 - (void)awakeFromNib {

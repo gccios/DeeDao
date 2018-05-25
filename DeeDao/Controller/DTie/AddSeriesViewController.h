@@ -7,6 +7,7 @@
 //
 
 #import "DDViewController.h"
+#import "SeriesDetailModel.h"
 
 @protocol AddSeriesDelegate <NSObject>
 
@@ -15,6 +16,8 @@
 @end
 
 @interface AddSeriesViewController : DDViewController
+
+- (instancetype)initWithSeriesModel:(SeriesDetailModel *)model seriesID:(NSInteger)seriesID;
 
 @property (nonatomic, weak) id<AddSeriesDelegate> delegate;
 

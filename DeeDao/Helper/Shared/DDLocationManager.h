@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
+#import "DTieModel.h"
 
 extern NSString * const DDUserLocationDidUpdateNotification;
 
@@ -22,5 +23,7 @@ extern NSString * const DDUserLocationDidUpdateNotification;
 - (void)startLocationService;
 
 - (void)stopLocationService;
+
+- (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel;
 
 @end

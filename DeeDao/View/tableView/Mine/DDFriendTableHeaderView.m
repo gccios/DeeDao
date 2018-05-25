@@ -60,7 +60,7 @@
     }];
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
-    lineView.backgroundColor = UIColorFromRGB(0x3F3F3F);
+    lineView.backgroundColor = [UIColorFromRGB(0x00000) colorWithAlphaComponent:.12f];
     [self.preView addSubview:lineView];
     [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -76,6 +76,7 @@
     
     self.titleLabel.hidden = YES;
     self.preView.hidden = NO;
+    self.preLabel.text = pre;
     
     self.frame = CGRectMake(0, 0, kMainBoundsWidth, 80 * scale);
 }

@@ -13,6 +13,7 @@
 @interface DTieDetailTextTableViewCell ()
 
 @property (nonatomic, strong) UILabel * detailLabel;
+//@property (nonatomic, strong) UIVisualEffectView * effectView;
 
 @end
 
@@ -41,6 +42,14 @@
         make.right.mas_equalTo(-60 * scale);
         make.bottom.mas_equalTo(-20 * scale);
     }];
+    
+//    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+//    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+//    self.effectView.alpha = .98f;
+//    [self.contentView addSubview:self.effectView];
+//    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.mas_equalTo(0);
+//    }];
 }
 
 - (void)configWithModel:(DTieEditModel *)model

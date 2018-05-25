@@ -17,6 +17,8 @@
 #import "SeriesViewController.h"
 #import "DTieMapViewController.h"
 #import "DTieDetailRequest.h"
+#import "DTieSearchViewController.h"
+#import "DDNavigationViewController.h"
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -52,16 +54,19 @@
 
 - (void)getMoreList
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
     DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [hud hideAnimated:YES];
+//        [hud hideAnimated:YES];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
-                
+                [self.dataSource removeAllObjects];
+                DTieModel * firstModel = [[DTieModel alloc] init];
+                firstModel.dTieType = DTieType_Add;
+                [self.dataSource addObject:firstModel];
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
@@ -72,16 +77,15 @@
                 
             }
         }
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [hud hideAnimated:YES];
+//        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [hud hideAnimated:YES];
+//        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     }];
@@ -101,6 +105,7 @@
     self.collectionView.backgroundColor = self.view.backgroundColor;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
+    self.collectionView.alwaysBounceVertical = YES;
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
@@ -154,10 +159,12 @@
 
 - (void)newDTieDidCreate:(NSNotification *)notification
 {
-    DTieModel * model = notification.object;
+//    DTieModel * model = notification.object;
+//
+//    [self.dataSource insertObject:model atIndex:1];
+//    [self.collectionView reloadData];
     
-    [self.dataSource insertObject:model atIndex:1];
-    [self.collectionView reloadData];
+    [self getMoreList];
 }
 
 - (void)createTopView
@@ -232,18 +239,20 @@
 - (void)seriesButtonDidClicked
 {
     SeriesViewController * series = [[SeriesViewController alloc] init];
-    [self.navigationController pushViewController:series animated:NO];
+    [self.navigationController pushViewController:series animated:YES];
 }
 
 - (void)mapButtonDidClicked
 {
     DTieMapViewController * map = [[DTieMapViewController alloc] init];
-    [self.navigationController pushViewController:map animated:NO];
+    [self.navigationController pushViewController:map animated:YES];
 }
 
 - (void)searchButtonDidClicked
 {
-    NSLog(@"搜索");
+    DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
+    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:search];
+    [self presentViewController:na animated:YES completion:nil];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -269,6 +278,7 @@
                     NSDictionary * data = [response objectForKey:@"data"];
                     if (KIsDictionary(data)) {
                         DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                        dtieModel.postId = model.postId;
                         DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
                         [self.navigationController pushViewController:edit animated:YES];
                     }

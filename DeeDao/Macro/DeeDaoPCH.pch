@@ -21,8 +21,8 @@
 #define NSLog(...) {}
 
 #else
-//#define HOSTURL @"http://10.93.20.171:8080"  //测试地址
-#define HOSTURL @"https://portal.deedao.com"
+#define HOSTURL @"http://10.93.20.171:8080"  //测试地址
+//#define HOSTURL @"https://portal.deedao.com"
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
 #define NSLog(...) NSLog(__VA_ARGS__)

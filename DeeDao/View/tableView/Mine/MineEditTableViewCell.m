@@ -9,6 +9,8 @@
 #import "MineEditTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import <UIImageView+WebCache.h>
+#import "UserManager.h"
 
 @interface MineEditTableViewCell ()
 
@@ -53,18 +55,43 @@
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(50 * scale);
     }];
+    
+    self.headImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
+    [self.contentView addSubview:self.headImageView];
+    [self.headImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(-60 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [DDViewFactoryTool cornerRadius:72 * scale withView:self.headImageView];
 }
 
 - (void)configWithType:(EditMineType)type indexPath:(NSIndexPath *)indexPath
 {
     self.textField.indexPath = indexPath;
     
+    self.textField.hidden = NO;
+    self.headImageView.hidden = YES;
+    
     switch (type) {
+        case EditMineType_Logo:
+            
+        {
+            self.nameLabel.text = @"头像";
+            self.textField.placeholder = @"";
+            self.textField.hidden = YES;
+            self.headImageView.hidden = NO;
+            [self.headImageView sd_setImageWithURL:[NSURL URLWithString:[UserManager shareManager].user.portraituri]];
+        }
+            
+            break;
+            
         case EditMineType_Name:
             
         {
-            self.nameLabel.text = @"姓名";
+            self.nameLabel.text = @"昵称";
             self.textField.placeholder = @"请输入您的姓名";
+            self.textField.text = [UserManager shareManager].user.nickname;
         }
             
             break;
@@ -74,15 +101,22 @@
         {
             self.nameLabel.text = @"性别";
             self.textField.placeholder = @"请输入您的性别";
+            NSInteger sex = [[UserManager shareManager].user.sex integerValue];
+            if (sex) {
+                self.textField.text = @"男";
+            }else{
+                self.textField.text = @"女";
+            }
         }
             
             break;
             
-        case EditMineType_Detail:
+        case EditMineType_Address:
             
         {
-            self.nameLabel.text = @"签名";
-            self.textField.placeholder = @"请输入您的个性签名";
+            self.nameLabel.text = @"地区";
+            self.textField.placeholder = @"请输入您所在地区";
+            self.textField.text = [UserManager shareManager].user.country;
         }
             
             break;
@@ -92,6 +126,17 @@
         {
             self.nameLabel.text = @"手机";
             self.textField.placeholder = @"请输入您的手机号";
+            self.textField.text = [UserManager shareManager].user.phone;
+        }
+            
+            break;
+            
+        case EditMineType_Detail:
+            
+        {
+            self.nameLabel.text = @"签名";
+            self.textField.placeholder = @"请输入您的个性签名";
+            self.textField.text = [UserManager shareManager].user.signature;
         }
             
             break;
@@ -101,16 +146,6 @@
         {
             self.nameLabel.text = @"生日";
             self.textField.placeholder = @"请输入您的公历生日";
-        }
-            
-            break;
-            
-        case EditMineType_Address:
-            
-        {
-            self.nameLabel.text = @"地址";
-            self.textField.placeholder = @"请输入您的实际地址";
-            self.textField.indexPath = indexPath;
         }
             
             break;

@@ -7,7 +7,10 @@
 //
 
 #import "DDViewController.h"
+#import "MailModel.h"
 
 @interface MailDetailViewController : DDViewController
+
+- (instancetype)initMailModel:(MailModel *)model;
 
 @end

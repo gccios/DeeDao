@@ -8,12 +8,16 @@
 
 #import "MineInfoViewController.h"
 #import "MineEditTableViewCell.h"
+#import <MobileCoreServices/MobileCoreServices.h>
+#import "DDTool.h"
 
-@interface MineInfoViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface MineInfoViewController ()<UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UITableView * tableView;
+
+@property (nonatomic, strong) UIImagePickerController *imagePickerController;
 
 @end
 
@@ -25,13 +29,17 @@
     [self createViews];
 }
 
+- (void)saveButtonDidClicked
+{
+    
+}
+
 - (void)createViews
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.backgroundColor = self.view.backgroundColor;
-    self.tableView.rowHeight = 144 * scale;
     [self.tableView registerClass:[MineEditTableViewCell class] forCellReuseIdentifier:@"MineEditTableViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -73,7 +81,7 @@
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"close"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -83,7 +91,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"我的个人资料";
+    titleLabel.text = @"个人信息";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -105,14 +113,9 @@
     }];
 }
 
-- (void)saveButtonDidClicked
-{
-    NSLog(@"保存");
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 7;
+    return 6;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -128,9 +131,72 @@
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (indexPath.row == 0) {
+        return 228 * scale;
+    }
+    
+    return 144 * scale;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        [self selectImageFromAlbum];
+    }
+}
+
+#pragma mark 从相册获取图片或视频
+- (void)selectImageFromAlbum
+{
+    self.imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    [self.imagePickerController setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
+    self.imagePickerController.mediaTypes = @[(NSString *)kUTTypeImage];
+    [self presentViewController:self.imagePickerController animated:YES completion:nil];
+}
+
+#pragma mark UIImagePickerControllerDelegate
+//适用获取所有媒体资源，只需判断资源类型
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
+    NSString *mediaType=[info objectForKey:UIImagePickerControllerMediaType];
+    //判断资源类型
+    if ([mediaType isEqualToString:(NSString *)kUTTypeImage]){
+        
+        UIImage *tmpImg = [info objectForKey:UIImagePickerControllerEditedImage];
+        
+        if (nil == tmpImg) {
+            tmpImg = [info objectForKey:UIImagePickerControllerOriginalImage];
+        }
+        
+        MineEditTableViewCell * cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        [cell.headImageView setImage:tmpImg];
+        
+    }
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (UIImagePickerController *)imagePickerController
+{
+    if (!_imagePickerController) {
+        _imagePickerController = [[UIImagePickerController alloc] init];
+        _imagePickerController.delegate = self;
+        _imagePickerController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
+        _imagePickerController.allowsEditing = YES;
+    }
+    return _imagePickerController;
 }
 
 - (void)didReceiveMemoryWarning {

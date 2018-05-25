@@ -151,6 +151,7 @@
     NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.updateTime / 1000]];
     self.timeLabel.text = createTime;
     
+    self.detailLabel.text = model.postSummary;
     [self.yaoyueButton configTitle:[NSString stringWithFormat:@"%ld", model.wyyCount]];
     [self.shoucangButton configTitle:[NSString stringWithFormat:@"%ld", model.collectCount]];
     [self.dazhaohuButton configTitle:[NSString stringWithFormat:@"%ld", model.dzfCount]];

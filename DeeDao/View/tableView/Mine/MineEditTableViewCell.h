@@ -10,18 +10,20 @@
 #import "DDEditTextField.h"
 
 typedef enum : NSUInteger {
+    EditMineType_Logo,
     EditMineType_Name,
     EditMineType_Sex,
-    EditMineType_Detail,
-    EditMineType_TelNumber,
-    EditMineType_Birthday,
     EditMineType_Address,
+    EditMineType_TelNumber,
+    EditMineType_Detail,
+    EditMineType_Birthday,
     EditMineType_EMail
 } EditMineType;
 
 @interface MineEditTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) DDEditTextField * textField;
+@property (nonatomic, strong) UIImageView * headImageView;
 
 - (void)configWithType:(EditMineType)type indexPath:(NSIndexPath *)indexPath;
 

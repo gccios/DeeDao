@@ -27,16 +27,26 @@
 
 @implementation SeriesChoosDTieController
 
+- (instancetype)initWithSource:(NSMutableArray *)source
+{
+    if (self = [super init]) {
+        self.dataSource = source;
+        
+        self.start = self.dataSource.count;
+        self.length = 30;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.start = 0;
-    self.length = 30;
-    
     [self createViews];
     
-    [self getMoreList];
+    if (self.dataSource.count == 0) {
+        [self getMoreList];
+    }
 }
 
 - (void)createViews
@@ -85,18 +95,14 @@
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     if (self.delegate && [self.delegate respondsToSelector:@selector(seriesWillInsertWith:)]) {
         [self.delegate seriesWillInsertWith:model];
-        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
 - (void)getMoreList
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
-    
     DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [hud hideAnimated:YES];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
@@ -115,12 +121,10 @@
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     }];
@@ -173,14 +177,6 @@
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (NSMutableArray *)dataSource
-{
-    if (!_dataSource) {
-        _dataSource = [[NSMutableArray alloc] init];
-    }
-    return _dataSource;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -32,6 +32,7 @@
     self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyue"]];
     [self.yaoyueButton configTitle:@"99+"];
+    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.yaoyueButton.handleLabel.textColor = UIColorFromRGB(0xFFFFFF);
     [self addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -43,6 +44,7 @@
     self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.shoucangButton configImage:[UIImage imageNamed:@"yaoyue"]];
     [self.shoucangButton configTitle:@"99+"];
+    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.shoucangButton.handleLabel.textColor = UIColorFromRGB(0xFFFFFF);
     [self addSubview:self.shoucangButton];
     [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -54,6 +56,7 @@
     self.dazhaohuButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
     [self.dazhaohuButton configTitle:@"99+"];
+    [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.dazhaohuButton.handleLabel.textColor = UIColorFromRGB(0xFFFFFF);
     [self addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -82,5 +85,25 @@
     }
 }
 
+- (void)yaoyueButtonDidClicked
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(handleViewDidClickedYaoyue)]) {
+        [self.delegate handleViewDidClickedYaoyue];
+    }
+}
+
+- (void)shoucangButtonDidClicked
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(handleViewDidClickedShoucang)]) {
+        [self.delegate handleViewDidClickedShoucang];
+    }
+}
+
+- (void)dazhaohuButtonDidClicked
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(handleViewDidClickedDazhaohu)]) {
+        [self.delegate handleViewDidClickedDazhaohu];
+    }
+}
 
 @end
