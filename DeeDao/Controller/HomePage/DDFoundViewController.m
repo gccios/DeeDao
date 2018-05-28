@@ -37,13 +37,14 @@
 @property (nonatomic, strong) SCSafariPageController * safariPageController;
 @property (nonatomic, strong) NSMutableArray * mapVCSource;
 
-@property (nonatomic, assign) NSInteger pageType;
 @property (nonatomic, assign) NSInteger sourceType;
 
 @property (nonatomic, strong) NSMutableArray * mapSource;
 @property (nonatomic, strong) NSMutableArray * pointArray;
 
 @property (nonatomic, assign) NSInteger year;
+
+@property (nonatomic, strong) UIButton * backLocationButton;
 
 @end
 
@@ -67,8 +68,7 @@
     self.isFirst = YES;
     // Do any additional setup after loading the view.
     
-    self.pageType = 1;
-    self.sourceType = 1;
+    self.sourceType = 6;
     
     [self creatViews];
     [self creatTopView];
@@ -109,6 +109,24 @@
     [self.safariPageController setDataSource:self];
     [self.safariPageController setDelegate:self];
     self.safariPageController.view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
+    
+    self.backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
+    [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.backLocationButton];
+    [self.backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-60 * scale);
+        make.width.height.mas_equalTo(120 * scale);
+    }];
+}
+
+- (void)backLocationButtonDidClicked
+{
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+    BMKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
+    [self.mapView setRegion:adjustedRegion animated:YES];
+    self.isFirst = NO;
 }
 
 - (void)updateUserLocation
@@ -143,12 +161,7 @@
     CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
     [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
     
-    NSInteger dataSourceType = 3;
-    if (self.pageType == 2) {
-        dataSourceType = self.sourceType;
-    }
-    
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:dataSourceType type:1 pageStart:0 pageSize:100];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
@@ -326,36 +339,30 @@
     [self.safariPageController.view setFrame:self.view.bounds];
     [self.safariPageController didMoveToParentViewController:self];
     [self.safariPageController zoomOutAnimated:YES completion:nil];
-    self.pageType = 1;
 }
 
 - (void)sourceButtonDidClicked
 {
-    if (self.pageType == 1) {
-        self.pageType = 2;
-        [MBProgressHUD showTextHUDWithText:@"切换至来源" inView:self.view];
+    if (self.sourceType == 3) {
+        self.sourceType = 6;
     }else{
-        
-        if (self.sourceType == 3) {
-            self.sourceType = 6;
-        }else{
-            self.sourceType++;
-            if (self.sourceType > 6) {
-                self.sourceType = 1;
-            }
-        }
-        
-        
-        if (self.sourceType == 1) {
-            [MBProgressHUD showTextHUDWithText:@"切换至自己的帖子" inView:self.view];
-        }else if (self.sourceType == 2){
-            [MBProgressHUD showTextHUDWithText:@"切换至收藏的帖子" inView:self.view];
-        }else if (self.sourceType == 3){
-            [MBProgressHUD showTextHUDWithText:@"切换至自己+收藏的帖子" inView:self.view];
-        }else{
-            [MBProgressHUD showTextHUDWithText:@"切换至公开帖" inView:self.view];
+        self.sourceType++;
+        if (self.sourceType > 6) {
+            self.sourceType = 1;
         }
     }
+    
+    
+    if (self.sourceType == 1) {
+        [MBProgressHUD showTextHUDWithText:@"切换至自己的帖子" inView:self.view];
+    }else if (self.sourceType == 2){
+        [MBProgressHUD showTextHUDWithText:@"切换至收藏的帖子" inView:self.view];
+    }else if (self.sourceType == 3){
+        [MBProgressHUD showTextHUDWithText:@"切换至自己+收藏的帖子" inView:self.view];
+    }else{
+        [MBProgressHUD showTextHUDWithText:@"切换至公开帖" inView:self.view];
+    }
+    
     [self.mapView removeAnnotations:self.pointArray];
     [self requestMapViewLocations];
 }

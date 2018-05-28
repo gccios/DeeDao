@@ -20,6 +20,7 @@
 #import "DTieEditViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
+#import "DDCollectionHandleView.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
@@ -34,8 +35,8 @@
 @property (nonatomic, strong) UserModel * model;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
-@property (nonatomic, strong) UIButton * addButton;
-@property (nonatomic, strong) UIButton * deleteButton;
+//@property (nonatomic, strong) UIButton * addButton;
+//@property (nonatomic, strong) UIButton * deleteButton;
 
 @end
 
@@ -127,20 +128,19 @@
         height += [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:self.model.signature font:kPingFangRegular(48 * scale)];
     }
     self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, height);
-    
-    [self.collectionView registerClass:[UserInfoCollectionHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UserInfoCollectionHeader"];
+    self.layout.footerReferenceSize = CGSizeMake(kMainBoundsWidth, 330 * scale);
     
     [self.collectionView reloadData];
     
-    if (!self.model.selfFlg) {
-        if (self.model.friendFlg) {
-            self.deleteButton.hidden = NO;
-            self.addButton.hidden = YES;
-        }else{
-            self.deleteButton.hidden = YES;
-            self.addButton.hidden = NO;
-        }
-    }
+//    if (!self.model.selfFlg) {
+//        if (self.model.friendFlg) {
+//            self.deleteButton.hidden = NO;
+//            self.addButton.hidden = YES;
+//        }else{
+//            self.deleteButton.hidden = YES;
+//            self.addButton.hidden = NO;
+//        }
+//    }
 }
 
 - (void)createViews
@@ -154,6 +154,10 @@
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.layout];
     [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
+    [self.collectionView registerClass:[UserInfoCollectionHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UserInfoCollectionHeader"];
+    if (!self.model.selfFlg) {
+        [self.collectionView registerClass:[DDCollectionHandleView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"DDCollectionHandleView"];
+    }
     self.collectionView.backgroundColor = self.view.backgroundColor;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -193,6 +197,25 @@
         [header configWithModel:self.model];
         
         return header;
+    }else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
+        DDCollectionHandleView * handView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"DDCollectionHandleView" forIndexPath:indexPath];
+        
+        handView.backgroundColor = self.view.backgroundColor;
+        if (self.model.friendFlg) {
+            [handView configButtonBackgroundColor:self.view.backgroundColor title:@"删除好友"];
+            __weak typeof(self) weakSelf = self;
+            handView.handleButtonClicked = ^{
+                [weakSelf deleteFriend];
+            };
+        }else{
+            [handView configButtonBackgroundColor:self.view.backgroundColor title:@"添加好友"];
+            __weak typeof(self) weakSelf = self;
+            handView.handleButtonClicked = ^{
+                [weakSelf addFriend];
+            };
+        }
+        
+        return handView;
     }
     return nil;
 }
@@ -308,54 +331,54 @@
     _dataSource = [[NSMutableArray alloc] initWithArray:model.postBeanList];
 }
 
-- (UIButton *)addButton
-{
-    if (!_addButton) {
-        CGFloat scale = kMainBoundsWidth / 1080.f;
-        _addButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0XDB6283) title:@"添加好友"];
-        [self.view addSubview:_addButton];
-        [_addButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(60 * scale);
-            make.right.mas_equalTo(-60 * scale);
-            make.bottom.mas_equalTo(-95 * scale);
-            make.height.mas_equalTo(144 * scale);
-        }];
-        [DDViewFactoryTool cornerRadius:24 * scale withView:_addButton];
-        _addButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-        _addButton.layer.borderWidth = 3 * scale;
-        _addButton.backgroundColor = self.view.backgroundColor;
-        [_addButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
-        CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-        gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-        gradientLayer.startPoint = CGPointMake(0, 1);
-        gradientLayer.endPoint = CGPointMake(1, 0);
-        gradientLayer.locations = @[@0, @1.0];
-        gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 120 * scale, (144 * scale));
-        [_addButton.layer addSublayer:gradientLayer];
-    }
-    return _addButton;
-}
-
-- (UIButton *)deleteButton
-{
-    if (!_deleteButton) {
-        CGFloat scale = kMainBoundsWidth / 1080.f;
-        _deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0XDB6283) title:@"删除好友"];
-        [self.view addSubview:_deleteButton];
-        [_deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(60 * scale);
-            make.right.mas_equalTo(-60 * scale);
-            make.bottom.mas_equalTo(-95 * scale);
-            make.height.mas_equalTo(144 * scale);
-        }];
-        [DDViewFactoryTool cornerRadius:24 * scale withView:_deleteButton];
-        _deleteButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-        _deleteButton.layer.borderWidth = 3 * scale;
-        _deleteButton.backgroundColor = self.view.backgroundColor;
-        [_deleteButton addTarget:self action:@selector(deleteFriend) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _deleteButton;
-}
+//- (UIButton *)addButton
+//{
+//    if (!_addButton) {
+//        CGFloat scale = kMainBoundsWidth / 1080.f;
+//        _addButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0XDB6283) title:@"添加好友"];
+//        [self.view addSubview:_addButton];
+//        [_addButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.mas_equalTo(60 * scale);
+//            make.right.mas_equalTo(-60 * scale);
+//            make.bottom.mas_equalTo(-95 * scale);
+//            make.height.mas_equalTo(144 * scale);
+//        }];
+//        [DDViewFactoryTool cornerRadius:24 * scale withView:_addButton];
+//        _addButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//        _addButton.layer.borderWidth = 3 * scale;
+//        _addButton.backgroundColor = self.view.backgroundColor;
+//        [_addButton addTarget:self action:@selector(addFriend) forControlEvents:UIControlEventTouchUpInside];
+//        CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+//        gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+//        gradientLayer.startPoint = CGPointMake(0, 1);
+//        gradientLayer.endPoint = CGPointMake(1, 0);
+//        gradientLayer.locations = @[@0, @1.0];
+//        gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 120 * scale, (144 * scale));
+//        [_addButton.layer addSublayer:gradientLayer];
+//    }
+//    return _addButton;
+//}
+//
+//- (UIButton *)deleteButton
+//{
+//    if (!_deleteButton) {
+//        CGFloat scale = kMainBoundsWidth / 1080.f;
+//        _deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0XDB6283) title:@"删除好友"];
+//        [self.view addSubview:_deleteButton];
+//        [_deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.mas_equalTo(60 * scale);
+//            make.right.mas_equalTo(-60 * scale);
+//            make.bottom.mas_equalTo(-95 * scale);
+//            make.height.mas_equalTo(144 * scale);
+//        }];
+//        [DDViewFactoryTool cornerRadius:24 * scale withView:_deleteButton];
+//        _deleteButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//        _deleteButton.layer.borderWidth = 3 * scale;
+//        _deleteButton.backgroundColor = self.view.backgroundColor;
+//        [_deleteButton addTarget:self action:@selector(deleteFriend) forControlEvents:UIControlEventTouchUpInside];
+//    }
+//    return _deleteButton;
+//}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

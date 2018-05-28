@@ -7,6 +7,7 @@
 //
 
 #import "AddCommentRequest.h"
+#import "UserManager.h"
 
 @implementation AddCommentRequest
 
@@ -18,6 +19,7 @@
         
         [self setIntegerValue:postId forParamKey:@"postViewId"];
         [self setValue:commentContent forParamKey:@"commentContent"];
+        [self setIntegerValue:[UserManager shareManager].user.cid forParamKey:@"commentatorId"];
     }
     return self;
 }

@@ -171,7 +171,7 @@
     self.yaoyueButton.enabled = NO;
     if (model.wyyFlg) {
         
-        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.postId];
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             model.wyyFlg = 0;
@@ -186,7 +186,7 @@
         }];
         
     }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:1 subType:0 remark:@""];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:1 subType:0 remark:@""];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -209,7 +209,7 @@
     self.shoucangButton.enabled = NO;
     if (model.collectFlg) {
         
-        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.postId];
+        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             model.collectFlg = 0;
@@ -224,7 +224,7 @@
         }];
         
     }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:0 subType:0 remark:@""];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:0 remark:@""];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -246,7 +246,7 @@
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
     self.dazhaohuButton.enabled = NO;
     
-    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.postId type:0 subType:1 remark:@""];
+    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:1 remark:@""];
     
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         

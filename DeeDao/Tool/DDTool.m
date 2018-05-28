@@ -12,6 +12,8 @@
 #import <BGNetworkManager.h>
 #import "DDNetworkConfiguration.h"
 #import <IQKeyboardManager.h>
+#import <Photos/Photos.h>
+#import "MBProgressHUD+DDHUD.h"
 
 @implementation DDTool
 
@@ -172,6 +174,53 @@
         str = @"";
     }
     return str;
+}
+
++ (void)userLibraryAuthorizationStatusWithSuccess:(void (^)(void))success failure:(void (^)(void))failure
+{
+    //判断用户是否拥有权限
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    if (status == PHAuthorizationStatusNotDetermined) {
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (status == PHAuthorizationStatusAuthorized) {
+                    success();
+                }else{
+                    failure();
+                }
+            });
+        }];
+    } else if (status == PHAuthorizationStatusAuthorized) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            success();
+        });
+    } else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            failure();
+        });
+    }
+}
+
++ (void)saveImageInSystemPhoto:(UIImage *)image
+{
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        __block NSString *createdAssetId = nil;
+        NSError * error;
+        // 添加图片到【相机胶卷】
+        // 同步方法,直接创建图片,代码执行完,图片没创建完,所以使用占位ID (createdAssetId)
+        [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+            createdAssetId = [PHAssetChangeRequest creationRequestForAssetFromImage:image].placeholderForCreatedAsset.localIdentifier;
+        } error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                [MBProgressHUD showTextHUDWithText:@"保存失败" inView:[UIApplication sharedApplication].keyWindow];
+            }else{
+                [MBProgressHUD showTextHUDWithText:@"保存成功" inView:[UIApplication sharedApplication].keyWindow];
+            }
+        });
+    });
 }
 
 @end

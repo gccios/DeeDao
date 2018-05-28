@@ -28,6 +28,8 @@
 
 @property (nonatomic, assign) BOOL isFirst;
 
+@property (nonatomic, strong) UIButton * backLocationButton;
+
 @end
 
 @implementation DTieMapViewController
@@ -61,7 +63,25 @@
     }];
     self.mapView.delegate = self;
     
+    self.backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
+    [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.backLocationButton];
+    [self.backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-60 * scale);
+        make.width.height.mas_equalTo(120 * scale);
+    }];
+    
     [self createTopView];
+}
+
+- (void)backLocationButtonDidClicked
+{
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+    BMKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
+    [self.mapView setRegion:adjustedRegion animated:YES];
+    self.isFirst = NO;
 }
 
 - (void)updateUserLocation

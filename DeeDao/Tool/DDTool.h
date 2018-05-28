@@ -31,4 +31,8 @@
 
 + (NSString *)getTextWithHtml:(NSString *)html;
 
++ (void)userLibraryAuthorizationStatusWithSuccess:(void (^)(void))success failure:(void (^)(void))failure;
+
++ (void)saveImageInSystemPhoto:(UIImage *)image;
+
 @end

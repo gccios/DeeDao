@@ -39,6 +39,12 @@
 		062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048D520B7E399008DDF25 /* AddOrUpdateSecurityRequest.m */; };
 		062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048D820B7F2EF008DDF25 /* SelectSecurityRequest.m */; };
 		062048DC20B7F960008DDF25 /* DeleteSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062048DB20B7F960008DDF25 /* DeleteSecurityRequest.m */; };
+		0623470620BBB61C00B1894E /* DDShareManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623470520BBB61C00B1894E /* DDShareManager.m */; };
+		0623470920BBD80A00B1894E /* DTieShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623470820BBD80A00B1894E /* DTieShareViewController.m */; };
+		0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623470B20BBDC6600B1894E /* XWDragCellCollectionView.m */; };
+		0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */; };
+		0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471520BBE05200B1894E /* XRWaterfallLayout.m */; };
+		0623471A20BC15E400B1894E /* DDActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471920BC15E400B1894E /* DDActivityViewController.m */; };
 		06301B4220A6D309003580CA /* XFCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3A20A6D309003580CA /* XFCameraButton.m */; };
 		06301B4320A6D309003580CA /* XFCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3C20A6D309003580CA /* XFCameraController.m */; };
 		06301B4420A6D309003580CA /* XFCameraController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06301B3D20A6D309003580CA /* XFCameraController.xib */; };
@@ -243,6 +249,18 @@
 		062048D820B7F2EF008DDF25 /* SelectSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectSecurityRequest.m; sourceTree = "<group>"; };
 		062048DA20B7F960008DDF25 /* DeleteSecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeleteSecurityRequest.h; sourceTree = "<group>"; };
 		062048DB20B7F960008DDF25 /* DeleteSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeleteSecurityRequest.m; sourceTree = "<group>"; };
+		0623470420BBB61C00B1894E /* DDShareManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDShareManager.h; sourceTree = "<group>"; };
+		0623470520BBB61C00B1894E /* DDShareManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShareManager.m; sourceTree = "<group>"; };
+		0623470720BBD80A00B1894E /* DTieShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieShareViewController.h; sourceTree = "<group>"; };
+		0623470820BBD80A00B1894E /* DTieShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieShareViewController.m; sourceTree = "<group>"; };
+		0623470B20BBDC6600B1894E /* XWDragCellCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XWDragCellCollectionView.m; sourceTree = "<group>"; };
+		0623470C20BBDC6600B1894E /* XWDragCellCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XWDragCellCollectionView.h; sourceTree = "<group>"; };
+		0623471120BBDCB400B1894E /* DDShareImageCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDShareImageCollectionViewCell.h; sourceTree = "<group>"; };
+		0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShareImageCollectionViewCell.m; sourceTree = "<group>"; };
+		0623471520BBE05200B1894E /* XRWaterfallLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRWaterfallLayout.m; sourceTree = "<group>"; };
+		0623471620BBE05200B1894E /* XRWaterfallLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRWaterfallLayout.h; sourceTree = "<group>"; };
+		0623471820BC15E400B1894E /* DDActivityViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDActivityViewController.h; sourceTree = "<group>"; };
+		0623471920BC15E400B1894E /* DDActivityViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDActivityViewController.m; sourceTree = "<group>"; };
 		06301B3A20A6D309003580CA /* XFCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraButton.m; sourceTree = "<group>"; };
 		06301B3B20A6D309003580CA /* XFCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraButton.h; sourceTree = "<group>"; };
 		06301B3C20A6D309003580CA /* XFCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraController.m; sourceTree = "<group>"; };
@@ -558,6 +576,24 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
+		0623470A20BBDC6600B1894E /* XWDragCellCollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				0623470C20BBDC6600B1894E /* XWDragCellCollectionView.h */,
+				0623470B20BBDC6600B1894E /* XWDragCellCollectionView.m */,
+			);
+			path = XWDragCellCollectionView;
+			sourceTree = "<group>";
+		};
+		0623471420BBE05200B1894E /* XRWaterfallLayout */ = {
+			isa = PBXGroup;
+			children = (
+				0623471620BBE05200B1894E /* XRWaterfallLayout.h */,
+				0623471520BBE05200B1894E /* XRWaterfallLayout.m */,
+			);
+			path = XRWaterfallLayout;
+			sourceTree = "<group>";
+		};
 		06301B3720A6D2FE003580CA /* XFAVFoundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -599,10 +635,16 @@
 		0641496D20AA7F4F00460CB3 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				0641496E20AA7F8500460CB3 /* QNDDUploadManager.h */,
-				0641496F20AA7F8500460CB3 /* QNDDUploadManager.m */,
+				06733F9620A2D748007875A7 /* UserManager.h */,
+				06733F9720A2D748007875A7 /* UserManager.m */,
+				06733F9920A2E82D007875A7 /* WeChatManager.h */,
+				06733F9A20A2E82D007875A7 /* WeChatManager.m */,
+				0623470420BBB61C00B1894E /* DDShareManager.h */,
+				0623470520BBB61C00B1894E /* DDShareManager.m */,
 				0641497120AAC54800460CB3 /* DDLocationManager.h */,
 				0641497220AAC54800460CB3 /* DDLocationManager.m */,
+				0641496E20AA7F8500460CB3 /* QNDDUploadManager.h */,
+				0641496F20AA7F8500460CB3 /* QNDDUploadManager.m */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -956,6 +998,8 @@
 		06733F8620A2C40D007875A7 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				0623471420BBE05200B1894E /* XRWaterfallLayout */,
+				0623470A20BBDC6600B1894E /* XWDragCellCollectionView */,
 				06102AD520B470F700FF3278 /* GCCLayerCurve */,
 				066033C220B2BDB600A54D81 /* SCSafariPageController */,
 				060F004D20AC11A800C810A1 /* TYCyclePagerView */,
@@ -992,12 +1036,8 @@
 		06733F9520A2D707007875A7 /* User */ = {
 			isa = PBXGroup;
 			children = (
-				06733F9620A2D748007875A7 /* UserManager.h */,
-				06733F9720A2D748007875A7 /* UserManager.m */,
 				06733FA020A2FD77007875A7 /* UserModel.h */,
 				06733FA120A2FD77007875A7 /* UserModel.m */,
-				06733F9920A2E82D007875A7 /* WeChatManager.h */,
-				06733F9A20A2E82D007875A7 /* WeChatManager.m */,
 				064F0B4420A489BB007C0A4F /* MineMenuModel.h */,
 				064F0B4520A489BB007C0A4F /* MineMenuModel.m */,
 				061994A520B5091700AD64AB /* SecurityGroupModel.h */,
@@ -1069,6 +1109,8 @@
 				0647F31220B67E20009B7C27 /* UserInfoCollectionHeader.m */,
 				06BBF91C20B71A220065B8C0 /* DDCollectionHandleView.h */,
 				06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */,
+				0623471120BBDCB400B1894E /* DDShareImageCollectionViewCell.h */,
+				0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -1198,6 +1240,10 @@
 				06102AD020B46CB800FF3278 /* LiuYanViewController.m */,
 				061994BA20B53F1900AD64AB /* DTieSearchViewController.h */,
 				061994BB20B53F1900AD64AB /* DTieSearchViewController.m */,
+				0623470720BBD80A00B1894E /* DTieShareViewController.h */,
+				0623470820BBD80A00B1894E /* DTieShareViewController.m */,
+				0623471820BC15E400B1894E /* DDActivityViewController.h */,
+				0623471920BC15E400B1894E /* DDActivityViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1436,11 +1482,14 @@
 				06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */,
 				06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */,
 				0647F30A20B661D6009B7C27 /* SeriesDetailRequest.m in Sources */,
+				0623470920BBD80A00B1894E /* DTieShareViewController.m in Sources */,
+				0623471A20BC15E400B1894E /* DDActivityViewController.m in Sources */,
 				064170FF20B3B8FA0075ECB6 /* SeriesTableViewCell.m in Sources */,
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				0641710C20B3EB9C0075ECB6 /* AddSeriesViewController.m in Sources */,
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
+				0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */,
 				066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */,
@@ -1524,6 +1573,7 @@
 				06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */,
 				066033F120B2BE6000A54D81 /* SCSafariPageWrapperViewController.m in Sources */,
 				061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */,
+				0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */,
 				0641710220B3B9580075ECB6 /* SeriesModel.m in Sources */,
 				066033F020B2BE6000A54D81 /* SCSafariPageController.m in Sources */,
 				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
@@ -1531,6 +1581,7 @@
 				06BB78F720A9C9100049F28F /* MailShareTableViewCell.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
 				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
+				0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */,
 				060F004920ABE94600C810A1 /* DTieListRequest.m in Sources */,
 				066033F220B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m in Sources */,
 				0641497320AAC54800460CB3 /* DDLocationManager.m in Sources */,
@@ -1544,6 +1595,7 @@
 				0641710920B3E5650075ECB6 /* GetSeriesRequest.m in Sources */,
 				06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */,
 				066033E520B2BE0400A54D81 /* SCWeakObjectWrapper.m in Sources */,
+				0623470620BBB61C00B1894E /* DDShareManager.m in Sources */,
 				0647F31620B698BE009B7C27 /* AddFriendRequest.m in Sources */,
 				060F006220AC493A00C810A1 /* DTieDetailRequest.m in Sources */,
 				066033E320B2BE0400A54D81 /* easing.c in Sources */,

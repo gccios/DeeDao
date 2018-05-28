@@ -14,6 +14,7 @@
 @interface DTieDetailVideoTableViewCell ()
 
 @property (nonatomic, strong) UIImageView * detailImageView;
+@property (nonatomic, strong) UIImageView * playImageView;;
 
 @end
 
@@ -32,10 +33,19 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.detailImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-    self.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    [self.contentView addSubview:self.imageView];
-    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.detailImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [self.contentView addSubview:self.detailImageView];
+    [self.detailImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
+    }];
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    self.playImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.playImageView setImage:[UIImage imageNamed:@"player"]];
+    [self.contentView addSubview:self.playImageView];
+    [self.playImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(0);
+        make.width.height.mas_equalTo(150 * scale);
     }];
 }
 

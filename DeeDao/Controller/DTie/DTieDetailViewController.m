@@ -19,6 +19,7 @@
 #import "DTieCancleWYYRequest.h"
 #import "LiuYanViewController.h"
 #import "UserInfoViewController.h"
+#import <AVKit/AVKit.h>
 
 @interface DTieDetailViewController () <UITableViewDelegate, UITableViewDataSource, DDHandleViewDelegate>
 
@@ -185,7 +186,7 @@
 
 - (void)liuyanButtonDidClicked
 {
-    LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.postId];
+    LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.cid];
     [self presentViewController:liuyan animated:YES completion:nil];
 }
 
@@ -238,10 +239,22 @@
     return [tableView dequeueReusableCellWithIdentifier:@"DTieDetailTextTableViewCell" forIndexPath:indexPath];
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DTieEditModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    if (!isEmptyString(model.textInformation)) {
+        AVPlayerViewController * playView = [[AVPlayerViewController alloc] init];
+        playView = [[AVPlayerViewController alloc] init];
+        playView.player = [[AVPlayer alloc] initWithURL:[NSURL URLWithString:model.textInformation]];
+        playView.videoGravity = AVLayerVideoGravityResizeAspect;
+        [self presentViewController:playView animated:YES completion:nil];
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     DTieEditModel * model = [self.dataSource objectAtIndex:indexPath.row];
-    if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
+    if (model.type == DTieEditType_Image) {
         
         UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
 
@@ -263,6 +276,8 @@
         CGFloat imgHeight = image.size.height * kMainBoundsWidth / image.size.width;
         return imgHeight;
         
+    }else if(model.type == DTieEditType_Video){
+        return  kMainBoundsWidth / 16.f * 9.f;
     }
     return UITableViewAutomaticDimension;
 }

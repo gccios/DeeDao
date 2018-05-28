@@ -11,10 +11,12 @@
 #import <Masonry.h>
 #import <UIImageView+WebCache.h>
 #import "DDTool.h"
+#import "DDShareManager.h"
 
 @interface DDCollectionTableViewCell ()
 
 @property (nonatomic, strong) UIImageView * baseImageView;
+@property (nonatomic, strong) UIImageView * playImageView;;
 
 @property (nonatomic, strong) UIView * firstReadView;
 @property (nonatomic, strong) UILabel * titleLabel;
@@ -114,10 +116,30 @@
         make.right.mas_equalTo(-120 * scale);
         make.bottom.mas_equalTo(-60 * scale);
     }];
+    
+    self.playImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.playImageView setImage:[UIImage imageNamed:@"player"]];
+    [self.contentView addSubview:self.playImageView];
+    [self.playImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(0);
+        make.width.height.mas_equalTo(150 * scale);
+    }];
+    
+    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
+    self.baseImageView.userInteractionEnabled = YES;
+    [self.baseImageView addGestureRecognizer:longPress];
+}
+
+- (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
+{
+    if (self.playImageView.isHidden) {
+         [[DDShareManager shareManager] showHandleViewWithImage:self.baseImageView.image];
+    }
 }
 
 - (void)configWithModel:(DTieEditModel *)model
 {
+    self.playImageView.hidden = YES;
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
         self.firstReadView.hidden = YES;
         self.baseReadView.hidden = YES;
@@ -128,6 +150,11 @@
         }else{
             [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.detailContent]]];
         }
+        
+        if (model.type == DTieEditType_Video) {
+            self.playImageView.hidden = NO;
+        }
+        
     }else if (model.type == DTieEditType_Text){
         self.firstReadView.hidden = YES;
         self.baseReadView.hidden = NO;

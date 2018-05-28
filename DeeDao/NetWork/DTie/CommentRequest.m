@@ -14,9 +14,7 @@
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPGet;
-        self.methodName = @"post/comment/selectCommentByPostViewId";
-        
-        [self setIntegerValue:postId forParamKey:@"postViewId"];
+        self.methodName = [NSString stringWithFormat:@"post/comment/selectCommentByPostViewId/%ld", postId];
     }
     return self;
 }

@@ -54,6 +54,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 @property (nonatomic, assign) BOOL QXEnable;
 @property (nonatomic, assign) BOOL PYQEnable;
 @property (nonatomic, assign) BOOL WXEnable;
+@property (nonatomic, strong) NSMutableArray * shareImages;
 
 @property (nonatomic, strong) DTieEditFooterView * footerView;
 
@@ -64,7 +65,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 @property (nonatomic, strong) DTieModel * editModel;
 
-@property (nonatomic, strong) SecurityGroupModel * model;
+@property (nonatomic, strong) SecurityGroupModel * groupModel;
 
 @end
 
@@ -589,8 +590,21 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
             tmpImg = [info objectForKey:UIImagePickerControllerOriginalImage];
         }
         
+        NSData*  data = [NSData data];
+        data = UIImageJPEGRepresentation(tmpImg, 1);
+        float tempX = 0.9;
+        NSInteger length = data.length;
+        while (data.length > 500*1024) {
+            data = UIImageJPEGRepresentation(tmpImg, tempX);
+            tempX -= 0.1;
+            if (data.length == length) {
+                break;
+            }
+            length = data.length;
+        }
+        
         DTieEditModel * model = [self.moduleSource objectAtIndex:self.currentEditIndex.row];
-        model.image = tmpImg;
+        model.image = [UIImage imageWithData:data];
         
         [self.tableView beginUpdates];
         [self.tableView reloadRowsAtIndexPaths:@[self.currentEditIndex] withRowAnimation:UITableViewRowAnimationFade];
@@ -797,7 +811,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 - (void)securityDidSelectWith:(SecurityGroupModel *)model
 {
-    self.model = model;
+    self.groupModel = model;
     CGFloat scale = kMainBoundsWidth / 1080.f;
     NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"当前D贴权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
     NSString * name = model.securitygroupName;
@@ -919,6 +933,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     __block NSInteger tempCount = 0;
     
     NSMutableArray * tempArray = [[NSMutableArray alloc] initWithArray:self.moduleSource];
+    [self.shareImages removeAllObjects];
     
     for (NSInteger i = 0; i < tempArray.count; i++) {
         
@@ -996,6 +1011,9 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                 }
                 
                 QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                if (self.PYQEnable) {
+                    [self.shareImages addObject:model.image];
+                }
                 
                 [manager uploadImage:model.image progress:^(NSString *key, float percent) {
                     
@@ -1146,7 +1164,13 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     if (self.editModel) {
         postId = self.editModel.postId;
     }
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:self.status remindFlg:1 firstPic:firstPic postID:postId];
+    
+    NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
+    if (self.groupModel) {
+        [allowToSeeList addObject:@(self.groupModel.cid)];
+    }
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:self.status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:1 allowToSeeList:allowToSeeList];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -1162,6 +1186,9 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                     DTie.dTieType = DTieType_Edit;
                 }
                 [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:DTie];
+                
+                [self checkShare];
+                
                 [self.navigationController popViewControllerAnimated:YES];
             }
         }
@@ -1175,6 +1202,13 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     }];
     
     NSLog(@"%@", array);
+}
+
+- (void)checkShare
+{
+    if (self.PYQEnable) {
+        
+    }
 }
 
 - (UILongPressGestureRecognizer *)longPressGesture
@@ -1195,6 +1229,14 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         _imagePickerController.allowsEditing = NO;
     }
     return _imagePickerController;
+}
+
+- (NSMutableArray *)shareImages
+{
+    if (_shareImages) {
+        _shareImages = [[NSMutableArray alloc] initWithCapacity:9];
+    }
+    return _shareImages;
 }
 
 - (void)dealloc

@@ -14,6 +14,7 @@
 #import "UserManager.h"
 #import "DDTool.h"
 #import "DDHandleButton.h"
+#import <AVKit/AVKit.h>
 
 @interface DTieEditReadViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -125,6 +126,18 @@
         return cell;
     }
     return [tableView dequeueReusableCellWithIdentifier:@"DTieDetailTextTableViewCell" forIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DTieEditModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    if (!isEmptyString(model.videoURL)) {
+        AVPlayerViewController * playView = [[AVPlayerViewController alloc] init];
+        playView = [[AVPlayerViewController alloc] init];
+        playView.player = [[AVPlayer alloc] initWithURL:[NSURL URLWithString:model.textInformation]];
+        playView.videoGravity = AVLayerVideoGravityResizeAspect;
+        [self presentViewController:playView animated:YES completion:nil];
+    }
 }
 
 - (void)createHeaderView

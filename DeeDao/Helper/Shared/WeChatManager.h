@@ -17,4 +17,6 @@ extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功
 
 - (void)loginWithWeChat;
 
+- (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController;
+
 @end
