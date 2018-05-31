@@ -11,6 +11,7 @@
 #import "MBProgressHUD+DDHUD.h"
 #import "DTieModel.h"
 #import "DTieChooseCollectionViewCell.h"
+#import <MJRefresh.h>
 
 @interface SecurityDTieViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -43,12 +44,14 @@
     // Do any additional setup after loading the view.
     
     self.start = 0;
-    self.length = 30;
+    self.length = 20;
     
     [self createViews];
     
     if (self.dataSource.count == 0) {
-        [self getMoreList];
+        [self refreshData];
+    }else{
+        self.start = self.dataSource.count;
     }
 }
 
@@ -71,6 +74,7 @@
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    self.collectionView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(getMoreList)];
     
     [self createTopView];
 }
@@ -90,7 +94,10 @@
     
     [cell configWithDTieModel:model];
     
-    if ([self.chooseSource containsObject:model]) {
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.cid];
+    NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
+    
+    if (tempArray && tempArray.count > 0) {
         [cell configSelectStatus:YES];
     }else{
         [cell configSelectStatus:NO];
@@ -112,6 +119,39 @@
     [collectionView reloadItemsAtIndexPaths:@[indexPath]];
 }
 
+- (void)refreshData
+{
+    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:0 length:self.length];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data) && data.count > 0) {
+                [self.dataSource removeAllObjects];
+                for (NSDictionary * dict in data) {
+                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                    [self.dataSource addObject:model];
+                }
+                [self.collectionView reloadData];
+                self.start = 21;
+                
+                return;
+                
+            }
+        }
+        
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        
+    }];
+}
+
 - (void)getMoreList
 {
     DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
@@ -119,27 +159,28 @@
         
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
-            if (KIsArray(data)) {
+            if (KIsArray(data) && data.count > 0) {
                 
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
                 }
                 [self.collectionView reloadData];
-                
+                self.start += self.length;
                 return;
                 
             }
         }
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_footer endRefreshing];
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_footer endRefreshing];
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_footer endRefreshing];
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
         
     }];
 }

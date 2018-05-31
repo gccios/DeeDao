@@ -8,7 +8,15 @@
 
 #import "DDViewController.h"
 
+@protocol UserFriendInfoDelegate <NSObject>
+
+- (void)userFriendInfoDidUpdate;
+
+@end
+
 @interface UserInfoViewController : DDViewController
+
+@property (nonatomic, weak) id<UserFriendInfoDelegate> delegate;
 
 - (instancetype)initWithUserId:(NSInteger)userId;
 

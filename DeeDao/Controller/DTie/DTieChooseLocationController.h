@@ -18,5 +18,6 @@
 @interface DTieChooseLocationController : DDViewController
 
 @property (nonatomic, assign) id<ChooseLocationDelegate> delegate;
+@property (nonatomic, strong) BMKPoiInfo * startPoi;
 
 @end

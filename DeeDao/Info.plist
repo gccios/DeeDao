@@ -37,6 +37,9 @@
 	<array>
 		<string>wechat</string>
 		<string>weixin</string>
+		<string>qqmap</string>
+		<string>iosamap</string>
+		<string>baidumap</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

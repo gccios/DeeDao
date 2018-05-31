@@ -9,6 +9,7 @@
 #import "DDDTieViewController.h"
 #import "DTieCollectionViewCell.h"
 #import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 #import "QNDDUploadManager.h"
 #import "DTieListRequest.h"
 #import "MBProgressHUD+DDHUD.h"
@@ -19,6 +20,7 @@
 #import "DTieDetailRequest.h"
 #import "DTieSearchViewController.h"
 #import "DDNavigationViewController.h"
+#import <MJRefresh.h>
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -45,21 +47,21 @@
     [super viewDidLoad];
     
     self.start = 0;
-    self.length = 30;
+    self.length = 20;
     
     [self createViews];
     
-    [self getMoreList];
+    [self refreshData];
 }
 
-- (void)getMoreList
+- (void)refreshData
 {
-//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
+    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:0 length:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-//        [hud hideAnimated:YES];
+        //        [hud hideAnimated:YES];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
@@ -73,21 +75,56 @@
                 }
                 [self.collectionView reloadData];
                 
-                return;
+                self.start = self.length + 1;
                 
             }
         }
+        [self.collectionView.mj_header endRefreshing];
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        //        [hud hideAnimated:YES];
+        //        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_header endRefreshing];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        //        [hud hideAnimated:YES];
+        //        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_header endRefreshing];
+    }];
+}
+
+- (void)getMoreList
+{
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    
+    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+//        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data) && data.count > 0) {
+                for (NSDictionary * dict in data) {
+                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                    [self.dataSource addObject:model];
+                }
+                [self.collectionView reloadData];
+                
+                self.start += self.length;
+                
+            }
+        }
+        [self.collectionView.mj_footer endRefreshing];
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
 //        [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
-        
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_footer endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
 //        [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
-        
+//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [self.collectionView.mj_footer endRefreshing];
     }];
 }
 
@@ -112,59 +149,62 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    /*
-     D贴顶部下拉资源管理
-     */
-    CGFloat managerViewHeight = 288 * scale;
-    self.DTieManagerView = [[UIView alloc] initWithFrame:CGRectMake(0, -managerViewHeight, kMainBoundsWidth, managerViewHeight)];
-    self.DTieManagerView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshData)];
+    self.collectionView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(getMoreList)];
     
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(managerViewDidClicked)];
-    tap.numberOfTapsRequired = 1;
-    [self.collectionView.panGestureRecognizer requireGestureRecognizerToFail:tap];
-    [self.DTieManagerView addGestureRecognizer:tap];
-    
-    [self.collectionView addSubview:self.DTieManagerView];
-    
-    UIImageView * managerImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"sourceManager"]];
-    [self.DTieManagerView addSubview:managerImageView];
-    [managerImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.height.mas_equalTo(144 * scale);
-        make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(263 * scale);
-    }];
-    
-    UILabel * managerTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    managerTitleLabel.text = @"D贴素材管理";
-    [self.DTieManagerView addSubview:managerTitleLabel];
-    [managerTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(-50 * scale / 2);
-        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
-        make.height.mas_equalTo(50 * scale);
-    }];
-    
-    UILabel * managerSubtitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    managerSubtitleLabel.text = @"展开所有D贴照片和视频";
-    [self.DTieManagerView addSubview:managerSubtitleLabel];
-    [managerSubtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(managerTitleLabel.mas_bottom).offset(10 * scale);
-        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
-        make.height.mas_equalTo(36 * scale);
-    }];
-    
+//    /*
+//     D贴顶部下拉资源管理
+//     */
+//    CGFloat managerViewHeight = 288 * scale;
+//    self.DTieManagerView = [[UIView alloc] initWithFrame:CGRectMake(0, -managerViewHeight, kMainBoundsWidth, managerViewHeight)];
+//    self.DTieManagerView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+//
+//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(managerViewDidClicked)];
+//    tap.numberOfTapsRequired = 1;
+//    [self.collectionView.panGestureRecognizer requireGestureRecognizerToFail:tap];
+//    [self.DTieManagerView addGestureRecognizer:tap];
+//
+//    [self.collectionView addSubview:self.DTieManagerView];
+//
+//    UIImageView * managerImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"sourceManager"]];
+//    [self.DTieManagerView addSubview:managerImageView];
+//    [managerImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.height.mas_equalTo(144 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.left.mas_equalTo(263 * scale);
+//    }];
+//
+//    UILabel * managerTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+//    managerTitleLabel.text = @"D贴素材管理";
+//    [self.DTieManagerView addSubview:managerTitleLabel];
+//    [managerTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(-50 * scale / 2);
+//        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
+//        make.height.mas_equalTo(50 * scale);
+//    }];
+//
+//    UILabel * managerSubtitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+//    managerSubtitleLabel.text = @"展开所有D贴照片和视频";
+//    [self.DTieManagerView addSubview:managerSubtitleLabel];
+//    [managerSubtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(managerTitleLabel.mas_bottom).offset(10 * scale);
+//        make.left.mas_equalTo(managerImageView.mas_right).offset(24 * scale);
+//        make.height.mas_equalTo(36 * scale);
+//    }];
+//
     [self createTopView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate:) name:DTieDidCreateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate) name:DTieDidCreateNotification object:nil];
 }
 
-- (void)newDTieDidCreate:(NSNotification *)notification
+- (void)newDTieDidCreate
 {
 //    DTieModel * model = notification.object;
 //
 //    [self.dataSource insertObject:model atIndex:1];
 //    [self.collectionView reloadData];
     
-    [self getMoreList];
+    [self refreshData];
 }
 
 - (void)createTopView
@@ -192,7 +232,7 @@
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"D贴";
+    titleLabel.text = @"我的D贴";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60.5 * scale);
@@ -220,15 +260,15 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    self.seriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [self.seriesButton setImage:[UIImage imageNamed:@"series"] forState:UIControlStateNormal];
-    [self.seriesButton addTarget:self action:@selector(seriesButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:self.seriesButton];
-    [self.seriesButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(self.mapButton.mas_left).offset(-20 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
+//    self.seriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//    [self.seriesButton setImage:[UIImage imageNamed:@"series"] forState:UIControlStateNormal];
+//    [self.seriesButton addTarget:self action:@selector(seriesButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:self.seriesButton];
+//    [self.seriesButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(self.mapButton.mas_left).offset(-20 * scale);
+//        make.bottom.mas_equalTo(-20 * scale);
+//        make.width.height.mas_equalTo(100 * scale);
+//    }];
 }
 
 - (void)managerViewDidClicked
@@ -279,7 +319,7 @@
                     if (KIsDictionary(data)) {
                         DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                         dtieModel.postId = model.postId;
-                        DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
+                        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
                         [self.navigationController pushViewController:edit animated:YES];
                     }
                 }
@@ -320,16 +360,16 @@
     return cell;
 }
 
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
-{
-    if (scrollView == self.collectionView) {
-        CGFloat contentY = scrollView.contentOffset.y;
-        CGFloat height = self.DTieManagerView.frame.size.height;
-        if (contentY <= -height) {
-            [scrollView setContentOffset:CGPointMake(0, -height) animated:YES];
-        }
-    }
-}
+//- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+//{
+//    if (scrollView == self.collectionView) {
+//        CGFloat contentY = scrollView.contentOffset.y;
+//        CGFloat height = self.DTieManagerView.frame.size.height;
+//        if (contentY <= -height) {
+//            [scrollView setContentOffset:CGPointMake(0, -height) animated:YES];
+//        }
+//    }
+//}
 
 - (NSMutableArray *)dataSource
 {

@@ -106,6 +106,9 @@
         
         [MBProgressHUD showTextHUDWithText:@"删除好友成功" inView:self.view];
         [self getData];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate)]) {
+            [self.delegate userFriendInfoDidUpdate];
+        }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -166,7 +169,6 @@
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 300 * scale, 0);
     
     [self createTopView];
 }

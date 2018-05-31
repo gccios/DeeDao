@@ -13,6 +13,8 @@
 
 - (void)configWithModel:(DTieEditModel *)model;
 
+- (void)configCanSee:(BOOL)isCansee;
+
 - (void)configFirstWithModel:(DTieEditModel *)model firstTime:(NSString *)firstTime location:(NSString *)location updateTime:(NSString *)updateTime;
 
 @end

@@ -20,6 +20,10 @@
 #import "LiuYanViewController.h"
 #import "UserInfoViewController.h"
 #import <AVKit/AVKit.h>
+#import "DDShareManager.h"
+#import "DDLocationManager.h"
+#import "UserManager.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DTieDetailViewController () <UITableViewDelegate, UITableViewDataSource, DDHandleViewDelegate>
 
@@ -92,6 +96,11 @@
 #pragma mark - 用户主要交互事件
 - (void)handleViewDidClickedYaoyue
 {
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.handleView.yaoyueButton.enabled = NO;
     if (self.model.wyyFlg) {
         
@@ -129,6 +138,11 @@
 
 - (void)handleViewDidClickedShoucang
 {
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.handleView.shoucangButton.enabled = NO;
     if (self.model.collectFlg) {
         
@@ -166,6 +180,11 @@
 
 - (void)handleViewDidClickedDazhaohu
 {
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.handleView.dazhaohuButton.enabled = NO;
     
     DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:@""];
@@ -186,8 +205,8 @@
 
 - (void)liuyanButtonDidClicked
 {
-    LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.cid];
-    [self presentViewController:liuyan animated:YES completion:nil];
+    LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.cid commentId:self.model.authorId];
+    [self.navigationController pushViewController:liuyan animated:YES];
 }
 
 - (void)reloadHandleView
@@ -326,6 +345,17 @@
         make.top.left.right.mas_equalTo(0);
         make.height.mas_equalTo(height);
     }];
+    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
+    imageView.userInteractionEnabled = YES;
+    [imageView addGestureRecognizer:longPress];
+    
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [headerView addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(imageView.mas_bottom).offset(40 * scale);
+        make.left.mas_equalTo(50 * scale);
+        make.width.height.mas_equalTo(116 * scale);
+    }];
     
     UIImageView * logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [logoImageView sd_setImageWithURL:[NSURL URLWithString:self.model.portraituri]];
@@ -354,7 +384,7 @@
     [nameLabel addGestureRecognizer:tap2];
     
     UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    detailLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd" time:self.model.createTime];
+    detailLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日" time:self.model.sceneTime];
     [headerView addSubview:detailLabel];
     [detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(nameLabel.mas_bottom).offset(15 * scale);;
@@ -378,7 +408,7 @@
     
     UILabel * timeLocationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     timeLocationLabel.numberOfLines = 0;
-    timeLocationLabel.text = [NSString stringWithFormat:@"%@\n%@", [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.createTime], self.model.sceneAddress];
+    timeLocationLabel.text = [NSString stringWithFormat:@"%@\n%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.sceneAddress];
     [headerView addSubview:timeLocationLabel];
     [timeLocationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(titleLabel.mas_bottom).offset(20 * scale);
@@ -401,6 +431,14 @@
     self.tableView.tableHeaderView = headerView;
 }
 
+- (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
+{
+    UIImageView * imageView = (UIImageView *)longPress.view;
+    if ([imageView isKindOfClass:[UIImageView class]]) {
+        [[DDShareManager shareManager] showHandleViewWithImage:imageView.image];
+    }
+}
+
 - (void)lookUserInfo
 {
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.authorId];
@@ -421,7 +459,7 @@
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
-    lastUpdateLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.updateTime]];
+    lastUpdateLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.updateTime]];
     
     UIView * line1 = [[UIView alloc] initWithFrame:CGRectZero];
     line1.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:.4f];
@@ -580,6 +618,8 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
+    
+    
 }
 
 - (void)backButtonDidClicked

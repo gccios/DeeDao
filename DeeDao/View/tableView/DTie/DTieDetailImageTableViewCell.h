@@ -13,6 +13,8 @@
 
 - (void)configWithModel:(DTieEditModel *)model;
 
+- (void)configWithCanSee:(BOOL)cansee;
+
 - (void)yulanWithModel:(DTieEditModel *)model;
 
 @end

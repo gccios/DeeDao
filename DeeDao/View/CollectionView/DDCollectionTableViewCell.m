@@ -141,6 +141,7 @@
 {
     self.playImageView.hidden = YES;
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
+        [self.baseImageView setImage:[UIImage new]];
         self.firstReadView.hidden = YES;
         self.baseReadView.hidden = YES;
         self.baseImageView.hidden = NO;
@@ -160,6 +161,19 @@
         self.baseReadView.hidden = NO;
         self.baseImageView.hidden = YES;
         self.readLabel.text = [DDTool getTextWithHtml:model.detailContent];
+    }
+}
+
+- (void)configCanSee:(BOOL)isCansee
+{
+    if (isCansee) {
+        self.firstReadView.hidden = YES;
+        self.baseReadView.hidden = YES;
+        self.baseImageView.hidden = NO;
+        self.baseImageView.contentMode = UIViewContentModeScaleAspectFill;
+        [self.baseImageView setImage:[UIImage imageNamed:@"shuBG"]];
+    }else{
+        self.baseImageView.contentMode = UIViewContentModeScaleAspectFit;
     }
 }
 

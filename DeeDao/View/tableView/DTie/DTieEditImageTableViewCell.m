@@ -93,14 +93,14 @@
         
         // 没有找到已下载的图片就使用默认的占位图，当然高度也是默认的高度了，除了高度不固定的文字部分。
         if (!image) {
-            image = [UIImage imageNamed:@"test"];
+            image = [UIImage new];
         }
         [self.tieImageView setImage:image];
     }else{
         self.addButton.hidden = NO;
     }
     
-    if (self.model.pFlag) {
+    if (self.model.pFlag == 1) {
         [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
     }else{
         [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
@@ -115,10 +115,11 @@
 
 - (void)seeButtonDidClicked
 {
-    self.model.pFlag = !self.model.pFlag;
-    if (self.model.pFlag) {
+    if (self.model.pFlag == 0) {
+        self.model.pFlag = 1;
         [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
     }else{
+        self.model.pFlag = 0;
         [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
     }
 }

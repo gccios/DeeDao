@@ -13,10 +13,14 @@ extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功
 
 @interface WeChatManager : NSObject <WXApiDelegate>
 
+@property (nonatomic, assign) BOOL isShare;
+
 + (instancetype)shareManager;
 
 - (void)loginWithWeChat;
 
 - (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController;
+
+- (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image;
 
 @end

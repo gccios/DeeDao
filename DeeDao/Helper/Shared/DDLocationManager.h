@@ -6,7 +6,7 @@
 //  Copyright © 2018年 郭春城. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
 #import <BaiduMapAPI_Location/BMKLocationComponent.h>
 #import "DTieModel.h"
@@ -25,5 +25,7 @@ extern NSString * const DDUserLocationDidUpdateNotification;
 - (void)stopLocationService;
 
 - (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel;
+
+- (void)mapNavigationToLongitude:(double)longitude latitude:(double)latitude poiName:(NSString *)name withViewController:(UIViewController *)viewController;
 
 @end

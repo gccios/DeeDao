@@ -268,7 +268,8 @@
         userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
         [_mapView updateLocationViewWithParam:userlocationStyle];
         _mapView.showsUserLocation = YES;
-        _mapView.userTrackingMode = BMKUserTrackingModeFollow;
+        _mapView.userTrackingMode = BMKUserTrackingModeNone;
+        _mapView.showMapPoi = NO;
     }
     return _mapView;
 }

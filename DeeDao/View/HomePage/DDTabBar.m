@@ -8,6 +8,7 @@
 
 #import "DDTabBar.h"
 #import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 
 @interface DDTabBar ()
 
@@ -48,7 +49,7 @@
 {
     UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
     UINavigationController * na = (UINavigationController *)tab.selectedViewController;
-    DTieEditViewController * edit = [[DTieEditViewController alloc] init];
+    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] init];
     [na pushViewController:edit animated:YES];
 }
 

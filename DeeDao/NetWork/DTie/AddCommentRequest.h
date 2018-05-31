@@ -10,6 +10,6 @@
 
 @interface AddCommentRequest : BGNetworkRequest
 
-- (instancetype)initWithPostID:(NSInteger)postId commentContent:(NSString *)commentContent;
+- (instancetype)initWithPostID:(NSInteger)postId commentId:(NSInteger)commentId commentContent:(NSString *)commentContent;
 
 @end

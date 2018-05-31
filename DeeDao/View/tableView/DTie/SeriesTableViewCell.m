@@ -8,6 +8,7 @@
 
 #import "SeriesTableViewCell.h"
 #import "DDViewFactoryTool.h"
+#import "DDTool.h"
 #import <Masonry.h>
 #import <UIImageView+WebCache.h>
 
@@ -38,8 +39,8 @@
     self.showTitleLabel.text = model.seriesTitle;
     self.editTitleLabel.text = model.seriesTitle;
     if (!isEmptyString(model.seriesFirstPicture)) {
-        [self.showImageView sd_setImageWithURL:[NSURL URLWithString:model.seriesFirstPicture]];
-        [self.editImageView sd_setImageWithURL:[NSURL URLWithString:model.seriesFirstPicture]];
+        [self.showImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.seriesFirstPicture]]];
+        [self.editImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.seriesFirstPicture]]];
     }
     
     if (model.seriesStatus) {

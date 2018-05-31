@@ -49,6 +49,14 @@
         make.width.height.mas_equalTo(40 * scale);
     }];
     
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [self.contentView addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(46 * scale);
+        make.centerY.mas_equalTo(0);
+        make.width.height.mas_equalTo(148 * scale);
+    }];
+    
     self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"DeeDao-logo"]];
     [self.contentView addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {

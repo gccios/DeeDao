@@ -47,11 +47,10 @@
     self.pageType = 1;
     self.sourceType = 3;
     self.start = 0;
-    self.length = 30;
+    self.length = 1000;
     self.dataSource = [[NSMutableArray alloc] init];
     
     [self createViews];
-    [self searchRequest];
 }
 
 - (void)searchRequest

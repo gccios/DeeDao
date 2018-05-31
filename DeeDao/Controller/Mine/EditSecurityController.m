@@ -56,12 +56,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataDict = [[NSMutableDictionary alloc] init];
-    self.dataSource = [[NSMutableArray alloc] init];
-    self.selectFriend = [[NSMutableArray alloc] init];
-    self.selectDTie = [[NSMutableArray alloc] init];
-    self.DTieSource = [[NSMutableArray alloc] init];
-    
     [self createViews];
     
     [self requestFriendList];
@@ -206,9 +200,13 @@
         [cell configWithModel:model];
         
         __weak typeof(self) weakSelf = self;
+        __weak typeof(cell) weakCell = cell;
         cell.cancleButtonHandle = ^{
-            [weakSelf.selectFriend removeObjectAtIndex:indexPath.row];
-            [weakSelf.collectionView deleteItemsAtIndexPaths:@[indexPath]];
+            NSIndexPath * tempIndex = [weakSelf.collectionView indexPathForCell:weakCell];
+            if (tempIndex) {
+                [weakSelf.selectFriend removeObjectAtIndex:tempIndex.row];
+                [weakSelf.collectionView deleteItemsAtIndexPaths:@[tempIndex]];
+            }
         };
     }
     
@@ -385,6 +383,7 @@
     }];
 }
 
+#pragma mark - getter
 - (NSMutableArray *)selectFriend
 {
     if (!_selectFriend) {
@@ -399,6 +398,30 @@
         _selectDTie = [[NSMutableArray alloc] init];
     }
     return _selectDTie;
+}
+
+- (NSMutableDictionary *)dataDict
+{
+    if (!_dataDict) {
+        _dataDict = [[NSMutableDictionary alloc] init];
+    }
+    return _dataDict;
+}
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [[NSMutableArray alloc] init];
+    }
+    return _dataSource;
+}
+
+- (NSMutableArray *)DTieSource
+{
+    if (!_DTieSource) {
+        _DTieSource = [[NSMutableArray alloc] init];
+    }
+    return _DTieSource;
 }
 
 - (void)didReceiveMemoryWarning {

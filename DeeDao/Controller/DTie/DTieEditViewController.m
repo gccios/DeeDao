@@ -24,10 +24,13 @@
 #import "DTieDetailViewController.h"
 #import "DDTool.h"
 #import "DDPrivateViewController.h"
+#import "WeChatManager.h"
+#import "DTieShareViewController.h"
+#import "DatePickerView.h"
 
 NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
-@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ChooseLocationDelegate, DDPrivateViewSelectDelegate>
+@interface DTieEditViewController () <UITableViewDelegate, UITableViewDataSource, DTEditTextViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, ChooseLocationDelegate, DDPrivateViewSelectDelegate, DatePickerViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UIButton * putButton;
@@ -66,6 +69,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 @property (nonatomic, strong) DTieModel * editModel;
 
 @property (nonatomic, strong) SecurityGroupModel * groupModel;
+@property (nonatomic, assign) NSInteger sharePostId;
+
+@property (nonatomic, strong) DatePickerView * datePicker;
+@property (nonatomic, assign) NSInteger createTime;
 
 @end
 
@@ -91,15 +98,23 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    
+    self.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
     [self createDataSource];
     [self createViews];
     
     if (!isEmptyString(self.editLocation)) {
         self.footerView.locationLabel.text = self.editLocation;
+    }else{
+        self.footerView.locationLabel.text = [DDLocationManager shareManager].result.address;
     }
     
     if (self.editModel) {
+        
+        if (self.editModel.sceneTime > 0) {
+            self.createTime = self.editModel.sceneTime;
+            self.footerView.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.editModel.sceneTime];
+        }
+        
         [self.dataSource removeAllObjects];
         [self.moduleSource removeAllObjects];
         
@@ -140,6 +155,10 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
     self.footerView = [[DTieEditFooterView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 370 * scale)];
     [self.footerView.locationButton addTarget:self action:@selector(chooseLocation) forControlEvents:UIControlEventTouchUpInside];
     [self.footerView.AddButton addTarget:self action:@selector(addMoudle) forControlEvents:UIControlEventTouchUpInside];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(timeViewDidTap)];
+    self.footerView.timeLabel.userInteractionEnabled = YES;
+    [self.footerView.timeLabel addGestureRecognizer:tap];
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     [self.tableView registerClass:[DTieEditTableViewCell class] forCellReuseIdentifier:@"DTieEditTableViewCell"];
@@ -466,6 +485,8 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                     [self.tableView endUpdates];
                 }];
+            }else{
+                model.image = image;
             }
             
             CGFloat scale = image.size.height / image.size.width;
@@ -943,7 +964,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                                @"datadictionaryType":@"CONTENT_TEXT",
                                @"detailsContent":@"",
                                @"textInformation":@"",
-                               @"pFlg":[NSNumber numberWithBool:model.pFlag]}];
+                               @"pFlg":@(model.pFlag)}];
         
         switch (model.type) {
             case DTieEditType_Text:
@@ -971,7 +992,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                                         @"datadictionaryType":@"CONTENT_TEXT",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":@"",
-                                        @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                                        @"pFlg":@(model.pFlag)};
                 [listArray replaceObjectAtIndex:i withObject:dict];
                 tempCount++;
                 if (tempCount == self.moduleSource.count) {
@@ -984,13 +1005,17 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                 
             case DTieEditType_Image:
             {
+                if (model.image) {
+                    [self.shareImages addObject:model.image];
+                }
+                
                 if (!model.image) {
                     if (model.detailContent) {
                         NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
                                                 @"datadictionaryType":@"CONTENT_IMG",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":@"",
-                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                                                @"pFlg":@(model.pFlag)};
                         [listArray replaceObjectAtIndex:i withObject:dict];
                         tempCount++;
                         if (tempCount == self.moduleSource.count) {
@@ -1011,9 +1036,6 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                 }
                 
                 QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
-                if (self.PYQEnable) {
-                    [self.shareImages addObject:model.image];
-                }
                 
                 [manager uploadImage:model.image progress:^(NSString *key, float percent) {
                     
@@ -1024,7 +1046,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                                             @"datadictionaryType":@"CONTENT_IMG",
                                             @"detailsContent":model.detailsContent,
                                             @"textInformation":@"",
-                                            @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                                            @"pFlg":@(model.pFlag)};
                     [listArray replaceObjectAtIndex:i withObject:dict];
                     tempCount++;
                     if (tempCount == self.moduleSource.count) {
@@ -1054,7 +1076,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                                                 @"datadictionaryType":@"CONTENT_VIDEO",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
-                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                                                @"pFlg":@(model.pFlag)};
                         [listArray replaceObjectAtIndex:i withObject:dict];
                         tempCount++;
                         if (tempCount == self.moduleSource.count) {
@@ -1089,7 +1111,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                                                 @"datadictionaryType":@"CONTENT_VIDEO",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
-                                                @"pFlg":[NSNumber numberWithBool:model.pFlag]};
+                                                @"pFlg":@(model.pFlag)};
                         [listArray replaceObjectAtIndex:i withObject:dict];
                         tempCount++;
                         if (tempCount == self.moduleSource.count) {
@@ -1170,7 +1192,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         [allowToSeeList addObject:@(self.groupModel.cid)];
     }
     
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:self.status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:1 allowToSeeList:allowToSeeList];
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:array title:title address:address addressLng:lon addressLat:lat status:self.status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:1 allowToSeeList:allowToSeeList sceneTime:self.createTime];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -1180,16 +1202,21 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
                 [MBProgressHUD showTextHUDWithText:@"创建成功" inView:self.view];
                 
                 DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
+                self.sharePostId = DTie.postId;
                 if (self.status) {
                     DTie.dTieType = DTieType_MyDtie;
                 }else{
                     DTie.dTieType = DTieType_Edit;
                 }
-                [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:DTie];
                 
-                [self checkShare];
-                
+                [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:nil];
                 [self.navigationController popViewControllerAnimated:YES];
+                
+                if (self.PYQEnable || self.WXEnable) {
+                    if (self.status == 1) {
+                        [self checkShare];
+                    }
+                }
             }
         }
         
@@ -1207,7 +1234,22 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 - (void)checkShare
 {
     if (self.PYQEnable) {
+        if (self.shareImages && self.shareImages.count > 0) {
+            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareImages];
+            [self.navigationController presentViewController:share animated:YES completion:nil];
+        }
+    }else if(self.WXEnable){
         
+        if (self.sharePostId == 0) {
+            return;
+        }
+        
+        [WeChatManager shareManager].isShare = YES;
+        UIImage * image = [UIImage imageNamed:@"DeeDao-logo"];
+        if (self.shareImages && self.shareImages.count > 0) {
+            image = [self.shareImages firstObject];
+        }
+        [[WeChatManager shareManager] shareMiniProgramWithPostID:self.editModel.cid image:image];
     }
 }
 
@@ -1233,10 +1275,33 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 
 - (NSMutableArray *)shareImages
 {
-    if (_shareImages) {
+    if (!_shareImages) {
         _shareImages = [[NSMutableArray alloc] initWithCapacity:9];
     }
     return _shareImages;
+}
+
+- (DatePickerView *)datePicker
+{
+    if (!_datePicker) {
+        _datePicker = [[DatePickerView alloc] initWithFrame:CGRectMake(0, kMainBoundsHeight / 3 * 2, kMainBoundsWidth, kMainBoundsHeight / 3)];
+        _datePicker.delegate = self;
+        [[UIApplication sharedApplication].keyWindow addSubview:_datePicker];
+    }
+    return _datePicker;
+}
+
+- (void)timeViewDidTap
+{
+    [self.datePicker showDateTimePickerView];
+}
+
+- (void)didClickFinishDateTimePickerView:(NSString *)date
+{
+    self.createTime = self.datePicker.currentTime;
+    NSString * str = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.createTime];
+    self.footerView.timeLabel.text = str;
+    [self.datePicker hideDateTimePickerView];
 }
 
 - (void)dealloc

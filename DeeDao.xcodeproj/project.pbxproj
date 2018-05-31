@@ -44,7 +44,14 @@
 		0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623470B20BBDC6600B1894E /* XWDragCellCollectionView.m */; };
 		0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */; };
 		0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471520BBE05200B1894E /* XRWaterfallLayout.m */; };
-		0623471A20BC15E400B1894E /* DDActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0623471920BC15E400B1894E /* DDActivityViewController.m */; };
+		06286AA720BFA6F100434068 /* JZLocationConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AA520BFA6F100434068 /* JZLocationConverter.m */; };
+		06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 06286AA820BFC8E500434068 /* mapChooseBG.jpeg */; };
+		06286AAC20BFDDE700434068 /* DTieNewEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */; };
+		06286AB020BFE6D500434068 /* ShareImageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AAF20BFE6D500434068 /* ShareImageItem.m */; };
+		06286AB420BFFF2300434068 /* DTieContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB320BFFF2300434068 /* DTieContentView.m */; };
+		06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB620BFFF3500434068 /* DTieQuanxianView.m */; };
+		06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB920C014D800434068 /* DTieNewEditImageCell.m */; };
+		06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */; };
 		06301B4220A6D309003580CA /* XFCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3A20A6D309003580CA /* XFCameraButton.m */; };
 		06301B4320A6D309003580CA /* XFCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3C20A6D309003580CA /* XFCameraController.m */; };
 		06301B4420A6D309003580CA /* XFCameraController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06301B3D20A6D309003580CA /* XFCameraController.xib */; };
@@ -53,6 +60,10 @@
 		06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4A20A88242003580CA /* MYWalletViewController.m */; };
 		06301B4E20A89091003580CA /* AchievementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B4D20A89091003580CA /* AchievementViewController.m */; };
 		06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B5020A89118003580CA /* AchievementCollectionCell.m */; };
+		063E7D1520BE5964004AFF63 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 064B34BC20A9846600B7D0E4 /* libcrypto.a */; };
+		063E7D1620BE5964004AFF63 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 064B34BA20A9845500B7D0E4 /* libssl.a */; };
+		063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */ = {isa = PBXBuildFile; fileRef = 063E7D1920BE601E004AFF63 /* custom_config_0323 */; };
+		063E7D1E20BEC3D8004AFF63 /* DatePickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 063E7D1D20BEC3D8004AFF63 /* DatePickerView.m */; };
 		0641497020AA7F8500460CB3 /* QNDDUploadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641496F20AA7F8500460CB3 /* QNDDUploadManager.m */; };
 		0641497320AAC54800460CB3 /* DDLocationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641497220AAC54800460CB3 /* DDLocationManager.m */; };
 		0641497720AAEACE00460CB3 /* CreateDTieRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641497620AAEACE00460CB3 /* CreateDTieRequest.m */; };
@@ -146,6 +157,8 @@
 		0674E69120AEE809006961E1 /* MailDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0674E69020AEE809006961E1 /* MailDetailViewController.m */; };
 		06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */; };
 		06790B3E20A4418A00929228 /* DTieModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3D20A4418A00929228 /* DTieModel.m */; };
+		069FF64D20C04F4E00C15D4F /* DTieNewEditVideoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 069FF64C20C04F4E00C15D4F /* DTieNewEditVideoCell.m */; };
+		069FF65120C05D7C00C15D4F /* RTDragCellTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 069FF64F20C05D7C00C15D4F /* RTDragCellTableView.m */; };
 		06BB78F720A9C9100049F28F /* MailShareTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78F620A9C9100049F28F /* MailShareTableViewCell.m */; };
 		06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78F920A9C91F0049F28F /* MailSmallTableViewCell.m */; };
 		06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */; };
@@ -259,8 +272,21 @@
 		0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShareImageCollectionViewCell.m; sourceTree = "<group>"; };
 		0623471520BBE05200B1894E /* XRWaterfallLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XRWaterfallLayout.m; sourceTree = "<group>"; };
 		0623471620BBE05200B1894E /* XRWaterfallLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XRWaterfallLayout.h; sourceTree = "<group>"; };
-		0623471820BC15E400B1894E /* DDActivityViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDActivityViewController.h; sourceTree = "<group>"; };
-		0623471920BC15E400B1894E /* DDActivityViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDActivityViewController.m; sourceTree = "<group>"; };
+		06286AA520BFA6F100434068 /* JZLocationConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JZLocationConverter.m; sourceTree = "<group>"; };
+		06286AA620BFA6F100434068 /* JZLocationConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JZLocationConverter.h; sourceTree = "<group>"; };
+		06286AA820BFC8E500434068 /* mapChooseBG.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mapChooseBG.jpeg; sourceTree = "<group>"; };
+		06286AAA20BFDDE700434068 /* DTieNewEditViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditViewController.h; sourceTree = "<group>"; };
+		06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditViewController.m; sourceTree = "<group>"; };
+		06286AAE20BFE6D500434068 /* ShareImageItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareImageItem.h; sourceTree = "<group>"; };
+		06286AAF20BFE6D500434068 /* ShareImageItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareImageItem.m; sourceTree = "<group>"; };
+		06286AB220BFFF2300434068 /* DTieContentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieContentView.h; sourceTree = "<group>"; };
+		06286AB320BFFF2300434068 /* DTieContentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieContentView.m; sourceTree = "<group>"; };
+		06286AB520BFFF3500434068 /* DTieQuanxianView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieQuanxianView.h; sourceTree = "<group>"; };
+		06286AB620BFFF3500434068 /* DTieQuanxianView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieQuanxianView.m; sourceTree = "<group>"; };
+		06286AB820C014D800434068 /* DTieNewEditImageCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditImageCell.h; sourceTree = "<group>"; };
+		06286AB920C014D800434068 /* DTieNewEditImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditImageCell.m; sourceTree = "<group>"; };
+		06286ABB20C0152C00434068 /* DTieNewEditTextCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditTextCell.h; sourceTree = "<group>"; };
+		06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditTextCell.m; sourceTree = "<group>"; };
 		06301B3A20A6D309003580CA /* XFCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraButton.m; sourceTree = "<group>"; };
 		06301B3B20A6D309003580CA /* XFCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraButton.h; sourceTree = "<group>"; };
 		06301B3C20A6D309003580CA /* XFCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraController.m; sourceTree = "<group>"; };
@@ -276,6 +302,9 @@
 		06301B4D20A89091003580CA /* AchievementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementViewController.m; sourceTree = "<group>"; };
 		06301B4F20A89118003580CA /* AchievementCollectionCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AchievementCollectionCell.h; sourceTree = "<group>"; };
 		06301B5020A89118003580CA /* AchievementCollectionCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AchievementCollectionCell.m; sourceTree = "<group>"; };
+		063E7D1920BE601E004AFF63 /* custom_config_0323 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = custom_config_0323; sourceTree = "<group>"; };
+		063E7D1C20BEC3D8004AFF63 /* DatePickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatePickerView.h; sourceTree = "<group>"; };
+		063E7D1D20BEC3D8004AFF63 /* DatePickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatePickerView.m; sourceTree = "<group>"; };
 		0641496E20AA7F8500460CB3 /* QNDDUploadManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNDDUploadManager.h; sourceTree = "<group>"; };
 		0641496F20AA7F8500460CB3 /* QNDDUploadManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNDDUploadManager.m; sourceTree = "<group>"; };
 		0641497120AAC54800460CB3 /* DDLocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDLocationManager.h; sourceTree = "<group>"; };
@@ -466,6 +495,10 @@
 		06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCollectionViewCell.m; sourceTree = "<group>"; };
 		06790B3C20A4418A00929228 /* DTieModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieModel.h; sourceTree = "<group>"; };
 		06790B3D20A4418A00929228 /* DTieModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieModel.m; sourceTree = "<group>"; };
+		069FF64B20C04F4E00C15D4F /* DTieNewEditVideoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditVideoCell.h; sourceTree = "<group>"; };
+		069FF64C20C04F4E00C15D4F /* DTieNewEditVideoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditVideoCell.m; sourceTree = "<group>"; };
+		069FF64F20C05D7C00C15D4F /* RTDragCellTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RTDragCellTableView.m; sourceTree = "<group>"; };
+		069FF65020C05D7C00C15D4F /* RTDragCellTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RTDragCellTableView.h; sourceTree = "<group>"; };
 		06BB78F520A9C9100049F28F /* MailShareTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MailShareTableViewCell.h; sourceTree = "<group>"; };
 		06BB78F620A9C9100049F28F /* MailShareTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailShareTableViewCell.m; sourceTree = "<group>"; };
 		06BB78F820A9C91F0049F28F /* MailSmallTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MailSmallTableViewCell.h; sourceTree = "<group>"; };
@@ -512,6 +545,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				063E7D1520BE5964004AFF63 /* libcrypto.a in Frameworks */,
+				063E7D1620BE5964004AFF63 /* libssl.a in Frameworks */,
 				822B904317B24E8CB3084F2A /* libPods-DeeDao.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -594,6 +629,41 @@
 			path = XRWaterfallLayout;
 			sourceTree = "<group>";
 		};
+		06286AA420BFA6F100434068 /* JZLocationConverter */ = {
+			isa = PBXGroup;
+			children = (
+				06286AA620BFA6F100434068 /* JZLocationConverter.h */,
+				06286AA520BFA6F100434068 /* JZLocationConverter.m */,
+			);
+			path = JZLocationConverter;
+			sourceTree = "<group>";
+		};
+		06286AAD20BFE6C000434068 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				06286AAE20BFE6D500434068 /* ShareImageItem.h */,
+				06286AAF20BFE6D500434068 /* ShareImageItem.m */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
+		06286AB120BFFF0900434068 /* DTieEdit */ = {
+			isa = PBXGroup;
+			children = (
+				06286AB220BFFF2300434068 /* DTieContentView.h */,
+				06286AB320BFFF2300434068 /* DTieContentView.m */,
+				06286AB520BFFF3500434068 /* DTieQuanxianView.h */,
+				06286AB620BFFF3500434068 /* DTieQuanxianView.m */,
+				06286AB820C014D800434068 /* DTieNewEditImageCell.h */,
+				06286AB920C014D800434068 /* DTieNewEditImageCell.m */,
+				069FF64B20C04F4E00C15D4F /* DTieNewEditVideoCell.h */,
+				069FF64C20C04F4E00C15D4F /* DTieNewEditVideoCell.m */,
+				06286ABB20C0152C00434068 /* DTieNewEditTextCell.h */,
+				06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */,
+			);
+			path = DTieEdit;
+			sourceTree = "<group>";
+		};
 		06301B3720A6D2FE003580CA /* XFAVFoundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -630,6 +700,15 @@
 				06301B4120A6D309003580CA /* XFPhotoLibraryManager.m */,
 			);
 			path = XFPhotoLibraryManager;
+			sourceTree = "<group>";
+		};
+		063E7D1B20BEC3D8004AFF63 /* DatePickerView */ = {
+			isa = PBXGroup;
+			children = (
+				063E7D1C20BEC3D8004AFF63 /* DatePickerView.h */,
+				063E7D1D20BEC3D8004AFF63 /* DatePickerView.m */,
+			);
+			path = DatePickerView;
 			sourceTree = "<group>";
 		};
 		0641496D20AA7F4F00460CB3 /* Shared */ = {
@@ -887,6 +966,7 @@
 		06733F6520A29168007875A7 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				06286AB120BFFF0900434068 /* DTieEdit */,
 				06137A5420AE87FB00D1183A /* Other */,
 				064F0B4020A4896D007C0A4F /* tableView */,
 				06790B3420A3ECD000929228 /* CollectionView */,
@@ -941,6 +1021,8 @@
 		06733F6C20A29343007875A7 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				06286AA820BFC8E500434068 /* mapChooseBG.jpeg */,
+				063E7D1920BE601E004AFF63 /* custom_config_0323 */,
 				06733F6D20A2934B007875A7 /* Image */,
 			);
 			path = Resource;
@@ -998,6 +1080,10 @@
 		06733F8620A2C40D007875A7 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				069FF64E20C05D7C00C15D4F /* RTDragCellTableView */,
+				06286AAD20BFE6C000434068 /* Other */,
+				06286AA420BFA6F100434068 /* JZLocationConverter */,
+				063E7D1B20BEC3D8004AFF63 /* DatePickerView */,
 				0623471420BBE05200B1894E /* XRWaterfallLayout */,
 				0623470A20BBDC6600B1894E /* XWDragCellCollectionView */,
 				06102AD520B470F700FF3278 /* GCCLayerCurve */,
@@ -1115,6 +1201,15 @@
 			path = CollectionView;
 			sourceTree = "<group>";
 		};
+		069FF64E20C05D7C00C15D4F /* RTDragCellTableView */ = {
+			isa = PBXGroup;
+			children = (
+				069FF64F20C05D7C00C15D4F /* RTDragCellTableView.m */,
+				069FF65020C05D7C00C15D4F /* RTDragCellTableView.h */,
+			);
+			path = RTDragCellTableView;
+			sourceTree = "<group>";
+		};
 		06BB78F320A9C8140049F28F /* Mail */ = {
 			isa = PBXGroup;
 			children = (
@@ -1216,6 +1311,8 @@
 			children = (
 				060F005720AC11DC00C810A1 /* DDCollectionViewController.h */,
 				060F005820AC11DC00C810A1 /* DDCollectionViewController.m */,
+				06286AAA20BFDDE700434068 /* DTieNewEditViewController.h */,
+				06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */,
 				06FCD62620A53F7300E6EAA4 /* DTieEditViewController.h */,
 				06FCD62720A53F7300E6EAA4 /* DTieEditViewController.m */,
 				060F004A20ABFAC800C810A1 /* DTieEditReadViewController.h */,
@@ -1242,8 +1339,6 @@
 				061994BB20B53F1900AD64AB /* DTieSearchViewController.m */,
 				0623470720BBD80A00B1894E /* DTieShareViewController.h */,
 				0623470820BBD80A00B1894E /* DTieShareViewController.m */,
-				0623471820BC15E400B1894E /* DDActivityViewController.h */,
-				0623471920BC15E400B1894E /* DDActivityViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1388,7 +1483,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */,
 				06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */,
+				06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
 				064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */,
 				06301B4420A6D309003580CA /* XFCameraController.xib in Resources */,
@@ -1423,12 +1520,14 @@
 				"${PODS_ROOT}/BaiduMapKit/BaiduMapKit/BaiduMapAPI_Map.framework/Resources/mapapi.bundle",
 				"${PODS_ROOT}/IQKeyboardManager/IQKeyboardManager/Resources/IQKeyboardManager.bundle",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
+				"${PODS_ROOT}/TZImagePickerController/TZImagePickerController/TZImagePickerController/TZImagePickerController.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/mapapi.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/IQKeyboardManager.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/TZImagePickerController.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1467,6 +1566,8 @@
 				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
 				0647F31320B67E20009B7C27 /* UserInfoCollectionHeader.m in Sources */,
 				061994B020B5195300AD64AB /* SecurityHeaderView.m in Sources */,
+				06286AA720BFA6F100434068 /* JZLocationConverter.m in Sources */,
+				069FF65120C05D7C00C15D4F /* RTDragCellTableView.m in Sources */,
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
@@ -1483,13 +1584,13 @@
 				06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */,
 				0647F30A20B661D6009B7C27 /* SeriesDetailRequest.m in Sources */,
 				0623470920BBD80A00B1894E /* DTieShareViewController.m in Sources */,
-				0623471A20BC15E400B1894E /* DDActivityViewController.m in Sources */,
 				064170FF20B3B8FA0075ECB6 /* SeriesTableViewCell.m in Sources */,
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				0641710C20B3EB9C0075ECB6 /* AddSeriesViewController.m in Sources */,
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
 				0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */,
+				06286AB020BFE6D500434068 /* ShareImageItem.m in Sources */,
 				066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */,
@@ -1533,6 +1634,7 @@
 				0650A9FC20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */,
+				06286AB420BFFF2300434068 /* DTieContentView.m in Sources */,
 				062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */,
 				066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
@@ -1543,6 +1645,7 @@
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
 				062048D020B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m in Sources */,
 				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
+				06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */,
 				066033B820B26BAC00A54D81 /* DDHandleView.m in Sources */,
 				0647F32220B6B1DF009B7C27 /* SaveUserRequest.m in Sources */,
 				064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */,
@@ -1571,6 +1674,8 @@
 				061994BC20B53F1900AD64AB /* DTieSearchViewController.m in Sources */,
 				06733F6B20A291C0007875A7 /* DDViewController.m in Sources */,
 				06FCD62820A53F7300E6EAA4 /* DTieEditViewController.m in Sources */,
+				063E7D1E20BEC3D8004AFF63 /* DatePickerView.m in Sources */,
+				06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */,
 				066033F120B2BE6000A54D81 /* SCSafariPageWrapperViewController.m in Sources */,
 				061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */,
 				0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */,
@@ -1587,17 +1692,20 @@
 				0641497320AAC54800460CB3 /* DDLocationManager.m in Sources */,
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
 				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
+				06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */,
 				064B34C020A99A6B00B7D0E4 /* DDPrivateViewController.m in Sources */,
 				06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */,
 				066033E220B2BE0400A54D81 /* SCEasingFunction.m in Sources */,
 				064F0B3F20A48233007C0A4F /* MineHeaderView.m in Sources */,
 				06301B5120A89118003580CA /* AchievementCollectionCell.m in Sources */,
+				069FF64D20C04F4E00C15D4F /* DTieNewEditVideoCell.m in Sources */,
 				0641710920B3E5650075ECB6 /* GetSeriesRequest.m in Sources */,
 				06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */,
 				066033E520B2BE0400A54D81 /* SCWeakObjectWrapper.m in Sources */,
 				0623470620BBB61C00B1894E /* DDShareManager.m in Sources */,
 				0647F31620B698BE009B7C27 /* AddFriendRequest.m in Sources */,
 				060F006220AC493A00C810A1 /* DTieDetailRequest.m in Sources */,
+				06286AAC20BFDDE700434068 /* DTieNewEditViewController.m in Sources */,
 				066033E320B2BE0400A54D81 /* easing.c in Sources */,
 				06733FA520A30D72007875A7 /* DDDTieViewController.m in Sources */,
 				06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */,
@@ -1773,6 +1881,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 9U9L62FB58;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DeeDao/Macro/DeeDaoPCH.pch;
 				INFOPLIST_FILE = DeeDao/Info.plist;
@@ -1801,6 +1910,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 9U9L62FB58;
+				ENABLE_BITCODE = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = DeeDao/Macro/DeeDaoPCH.pch;
 				INFOPLIST_FILE = DeeDao/Info.plist;

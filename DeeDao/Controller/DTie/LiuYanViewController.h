@@ -10,6 +10,6 @@
 
 @interface LiuYanViewController : DDViewController
 
-- (instancetype)initWithPostID:(NSInteger)postId;
+- (instancetype)initWithPostID:(NSInteger)postId commentId:(NSInteger)commentId;
 
 @end

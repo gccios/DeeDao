@@ -118,21 +118,22 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
-//    self.nameLabel.text = @"Just丶DeeDao";
-    [self.userView addSubview:self.nameLabel];
-    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
-        make.left.mas_equalTo(self.InfoLabel);
-        make.height.mas_equalTo(45 * scale);
-    }];
-    
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
 //    self.timeLabel.text = @"22:36 PM";
     [self.userView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.nameLabel);
+        make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
         make.right.mas_equalTo(-45 * scale);
+        make.height.mas_equalTo(45 * scale);
+    }];
+    
+    self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x444444) alignment:NSTextAlignmentLeft];
+    //    self.nameLabel.text = @"Just丶DeeDao";
+    [self.userView addSubview:self.nameLabel];
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.InfoLabel.mas_bottom).offset(15 * scale);
+        make.left.mas_equalTo(self.InfoLabel);
+        make.right.mas_equalTo(self.timeLabel.mas_left).offset(-10 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
 }
@@ -142,7 +143,7 @@
     self.titleLabel.text = model.mailTitle;
     self.InfoLabel.text = model.mailContent;
     self.nameLabel.text = model.nickName;
-    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:model.updateTime];
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.updateTime];
     [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
 }
 

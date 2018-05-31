@@ -13,4 +13,6 @@
 
 - (void)configWithModel:(DTieEditModel *)model;
 
+- (void)configWithCanSee:(BOOL)cansee;
+
 @end

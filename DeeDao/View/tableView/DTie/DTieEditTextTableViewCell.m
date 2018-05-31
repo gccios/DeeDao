@@ -82,7 +82,7 @@
         }
     }
     
-    if (self.model.pFlag) {
+    if (self.model.pFlag == 1) {
         [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
     }else{
         [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
@@ -91,10 +91,11 @@
 
 - (void)seeButtonDidClicked
 {
-    self.model.pFlag = !self.model.pFlag;
-    if (self.model.pFlag) {
+    if (self.model.pFlag == 0) {
+        self.model.pFlag = 1;
         [self.seeButton setImage:[UIImage imageNamed:@"qx"] forState:UIControlStateNormal];
     }else{
+        self.model.pFlag = 0;
         [self.seeButton setImage:[UIImage imageNamed:@"qxno"] forState:UIControlStateNormal];
     }
 }

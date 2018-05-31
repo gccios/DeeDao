@@ -20,6 +20,9 @@
 #import "DTieDetailViewController.h"
 #import "DTieEditViewController.h"
 #import "UserInfoViewController.h"
+#import "DDShareManager.h"
+#import "UserManager.h"
+#import "DDLocationManager.h"
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
@@ -120,6 +123,9 @@
         make.width.mas_equalTo(450 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationShouldChooseNavi)];
+    self.locationLabel.userInteractionEnabled = YES;
+    [self.locationLabel addGestureRecognizer:tap];
     
     self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
     [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyue"]];
@@ -158,6 +164,14 @@
     }];
 }
 
+- (void)locationShouldChooseNavi
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    if (model) {
+        [[DDLocationManager shareManager] mapNavigationToLongitude:model.sceneAddressLng latitude:model.sceneAddressLat poiName:model.sceneAddress withViewController:self];
+    }
+}
+
 - (void)lookUserInfo
 {
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
@@ -168,6 +182,12 @@
 - (void)yaoyueButtonDidClicked
 {
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    
+    if (model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.yaoyueButton.enabled = NO;
     if (model.wyyFlg) {
         
@@ -206,6 +226,12 @@
 - (void)shoucangButtonDidClicked
 {
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    
+    if (model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.shoucangButton.enabled = NO;
     if (model.collectFlg) {
         
@@ -244,6 +270,12 @@
 - (void)dazhaohuButtonDidClicked
 {
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    
+    if (model.authorId == [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
+        return;
+    }
+    
     self.dazhaohuButton.enabled = NO;
     
     DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:1 remark:@""];
@@ -275,13 +307,15 @@
         self.nameLabel.text = model.nickname;
         
         NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.updateTime / 1000]];
+        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.sceneTime / 1000]];
         self.locationLabel.text = [NSString stringWithFormat:@"%@\n%@", createTime, model.sceneAddress];
         
         [self.yaoyueButton configTitle:[NSString stringWithFormat:@"%ld", model.wyyCount]];
         [self.shoucangButton configTitle:[NSString stringWithFormat:@"%ld", model.collectCount]];
         [self.dazhaohuButton configTitle:[NSString stringWithFormat:@"%ld", model.dzfCount]];
+        
+        self.titleLabel.text = model.postSummary;
     }
 }
 
@@ -294,6 +328,12 @@
     
     DTieModel * model = [self.dataSource objectAtIndex:index];
     [cell configWithModel:model tag:index];
+    
+    __weak typeof(self) weakSelf = self;
+    __weak typeof(cell) weakCell = cell;
+    cell.tableViewClickHandle = ^(NSIndexPath *cellIndex) {
+        [weakSelf.pagerView.delegate pagerView:weakSelf.pagerView didSelectedItemCell:weakCell atIndex:cellIndex.item];
+    };
     
     return cell;
 }
@@ -337,8 +377,12 @@
         return;
     }
     
-    DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
-    [self.navigationController pushViewController:detail animated:NO];
+    if (model.details) {
+        DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
+        [self.navigationController pushViewController:detail animated:NO];
+    }else{
+        [MBProgressHUD showTextHUDWithText:@"正在获取帖子内容" inView:self.view];
+    }
 }
 
 - (void)createTopView
@@ -375,14 +419,33 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     self.titleLabel.text = @"浏览D贴";
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
+        make.right.mas_equalTo(-210 * scale);
     }];
+    
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"0/9"];
+    [shareButton setImage:[UIImage imageNamed:@"navShare"] forState:UIControlStateNormal];
+    [self.topView addSubview:shareButton];
+    [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.titleLabel);
+        make.right.mas_equalTo(-60 * scale);
+        make.width.mas_equalTo(150 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    [DDShareManager shareManager].tempNumberLabel = shareButton;
+    [[DDShareManager shareManager] updateNumber];
+}
+
+- (void)shareButtonDidClicked
+{
+    [[DDShareManager shareManager] showShareList];
 }
 
 - (void)backButtonDidClicked

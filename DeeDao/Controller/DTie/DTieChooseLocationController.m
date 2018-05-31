@@ -52,7 +52,7 @@
     userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
     [self.mapView updateLocationViewWithParam:userlocationStyle];
     self.mapView.showsUserLocation = YES;
-    self.mapView.userTrackingMode = BMKUserTrackingModeFollow;
+    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
     
     [self.view addSubview:self.mapView];
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -60,6 +60,15 @@
         make.left.right.mas_equalTo(0);
         make.height.mas_equalTo((kMainBoundsHeight - (220 + kStatusBarHeight) * scale) / 2);
     }];
+    
+    if (self.startPoi) {
+        if (self.isFirst) {
+            BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(self.startPoi.pt, BMKCoordinateSpanMake(.01, .01));
+            BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
+            [self.mapView setRegion:adjustedRegion animated:YES];
+            self.isFirst = NO;
+        }
+    }
     
     if ([DDLocationManager shareManager].userLocation) {
         [self updateUserLocation];
@@ -97,7 +106,7 @@
     if (self.isFirst) {
         BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.01, .01));
         BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
-        [_mapView setRegion:adjustedRegion animated:YES];
+        [self.mapView setRegion:adjustedRegion animated:YES];
         self.isFirst = NO;
     }
 }

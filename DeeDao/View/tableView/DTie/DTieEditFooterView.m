@@ -31,27 +31,27 @@
     self.locationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@""];
     [self addSubview:self.locationButton];
     [self.locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(15 * scale);
+        make.top.mas_equalTo(80 * scale);
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(105 * scale);
+        make.height.mas_equalTo(85 * scale);
     }];
     
     UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
-    [self.locationButton addSubview:imageView];
+    [self addSubview:imageView];
     [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(9 * scale);
-        make.left.mas_equalTo(0);
+        make.top.mas_equalTo(25 * scale);
+        make.left.mas_equalTo(60 * scale);
         make.width.height.mas_equalTo(72 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.timeLabel.text = [DDTool getCurrentTimeWithFormat:@"yyyy年MM月dd日 HH:mm"];
-    [self.locationButton addSubview:self.timeLabel];
+    [self addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(9 * scale);
+        make.top.mas_equalTo(15 * scale);
         make.left.mas_equalTo(imageView.mas_right).offset(12 * scale);
-        make.height.mas_equalTo(48 * scale);
+        make.height.mas_equalTo(65 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
     

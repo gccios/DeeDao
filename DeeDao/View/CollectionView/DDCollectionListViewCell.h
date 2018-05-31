@@ -8,10 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import "DTieModel.h"
+#import "TYCyclePagerView.h"
 
 @interface DDCollectionListViewCell : UICollectionViewCell
 
 @property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, copy) void (^tableViewClickHandle)(NSIndexPath * cellIndex);
 
 - (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag;
 

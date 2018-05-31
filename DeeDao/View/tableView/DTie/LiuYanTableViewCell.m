@@ -36,7 +36,7 @@
 {
     [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.commentatorPic]];
     self.nameLabel.text = model.commentatorName;
-    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:model.commentTime];
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.commentTime];
     self.detailLabel.text = model.commentContent;
 }
 
@@ -46,7 +46,14 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [self.contentView addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.mas_equalTo(38 * scale);
+        make.width.height.mas_equalTo(116 * scale);
+    }];
+    
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [self.contentView addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.mas_equalTo(48 * scale);
@@ -60,6 +67,7 @@
         make.top.mas_equalTo(50 * scale);
         make.left.mas_equalTo(self.logoImageView.mas_right).offset(48 * scale);
         make.height.mas_equalTo(55 * scale);
+        make.right.mas_equalTo(350 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:[UIColorFromRGB(0x000000) colorWithAlphaComponent:.54f] alignment:NSTextAlignmentLeft];
@@ -86,8 +94,9 @@
         make.width.mas_equalTo(840 * scale);
         make.height.mas_equalTo(2 * scale);
         make.right.mas_equalTo(-60 * scale);
+        make.bottom.mas_equalTo(0 * scale);
     }];
-    [lineView layerDotteLinePoints:@[[NSValue valueWithCGPoint:CGPointMake(0, 0)], [NSValue valueWithCGPoint:CGPointMake(840 * scale, 0)]] Color:UIColorFromRGB(0x999999) Width:2 * scale SolidLength:6 * scale DotteLength:3 * scale];
+    [lineView layerDotteLinePoints:@[[NSValue valueWithCGPoint:CGPointMake(0, 0)], [NSValue valueWithCGPoint:CGPointMake(840 * scale, 0)]] Color:UIColorFromRGB(0x999999) Width:2 * scale SolidLength:3 * scale DotteLength:3 * scale];
 }
 
 - (void)awakeFromNib {

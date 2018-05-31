@@ -44,7 +44,7 @@
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    self.coverImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    self.coverImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [self.contentView addSubview:self.coverImageView];
     [self.coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -57,7 +57,15 @@
     self.coverImageView.layer.shadowOpacity = .5f;
     self.coverImageView.layer.shadowOffset = CGSizeMake(0, 2 * scale);
     
-    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [self.contentView addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.coverImageView.mas_right).offset(36 * scale);
+        make.top.mas_equalTo(168 * scale);
+        make.width.height.mas_equalTo(122 * scale);
+    }];
+    
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [self.contentView addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.coverImageView.mas_right).offset(48 * scale);
@@ -147,7 +155,7 @@
     self.nameLabel.text = model.nickname;
     
     NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
     NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.updateTime / 1000]];
     self.timeLabel.text = createTime;
     

@@ -186,7 +186,7 @@
     }];
     
     UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    detailLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd" time:self.model.createTime];
+    detailLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日" time:self.model.createTime];
     [headerView addSubview:detailLabel];
     [detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(nameLabel.mas_bottom).offset(15 * scale);;
@@ -207,7 +207,7 @@
     
     UILabel * timeLocationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     timeLocationLabel.numberOfLines = 0;
-    timeLocationLabel.text = [NSString stringWithFormat:@"%@\n%@", [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.createTime], self.model.sceneAddress];
+    timeLocationLabel.text = [NSString stringWithFormat:@"%@\n%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.createTime], self.model.sceneAddress];
     [headerView addSubview:timeLocationLabel];
     [timeLocationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(titleLabel.mas_bottom).offset(20 * scale);
@@ -244,7 +244,7 @@
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
-    lastUpdateLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.updateTime]];
+    lastUpdateLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.updateTime]];
     
 //    UIView * line1 = [[UIView alloc] initWithFrame:CGRectZero];
 //    line1.backgroundColor = [[UIColor lightGrayColor] colorWithAlphaComponent:.4f];

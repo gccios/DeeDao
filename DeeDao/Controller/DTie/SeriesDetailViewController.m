@@ -92,7 +92,7 @@
     [headerView addSubview:titleLabel];
     
     UILabel * timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectMake(60 * scale, 126 * scale, kMainBoundsWidth - 120 * scale, 54 * scale) font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    timeLabel.text = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.seriesTime];
+    timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.seriesTime];
     [headerView addSubview:timeLabel];
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectMake(60 * scale, 202 * scale, kMainBoundsWidth - 120 * scale, 3 * scale)];

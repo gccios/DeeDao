@@ -16,6 +16,7 @@
         self.httpMethod = BGNetworkRequestHTTPPost;
         self.methodName = @"user/saveFriendOrConcern";
         
+        [self setIntegerValue:userId forParamKey:@"friendId"];
         [self setIntegerValue:1 forParamKey:@"type"];
         
         if (isAdd) {
@@ -33,6 +34,7 @@
         self.httpMethod = BGNetworkRequestHTTPPost;
         self.methodName = @"user/saveFriendOrConcern";
         
+        [self setIntegerValue:userId forParamKey:@"friendId"];
         [self setIntegerValue:2 forParamKey:@"type"];
         
         if (isAdd) {

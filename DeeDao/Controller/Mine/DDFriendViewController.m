@@ -12,7 +12,7 @@
 #import "SelectFriendRequest.h"
 #import "UserInfoViewController.h"
 
-@interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource, UserFriendInfoDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
@@ -65,6 +65,7 @@
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
+                [self.dataSource removeAllObjects];
                 for (NSInteger i = 0; i < data.count; i++) {
                     NSDictionary * dict = [data objectAtIndex:i];
                     UserModel * model = [UserModel mj_objectWithKeyValues:dict];
@@ -83,6 +84,8 @@
 
 - (void)sortFriends
 {
+    [self.dataDict removeAllObjects];
+    
     // 将耗时操作放到子线程
     dispatch_queue_t queue = dispatch_queue_create("DDFriends.infoDict", DISPATCH_QUEUE_SERIAL);
     dispatch_async(queue, ^{
@@ -126,7 +129,13 @@
     UserModel * model = [data objectAtIndex:indexPath.row];
     
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.cid];
+    info.delegate = self;
     [self.navigationController pushViewController:info animated:YES];
+}
+
+- (void)userFriendInfoDidUpdate
+{
+    [self requestFriendList];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

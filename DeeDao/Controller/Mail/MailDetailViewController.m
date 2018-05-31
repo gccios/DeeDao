@@ -126,6 +126,14 @@
     coverView.layer.shadowOpacity = .2f;
     coverView.layer.shadowOffset = CGSizeMake(0, -12 * scale);
     
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [headerView addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(99 * scale);
+        make.bottom.mas_equalTo(-49 * scale);
+        make.width.height.mas_equalTo(182 * scale);
+    }];
+    
     UIImageView * logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
     [logoImageView sd_setImageWithURL:[NSURL URLWithString:self.model.portraitUri]];
     [headerView addSubview:logoImageView];
@@ -166,7 +174,7 @@
 {
     MainInfoTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MainInfoTableViewCell" forIndexPath:indexPath];
     
-    [cell configInfo:self.model.mailContent time:[DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:self.model.createTime]];
+    [cell configInfo:self.model.mailContent time:[DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.createTime]];
     
     return cell;
 }

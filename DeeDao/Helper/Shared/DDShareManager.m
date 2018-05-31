@@ -37,6 +37,15 @@
     return instance;
 }
 
+- (void)updateNumber
+{
+    NSString * number = [NSString stringWithFormat:@"%lu/9", (unsigned long)self.shareList.count];
+    self.numberLabel.text = number;
+    if (self.tempNumberLabel) {
+        [self.tempNumberLabel setTitle:number forState:UIControlStateNormal];
+    }
+}
+
 - (void)addShareList
 {
     if (self.handleImage) {
@@ -47,12 +56,11 @@
         }else{
             [self.shareList addObject:self.handleImage];
             [self hiddenHandleView];
-            self.numberLabel.text = [NSString stringWithFormat:@"%lu/9", (unsigned long)self.shareList.count];
+            [self updateNumber];
             if (self.shareList.count >= 9) {
                 [self showShareList];
             }
         }
-        
     }
 }
 
@@ -192,7 +200,7 @@
         make.top.mas_equalTo(180 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
-    UIImageView * addImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"save"]];
+    UIImageView * addImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"addshare"]];
     [self.addShareListButton addSubview:addImageView];
     [addImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(75 * scale);

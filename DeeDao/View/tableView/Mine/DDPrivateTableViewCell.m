@@ -33,6 +33,12 @@
 {
     self.titleLabel.text = model.securitygroupName;
     self.subTitleLabel.text = model.securitygroupPropName;
+    
+    if (model.landAccountFlg == 1) {
+        [self.logoImageView setImage:[UIImage imageNamed:@"xiaomiquanBG"]];
+    }else if(model.landAccountFlg == 0) {
+        [self.logoImageView setImage:[UIImage imageNamed:@"yinsiBG"]];
+    }
 }
 
 - (void)createPrivateCell
@@ -56,7 +62,7 @@
         make.bottom.mas_equalTo(-24 * scale);
     }];
     
-    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"xiaomiquan"]];
     self.logoImageView.layer.masksToBounds = YES;
     [self.baseView addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {

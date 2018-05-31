@@ -14,6 +14,9 @@
 #import <BaiduMapAPI_Base/BMKMapManager.h>
 #import "DDLocationManager.h"
 #import "UserManager.h"
+#import "WeChatManager.h"
+#import "DTieEditViewController.h"
+#import <BaiduMapAPI_Map/BMKMapView.h>
 
 @interface AppDelegate ()
 
@@ -40,6 +43,12 @@
         NSLog(@"百度地图调起失败");
     }
     temp = [BMKMapManager setCoordinateTypeUsedInBaiduMapSDK:BMK_COORDTYPE_COMMON];
+    
+//    //个性化地图模板文件路径
+//    NSString* path = [[NSBundle mainBundle] pathForResource:@"custom_config_0323" ofType:@""];
+//    //设置个性化地图样式
+//    [BMKMapView customMapStyle:path];
+//    [BMKMapView enableCustomMapStyle:YES];//打开个性化地图
     
     //开始定位
     [[DDLocationManager shareManager] performSelector:@selector(startLocationService) withObject:nil afterDelay:.5f];
@@ -106,6 +115,12 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    
+    if ([WeChatManager shareManager].isShare) {
+        [WeChatManager shareManager].isShare = NO;
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:nil];
+    }
+    
 }
 
 

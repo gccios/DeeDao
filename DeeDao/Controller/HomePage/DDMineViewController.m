@@ -39,8 +39,7 @@
 - (void)createDataSource
 {
     self.dataSource = [NSMutableArray new];
-    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Wallet],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
+    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Address],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Private]];
     NSArray * sysArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_System]];

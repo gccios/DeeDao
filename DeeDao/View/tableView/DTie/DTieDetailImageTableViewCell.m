@@ -10,12 +10,13 @@
 #import "DDTool.h"
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
+#import "DDShareManager.h"
 
 @interface DTieDetailImageTableViewCell ()
 
 @property (nonatomic, strong) UIImageView * detailImageView;
 
-//@property (nonatomic, strong) UIVisualEffectView * effectView;
+@property (nonatomic, strong) UIImageView * fugaiImageView;
 
 @end
 
@@ -40,6 +41,10 @@
         make.edges.mas_equalTo(0);
     }];
     
+    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
+    self.detailImageView.userInteractionEnabled = YES;
+    [self.detailImageView addGestureRecognizer:longPress];
+    
 //    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
 //    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
 //    self.effectView.alpha = .98f;
@@ -47,6 +52,28 @@
 //    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.edges.mas_equalTo(0);
 //    }];
+    
+    self.fugaiImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.fugaiImageView setImage:[UIImage imageNamed:@"hengBG"]];
+    [self.contentView addSubview:self.fugaiImageView];
+    [self.fugaiImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.fugaiImageView.hidden = YES;
+}
+
+- (void)configWithCanSee:(BOOL)cansee
+{
+    if (cansee) {
+        self.fugaiImageView.hidden = NO;
+    }else{
+        self.fugaiImageView.hidden = YES;
+    }
+}
+
+- (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
+{
+    [[DDShareManager shareManager] showHandleViewWithImage:self.detailImageView.image];
 }
 
 - (void)configWithModel:(DTieEditModel *)model
@@ -56,7 +83,7 @@
     if (image) {
         [self.detailImageView setImage:image];
     }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
     }
 }
 
@@ -65,7 +92,7 @@
     if (model.image) {
         [self.detailImageView setImage:model.image];
     }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
     }
 }
 

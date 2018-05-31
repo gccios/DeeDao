@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.0.4)
   - AFNetworking/UIKit (3.0.4):
     - AFNetworking/NSURLSession
-  - BaiduMapKit (3.4.4)
+  - BaiduMapKit (4.0.0)
   - BGNetwork (0.2.6):
     - AFNetworking (~> 3.0.2)
   - HappyDNS (0.3.13)
@@ -28,10 +28,11 @@ PODS:
   - SDWebImage (4.3.3):
     - SDWebImage/Core (= 4.3.3)
   - SDWebImage/Core (4.3.3)
+  - TZImagePickerController (2.1.4)
   - WechatOpenSDK (1.8.2)
 
 DEPENDENCIES:
-  - BaiduMapKit
+  - BaiduMapKit (~> 4.0.0)
   - BGNetwork
   - IQKeyboardManager (~> 5.0.8)
   - Masonry (~> 1.1.0)
@@ -40,6 +41,7 @@ DEPENDENCIES:
   - MJRefresh
   - Qiniu (~> 7.1)
   - SDWebImage
+  - TZImagePickerController (~> 2.1.4)
   - WechatOpenSDK
 
 SPEC REPOS:
@@ -55,11 +57,12 @@ SPEC REPOS:
     - MJRefresh
     - Qiniu
     - SDWebImage
+    - TZImagePickerController
     - WechatOpenSDK
 
 SPEC CHECKSUMS:
   AFNetworking: a0075feb321559dc78d9d85b55d11caa19eabb93
-  BaiduMapKit: 4ac88f5a363500760392825b69709f4a0125f81e
+  BaiduMapKit: 8fa2eb2ca81b92b740b19d9ff3b59d751d3e92e1
   BGNetwork: 66986f143548bb5308bffd85dfb2bfd544de1450
   HappyDNS: 17732b07a75bb9756bd6fe04452609e8da8c663e
   IQKeyboardManager: 266cb7b1d11f94a3e71229d77f960f9a1b538e5b
@@ -69,8 +72,9 @@ SPEC CHECKSUMS:
   MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
   Qiniu: ae0fea1cc379fae1560d8748ac537e0fbeb8626e
   SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
+  TZImagePickerController: 2a8f41ba058e215bc9b699ade241fdbcc910c2bd
   WechatOpenSDK: 676feec516a11173eafd1fe64b10d27babf28701
 
-PODFILE CHECKSUM: f7f1b9087b1c1b60bd1b46ee2b5967c17685640a
+PODFILE CHECKSUM: ce9ce360f2113d2e50673f9c76bd687af62cd993
 
 COCOAPODS: 1.5.0

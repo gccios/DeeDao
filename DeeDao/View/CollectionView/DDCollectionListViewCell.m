@@ -14,6 +14,8 @@
 #import "DTieDetailRequest.h"
 #import "DDCollectionTableViewCell.h"
 #import "TYCyclePagerView.h"
+#import "DDLocationManager.h"
+#import "DDTool.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -23,6 +25,8 @@
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, assign) BOOL isFirstRead;
 @property (nonatomic, assign) NSIndexPath * firestIndex;
+@property (nonatomic, strong) UIView * baseView;
+@property (nonatomic, strong) UIImageView * collectImageView;
 
 @end
 
@@ -38,29 +42,46 @@
 
 - (void)createListViewCell
 {
-    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.backgroundColor = [UIColor clearColor];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    self.baseView = [[UIView alloc] init];
+    self.baseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    [self.contentView addSubview:self.baseView];
+    [self.baseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(50 * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    
     self.baseImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"test"]];
-    [self.contentView addSubview:self.baseImageView];
+    [self.baseView addSubview:self.baseImageView];
     [self.baseImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
 
-    [DDViewFactoryTool cornerRadius:24 * scale withView:self];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.baseView];
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.tableView.backgroundColor = self.backgroundColor;
+    self.tableView.backgroundColor = self.baseView.backgroundColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.rowHeight = kMainBoundsHeight - 594 * scale;
+    self.tableView.rowHeight = kMainBoundsHeight - 594 * scale - 50 * scale;
     self.tableView.pagingEnabled = YES;
     [self.tableView registerClass:[DDCollectionTableViewCell class] forCellReuseIdentifier:@"DDCollectionTableViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    [self addSubview:self.tableView];
+    [self.baseView addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
+    }];
+    
+    self.collectImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
+    [self addSubview:self.collectImageView];
+    [self.collectImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(0 * scale);
+        make.right.mas_equalTo(-40 * scale);
+        make.width.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(400 * scale);
     }];
 }
 
@@ -68,10 +89,20 @@
 {
     self.tableView.tag = tag;
     self.isFirstRead = YES;
+    [self.baseImageView setImage:[UIImage new]];
     [self.baseImageView sd_cancelCurrentAnimationImagesLoad];
     [self.baseImageView sd_cancelCurrentImageLoad];
     [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
-    self.tableView.hidden = YES;
+    
+    if (model.wyyFlg) {
+        [self.collectImageView setImage:[UIImage imageNamed:@"yaoyueshu"]];
+        self.collectImageView.hidden = NO;
+    }else if (model.collectFlg) {
+        [self.collectImageView setImage:[UIImage imageNamed:@"shoucangshu"]];
+        self.collectImageView.hidden = NO;
+    }else{
+        self.collectImageView.hidden = YES;
+    }
     
     if (model.details) {
         self.model = model;
@@ -129,6 +160,15 @@
     
     DTieEditModel * model = [self.model.details objectAtIndex:indexPath.row - 1];
     
+    if (model.pFlag) {
+        if ([[DDLocationManager shareManager] contentIsCanSeeWith:self.model detailModle:model]) {
+            [cell configCanSee:YES];
+        }else{
+            [cell configCanSee:NO];
+            return cell;
+        }
+    }
+    
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
         [cell configWithModel:model];
         return cell;
@@ -138,16 +178,16 @@
         self.isFirstRead = NO;
         self.firestIndex = indexPath;
         NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.createTime / 1000]];
+        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
         NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
         [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
     }else{
         
         if (self.firestIndex && [indexPath isEqual:self.firestIndex]) {
             NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-            [formatter setDateFormat:@"yyyy-MM-dd HH:mm"];
-            NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.createTime / 1000]];
+            [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+            NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
             NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
             [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
         }else{
@@ -160,28 +200,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UIView * view = tableView.superview;
-    if ([view isKindOfClass:[TYCyclePagerView class]]) {
-        TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
-        [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
-    }else{
-        view = view.superview;
-        if ([view isKindOfClass:[TYCyclePagerView class]]) {
-            TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
-            [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
-        }else{
-            view = view.superview;
-            if ([view isKindOfClass:[TYCyclePagerView class]]) {
-                TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
-                [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
-            }else{
-                view = view.superview;
-                if ([view isKindOfClass:[TYCyclePagerView class]]) {
-                    TYCyclePagerView * pagerView = (TYCyclePagerView *)view;
-                    [pagerView.delegate pagerView:pagerView didSelectedItemCell:[pagerView.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:tableView.tag inSection:0]] atIndex:tableView.tag];
-                }
-            }
-        }
+    if (self.tableViewClickHandle) {
+        self.tableViewClickHandle([NSIndexPath indexPathForItem:tableView.tag inSection:0]);
     }
 }
 

@@ -13,7 +13,8 @@
 @interface DTieDetailTextTableViewCell ()
 
 @property (nonatomic, strong) UILabel * detailLabel;
-//@property (nonatomic, strong) UIVisualEffectView * effectView;
+
+@property (nonatomic, strong) UIImageView * fugaiImageView;
 
 @end
 
@@ -50,6 +51,23 @@
 //    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.edges.mas_equalTo(0);
 //    }];
+    
+    self.fugaiImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.fugaiImageView setImage:[UIImage imageNamed:@"hengBG"]];
+    [self.contentView addSubview:self.fugaiImageView];
+    [self.fugaiImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.fugaiImageView.hidden = YES;
+}
+
+- (void)configWithCanSee:(BOOL)cansee
+{
+    if (cansee) {
+        self.fugaiImageView.hidden = NO;
+    }else{
+        self.fugaiImageView.hidden = YES;
+    }
 }
 
 - (void)configWithModel:(DTieEditModel *)model

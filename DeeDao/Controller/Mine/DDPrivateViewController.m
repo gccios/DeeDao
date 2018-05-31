@@ -287,6 +287,7 @@
 - (void)createButtonDidClicked
 {
     EditSecurityController * edit = [[EditSecurityController alloc] init];
+    edit.delegate = self;
     [self.navigationController pushViewController:edit animated:YES];
 }
 

@@ -16,6 +16,8 @@
 @property (nonatomic, strong) UIImageView * detailImageView;
 @property (nonatomic, strong) UIImageView * playImageView;;
 
+@property (nonatomic, strong) UIImageView * fugaiImageView;
+
 @end
 
 @implementation DTieDetailVideoTableViewCell
@@ -47,6 +49,23 @@
         make.center.mas_equalTo(0);
         make.width.height.mas_equalTo(150 * scale);
     }];
+    
+    self.fugaiImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.fugaiImageView setImage:[UIImage imageNamed:@"hengBG"]];
+    [self.contentView addSubview:self.fugaiImageView];
+    [self.fugaiImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.fugaiImageView.hidden = YES;
+}
+
+- (void)configWithCanSee:(BOOL)cansee
+{
+    if (cansee) {
+        self.fugaiImageView.hidden = NO;
+    }else{
+        self.fugaiImageView.hidden = YES;
+    }
 }
 
 - (void)configWithModel:(DTieEditModel *)model
@@ -56,7 +75,7 @@
     if (image) {
         [self.detailImageView setImage:image];
     }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
     }
 }
 
@@ -65,7 +84,7 @@
     if (model.image) {
         [self.detailImageView setImage:model.image];
     }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"test"]];
+        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
     }
 }
 

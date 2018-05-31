@@ -11,13 +11,14 @@
 
 @implementation AddCommentRequest
 
-- (instancetype)initWithPostID:(NSInteger)postId commentContent:(NSString *)commentContent
+- (instancetype)initWithPostID:(NSInteger)postId commentId:(NSInteger)commentId commentContent:(NSString *)commentContent
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPPost;
         self.methodName = @"post/comment/addPostComment";
         
         [self setIntegerValue:postId forParamKey:@"postViewId"];
+        [self setIntegerValue:commentId forParamKey:@"commentId"];
         [self setValue:commentContent forParamKey:@"commentContent"];
         [self setIntegerValue:[UserManager shareManager].user.cid forParamKey:@"commentatorId"];
     }

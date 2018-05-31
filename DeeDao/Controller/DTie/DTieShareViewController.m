@@ -11,13 +11,14 @@
 #import "XRWaterfallLayout.h"
 #import "DDShareImageCollectionViewCell.h"
 #import "WeChatManager.h"
+#import "DDShareManager.h"
 
 @interface DTieShareViewController ()<XWDragCellCollectionViewDataSource, XWDragCellCollectionViewDelegate, XRWaterfallLayoutDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UILabel * titleLabel;
 
-@property (nonatomic, weak) NSMutableArray * shareList;
+@property (nonatomic, strong) NSMutableArray * shareList;
 
 @property (nonatomic, strong) XWDragCellCollectionView *mainView;
 @property (nonatomic, assign) BOOL isEdit;
@@ -64,9 +65,12 @@
     [cell configImageWith:image isEdit:self.isEdit];
     
     __weak typeof(self) weakSelf = self;
+    __weak typeof(cell) weakCell = cell;
     cell.cancleButtonClicked = ^{
-        [weakSelf.shareList removeObjectAtIndex:indexPath.row];
-        [self.mainView deleteItemsAtIndexPaths:@[indexPath]];
+        NSIndexPath * tempIndexPath = [self.mainView indexPathForCell:weakCell];
+        [weakSelf.shareList removeObjectAtIndex:tempIndexPath.item];
+        [weakSelf.mainView deleteItemsAtIndexPaths:@[tempIndexPath]];
+        [[DDShareManager shareManager] updateNumber];
     };
     
     [self.mainView.longPressGesture requireGestureRecognizerToFail:cell.tap];

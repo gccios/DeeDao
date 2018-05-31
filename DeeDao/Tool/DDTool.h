@@ -21,6 +21,7 @@
 + (NSString *)DDGetExpectTimeYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day;
 + (double)DDGetDoubleTimeWithDisYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day;
 
++ (double)DDGetDoubleWithYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day hour:(NSInteger)hour minute:(NSInteger)minute;
 + (double)DDGetDoubleWithYear:(NSInteger)year mouth:(NSInteger)mouth day:(NSInteger)day;
 
 + (NSString *)getTimeWithFormat:(NSString *)format time:(NSInteger)time;
@@ -34,5 +35,7 @@
 + (void)userLibraryAuthorizationStatusWithSuccess:(void (^)(void))success failure:(void (^)(void))failure;
 
 + (void)saveImageInSystemPhoto:(UIImage *)image;
+
++ (NSString *)replaceUnicode:(NSString *)unicodeStr;
 
 @end

@@ -14,6 +14,7 @@
 #import <IQKeyboardManager.h>
 #import <Photos/Photos.h>
 #import "MBProgressHUD+DDHUD.h"
+#import <SDWebImageManager.h>
 
 @implementation DDTool
 
@@ -38,6 +39,10 @@
     [[UITableView appearance] setEstimatedRowHeight:0];
     [[UITableView appearance] setEstimatedSectionFooterHeight:0];
     [[UITableView appearance] setEstimatedSectionHeaderHeight:0];
+    
+    //设置图片缓存策略
+    [[SDImageCache sharedImageCache].config setShouldDecompressImages:NO];
+    [[SDWebImageDownloader sharedDownloader] setShouldDecompressImages:NO];
     
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
@@ -83,7 +88,7 @@
     
     ///< 打印推算时间
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd"];
+    [formatter setDateFormat:@"yyyy年MM月dd日"];
     NSString *calculateStr = [formatter stringFromDate:calculatedate];
     
     return calculateStr;
@@ -106,6 +111,25 @@
     NSDate *calculatedate = [calendar dateByAddingComponents:datecomps toDate:currentdata options:0];
     
     return [calculatedate timeIntervalSince1970] * 1000;
+}
+
++ (double)DDGetDoubleWithYear:(NSInteger)year month:(NSUInteger)month day:(NSUInteger)day hour:(NSInteger)hour minute:(NSInteger)minute
+{
+    NSCalendar *gregorian = [NSCalendar currentCalendar];
+    
+    NSDateComponents* comp2 = [[NSDateComponents alloc]
+                               init];
+    // 设置各时间字段的数值
+    comp2.year = year;
+    comp2.month = month;
+    comp2.day = day;
+    comp2.hour = hour;
+    comp2.minute = minute;
+    // 通过NSDateComponents所包含的时间字段的数值来恢复NSDate对象
+    NSDate *date = [gregorian dateFromComponents:comp2];
+    NSTimeInterval time = [date timeIntervalSince1970];
+    
+    return time * 1000;
 }
 
 + (double)DDGetDoubleWithYear:(NSInteger)year mouth:(NSInteger)mouth day:(NSInteger)day
@@ -148,8 +172,11 @@
 
 + (NSString *)getImageURLWithHtml:(NSString *)html
 {
-    NSString * str;
+    NSString * str = [html stringByReplacingOccurrencesOfString:@" " withString:@""];
     NSArray * array = [html componentsSeparatedByString:@"src=\""];
+    if (array.count == 1) {
+        return str;
+    }
     str = array.lastObject;
     NSArray * resultArray = [str componentsSeparatedByString:@"\""];
     str = resultArray.firstObject;
@@ -161,9 +188,12 @@
 
 + (NSString *)getTextWithHtml:(NSString *)html
 {
-    NSString * str;
+    NSString * str = [html stringByReplacingOccurrencesOfString:@" " withString:@""];
     
     NSArray * array = [html componentsSeparatedByString:@"</font"];
+    if (array.count == 1) {
+        return str;
+    }
     str = array.firstObject;
     NSArray * tempArray = [str componentsSeparatedByString:@"<font"];
     str = tempArray.lastObject;
@@ -221,6 +251,16 @@
             }
         });
     });
+}
+
++ (NSString *)replaceUnicode:(NSString *)unicodeStr
+{
+    NSString *tempStr1 = [unicodeStr stringByReplacingOccurrencesOfString:@"\\u" withString:@"\\U"];
+    NSString *tempStr2 = [tempStr1 stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    NSString *tempStr3 = [[@"\""stringByAppendingString:tempStr2]stringByAppendingString:@"\""];
+    NSData *tempData = [tempStr3 dataUsingEncoding:NSUTF8StringEncoding];
+    NSString* returnStr = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListImmutable format:NULL error:NULL];
+    return [returnStr stringByReplacingOccurrencesOfString:@"\\r\\n" withString:@"\n"];
 }
 
 @end

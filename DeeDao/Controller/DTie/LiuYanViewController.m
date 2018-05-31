@@ -12,6 +12,7 @@
 #import "CommentRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "AddCommentRequest.h"
+#import "DDTool.h"
 
 @interface LiuYanViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -23,15 +24,17 @@
 @property (nonatomic, strong) UITextField * textField;
 
 @property (nonatomic, assign) NSInteger postId;
+@property (nonatomic, assign) NSInteger commentId;
 
 @end
 
 @implementation LiuYanViewController
 
-- (instancetype)initWithPostID:(NSInteger)postId
+- (instancetype)initWithPostID:(NSInteger)postId commentId:(NSInteger)commentId
 {
     if (self = [super init]) {
         self.postId = postId;
+        self.commentId = commentId;
     }
     return self;
 }
@@ -62,8 +65,10 @@
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取评论失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取评论失败" inView:self.view];
     }];
 }
 
@@ -116,7 +121,7 @@
     [self endEdit];
     
     sendButton.enabled = NO;
-    AddCommentRequest * request = [[AddCommentRequest alloc] initWithPostID:self.postId commentContent:comment];
+    AddCommentRequest * request = [[AddCommentRequest alloc] initWithPostID:self.postId commentId:self.commentId commentContent:comment];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         sendButton.enabled = YES;
@@ -127,10 +132,13 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 CommentModel * model = [CommentModel mj_objectWithKeyValues:data];
-                [self.dataSource insertObject:model atIndex:0];
+                model.commentatorName = [DDTool replaceUnicode:model.commentatorName];
+                [self.dataSource addObject:model];
+                NSIndexPath * indexPath =[NSIndexPath indexPathForRow:self.dataSource.count - 1 inSection:0];
                 [self.tableView beginUpdates];
-                [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [self.tableView endUpdates];
+                [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             }
         }
         
@@ -155,6 +163,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     LiuYanTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"LiuYanTableViewCell" forIndexPath:indexPath];
+    
+    CommentModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    [cell configWithModel:model];
     
     return cell;
 }
@@ -184,7 +195,7 @@
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"close"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -208,7 +219,7 @@
 
 - (void)backButtonDidClicked
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (NSMutableArray *)dataSource

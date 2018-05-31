@@ -47,7 +47,7 @@
         make.top.mas_equalTo(self.topView.mas_bottom).offset(30 * scale);
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-30 * scale);
+        make.height.mas_equalTo(kMainBoundsHeight / 3);
     }];
     [DDViewFactoryTool cornerRadius:10 withView:self.textView];
 }
@@ -77,7 +77,7 @@
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"close"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -111,15 +111,16 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)saveButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
     if (self.delegate && [self.delegate respondsToSelector:@selector(DTEditTextDidFinished:)]) {
         [self.delegate DTEditTextDidFinished:self.textView.text];
     }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (RDTextView *)textView
@@ -151,15 +152,12 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[IQKeyboardManager sharedManager] setEnable:YES];
-}
-
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
-{
-    [super touchesBegan:touches withEvent:event];
+    
     if ([self.textView canResignFirstResponder]) {
         [self.textView resignFirstResponder];
     }
+    
+    [[IQKeyboardManager sharedManager] setEnable:YES];
 }
 
 - (void)didReceiveMemoryWarning {

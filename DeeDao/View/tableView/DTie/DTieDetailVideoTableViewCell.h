@@ -11,6 +11,8 @@
 
 @interface DTieDetailVideoTableViewCell : UITableViewCell
 
+- (void)configWithCanSee:(BOOL)cansee;
+
 - (void)configWithModel:(DTieEditModel *)model;
 
 - (void)yulanWithModel:(DTieEditModel *)model;
