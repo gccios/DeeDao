@@ -15,7 +15,7 @@
 #import "DDLocationManager.h"
 #import "UserManager.h"
 #import "WeChatManager.h"
-#import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
 
 @interface AppDelegate ()
@@ -118,7 +118,7 @@
     
     if ([WeChatManager shareManager].isShare) {
         [WeChatManager shareManager].isShare = NO;
-        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNotification object:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
     }
     
 }

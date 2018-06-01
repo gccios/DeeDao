@@ -15,6 +15,7 @@
 {
     if (self = [super init]) {
         self.detailsContent = @"";
+        self.shareEnable = YES;
     }
     return self;
 }

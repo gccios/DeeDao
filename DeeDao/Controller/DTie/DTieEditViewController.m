@@ -949,7 +949,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         return;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传Dtie" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传帖子内容" inView:self.view];
     NSMutableArray * listArray = [[NSMutableArray alloc] init];
     __block NSInteger tempCount = 0;
     

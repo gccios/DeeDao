@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DTieEditModel.h"
+#import "DTieModel.h"
 
 @interface DTieDetailVideoTableViewCell : UITableViewCell
 
 - (void)configWithCanSee:(BOOL)cansee;
 
 - (void)configWithModel:(DTieEditModel *)model;
+
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel;
 
 - (void)yulanWithModel:(DTieEditModel *)model;
 

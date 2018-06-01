@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DTieEditModel.h"
+#import "DTieModel.h"
 
 @interface DTieDetailImageTableViewCell : UITableViewCell
 
 - (void)configWithModel:(DTieEditModel *)model;
+
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel;
 
 - (void)configWithCanSee:(BOOL)cansee;
 

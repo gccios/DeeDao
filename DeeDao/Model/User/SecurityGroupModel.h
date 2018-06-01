@@ -20,4 +20,7 @@
 
 @property (nonatomic, assign) NSInteger landAccountFlg;
 
+@property (nonatomic, assign) BOOL isChoose;
+@property (nonatomic, assign) BOOL isNotification;
+
 @end

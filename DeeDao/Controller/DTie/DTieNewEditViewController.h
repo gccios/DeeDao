@@ -9,6 +9,8 @@
 #import "DDViewController.h"
 #import "DTieModel.h"
 
+extern NSString * const DTieDidCreateNewNotification;
+
 @interface DTieNewEditViewController : DDViewController
 
 - (instancetype)initWithDtieModel:(DTieModel *)model;

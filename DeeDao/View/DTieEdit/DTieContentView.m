@@ -9,7 +9,6 @@
 #import "DTieContentView.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
-#import "DDLocationManager.h"
 #import "DDTool.h"
 #import "DTieNewEditImageCell.h"
 #import "DTieNewEditTextCell.h"
@@ -22,6 +21,8 @@
 #import "RTDragCellTableView.h"
 #import "DTieChooseLocationController.h"
 #import "DatePickerView.h"
+#import "LookImageViewController.h"
+#import <AVKit/AVKit.h>
 
 @interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate>
 
@@ -38,12 +39,7 @@
 @property (nonatomic, strong) UIButton * videoButton;
 @property (nonatomic, strong) UIButton * textButton;
 
-@property (nonatomic, strong) NSMutableArray * modleSources;
-
-@property (nonatomic, strong) BMKPoiInfo * choosePOI;
-
 @property (nonatomic, strong) DatePickerView * datePicker;
-@property (nonatomic, assign) NSInteger createTime;
 
 @property (nonatomic, strong) DTieModel * editDTModel;
 
@@ -59,6 +55,16 @@
     if (self = [super initWithFrame:frame]) {
         self.editDTModel = editModel;
         [self.modleSources addObjectsFromArray:editModel.details];
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"detailNumber" ascending:YES];
+        [self.modleSources sortUsingDescriptors:@[sort]];
+        [self createContenView];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
         [self createContenView];
     }
     return self;
@@ -97,7 +103,7 @@
 #pragma mark - 选取照片
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在处理图片" inView:self.parentDDViewController.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在处理图片" inView:self.parentDDViewController.view];
     
     NSMutableArray * models = [[NSMutableArray alloc] init];
     for (NSInteger i = 0; i < photos.count; i++) {
@@ -124,7 +130,7 @@
     }
     [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
     [self.tableView reloadData];
-    [hud hideAnimated:YES];
+//    [hud hideAnimated:YES];
 }
 
 - (void)showChoosePhotoPicker
@@ -189,7 +195,7 @@
         }else{
             DTieEditModel * model = [[DTieEditModel alloc] init];
             model.type = DTieEditType_Text;
-            model.detailsContent = text;
+            model.detailContent = text;
             
             [self.modleSources insertObject:model atIndex:self.insertIndex];
             [self.tableView beginUpdates];
@@ -371,6 +377,12 @@
         make.edges.mas_equalTo(0);
     }];
     
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
+    
+    UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
+    swipe.direction = UISwipeGestureRecognizerDirectionLeft;
+    [self.tableView addGestureRecognizer:swipe];
+    
     self.tableView.tableHeaderView = headerView;
     
     [self createChooseView];
@@ -421,6 +433,21 @@
     }
 }
 
+#pragma mark - 左滑删除
+- (void)tableViewDidSwipe:(UISwipeGestureRecognizer *)swipe
+{
+    CGPoint point = [swipe locationInView:self.tableView];
+    NSIndexPath * indexPath = [self.tableView indexPathForRowAtPoint:point];
+    
+    if (indexPath && indexPath.row < self.modleSources.count) {
+        
+        [self.modleSources removeObjectAtIndex:indexPath.row];
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        [self.tableView endUpdates];
+    }
+}
+
 #pragma mark - 当时草稿进来时，需要将页面刷新止草稿本来的状态
 - (void)reloadWithEditModel
 {
@@ -454,6 +481,37 @@
 }
 
 #pragma mark - UITableViewDelegate & UITableViewDataSource
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DTieEditModel * model = [self.modleSources objectAtIndex:indexPath.row];
+    if (model.type == DTieEditType_Image) {
+        if (model.image) {
+            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImage:model.image];
+            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+        }else{
+            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImageURL:model.detailContent];
+            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+        }
+    }else if (model.type == DTieEditType_Video) {
+        
+        NSURL * url = nil;
+        if (model.videoURL) {
+            url = model.videoURL;
+        }else{
+            url = [NSURL URLWithString:model.detailContent];
+        }
+        
+        AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+        player.videoGravity = AVLayerVideoGravityResizeAspect;
+        player.player = [[AVPlayer alloc] initWithURL:url];
+        [self.parentDDViewController presentViewController:player animated:YES completion:nil];
+    }else{
+        DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:model.detailsContent placeholder:@"请输入文字"];
+        text.delegate = self;
+        [self.parentDDViewController presentViewController:text animated:YES completion:nil];
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return self.modleSources.count;

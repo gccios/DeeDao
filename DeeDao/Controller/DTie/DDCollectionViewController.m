@@ -9,7 +9,6 @@
 #import "DDCollectionViewController.h"
 #import "TYCyclePagerView.h"
 #import "DDCollectionListViewCell.h"
-#import "DTieDetailViewController.h"
 #import "DDHandleButton.h"
 #import <UIImageView+WebCache.h>
 #import "DTieCollectionRequest.h"
@@ -17,8 +16,8 @@
 #import "DTieCancleWYYRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DTieDetailRequest.h"
-#import "DTieDetailViewController.h"
-#import "DTieEditViewController.h"
+#import "DTieNewDetailViewController.h"
+#import "DTieNewEditViewController.h"
 #import "UserInfoViewController.h"
 #import "DDShareManager.h"
 #import "UserManager.h"
@@ -365,7 +364,7 @@
                 if (KIsDictionary(data)) {
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                     dtieModel.postId = model.postId;
-                    DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
+                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
                     [self.navigationController pushViewController:edit animated:YES];
                 }
             }
@@ -378,7 +377,7 @@
     }
     
     if (model.details) {
-        DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
+        DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:model];
         [self.navigationController pushViewController:detail animated:NO];
     }else{
         [MBProgressHUD showTextHUDWithText:@"正在获取帖子内容" inView:self.view];

@@ -8,17 +8,23 @@
 
 #import <UIKit/UIKit.h>
 #import "DTieModel.h"
+#import "DDLocationManager.h"
 
 @interface DTieContentView : UIView
 
 @property (nonatomic, weak) UINavigationController * parentDDViewController;
 
-- (instancetype)initWithFrame:(CGRect)frame editModel:(DTieModel *)editModel;
+@property (nonatomic, strong) NSMutableArray * modleSources;
+
+@property (nonatomic, assign) NSInteger createTime;
 
 @property (nonatomic, strong) UITextField * titleTextField;
 @property (nonatomic, strong) UILabel * locationLabel;
 @property (nonatomic, strong) UILabel * timeLabel;
 
+@property (nonatomic, strong) BMKPoiInfo * choosePOI;
+
+- (instancetype)initWithFrame:(CGRect)frame editModel:(DTieModel *)editModel;
 - (void)showChoosePhotoPicker;
 
 @end

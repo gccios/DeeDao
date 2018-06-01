@@ -11,12 +11,15 @@
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
 #import "DDShareManager.h"
+#import "LookImageViewController.h"
+#import "DDLocationManager.h"
 
 @interface DTieDetailImageTableViewCell ()
 
 @property (nonatomic, strong) UIImageView * detailImageView;
+@property (nonatomic, strong) DTieEditModel * model;
 
-@property (nonatomic, strong) UIImageView * fugaiImageView;
+@property (nonatomic, strong) UIVisualEffectView * effectView;
 
 @end
 
@@ -34,41 +37,52 @@
 {
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
     self.detailImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.detailImageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.detailImageView.clipsToBounds = YES;
     [self.contentView addSubview:self.detailImageView];
     [self.detailImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(0);
+        make.top.mas_equalTo(24 * scale);
+        make.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(-24 * scale);
     }];
     
     UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDidTap:)];
     self.detailImageView.userInteractionEnabled = YES;
     [self.detailImageView addGestureRecognizer:longPress];
+    [self.detailImageView addGestureRecognizer:tap];
     
-//    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-//    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
-//    self.effectView.alpha = .98f;
-//    [self.contentView addSubview:self.effectView];
-//    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.edges.mas_equalTo(0);
-//    }];
-    
-    self.fugaiImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-    [self.fugaiImageView setImage:[UIImage imageNamed:@"hengBG"]];
-    [self.contentView addSubview:self.fugaiImageView];
-    [self.fugaiImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(0);
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    self.effectView.alpha = .98f;
+    [self.contentView addSubview:self.effectView];
+    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(24 * scale);
+        make.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(-24 * scale);
     }];
-    self.fugaiImageView.hidden = YES;
+    self.effectView.hidden = YES;
+}
+
+- (void)imageDidTap:(UITapGestureRecognizer *)tap
+{
+    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    if (self.model.image) {
+        LookImageViewController * look = [[LookImageViewController alloc] initWithImage:self.model.image];
+        [na presentViewController:look animated:NO completion:nil];
+    }else{
+        LookImageViewController * look = [[LookImageViewController alloc] initWithImageURL:self.model.detailContent];
+        [na presentViewController:look animated:NO completion:nil];
+    }
 }
 
 - (void)configWithCanSee:(BOOL)cansee
 {
-    if (cansee) {
-        self.fugaiImageView.hidden = NO;
-    }else{
-        self.fugaiImageView.hidden = YES;
-    }
+    
 }
 
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
@@ -78,12 +92,43 @@
 
 - (void)configWithModel:(DTieEditModel *)model
 {
-    UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
+    self.model = model;
     
-    if (image) {
-        [self.detailImageView setImage:image];
+    if (model.image) {
+        [self.detailImageView setImage:model.image];
     }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
+        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
+        
+        if (image) {
+            [self.detailImageView setImage:image];
+        }else{
+            [self.detailImageView setImage:[UIImage new]];
+        }
+    }
+}
+
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
+{
+    self.model = model;
+    
+    if (model.image) {
+        [self.detailImageView setImage:model.image];
+    }else{
+        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
+        
+        if (image) {
+            [self.detailImageView setImage:image];
+        }else{
+            [self.detailImageView setImage:[UIImage new]];
+        }
+    }
+    
+    if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+        self.detailImageView.userInteractionEnabled = YES;
+        self.effectView.hidden = NO;
+    }else{
+        self.detailImageView.userInteractionEnabled = NO;
+        self.effectView.hidden = YES;
     }
 }
 

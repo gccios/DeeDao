@@ -161,13 +161,23 @@
 
 + (CGFloat)getHeightByWidth:(CGFloat)width title:(NSString *)title font:(UIFont *)font
 {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, width, 0)];
-    label.text = title;
-    label.font = font;
-    label.numberOfLines = 0;
-    [label sizeToFit];
-    CGFloat height = label.frame.size.height;
-    return height;
+    NSMutableAttributedString *attributeString = [[NSMutableAttributedString alloc] initWithString:title];
+    
+    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
+    paraStyle.lineBreakMode = NSLineBreakByCharWrapping;
+    paraStyle.alignment = NSTextAlignmentLeft;
+    paraStyle.lineSpacing = 6; //设置行间距
+    paraStyle.hyphenationFactor = 1.0;
+    paraStyle.firstLineHeadIndent = 0.0;
+    paraStyle.paragraphSpacingBefore = 0.0;
+    paraStyle.headIndent = 0;
+    paraStyle.tailIndent = 0;
+    
+    NSDictionary *dic = @{NSFontAttributeName:font, NSParagraphStyleAttributeName:paraStyle, NSKernAttributeName:@1.5f
+                          };
+    [attributeString addAttributes:dic range:NSMakeRange(0, attributeString.length)];
+    CGSize size = [attributeString boundingRectWithSize:CGSizeMake(width, MAXFLOAT) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading context:nil].size;
+    return size.height;
 }
 
 + (NSString *)getImageURLWithHtml:(NSString *)html
@@ -261,6 +271,17 @@
     NSData *tempData = [tempStr3 dataUsingEncoding:NSUTF8StringEncoding];
     NSString* returnStr = [NSPropertyListSerialization propertyListWithData:tempData options:NSPropertyListImmutable format:NULL error:NULL];
     return [returnStr stringByReplacingOccurrencesOfString:@"\\r\\n" withString:@"\n"];
+}
+
++ (CGFloat)getHeightWithImage:(UIImage *)image
+{
+    if (nil == image) {
+        return .1f;
+    }
+    
+    CGFloat scale = image.size.height / image.size.width;
+    CGFloat height = kMainBoundsWidth * scale;
+    return height;
 }
 
 @end

@@ -61,7 +61,7 @@
         make.height.mas_equalTo((kMainBoundsHeight - (220 + kStatusBarHeight) * scale) / 2);
     }];
     
-    if (self.startPoi) {
+    if (self.startPoi && self.startPoi.pt.latitude != 0) {
         if (self.isFirst) {
             BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(self.startPoi.pt, BMKCoordinateSpanMake(.01, .01));
             BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];

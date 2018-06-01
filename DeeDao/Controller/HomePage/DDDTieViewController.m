@@ -8,7 +8,7 @@
 
 #import "DDDTieViewController.h"
 #import "DTieCollectionViewCell.h"
-#import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 #import "DTieNewEditViewController.h"
 #import "QNDDUploadManager.h"
 #import "DTieListRequest.h"
@@ -194,7 +194,7 @@
 //
     [self createTopView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate) name:DTieDidCreateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate) name:DTieDidCreateNewNotification object:nil];
 }
 
 - (void)newDTieDidCreate
@@ -301,7 +301,7 @@
     switch (model.dTieType) {
         case DTieType_Add:
         {
-            DTieEditViewController * edit = [[DTieEditViewController alloc] init];
+            DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] init];
             [self.navigationController pushViewController:edit animated:YES];
         }
             break;
@@ -387,7 +387,7 @@
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DTieModel.h"
+#import "SecurityGroupModel.h"
 
 @interface DTieQuanxianView : UIView
+
+@property (nonatomic, strong) NSMutableArray * allowToSeeList;
+@property (nonatomic, assign) NSInteger shareType;
+@property (nonatomic, assign) NSInteger landAccountFlg;
+
+- (instancetype)initWithFrame:(CGRect)frame editModel:(DTieModel *)editModel;
 
 @end

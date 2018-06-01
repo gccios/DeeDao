@@ -21,7 +21,7 @@
 #import "DTieModel.h"
 #import <UIImageView+WebCache.h>
 #import "DTieFoundEditView.h"
-#import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudio/CoreAudioTypes.h>
@@ -51,6 +51,8 @@
 
 @property (nonatomic, strong) UIView * tipView;
 @property (nonatomic, strong) UILabel * tipLabel;
+
+@property (nonatomic, assign) CLLocationCoordinate2D markCoordinate;
 
 @end
 
@@ -169,7 +171,7 @@
         make.width.height.mas_equalTo(120 * scale);
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNewNotification object:nil];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
     self.timeLabel.backgroundColor = UIColorFromRGB(0xdb6283);
@@ -224,8 +226,6 @@
         [_mapView setRegion:adjustedRegion animated:YES];
         self.isFirst = NO;
     }
-    
-    [self requestMapViewLocations];
 }
 
 - (void)requestMapViewLocations
@@ -306,12 +306,19 @@
 
 - (void)DTieFoundEditViewBeginEidt:(DTieFoundEditView *)view
 {
+    
     NSString * location = @"";
     if (!isEmptyString(view.locationLabel.text)) {
         location = [view.locationLabel.text componentsSeparatedByString:@"\n"].lastObject;
     }
     
-    DTieEditViewController * edit = [[DTieEditViewController alloc] initWithTitle:view.titleTextField.text address:location];
+    DTieModel * model = [[DTieModel alloc] init];
+    model.postSummary = view.titleTextField.text;
+    model.sceneAddress = location;
+    model.sceneAddressLat = self.markCoordinate.latitude;
+    model.sceneAddressLng = self.markCoordinate.longitude;
+    
+    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:model];
     [view removeFromSuperview];
     [self.navigationController pushViewController:edit animated:YES];
 }
@@ -319,6 +326,7 @@
 #pragma mark - BMKMapViewDelegate
 - (void)mapview:(BMKMapView *)mapView onLongClick:(CLLocationCoordinate2D)coordinate
 {
+    self.markCoordinate = coordinate;
     DTieFoundEditView * edit = [[DTieFoundEditView alloc] initWithFrame:CGRectZero coordinate:coordinate];
     [self.view addSubview:edit];
     [edit mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -586,7 +594,7 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
     self.mapView.delegate = nil;
 }
 

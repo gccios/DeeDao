@@ -17,7 +17,7 @@
 #import "SaveFriendOrConcernRequest.h"
 #import "DDCollectionViewController.h"
 #import "DTieDetailRequest.h"
-#import "DTieEditViewController.h"
+#import "DTieNewEditViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
 #import "DDCollectionHandleView.h"
@@ -239,7 +239,7 @@
                     NSDictionary * data = [response objectForKey:@"data"];
                     if (KIsDictionary(data)) {
                         DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                        DTieEditViewController * edit = [[DTieEditViewController alloc] initWithDtieModel:dtieModel];
+                        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
                         [self.navigationController pushViewController:edit animated:YES];
                     }
                 }

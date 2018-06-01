@@ -38,4 +38,6 @@
 
 + (NSString *)replaceUnicode:(NSString *)unicodeStr;
 
++ (CGFloat)getHeightWithImage:(UIImage *)image;
+
 @end
