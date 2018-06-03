@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong) UIView * titleView;
 
+@property (nonatomic, strong) UIButton * deleteButton;
+
 @end
 
 @implementation DTieCollectionViewCell
@@ -121,6 +123,24 @@
         make.height.mas_equalTo(40 * scale);
         make.bottom.mas_equalTo(-30 * scale);
     }];
+    
+    self.deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(40 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.deleteButton setImage:[UIImage imageNamed:@"jianqubig"] forState:UIControlStateNormal];
+    [self.contentView addSubview:self.deleteButton];
+    [self.deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.right.mas_equalTo(self.contenImageView).offset(30 * scale);
+        make.width.height.mas_equalTo(60 * scale);
+    }];
+    [self.deleteButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.deleteButton.hidden = YES;
+}
+
+- (void)cancleButtonDidClicked
+{
+    if (self.deleteButton) {
+        self.deleteButtonHandle();
+    }
 }
 
 - (void)setIndexPath:(NSIndexPath *)indexPath
@@ -209,6 +229,15 @@
             
         default:
             break;
+    }
+}
+
+- (void)confiEditEnable:(BOOL)edit
+{
+    if (edit) {
+        self.deleteButton.hidden = NO;
+    }else{
+        self.deleteButton.hidden = YES;
     }
 }
 

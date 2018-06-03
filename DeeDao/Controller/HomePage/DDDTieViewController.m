@@ -20,6 +20,7 @@
 #import "DTieDetailRequest.h"
 #import "DTieSearchViewController.h"
 #import "DDNavigationViewController.h"
+#import "DTieDeleteRequest.h"
 #import <MJRefresh.h>
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
@@ -39,6 +40,9 @@
 @property (nonatomic, assign) NSInteger start;
 @property (nonatomic, assign) NSInteger length;
 
+@property (nonatomic, strong) UILongPressGestureRecognizer * longPress;
+@property (nonatomic, assign) BOOL isEdit;
+
 @end
 
 @implementation DDDTieViewController
@@ -46,6 +50,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.isEdit = NO;
     self.start = 0;
     self.length = 20;
     
@@ -128,6 +133,23 @@
     }];
 }
 
+- (void)deleteDtieWithIndexPath:(NSIndexPath *)indexPath
+{
+    DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:model.postId];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+    
+    [self.dataSource removeObject:model];
+    [self.collectionView deleteItemsAtIndexPaths:@[indexPath]];
+}
+
 - (void)createViews
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
@@ -151,6 +173,9 @@
     
     self.collectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshData)];
     self.collectionView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(getMoreList)];
+    
+    self.longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidChange:)];
+    [self.collectionView addGestureRecognizer:self.longPress];
     
 //    /*
 //     D贴顶部下拉资源管理
@@ -195,6 +220,14 @@
     [self createTopView];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate) name:DTieDidCreateNewNotification object:nil];
+}
+
+- (void)longPressDidChange:(UILongPressGestureRecognizer *)longPress
+{
+    if (longPress.state == UIGestureRecognizerStateBegan) {
+        self.isEdit = !self.isEdit;
+        [self.collectionView reloadData];
+    }
 }
 
 - (void)newDTieDidCreate
@@ -356,6 +389,17 @@
     cell.indexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:indexPath.section];
     
     [cell configWithDTieModel:model];
+    [cell confiEditEnable:self.isEdit];
+    if (indexPath.row == 0) {
+        [cell confiEditEnable:NO];
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    __weak typeof(cell) weakCell = cell;
+    cell.deleteButtonHandle = ^{
+        NSIndexPath * indexPath = [weakSelf.collectionView indexPathForCell:weakCell];
+        [weakSelf deleteDtieWithIndexPath:indexPath];
+    };
     
     return cell;
 }

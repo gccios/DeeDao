@@ -73,6 +73,7 @@
 #pragma mark - 时间和地点的选择
 - (void)timeViewDidTap
 {
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
     [self.datePicker showDateTimePickerViewWithDate:[NSDate dateWithTimeIntervalSince1970:self.createTime/1000]];
 }
 
@@ -86,6 +87,7 @@
 
 - (void)chooseLocation
 {
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
     DTieChooseLocationController * chosse = [[DTieChooseLocationController alloc] init];
     if (self.choosePOI) {
         chosse.startPoi = self.choosePOI;

@@ -11,18 +11,27 @@
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "UserLoginWXRequest.h"
+#import <WXApi.h>
 
 @interface LoginViewController ()
 
-@property (nonatomic, strong) UIButton * loginButton;
-
 @property (nonatomic, assign) BOOL hasDDObserver;
+
+@property (nonatomic, strong) UIButton * loginButton;
+@property (nonatomic, strong) UIButton * agreementButton;
+@property (nonatomic, assign) BOOL isAgreement;
+
+@property (nonatomic, assign) BOOL isInstallWeChat;
+
 @end
 
 @implementation LoginViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    //判断是否是微信登录
+    self.isInstallWeChat = [WXApi isWXAppInstalled];
     
     [self createViews];
 }
@@ -44,25 +53,81 @@
     [self.view addSubview:bgImageView];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColorFromRGB(0x0ABB07) colorWithAlphaComponent:.82f] title:@"用微信直接登录"];
+    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColorFromRGB(0x0ABB07) colorWithAlphaComponent:.82f] title:@"微信登录"];
     [self.loginButton setImage:[UIImage imageNamed:@"wxlogo"] forState:UIControlStateNormal];
     [self.loginButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
     [self.loginButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 5)];
     [DDViewFactoryTool cornerRadius:6 withView:self.loginButton];
-    self.loginButton.alpha = 0;
+//    self.loginButton.alpha = 0;
     [self.loginButton addTarget:self action:@selector(loginWithWeChat) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.loginButton];
     [self.loginButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-468 * scale);
+        make.bottom.mas_equalTo(-568 * scale);
         make.height.mas_equalTo(144 * scale);
     }];
     
-    if ([UserManager shareManager].isLogin) {
-         [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+    self.agreementButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.agreementButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
+    NSMutableAttributedString * attributedString = [[NSMutableAttributedString alloc] initWithString:@"阅读并同意《地到用户注册协议》" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:[UIColor whiteColor]}];
+    [attributedString addAttributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:[[UIColor whiteColor] colorWithAlphaComponent:.7f]} range:NSMakeRange(0, 5)];
+    [self.agreementButton setAttributedTitle:attributedString forState:UIControlStateNormal];
+    [self.agreementButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 20 * scale, 0, 0)];
+    [self.view addSubview:self.agreementButton];
+    [self.agreementButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(72 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.top.mas_equalTo(self.loginButton.mas_bottom).offset(40 * scale);
+    }];
+    [self.agreementButton addTarget:self action:@selector(agreementButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * registerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"注册地到账号"];
+    [self.view addSubview:registerButton];
+    [registerButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(80 * scale);
+        make.height.mas_equalTo(60 * scale);
+        make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
+    }];
+    
+    UIButton * passwordButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"账号密码登录"];
+    [self.view addSubview:passwordButton];
+    [passwordButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-80 * scale);
+        make.height.mas_equalTo(60 * scale);
+        make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
+    }];
+    
+    [registerButton addTarget:self action:@selector(registerButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [passwordButton addTarget:self action:@selector(passwordButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self showLoginWithWeChatButton];
+    
+//    if ([UserManager shareManager].isLogin) {
+//         [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+//    }else{
+//        [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+//    }
+}
+
+- (void)registerButtonDidClicked
+{
+    
+}
+
+- (void)passwordButtonDidClicked
+{
+    
+}
+
+- (void)agreementButtonDidClicked
+{
+    self.isAgreement = !self.isAgreement;
+    if (self.isAgreement) {
+        [self.agreementButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
     }else{
-        [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
+        [self.agreementButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     }
 }
 
@@ -130,8 +195,10 @@
 
 - (void)addDDObserver
 {
-    self.hasDDObserver = YES;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginWith:) name:DDUserDidGetWeChatCodeNotification object:nil];
+    if (!self.hasDDObserver) {
+        self.hasDDObserver = YES;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginWith:) name:DDUserDidGetWeChatCodeNotification object:nil];
+    }
 }
 
 - (void)removeDDObserver
@@ -149,9 +216,7 @@
 
 - (void)showLoginWithWeChatButton
 {
-    [UIView animateWithDuration:.5f animations:^{
-        self.loginButton.alpha = 1;
-    }];
+    self.loginButton.alpha = 1;
     [self addDDObserver];
 }
 

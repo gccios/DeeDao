@@ -15,6 +15,10 @@
 
 @property (nonatomic, strong) NSIndexPath * indexPath;
 
+@property (nonatomic, copy) void (^deleteButtonHandle)(void);
+
 - (void)configWithDTieModel:(DTieModel *)model;
+
+- (void)confiEditEnable:(BOOL)edit;
 
 @end

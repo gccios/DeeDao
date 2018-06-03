@@ -8,6 +8,8 @@
 
 #import "DTieNewDetailViewController.h"
 #import "DTieReadView.h"
+#import "WeChatManager.h"
+#import "DTieNewEditViewController.h"
 
 @interface DTieNewDetailViewController ()
 
@@ -32,6 +34,34 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDTieContent) name:DTieDidCreateNewNotification object:nil];
+}
+
+- (void)updateDTieContent
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (void)shareButtonDidClicked
+{
+    NSMutableArray * shareSource = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; self.model.details; i++) {
+        DTieEditModel * model = [self.model.details objectAtIndex:i];
+        if (model.type == DTieEditType_Image) {
+            [shareSource addObject:model];
+            if (shareSource.count >= 9) {
+                break;
+            }
+        }
+    }
+    [[WeChatManager shareManager] shareTimeLineWithImages:shareSource title:@"" viewController:self];
+}
+
+- (void)editButtonDidClicked
+{
+    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:self.model];
+    [self.navigationController pushViewController:edit animated:YES];
 }
 
 - (void)createViews
@@ -91,11 +121,36 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
+    
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+    [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:shareButton];
+    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+    
+    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [editButton setImage:[UIImage imageNamed:@"DTieEdit"] forState:UIControlStateNormal];
+    [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:editButton];
+    [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
 }
 
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

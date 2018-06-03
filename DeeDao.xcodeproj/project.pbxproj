@@ -163,9 +163,13 @@
 		06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78F920A9C91F0049F28F /* MailSmallTableViewCell.m */; };
 		06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */; };
 		06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */; };
+		06C6022820C432870009E536 /* RDAlertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022420C432870009E536 /* RDAlertAction.m */; };
+		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
 		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
+		06DCC8F620C3BE55000194CA /* DTieDeleteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */; };
+		06DCC8F920C3CB5F000194CA /* SelectAttentionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */; };
 		06E209DB20B035BB00EA541B /* MainInfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209DA20B035BB00EA541B /* MainInfoTableViewCell.m */; };
 		06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209DD20B03E5900EA541B /* DDSystemAlertController.m */; };
 		06E209E420B03F1800EA541B /* SystemAlertTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209E320B03F1800EA541B /* SystemAlertTableViewCell.m */; };
@@ -511,12 +515,20 @@
 		06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailBigTableViewCell.m; sourceTree = "<group>"; };
 		06BBF91C20B71A220065B8C0 /* DDCollectionHandleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDCollectionHandleView.h; sourceTree = "<group>"; };
 		06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDCollectionHandleView.m; sourceTree = "<group>"; };
+		06C6022420C432870009E536 /* RDAlertAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertAction.m; sourceTree = "<group>"; };
+		06C6022520C432870009E536 /* RDAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertView.h; sourceTree = "<group>"; };
+		06C6022620C432870009E536 /* RDAlertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertAction.h; sourceTree = "<group>"; };
+		06C6022720C432870009E536 /* RDAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertView.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
 		06DAB76420A34C880055FA60 /* DDFoundViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFoundViewController.m; sourceTree = "<group>"; };
 		06DAB76620A3539A0055FA60 /* DDMailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMailViewController.h; sourceTree = "<group>"; };
 		06DAB76720A3539A0055FA60 /* DDMailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMailViewController.m; sourceTree = "<group>"; };
 		06DAB76920A35A120055FA60 /* DDMineViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMineViewController.h; sourceTree = "<group>"; };
 		06DAB76A20A35A120055FA60 /* DDMineViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDMineViewController.m; sourceTree = "<group>"; };
+		06DCC8F420C3BE55000194CA /* DTieDeleteRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieDeleteRequest.h; sourceTree = "<group>"; };
+		06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieDeleteRequest.m; sourceTree = "<group>"; };
+		06DCC8F720C3CB5F000194CA /* SelectAttentionRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectAttentionRequest.h; sourceTree = "<group>"; };
+		06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectAttentionRequest.m; sourceTree = "<group>"; };
 		06E209D920B035BB00EA541B /* MainInfoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainInfoTableViewCell.h; sourceTree = "<group>"; };
 		06E209DA20B035BB00EA541B /* MainInfoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainInfoTableViewCell.m; sourceTree = "<group>"; };
 		06E209DC20B03E5900EA541B /* DDSystemAlertController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDSystemAlertController.h; sourceTree = "<group>"; };
@@ -757,6 +769,8 @@
 				060F006120AC493A00C810A1 /* DTieDetailRequest.m */,
 				0674E68520AEBC1B006961E1 /* DTieSearchRequest.h */,
 				0674E68620AEBC1B006961E1 /* DTieSearchRequest.m */,
+				06DCC8F420C3BE55000194CA /* DTieDeleteRequest.h */,
+				06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */,
 				06102AC620B465A200FF3278 /* DTieCollectionRequest.h */,
 				06102AC720B465A200FF3278 /* DTieCollectionRequest.m */,
 				06102AC920B4685600FF3278 /* DTieCancleCollectRequest.h */,
@@ -984,6 +998,7 @@
 		06733F6520A29168007875A7 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				06C6022320C432870009E536 /* RDAlertView */,
 				06286AB120BFFF0900434068 /* DTieEdit */,
 				06137A5420AE87FB00D1183A /* Other */,
 				064F0B4020A4896D007C0A4F /* tableView */,
@@ -1175,6 +1190,8 @@
 				0647F31B20B69A92009B7C27 /* SaveFriendOrConcernRequest.m */,
 				0647F31D20B6A3AB009B7C27 /* SelectFriendRequest.h */,
 				0647F31E20B6A3AB009B7C27 /* SelectFriendRequest.m */,
+				06DCC8F720C3CB5F000194CA /* SelectAttentionRequest.h */,
+				06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */,
 				0647F32020B6B1DF009B7C27 /* SaveUserRequest.h */,
 				0647F32120B6B1DF009B7C27 /* SaveUserRequest.m */,
 			);
@@ -1248,6 +1265,17 @@
 				06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */,
 			);
 			path = Mail;
+			sourceTree = "<group>";
+		};
+		06C6022320C432870009E536 /* RDAlertView */ = {
+			isa = PBXGroup;
+			children = (
+				06C6022420C432870009E536 /* RDAlertAction.m */,
+				06C6022520C432870009E536 /* RDAlertView.h */,
+				06C6022620C432870009E536 /* RDAlertAction.h */,
+				06C6022720C432870009E536 /* RDAlertView.m */,
+			);
+			path = RDAlertView;
 			sourceTree = "<group>";
 		};
 		06E209DF20B03EA900EA541B /* Mine */ = {
@@ -1618,6 +1646,7 @@
 				060F005920AC11DC00C810A1 /* DDCollectionViewController.m in Sources */,
 				0650A9FF20AD6E00005A5E76 /* DTieDetailTextTableViewCell.m in Sources */,
 				0674E69120AEE809006961E1 /* MailDetailViewController.m in Sources */,
+				06DCC8F920C3CB5F000194CA /* SelectAttentionRequest.m in Sources */,
 				064F0B4320A4898C007C0A4F /* MainTableViewCell.m in Sources */,
 				06FCD63720A55C8F00E6EAA4 /* DTieEditTableViewCell.m in Sources */,
 				0647F31C20B69A92009B7C27 /* SaveFriendOrConcernRequest.m in Sources */,
@@ -1668,6 +1697,7 @@
 				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
 				06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */,
 				066033B820B26BAC00A54D81 /* DDHandleView.m in Sources */,
+				06C6022920C432870009E536 /* RDAlertView.m in Sources */,
 				0647F32220B6B1DF009B7C27 /* SaveUserRequest.m in Sources */,
 				064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */,
 				06102AD820B470F700FF3278 /* UIView+LayerCurve.m in Sources */,
@@ -1700,9 +1730,11 @@
 				063E7D1E20BEC3D8004AFF63 /* DatePickerView.m in Sources */,
 				06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */,
 				066033F120B2BE6000A54D81 /* SCSafariPageWrapperViewController.m in Sources */,
+				06C6022820C432870009E536 /* RDAlertAction.m in Sources */,
 				061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */,
 				0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */,
 				0641710220B3B9580075ECB6 /* SeriesModel.m in Sources */,
+				06DCC8F620C3BE55000194CA /* DTieDeleteRequest.m in Sources */,
 				066033F020B2BE6000A54D81 /* SCSafariPageController.m in Sources */,
 				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
 				06E209E820B03FAC00EA541B /* SettingModel.m in Sources */,
@@ -1920,7 +1952,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "34b4ed69-bac3-4e71-a115-0dc9c1cb75bf";
+				PROVISIONING_PROFILE = "040426cc-5ff9-4cd9-b3b1-032f6366eb59";
 				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDev;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

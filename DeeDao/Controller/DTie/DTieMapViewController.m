@@ -49,6 +49,9 @@
     
     [self createViews];
     
+    [self updateUserLocation];
+    [self requestMapViewLocations];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateUserLocation) name:DDUserLocationDidUpdateNotification object:nil];
     [[DDLocationManager shareManager] startLocationService];
 }
@@ -95,7 +98,7 @@
         self.isFirst = NO;
     }
     
-    [self requestMapViewLocations];
+//    [self requestMapViewLocations];
 }
 
 - (void)requestMapViewLocations
@@ -181,14 +184,16 @@
     NSInteger index = [self.pointArray indexOfObject:annotation];
     DTieModel * model = [self.mapSource objectAtIndex:index];
     
+    CGFloat scale = kMainBoundsWidth / 414.f;
+    
     if ([view viewWithTag:888]) {
         UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }else{
-        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3, 3, 46, 46)];
+        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3* scale, 3 * scale, 46 * scale, 46 * scale)];
         imageView.tag = 888;
         [view addSubview:imageView];
-        [DDViewFactoryTool cornerRadius:23 withView:imageView];
+        [DDViewFactoryTool cornerRadius:23 * scale withView:imageView];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }
     

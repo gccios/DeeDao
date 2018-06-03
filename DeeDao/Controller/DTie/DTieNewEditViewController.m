@@ -19,7 +19,7 @@
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 
-@interface DTieNewEditViewController ()
+@interface DTieNewEditViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -28,6 +28,7 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 @property (nonatomic, strong) UIButton * yulanButton;
 
 @property (nonatomic, strong) DTieContentView * contenView;
+@property (nonatomic, strong) UITableView * quanxianTableView;
 @property (nonatomic, strong) DTieQuanxianView * quanxianView;
 @property (nonatomic, strong) DTieReadView * readView;
 @property (nonatomic, strong) NSMutableArray * shareImages;
@@ -411,8 +412,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 - (void)showQuanxianView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    [self.view insertSubview:self.quanxianView atIndex:0];
-    [self.quanxianView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.view insertSubview:self.quanxianTableView atIndex:0];
+    [self.quanxianTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
@@ -420,7 +421,7 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 
 - (void)hiddenQuanxianView
 {
-    [self.quanxianView removeFromSuperview];
+    [self.quanxianTableView removeFromSuperview];
 }
 
 #pragma mark - 第三步
@@ -495,6 +496,27 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     if (nil == self.editModel) {
         [self.contenView showChoosePhotoPicker];
     }
+    
+    self.quanxianTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.quanxianTableView.backgroundColor = self.view.backgroundColor;
+    self.quanxianTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.quanxianTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
+    self.quanxianTableView.rowHeight = .1 * scale;
+    self.quanxianTableView.delegate = self;
+    self.quanxianTableView.dataSource = self;
+    self.quanxianTableView.tableHeaderView = self.quanxianView;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
+    
+    return cell;
 }
 
 - (void)createTopView
@@ -607,6 +629,7 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+    [super touchesBegan:touches withEvent:event];
     if ([self.contenView.titleTextField isFirstResponder]) {
         [self.contenView.titleTextField resignFirstResponder];
     }
