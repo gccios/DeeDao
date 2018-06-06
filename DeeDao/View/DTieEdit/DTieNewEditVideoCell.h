@@ -14,6 +14,7 @@
 @property (nonatomic, strong) DTieEditModel * model;
 @property (nonatomic, strong) UIButton * addButton;
 @property (nonatomic, copy) void (^addButtonHandle)(void);
+@property (nonatomic, copy) void (^preViewHandle)(void);
 
 - (void)configWithModel:(DTieEditModel *)model;
 

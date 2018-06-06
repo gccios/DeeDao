@@ -161,6 +161,7 @@
 
 - (void)chooseFriend
 {
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
     if (self.dataSource.count == 0) {
         [self requestFriendList];
     }
@@ -285,6 +286,7 @@
 
 - (void)choosDTieDidClicked
 {
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
     SecurityDTieViewController * Dtie = [[SecurityDTieViewController alloc] initWithChooseSource:self.selectDTie DTieSource:self.DTieSource];
     [self.navigationController pushViewController:Dtie animated:YES];
 }
@@ -353,6 +355,7 @@
 
 - (void)createButtonDidClicked
 {
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
     if (isEmptyString(self.headerView.nameTextField.text)) {
         [MBProgressHUD showTextHUDWithText:@"请输入标题" inView:self.view];
         return;
@@ -424,6 +427,12 @@
         _DTieSource = [[NSMutableArray alloc] init];
     }
     return _DTieSource;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
 }
 
 - (void)didReceiveMemoryWarning {

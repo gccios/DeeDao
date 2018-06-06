@@ -17,6 +17,8 @@ extern NSString * const DDUserDidLoginOutNotification; //用户退出通知
 
 @property (nonatomic, strong) UserModel * user;
 
+@property (nonatomic, copy) NSString * PasteboardText;
+
 + (instancetype)shareManager;
 
 - (void)loginWithDictionary:(NSDictionary *)userInfo;

@@ -51,6 +51,7 @@
     self.dataSource = [[NSMutableArray alloc] init];
     
     [self createViews];
+    [self searchRequest];
 }
 
 - (void)searchRequest
@@ -132,6 +133,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self endEditing];
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     switch (model.dTieType) {
             
@@ -170,6 +172,7 @@
 
 - (void)timeButtonDidClicked
 {
+    [self endEditing];
     if (self.pageType == 1) {
         return;
     }
@@ -187,6 +190,7 @@
 
 - (void)sourceButtonDidClicked
 {
+    [self endEditing];
     if (self.pageType == 1) {
         self.pageType = 2;
         self.sourceButton.alpha = 1;

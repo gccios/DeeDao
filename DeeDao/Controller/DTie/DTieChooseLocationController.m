@@ -61,6 +61,17 @@
         make.height.mas_equalTo((kMainBoundsHeight - (220 + kStatusBarHeight) * scale) / 2);
     }];
     
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
+    
     if (self.startPoi && self.startPoi.pt.latitude != 0) {
         if (self.isFirst) {
             BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(self.startPoi.pt, BMKCoordinateSpanMake(.01, .01));

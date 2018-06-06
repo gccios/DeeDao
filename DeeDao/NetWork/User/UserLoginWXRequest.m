@@ -23,4 +23,19 @@
     return self;
 }
 
+- (instancetype)initWithTelNumber:(NSString *)telNumber code:(NSString *)code
+{
+    if (self = [super init]) {
+        
+        self.methodName = @"api/open/loginUser";
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        [self setValue:telNumber forParamKey:@"phoneNum"];
+        [self setValue:@"phone_login" forParamKey:@"loginType"];
+        [self setValue:code forParamKey:@"phoneCode"];
+        [self setValue:@"" forParamKey:@"pwd"];
+        
+    }
+    return self;
+}
+
 @end

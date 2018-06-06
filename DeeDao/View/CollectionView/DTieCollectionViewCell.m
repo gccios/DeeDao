@@ -68,7 +68,7 @@
     }];
     [coverView.layer addSublayer:gradientLayer];
     
-    self.contenImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeCenter image:[UIImage new]];
+    self.contenImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     self.contenImageView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:.7f];
     self.contentView.userInteractionEnabled = YES;
     [self.BGImageView addSubview:self.contenImageView];
@@ -158,6 +158,7 @@
             make.right.mas_equalTo(-30 * scale);
         }];
     }
+    
     _indexPath = indexPath;
 }
 

@@ -8,8 +8,15 @@
 
 #import "DDViewController.h"
 
+@protocol LiuyanDidComplete <NSObject>
+
+- (void)liuyanDidComplete;
+
+@end
+
 @interface LiuYanViewController : DDViewController
 
+@property (nonatomic, weak) id<LiuyanDidComplete> delegate;
 - (instancetype)initWithPostID:(NSInteger)postId commentId:(NSInteger)commentId;
 
 @end

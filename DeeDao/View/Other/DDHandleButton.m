@@ -34,8 +34,8 @@
         [_handleImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(0);
             make.centerX.mas_equalTo(0);
-            make.width.mas_equalTo(self.mas_width).multipliedBy(.7f);
-            make.height.mas_equalTo(self.mas_width).multipliedBy(.7f);
+            make.width.mas_equalTo(self.mas_width).multipliedBy(.6f);
+            make.height.mas_equalTo(self.mas_width).multipliedBy(.6f);
         }];
     }
     return _handleImageView;

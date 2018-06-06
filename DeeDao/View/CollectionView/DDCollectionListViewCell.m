@@ -14,12 +14,9 @@
 #import "DTieDetailRequest.h"
 #import "DDCollectionTableViewCell.h"
 #import "TYCyclePagerView.h"
-#import "DDLocationManager.h"
 #import "DDTool.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
-
-@property (nonatomic, strong) NSDictionary * dataDict;
 
 @property (nonatomic, strong) UIImageView * baseImageView;
 @property (nonatomic, strong) DTieModel * model;
@@ -27,6 +24,9 @@
 @property (nonatomic, assign) NSIndexPath * firestIndex;
 @property (nonatomic, strong) UIView * baseView;
 @property (nonatomic, strong) UIImageView * collectImageView;
+
+@property (nonatomic, strong) NSMutableArray * dataSource;
+@property (nonatomic, strong) DTieDetailRequest * request;
 
 @end
 
@@ -42,6 +42,8 @@
 
 - (void)createListViewCell
 {
+    self.dataSource = [[NSMutableArray alloc] init];
+    
     self.backgroundColor = [UIColor clearColor];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
@@ -87,6 +89,7 @@
 
 - (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag
 {
+    [self.dataSource removeAllObjects];
     self.tableView.tag = tag;
     self.isFirstRead = YES;
     [self.baseImageView setImage:[UIImage new]];
@@ -106,6 +109,18 @@
     
     if (model.details) {
         self.model = model;
+        
+        NSMutableArray * tempArray = [[NSMutableArray alloc] initWithArray:model.details];
+        for (NSInteger i = 0; i < tempArray.count; i++) {
+            DTieEditModel * editModel = [tempArray objectAtIndex:i];
+            if (editModel.type == DTieEditType_Image) {
+                [tempArray removeObject:editModel];
+                break;
+            }
+        }
+        [self.dataSource removeAllObjects];
+        [self.dataSource addObjectsFromArray:tempArray];
+        
         [self.tableView setContentOffset:CGPointZero animated:NO];
         self.tableView.hidden = NO;
         [self.tableView reloadData];
@@ -120,17 +135,31 @@
         postID = model.cid;
     }
     
-    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    self.request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+    [self.request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 [model mj_setKeyValues:data];
                 self.model = model;
-                [self.tableView setContentOffset:CGPointZero animated:NO];
-                self.tableView.hidden = NO;
-                [self.tableView reloadData];
+                
+                if (request == self.request) {
+                    NSMutableArray * tempArray = [[NSMutableArray alloc] initWithArray:model.details];
+                    for (NSInteger i = 0; i < tempArray.count; i++) {
+                        DTieEditModel * editModel = [tempArray objectAtIndex:i];
+                        if (editModel.type == DTieEditType_Image) {
+                            [tempArray removeObject:editModel];
+                            break;
+                        }
+                    }
+                    [self.dataSource removeAllObjects];
+                    [self.dataSource addObjectsFromArray:tempArray];
+                    
+                    [self.tableView setContentOffset:CGPointZero animated:NO];
+                    self.tableView.hidden = NO;
+                    [self.tableView reloadData];
+                }
             }
         }
         
@@ -143,7 +172,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.model.details.count + 1;
+    return self.dataSource.count+1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -154,46 +183,49 @@
         DTieEditModel * model = [[DTieEditModel alloc] init];
         model.type = DTieEditType_Image;
         model.detailContent = self.model.postFirstPicture;
-        [cell configWithModel:model];
+        [cell configWithModel:model Dtie:self.model];
         return cell;
     }
     
-    DTieEditModel * model = [self.model.details objectAtIndex:indexPath.row - 1];
-    
-    if (model.pFlag) {
-        if ([[DDLocationManager shareManager] contentIsCanSeeWith:self.model detailModle:model]) {
-            [cell configCanSee:YES];
-        }else{
-            [cell configCanSee:NO];
-            return cell;
-        }
-    }
+    DTieEditModel * model = [self.dataSource objectAtIndex:indexPath.row - 1];
     
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
-        [cell configWithModel:model];
+        [cell configWithModel:model Dtie:self.model];
         return cell;
     }
     
-    if (self.isFirstRead) {
-        self.isFirstRead = NO;
-        self.firestIndex = indexPath;
-        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
-        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
-        NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
-        [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
-    }else{
-        
-        if (self.firestIndex && [indexPath isEqual:self.firestIndex]) {
-            NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-            [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
-            NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
-            NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
-            [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
-        }else{
-            [cell configWithModel:model];
-        }
-    }
+    [cell configWithModel:model Dtie:self.model];
+    
+//    if (self.firestIndex && [indexPath isEqual:self.firestIndex]) {
+//        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+//        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+//        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
+//        NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
+//        [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+//    }else{
+//        [cell configWithModel:model Dtie:self.model];
+//    }
+    
+//    if (self.isFirstRead) {
+//        self.isFirstRead = NO;
+//        self.firestIndex = indexPath;
+//        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+//        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+//        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
+//        NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
+//        [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+//    }else{
+//
+//        if (self.firestIndex && [indexPath isEqual:self.firestIndex]) {
+//            NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+//            [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
+//            NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.sceneTime / 1000]];
+//            NSString * updateTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)self.model.updateTime / 1000]];
+//            [cell configFirstWithModel:model firstTime:createTime location:self.model.sceneAddress updateTime:updateTime];
+//        }else{
+//            [cell configWithModel:model];
+//        }
+//    }
     
     return cell;
 }

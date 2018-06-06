@@ -91,6 +91,10 @@
             result = @"新留言";
             break;
             
+        case 11:
+            result = @"转发了您的帖子";
+            break;
+            
         default:
             break;
     }

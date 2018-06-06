@@ -94,7 +94,7 @@
     
     [cell configWithDTieModel:model];
     
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.cid];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.postId];
     NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
     
     if (tempArray && tempArray.count > 0) {
@@ -110,7 +110,11 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     
-    if ([self.chooseSource containsObject:model]) {
+    
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.postId];
+    NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
+    
+    if (tempArray && tempArray.count > 0) {
         [self.chooseSource removeObject:model];
     }else{
         [self.chooseSource addObject:model];
@@ -130,7 +134,10 @@
                 [self.dataSource removeAllObjects];
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    [self.dataSource addObject:model];
+                    model.cid = model.postId;
+                    if (model.type == 0) {
+                        [self.dataSource addObject:model];
+                    }
                 }
                 [self.collectionView reloadData];
                 self.start = 21;
@@ -163,7 +170,9 @@
                 
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    [self.dataSource addObject:model];
+                    if (model.type == 0) {
+                        [self.dataSource addObject:model];
+                    }
                 }
                 [self.collectionView reloadData];
                 self.start += self.length;

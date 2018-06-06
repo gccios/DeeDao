@@ -238,8 +238,20 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     }];
 }
 
-- (void)saveOrCreateWith:(NSArray *)details status:(NSInteger)status
+- (void)saveOrCreateWith:(NSMutableArray *)details status:(NSInteger)status
 {
+    [details sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSInteger detailNumber1 = [[obj1 objectForKey:@"detailNumber"] integerValue];
+        NSInteger detailNumber2 = [[obj2 objectForKey:@"detailNumber"] integerValue];
+        if (detailNumber1 > detailNumber2) {
+            return NSOrderedDescending;
+        }else if (detailNumber1 < detailNumber2) {
+            return NSOrderedAscending;
+        }else{
+            return NSOrderedSame;
+        }
+    }];
+    
     if (details.count == 0) {
         [MBProgressHUD showTextHUDWithText:@"不能发布空贴哟~" inView:self.view];
         return;
@@ -283,13 +295,13 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                 [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
                 DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
                 self.sharePostId = DTie.postId;
-                [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
-                [self.navigationController popViewControllerAnimated:YES];
-                
-                if (status == 1) {
-                    [self checkShare];
-                }
             }
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
+        [self.navigationController popViewControllerAnimated:YES];
+        
+        if (status == 1) {
+            [self checkShare];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -310,7 +322,7 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     if (self.quanxianView.shareType == 1) {
         if (self.shareImages && self.shareImages.count > 0) {
             DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareImages];
-            [self.navigationController presentViewController:share animated:YES completion:nil];
+            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:share animated:YES completion:nil];
         }
     }else{
         

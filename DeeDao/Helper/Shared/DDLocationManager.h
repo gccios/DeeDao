@@ -17,12 +17,15 @@ extern NSString * const DDUserLocationDidUpdateNotification;
 
 @property (nonatomic, strong) BMKUserLocation * userLocation;
 @property (nonatomic, strong) BMKReverseGeoCodeResult * result;
+@property (nonatomic, assign) NSInteger distance;
 
 + (instancetype)shareManager;
 
 - (void)startLocationService;
 
 - (void)stopLocationService;
+
+- (BOOL)postIsCanDazhaohuWith:(DTieModel *)model;
 
 - (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel;
 

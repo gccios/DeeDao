@@ -9,6 +9,7 @@
 #import "SecurityFriendController.h"
 #import "DDFriendTableViewCell.h"
 #import "DDFriendTableHeaderView.h"
+#import "SelectFriendRequest.h"
 
 @interface SecurityFriendController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -16,7 +17,8 @@
 
 @property (nonatomic, strong) UITableView * tableView;
 
-@property (nonatomic, strong) NSDictionary * dataDict;
+@property (nonatomic, strong) NSMutableArray * dataSource;
+@property (nonatomic, strong) NSMutableDictionary * dataDict;
 @property (nonatomic, strong) NSArray * nameKeys;
 
 @end
@@ -26,7 +28,7 @@
 - (instancetype)initWithDataDict:(NSDictionary *)dataDict nameKeys:(NSArray *)nameKeys
 {
     if (self = [super init]) {
-        self.dataDict = dataDict;
+        self.dataDict = [NSMutableDictionary dictionaryWithDictionary:dataDict];
         self.nameKeys = nameKeys;
     }
     return self;
@@ -37,6 +39,73 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    
+    if (self.dataDict.count == 0) {
+        [self requestFriendList];
+    }
+}
+
+- (void)requestFriendList
+{
+    [SelectFriendRequest cancelRequest];
+    SelectFriendRequest * request = [[SelectFriendRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                    [self.dataSource addObject:model];
+                }
+                [self sortFriends];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)sortFriends
+{
+    // 将耗时操作放到子线程
+    dispatch_queue_t queue = dispatch_queue_create("DDFriends.infoDict", DISPATCH_QUEUE_SERIAL);
+    dispatch_async(queue, ^{
+        
+        for (UserModel * model in self.dataSource) {
+            // 获取并返回首字母
+            NSString * firstLetterString =model.firstLetter;
+            
+            //如果该字母对应的联系人模型不为空,则将此联系人模型添加到此数组中
+            if (self.dataDict[firstLetterString])
+            {
+                [self.dataDict[firstLetterString] addObject:model];
+            }
+            //没有出现过该首字母，则在字典中新增一组key-value
+            else
+            {
+                //创建新发可变数组存储该首字母对应的联系人模型
+                NSMutableArray *arrGroupNames = [[NSMutableArray alloc] init];
+                
+                [arrGroupNames addObject:model];
+                //将首字母-姓名数组作为key-value加入到字典中
+                [self.dataDict setObject:arrGroupNames forKey:firstLetterString];
+            }
+        }
+        
+        // 将addressBookDict字典中的所有Key值进行排序: A~Z
+        NSArray *nameKeys = [[self.dataDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+        self.nameKeys = [[NSArray alloc] initWithArray:nameKeys];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView reloadData];
+        });
+        
+    });
 }
 
 - (void)createViews
@@ -161,6 +230,22 @@
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (NSMutableDictionary *)dataDict
+{
+    if (!_dataDict) {
+        _dataDict = [[NSMutableDictionary alloc] init];
+    }
+    return _dataDict;
+}
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [[NSMutableArray alloc] init];
+    }
+    return _dataSource;
 }
 
 - (void)didReceiveMemoryWarning {

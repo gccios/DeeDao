@@ -197,7 +197,11 @@
 
 - (void)userFriendInfoDidUpdate
 {
-    [self requestFriendList];
+    if (self.selectButton == self.myFriendButton) {
+        [self requestFriendList];
+    }else if (self.selectButton == self.myAttentionButton) {
+        [self requestAttentionList];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -278,7 +282,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"好友列表";
+    titleLabel.text = @"关系列表";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

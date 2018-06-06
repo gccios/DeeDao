@@ -23,6 +23,7 @@
 #import "DatePickerView.h"
 #import "LookImageViewController.h"
 #import <AVKit/AVKit.h>
+#import "DDShareManager.h"
 
 @interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate>
 
@@ -55,8 +56,6 @@
     if (self = [super initWithFrame:frame]) {
         self.editDTModel = editModel;
         [self.modleSources addObjectsFromArray:editModel.details];
-        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"detailNumber" ascending:YES];
-        [self.modleSources sortUsingDescriptors:@[sort]];
         [self createContenView];
     }
     return self;
@@ -128,8 +127,16 @@
         DTieEditModel * model = [[DTieEditModel alloc] init];
         model.type = DTieEditType_Image;
         model.image = [UIImage imageWithData:data];
+        
+        if ([DDShareManager shareManager].editShareCount >= 9) {
+            model.shareEnable = NO;
+        }else{
+            [DDShareManager shareManager].editShareCount += 1;
+        }
+        
         [models addObject:model];
     }
+    
     [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
     [self.tableView reloadData];
 //    [hud hideAnimated:YES];
@@ -262,6 +269,8 @@
 
 - (void)createContenView
 {
+    [DDShareManager shareManager].editShareCount = 0;
+    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 684 * scale)];
@@ -382,7 +391,7 @@
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
     
     UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
-    swipe.direction = UISwipeGestureRecognizerDirectionLeft;
+    swipe.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;
     [self.tableView addGestureRecognizer:swipe];
     
     self.tableView.tableHeaderView = headerView;
@@ -483,36 +492,36 @@
 }
 
 #pragma mark - UITableViewDelegate & UITableViewDataSource
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    DTieEditModel * model = [self.modleSources objectAtIndex:indexPath.row];
-    if (model.type == DTieEditType_Image) {
-        if (model.image) {
-            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImage:model.image];
-            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
-        }else{
-            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImageURL:model.detailContent];
-            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
-        }
-    }else if (model.type == DTieEditType_Video) {
-        
-        NSURL * url = nil;
-        if (model.videoURL) {
-            url = model.videoURL;
-        }else{
-            url = [NSURL URLWithString:model.detailContent];
-        }
-        
-        AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
-        player.videoGravity = AVLayerVideoGravityResizeAspect;
-        player.player = [[AVPlayer alloc] initWithURL:url];
-        [self.parentDDViewController presentViewController:player animated:YES completion:nil];
-    }else{
-        DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:model.detailsContent placeholder:@"请输入文字"];
-        text.delegate = self;
-        [self.parentDDViewController presentViewController:text animated:YES completion:nil];
-    }
-}
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    DTieEditModel * model = [self.modleSources objectAtIndex:indexPath.row];
+//    if (model.type == DTieEditType_Image) {
+//        if (model.image) {
+//            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImage:model.image];
+//            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+//        }else{
+//            LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImageURL:model.detailContent];
+//            [self.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+//        }
+//    }else if (model.type == DTieEditType_Video) {
+//
+//        NSURL * url = nil;
+//        if (model.videoURL) {
+//            url = model.videoURL;
+//        }else{
+//            url = [NSURL URLWithString:model.detailContent];
+//        }
+//
+//        AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+//        player.videoGravity = AVLayerVideoGravityResizeAspect;
+//        player.player = [[AVPlayer alloc] initWithURL:url];
+//        [self.parentDDViewController presentViewController:player animated:YES completion:nil];
+//    }else{
+//        DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:model.detailsContent placeholder:@"请输入文字"];
+//        text.delegate = self;
+//        [self.parentDDViewController presentViewController:text animated:YES completion:nil];
+//    }
+//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -535,6 +544,17 @@
             [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
         };
         
+        cell.preViewHandle = ^{
+            
+            if (weakCell.model.image) {
+                LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImage:weakCell.model.image];
+                [weakSelf.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+            }else{
+                LookImageViewController * lookImage = [[LookImageViewController alloc] initWithImageURL:weakCell.model.detailContent];
+                [weakSelf.parentDDViewController presentViewController:lookImage animated:YES completion:nil];
+            }
+        };
+        
         return cell;
     }else if(model.type == DTieEditType_Video){
         DTieNewEditVideoCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewEditVideoCell" forIndexPath:indexPath];
@@ -547,6 +567,21 @@
             
             NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
             [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+        };
+        
+        cell.preViewHandle = ^{
+            
+            NSURL * url = nil;
+            if (weakCell.model.videoURL) {
+                url = weakCell.model.videoURL;
+            }else{
+                url = [NSURL URLWithString:weakCell.model.detailContent];
+            }
+            
+            AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+            player.videoGravity = AVLayerVideoGravityResizeAspect;
+            player.player = [[AVPlayer alloc] initWithURL:url];
+            [weakSelf.parentDDViewController presentViewController:player animated:YES completion:nil];
         };
         
         return cell;
@@ -562,6 +597,13 @@
         
         NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
         [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+    };
+    
+    cell.preViewHandle = ^{
+        
+        DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:weakCell.model.detailsContent placeholder:@"请输入文字"];
+        text.delegate = self;
+        [weakSelf.parentDDViewController presentViewController:text animated:YES completion:nil];
     };
     
     return cell;

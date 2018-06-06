@@ -8,6 +8,7 @@
 
 #import "DTieModel.h"
 #import "DDTool.h"
+#import "UserManager.h"
 
 @implementation DTieModel
 
@@ -27,16 +28,16 @@
 {
     _status = status;
     if (_status == 0) {
-        self.dTieType = DTieType_Edit;
-    }else{
-        self.dTieType = DTieType_MyDtie;
+        _dTieType = DTieType_Edit;
+    }else if (_dTieType == 0) {
+        _dTieType = DTieType_MyDtie;
     }
 }
 
 - (void)setCollectFlg:(NSInteger)collectFlg
 {
     _collectFlg = collectFlg;
-    if (self.wyyFlg == 0) {
+    if (_wyyFlg == 0 && _collectFlg == 1) {
         self.dTieType = DTieType_Collection;
     }
 }

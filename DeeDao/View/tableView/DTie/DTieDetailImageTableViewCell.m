@@ -125,10 +125,10 @@
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
         self.detailImageView.userInteractionEnabled = YES;
-        self.effectView.hidden = NO;
+        self.effectView.hidden = YES;
     }else{
         self.detailImageView.userInteractionEnabled = NO;
-        self.effectView.hidden = YES;
+        self.effectView.hidden = NO;
     }
 }
 

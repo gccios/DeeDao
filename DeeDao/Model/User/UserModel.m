@@ -10,6 +10,14 @@
 
 @implementation UserModel
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.portraituri = @"http://ow57gfs34.bkt.clouddn.com/DefaultLogo/defalutLogo.png";
+    }
+    return self;
+}
+
 + (NSDictionary *)mj_replacedKeyFromPropertyName
 {
     return @{
@@ -20,6 +28,15 @@
 + (NSDictionary *)mj_objectClassInArray
 {
     return @{@"postBeanList": @"DTieModel"};
+}
+
+- (void)setPortraituri:(NSString *)portraituri
+{
+    if (isEmptyString(portraituri)) {
+        _portraituri = @"http://ow57gfs34.bkt.clouddn.com/DefaultLogo/defalutLogo.png";
+    }else{
+        _portraituri = portraituri;
+    }
 }
 
 - (void)setNickname:(NSString *)nickname

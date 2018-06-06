@@ -71,9 +71,6 @@
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
                 [self.dataSource removeAllObjects];
-                DTieModel * firstModel = [[DTieModel alloc] init];
-                firstModel.dTieType = DTieType_Add;
-                [self.dataSource addObject:firstModel];
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
@@ -419,11 +416,6 @@
 {
     if (!_dataSource) {
         _dataSource = [[NSMutableArray alloc] init];
-        
-        DTieModel * model = [[DTieModel alloc] init];
-        model.dTieType = DTieType_Add;
-        [_dataSource addObject:model];
-        
     }
     
     return _dataSource;

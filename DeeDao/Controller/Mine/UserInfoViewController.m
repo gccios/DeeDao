@@ -20,7 +20,6 @@
 #import "DTieNewEditViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
-#import "DDCollectionHandleView.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
@@ -31,12 +30,14 @@
 
 @property (nonatomic, strong) UICollectionViewFlowLayout * layout;
 @property (nonatomic, strong) UICollectionView * collectionView;
+@property (nonatomic, strong) UserInfoCollectionHeader * header;
 
 @property (nonatomic, strong) UserModel * model;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
-//@property (nonatomic, strong) UIButton * addButton;
-//@property (nonatomic, strong) UIButton * deleteButton;
+@property (nonatomic, strong) UIView * bottomHandleView;
+@property (nonatomic, strong) UIButton * leftHandleButton;
+@property (nonatomic, strong) UIButton * rightHandleButton;
 
 @end
 
@@ -60,6 +61,62 @@
     [self getData];
 }
 
+- (void)leftHandleButtonDidClicked
+{
+    if (self.model.friendFlg) {
+        [self deleteFriend];
+    }else{
+        [self addFriend];
+    }
+}
+
+- (void)rightHandleButtonDidClicked
+{
+    self.rightHandleButton.enabled = NO;
+    BOOL isAdd = YES;
+    if (self.model.concernFlg) {
+        isAdd = NO;
+    }
+    SaveFriendOrConcernRequest * request = [[SaveFriendOrConcernRequest alloc] initWithHandleConcernId:self.model.cid andIsAdd:isAdd];
+    
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.model.concernFlg = !self.model.concernFlg;
+        
+        [self reloadBottomViewStatus];
+        [self.header configWithModel:self.model];
+        
+        self.rightHandleButton.enabled = YES;
+        
+        if (isAdd) {
+            [MBProgressHUD showTextHUDWithText:@"关注成功" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"取消关注" inView:self.view];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.rightHandleButton.enabled = YES;
+        if (isAdd) {
+            [MBProgressHUD showTextHUDWithText:@"关注失败" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"取消关注失败" inView:self.view];
+        }
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        self.rightHandleButton.enabled = YES;
+        if (isAdd) {
+            [MBProgressHUD showTextHUDWithText:@"关注失败" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"取消关注失败" inView:self.view];
+        }
+        
+    }];
+}
+
+
+
 - (void)getData
 {
     UserInfoRequest * request = [[UserInfoRequest alloc] initWithUserId:self.userId];
@@ -72,6 +129,7 @@
                 self.model = model;
             }
             [self createHeaderView];
+            [self reloadBottomViewStatus];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -105,10 +163,12 @@
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [MBProgressHUD showTextHUDWithText:@"删除好友成功" inView:self.view];
-        [self getData];
+//        [self getData];
         if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate)]) {
             [self.delegate userFriendInfoDidUpdate];
         }
+        self.model.friendFlg = 0;
+        [self reloadBottomViewStatus];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -131,7 +191,6 @@
         height += [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:self.model.signature font:kPingFangRegular(48 * scale)];
     }
     self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, height);
-    self.layout.footerReferenceSize = CGSizeMake(kMainBoundsWidth, 330 * scale);
     
     [self.collectionView reloadData];
     
@@ -158,9 +217,6 @@
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.layout];
     [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
     [self.collectionView registerClass:[UserInfoCollectionHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UserInfoCollectionHeader"];
-    if (!self.model.selfFlg) {
-        [self.collectionView registerClass:[DDCollectionHandleView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"DDCollectionHandleView"];
-    }
     self.collectionView.backgroundColor = self.view.backgroundColor;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -170,7 +226,68 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
+    if (!self.model.selfFlg) {
+        self.bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+        self.bottomHandleView.backgroundColor = [UIColorFromRGB(0xEEEEF4) colorWithAlphaComponent:.7f];
+        [self.view addSubview:self.bottomHandleView];
+        [self.bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.bottom.right.mas_equalTo(0);
+            make.height.mas_equalTo(324 * scale);
+        }];
+        
+        self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"删除好友"];
+        [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
+        self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.leftHandleButton.layer.borderWidth = 3 * scale;
+        [self.bottomHandleView addSubview:self.leftHandleButton];
+        [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(60 * scale);
+            make.width.mas_equalTo(444 * scale);
+            make.height.mas_equalTo(144 * scale);
+            make.centerY.mas_equalTo(0);
+        }];
+        
+        self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"添加关注"];
+        [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
+        self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.rightHandleButton.layer.borderWidth = 3 * scale;
+        [self.bottomHandleView addSubview:self.rightHandleButton];
+        [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-60 * scale);
+            make.width.mas_equalTo(444 * scale);
+            make.height.mas_equalTo(144 * scale);
+            make.centerY.mas_equalTo(0);
+        }];
+        
+        [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.collectionView setContentInset:UIEdgeInsetsMake(0, 0, 350 * scale, 0)];
+    }
+    
     [self createTopView];
+}
+
+- (void)reloadBottomViewStatus
+{
+    if (self.model.friendFlg == 1) {
+        [self.leftHandleButton setTitle:@"删除好友" forState:UIControlStateNormal];
+        [self.leftHandleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [self.leftHandleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
+    }else{
+        [self.leftHandleButton setTitle:@"添加好友" forState:UIControlStateNormal];
+        [self.leftHandleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
+        [self.leftHandleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
+    }
+    
+    if (self.model.concernFlg == 1) {
+        [self.rightHandleButton setTitle:@"取消关注" forState:UIControlStateNormal];
+        [self.rightHandleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [self.rightHandleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
+    }else{
+        [self.rightHandleButton setTitle:@"添加关注" forState:UIControlStateNormal];
+        [self.rightHandleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
+        [self.rightHandleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
+    }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -195,29 +312,10 @@
 {
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         UserInfoCollectionHeader * header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UserInfoCollectionHeader" forIndexPath:indexPath];
-        
+        self.header = header;
         [header configWithModel:self.model];
         
         return header;
-    }else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
-        DDCollectionHandleView * handView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"DDCollectionHandleView" forIndexPath:indexPath];
-        
-        handView.backgroundColor = self.view.backgroundColor;
-        if (self.model.friendFlg) {
-            [handView configButtonBackgroundColor:self.view.backgroundColor title:@"删除好友"];
-            __weak typeof(self) weakSelf = self;
-            handView.handleButtonClicked = ^{
-                [weakSelf deleteFriend];
-            };
-        }else{
-            [handView configButtonBackgroundColor:self.view.backgroundColor title:@"添加好友"];
-            __weak typeof(self) weakSelf = self;
-            handView.handleButtonClicked = ^{
-                [weakSelf addFriend];
-            };
-        }
-        
-        return handView;
     }
     return nil;
 }

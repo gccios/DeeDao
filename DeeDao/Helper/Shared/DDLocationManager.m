@@ -36,6 +36,7 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 {
     if (self = [super init]) {
         [self setUpLocationManager];
+        self.distance = 500;
     }
     return self;
 }
@@ -84,6 +85,19 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     self.result = result;
 }
 
+- (BOOL)postIsCanDazhaohuWith:(DTieModel *)model
+{
+    BMKMapPoint userPoint = BMKMapPointForCoordinate(self.userLocation.location.coordinate);
+    BMKMapPoint point = BMKMapPointForCoordinate(CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng));
+    CLLocationDistance distance = BMKMetersBetweenMapPoints(userPoint, point);
+    
+    if (distance > self.distance) {
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel
 {
     if (detailModel.pFlag == 0) {
@@ -94,7 +108,7 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     BMKMapPoint point = BMKMapPointForCoordinate(CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng));
     CLLocationDistance distance = BMKMetersBetweenMapPoints(userPoint, point);
     
-    if (distance > 500) {
+    if (distance > self.distance) {
         return NO;
     }
     

@@ -11,6 +11,7 @@
 #import "DDSystemAlertController.h"
 #import "UserManager.h"
 #import "UserLogoutRequest.h"
+#import "PassWordSetViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface DDSystemViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -116,7 +117,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    
     if (indexPath.row == 0) {
 //        DDSystemAlertController * alert = [[DDSystemAlertController alloc] init];
 //        [self.navigationController pushViewController:alert animated:YES];

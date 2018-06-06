@@ -70,8 +70,8 @@
     self.pagerView.delegate = self;
     self.pagerView.isInfiniteLoop = NO;
     [self.pagerView registerClass:[DDCollectionListViewCell class] forCellWithReuseIdentifier:@"DDCollectionListViewCell"];
-    [self.view addSubview:self.pagerView];
     
+    [self.view addSubview:self.pagerView];
     [self.pagerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + 144 + kStatusBarHeight) * scale);
         make.left.right.mas_equalTo(0);
@@ -126,26 +126,26 @@
     self.locationLabel.userInteractionEnabled = YES;
     [self.locationLabel addGestureRecognizer:tap];
     
-    self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
-    [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyue"]];
-    [self.yaoyueButton configTitle:@"0"];
-    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.yaoyueButton];
-    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangno"]];
+    [self.shoucangButton configTitle:@"0"];
+    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.shoucangButton];
+    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
         make.left.mas_equalTo(self.locationLabel.mas_right).offset(30 * scale);
         make.width.mas_equalTo(96 * scale);
         make.height.mas_equalTo(96 * scale);
     }];
     
-    self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
-    [self.shoucangButton configImage:[UIImage imageNamed:@"yaoyue"]];
-    [self.shoucangButton configTitle:@"0"];
-    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.shoucangButton];
-    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
+    [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueno"]];
+    [self.yaoyueButton configTitle:@"0"];
+    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.yaoyueButton];
+    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(10 * scale);
+        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(10 * scale);
         make.width.mas_equalTo(96 * scale);
         make.height.mas_equalTo(96 * scale);
     }];
@@ -157,7 +157,7 @@
     [self.view addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(10 * scale);
+        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(10 * scale);
         make.width.mas_equalTo(96 * scale);
         make.height.mas_equalTo(96 * scale);
     }];
@@ -285,11 +285,11 @@
         model.dzfCount++;
         [self reloadPageWithIndex:self.pagerView.curIndex];
         
-        self.shoucangButton.enabled = YES;
+        self.dazhaohuButton.enabled = YES;
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        self.shoucangButton.enabled = YES;
+        self.dazhaohuButton.enabled = YES;
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        self.shoucangButton.enabled = YES;
+        self.dazhaohuButton.enabled = YES;
     }];
 }
 
@@ -313,6 +313,24 @@
         [self.yaoyueButton configTitle:[NSString stringWithFormat:@"%ld", model.wyyCount]];
         [self.shoucangButton configTitle:[NSString stringWithFormat:@"%ld", model.collectCount]];
         [self.dazhaohuButton configTitle:[NSString stringWithFormat:@"%ld", model.dzfCount]];
+        
+        if (model.wyyFlg) {
+           [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueyes"]];
+        }else{
+            [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueno"]];
+        }
+        
+        if (model.dzfFlg) {
+            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
+        }else{
+            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuzuozhe"]];
+        }
+        
+        if (model.collectFlg) {
+            [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangyes"]];
+        }else{
+            [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangno"]];
+        }
         
         self.titleLabel.text = model.postSummary;
     }
@@ -429,7 +447,7 @@
     }];
     
     UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"0/9"];
-    [shareButton setImage:[UIImage imageNamed:@"navShare"] forState:UIControlStateNormal];
+    [shareButton setImage:[UIImage imageNamed:@"topShare"] forState:UIControlStateNormal];
     [self.topView addSubview:shareButton];
     [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -438,6 +456,7 @@
         make.width.mas_equalTo(150 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
+    [shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, -70 * scale, 0, 0)];
     [DDShareManager shareManager].tempNumberLabel = shareButton;
     [[DDShareManager shareManager] updateNumber];
 }

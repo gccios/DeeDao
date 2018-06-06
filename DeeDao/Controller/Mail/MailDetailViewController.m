@@ -81,7 +81,7 @@
 
 - (void)addFriendOK:(UIButton *)button
 {
-    SaveFriendOrConcernRequest * request = [[SaveFriendOrConcernRequest alloc] initWithHandleFriendId:self.model.createPerson andIsAdd:YES];
+    SaveFriendOrConcernRequest * request = [[SaveFriendOrConcernRequest alloc] initWithHandleFriendId:self.model.mailSendId andIsAdd:YES];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [button removeTarget:self action:@selector(addFriendOK:) forControlEvents:UIControlEventTouchUpInside];

@@ -152,23 +152,23 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
-    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
-        
-        MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
-        
-        [cell configWithModel:model];
-        
-        return cell;
-        
-    }else if (model.type == MailModelType_DTie) {
-        
-        MailBigTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailBigTableViewCell" forIndexPath:indexPath];
-        
-        [cell configWithModel:model];
-        
-        return cell;
-        
-    }
+//    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
+//        
+//        MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
+//        
+//        [cell configWithModel:model];
+//        
+//        return cell;
+//        
+//    }else if (model.type == MailModelType_DTie) {
+//        
+//        MailBigTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailBigTableViewCell" forIndexPath:indexPath];
+//        
+//        [cell configWithModel:model];
+//        
+//        return cell;
+//        
+//    }
     
     MailSmallTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MailSmallTableViewCell" forIndexPath:indexPath];
     
@@ -185,16 +185,16 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
-    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
-        
-        return 300 * scale;
-        
-    }else if (model.type == MailModelType_DTie) {
-        
-        return 550 * scale;
-        
-    }
+//    MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
+//    if (model.type == MailModelType_System || model.type == MailModelType_HuDong) {
+//        
+//        return 300 * scale;
+//        
+//    }else if (model.type == MailModelType_DTie) {
+//        
+//        return 550 * scale;
+//        
+//    }
     
     return 300 * scale;
 }

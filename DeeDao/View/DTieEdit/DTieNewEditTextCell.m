@@ -91,6 +91,9 @@
         make.right.mas_equalTo(-170 * scale);
         make.height.mas_equalTo(50 * scale);
     }];
+    self.contenLabel.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(preViewDidHandle)];
+    [self.contenLabel addGestureRecognizer:tap];
     
     self.deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
     [baseView addSubview:self.deedaoButton];
@@ -105,17 +108,17 @@
     self.deedaoLabel.text = @"到地体验";
     [self.deedaoButton addSubview:self.deedaoLabel];
     [self.deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
+        make.centerY.mas_equalTo(0);
         make.left.mas_equalTo(0);
-        make.height.mas_equalTo(45 * scale);
+        make.height.mas_equalTo(60 * scale);
     }];
 
     self.deedaoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
     [self.deedaoButton addSubview:self.deedaoImageView];
     [self.deedaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
-        make.right.mas_equalTo(0);
-        make.width.height.mas_equalTo(48 * scale);
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(self.deedaoLabel.mas_right).offset(5 * scale);
+        make.width.height.mas_equalTo(60 * scale);
     }];
     
 //    self.shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
@@ -144,14 +147,14 @@
 //        make.width.height.mas_equalTo(48 * scale);
 //    }];
     
-    UIButton * alertButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [alertButton setImage:[UIImage imageNamed:@"alertEdit"] forState:UIControlStateNormal];
-    [baseView addSubview:alertButton];
-    [alertButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(14 * scale);
-        make.right.mas_equalTo(-30 * scale);
-        make.width.height.mas_equalTo(72 * scale);
-    }];
+//    UIButton * alertButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [alertButton setImage:[UIImage imageNamed:@"alertEdit"] forState:UIControlStateNormal];
+//    [baseView addSubview:alertButton];
+//    [alertButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(14 * scale);
+//        make.right.mas_equalTo(-30 * scale);
+//        make.width.height.mas_equalTo(72 * scale);
+//    }];
     
     self.addButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.addButton setImage:[UIImage imageNamed:@"addEdit"] forState:UIControlStateNormal];
@@ -191,6 +194,13 @@
 {
     if (self.addButtonHandle) {
         self.addButtonHandle();
+    }
+}
+
+- (void)preViewDidHandle
+{
+    if (self.preViewHandle) {
+        self.preViewHandle();
     }
 }
 

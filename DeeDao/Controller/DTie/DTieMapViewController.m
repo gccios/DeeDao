@@ -66,6 +66,17 @@
     }];
     self.mapView.delegate = self;
     
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
+    
     self.backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
     [self.backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
     [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

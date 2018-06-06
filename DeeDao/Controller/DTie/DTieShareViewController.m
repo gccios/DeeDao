@@ -12,6 +12,7 @@
 #import "DDShareImageCollectionViewCell.h"
 #import "WeChatManager.h"
 #import "DDShareManager.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DTieShareViewController ()<XWDragCellCollectionViewDataSource, XWDragCellCollectionViewDelegate, XRWaterfallLayoutDelegate>
 
@@ -40,6 +41,8 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    
+    [MBProgressHUD showTextHUDWithText:@"长按调整图片" inView:self.view];
 }
 
 //根据item的宽度与indexPath计算每一个item的高度
@@ -167,7 +170,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    self.titleLabel.text = @"分享列表";
+    self.titleLabel.text = @"地到分享";
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -196,7 +199,13 @@
         [self.mainView reloadData];
         [self.mainView xw_stopEditingModel];
     }else{
-        [[WeChatManager shareManager] shareTimeLineWithImages:self.shareList title:@"分享" viewController:self];
+        if (self.shareList.count == 0) {
+            
+        }else if (self.shareList.count > 9){
+            [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:self.view];
+        }else {
+            [[WeChatManager shareManager] shareTimeLineWithImages:self.shareList title:@"分享" viewController:self];
+        }
     }
 }
 

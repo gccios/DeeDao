@@ -12,6 +12,8 @@
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
 #import <BaiduMapAPI_Search/BMKSearchComponent.h>
 #import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+#import <BaiduMapAPI_Map/BMKCircleView.h>
+#import <BaiduMapAPI_Map/BMKGroundOverlay.h>
 #import "DDLocationManager.h"
 #import "SCSafariPageController.h"
 #import "OnlyMapViewController.h"
@@ -53,6 +55,7 @@
 @property (nonatomic, strong) UILabel * tipLabel;
 
 @property (nonatomic, assign) CLLocationCoordinate2D markCoordinate;
+@property (nonatomic, strong) BMKCircle * circle;
 
 @end
 
@@ -90,16 +93,16 @@
     self.mapView.delegate = self;
     //设置定位图层自定义样式
     BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
-    //精度圈是否显示
-    userlocationStyle.isRotateAngleValid = YES;
     //跟随态旋转角度是否生效
-    userlocationStyle.isAccuracyCircleShow = YES;
+    userlocationStyle.isRotateAngleValid = NO;
+    //精度圈是否显示
+    userlocationStyle.isAccuracyCircleShow = NO;
     userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
     userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
     [self.mapView updateLocationViewWithParam:userlocationStyle];
+//    self.mapView.show
     self.mapView.showsUserLocation = YES;
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
-    self.mapView.showMapPoi = NO;
     self.mapView.buildingsEnabled = NO;
     
     [self.view addSubview:self.mapView];
@@ -107,6 +110,17 @@
         make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
     
     [self updateUserLocation];
     [self requestMapViewLocations];
@@ -145,7 +159,7 @@
     self.sourceButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
     self.sourceButton.layer.shadowRadius = 10 * scale;
     
-    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"时间"];
+    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"年"];
     self.timeButton.backgroundColor = UIColorFromRGB(0xdb6283);
     [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.timeButton];
@@ -218,6 +232,13 @@
 - (void)updateUserLocation
 {
     [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
+    
+    CLLocationCoordinate2D coors = [DDLocationManager shareManager].userLocation.location.coordinate;
+    if (self.circle) {
+        [self.mapView removeOverlay:self.circle];
+    }
+    self.circle = [BMKCircle circleWithCenterCoordinate:coors radius:500];
+    [self.mapView addOverlay:self.circle];
     
     if (self.isFirst) {
         BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
@@ -332,6 +353,19 @@
         make.edges.mas_equalTo(0);
     }];
     edit.delegate = self;
+}
+
+- (BMKOverlayView *)mapView:(BMKMapView *)mapView viewForOverlay:(id<BMKOverlay>)overlay
+{
+    if ([overlay isKindOfClass:[BMKCircle class]])
+    {
+        BMKCircleView* circleView = [[BMKCircleView alloc] initWithOverlay:overlay];
+        circleView.fillColor = [[UIColor blueColor] colorWithAlphaComponent:0.1];
+        circleView.strokeColor = [[UIColor blueColor] colorWithAlphaComponent:0.3];
+        circleView.lineWidth = .5f;
+        return circleView;
+    }
+    return nil;
 }
 
 - (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation

@@ -10,6 +10,7 @@
 #import <WXApi.h>
 
 extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功通知
+extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录成功通知
 
 @interface WeChatManager : NSObject <WXApiDelegate>
 

@@ -11,6 +11,7 @@
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "UserLoginWXRequest.h"
+#import "DDTelLoginViewController.h"
 #import <WXApi.h>
 
 @interface LoginViewController ()
@@ -51,9 +52,12 @@
     [bgImageView setImage:image];
     
     [self.view addSubview:bgImageView];
+    [bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColorFromRGB(0x0ABB07) colorWithAlphaComponent:.82f] title:@"微信登录"];
+    self.loginButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0x00BD00) title:@"微信登录"];
     [self.loginButton setImage:[UIImage imageNamed:@"wxlogo"] forState:UIControlStateNormal];
     [self.loginButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 5, 0, 0)];
     [self.loginButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 0, 5)];
@@ -62,9 +66,9 @@
     [self.loginButton addTarget:self action:@selector(loginWithWeChat) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.loginButton];
     [self.loginButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-568 * scale);
+        make.left.mas_equalTo(120 * scale);
+        make.right.mas_equalTo(-120 * scale);
+        make.bottom.mas_equalTo(-588 * scale);
         make.height.mas_equalTo(144 * scale);
     }];
     
@@ -77,32 +81,42 @@
     [self.view addSubview:self.agreementButton];
     [self.agreementButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.mas_equalTo(72 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
+        make.left.mas_equalTo(120 * scale);
+        make.right.mas_equalTo(-120 * scale);
         make.top.mas_equalTo(self.loginButton.mas_bottom).offset(40 * scale);
     }];
     [self.agreementButton addTarget:self action:@selector(agreementButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * registerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"注册地到账号"];
+    UIButton * readButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.agreementButton addSubview:readButton];
+    [readButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.right.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(470 * scale);
+    }];
+    [readButton addTarget:self action:@selector(readButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * registerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"短信验证码登录(注册)"];
     [self.view addSubview:registerButton];
     [registerButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(80 * scale);
+//        make.left.mas_equalTo(120 * scale);
+        make.centerX.mas_equalTo(0);
         make.height.mas_equalTo(60 * scale);
         make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
     }];
     
-    UIButton * passwordButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"账号密码登录"];
-    [self.view addSubview:passwordButton];
-    [passwordButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-80 * scale);
-        make.height.mas_equalTo(60 * scale);
-        make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
-    }];
+//    UIButton * passwordButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:[UIColor whiteColor] title:@"账号密码登录"];
+//    [self.view addSubview:passwordButton];
+//    [passwordButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(-120 * scale);
+//        make.height.mas_equalTo(60 * scale);
+//        make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
+//    }];
     
     [registerButton addTarget:self action:@selector(registerButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [passwordButton addTarget:self action:@selector(passwordButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [passwordButton addTarget:self action:@selector(passwordButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     [self showLoginWithWeChatButton];
+    self.loginButton.alpha = .5f;
     
 //    if ([UserManager shareManager].isLogin) {
 //         [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
@@ -111,14 +125,26 @@
 //    }
 }
 
-- (void)registerButtonDidClicked
+- (void)readButtonDidClicked
 {
     
 }
 
+- (void)registerButtonDidClicked
+{
+    DDTelLoginViewController * telLogin = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
+    [self presentViewController:telLogin animated:YES completion:nil];
+}
+
 - (void)passwordButtonDidClicked
 {
-    
+    DDTelLoginViewController * telLogin = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Login];
+    [self presentViewController:telLogin animated:YES completion:nil];
+}
+
+- (void)DDTelLoginDidSuccess
+{
+    [self loginSuccess];
 }
 
 - (void)agreementButtonDidClicked
@@ -126,8 +152,10 @@
     self.isAgreement = !self.isAgreement;
     if (self.isAgreement) {
         [self.agreementButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
+        self.loginButton.alpha = 1.f;
     }else{
         [self.agreementButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
+        self.loginButton.alpha = .5f;
     }
 }
 
@@ -176,6 +204,11 @@
 
 - (void)loginWithWeChat
 {
+    if (!self.isAgreement) {
+        [MBProgressHUD showTextHUDWithText:@"请仔细阅读并同意用户注册协议" inView:self.view];
+        return;
+    }
+    
     [[WeChatManager shareManager] loginWithWeChat];
 }
 
@@ -198,6 +231,7 @@
     if (!self.hasDDObserver) {
         self.hasDDObserver = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userLoginWith:) name:DDUserDidGetWeChatCodeNotification object:nil];
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(DDTelLoginDidSuccess) name:DDUserDidLoginWithTelNumberNotification object:nil];
     }
 }
 
@@ -206,6 +240,7 @@
     if (self.hasDDObserver) {
         self.hasDDObserver = NO;
         [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserDidGetWeChatCodeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserDidLoginWithTelNumberNotification object:nil];
     }
 }
 

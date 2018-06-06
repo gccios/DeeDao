@@ -12,4 +12,6 @@
 
 - (instancetype)initWithWeCode:(NSString *)code;
 
+- (instancetype)initWithTelNumber:(NSString *)telNumber code:(NSString *)code;
+
 @end

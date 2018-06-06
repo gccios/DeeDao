@@ -14,6 +14,7 @@
 #define KCompressibilityFactor 1280.00  
 
 NSString * const DDUserDidGetWeChatCodeNotification = @"DDUserDidGetWeChatCodeNotification";
+NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithTelNumberNotification";
 
 @interface WeChatManager ()
 
@@ -58,6 +59,7 @@ NSString * const DDUserDidGetWeChatCodeNotification = @"DDUserDidGetWeChatCodeNo
 //        NSString * path = [NSString stringWithFormat:@"%@/TimeLine%ld.jpg", DDDocumentPath, i];
         
         UIImage * image = [self getJPEGImagerImg:[images objectAtIndex:i]];
+        UIImage * result = [self image:image addTitle:@"测试加文字测试加文字测试加文字测试加文字测试加文字测试加文字" text:@"" codeImage:nil];
 //        BOOL ret = [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
 //        if (ret) {
 //            NSLog(@"写入成功%@", path);
@@ -65,7 +67,7 @@ NSString * const DDUserDidGetWeChatCodeNotification = @"DDUserDidGetWeChatCodeNo
 //            NSLog(@"写入失败%@", path);
 //        }
 //        ShareImageItem * item = [[ShareImageItem alloc] initWithData:image andFile:[NSURL URLWithString:path]];
-        [shareItems addObject:image];
+        [shareItems addObject:result];
         
 //        [self.slCompose addURL:[NSURL URLWithString:@"http://www.baidu.com"]];
     }
@@ -127,6 +129,26 @@ NSString * const DDUserDidGetWeChatCodeNotification = @"DDUserDidGetWeChatCodeNo
     req.message = mediaMessage;
     req.scene = WXSceneSession;
     [WXApi sendReq:req];
+}
+
+#pragma mark - 向图片中添加文字和小程序码
+- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    
+    CGFloat fontSize = 17.f / kMainBoundsWidth * image.size.width;
+    CGFloat contentHeight = fontSize * 7.f;
+    CGFloat originY = image.size.height - contentHeight;
+    CGFloat labelHeight = 20.f / kMainBoundsWidth * image.size.width;
+    CGFloat topMargin = 15.f / kMainBoundsWidth * image.size.width;
+    CGFloat leftMargin = 25.f / kMainBoundsWidth * image.size.width;
+    CGFloat rightMargin = 110.f / kMainBoundsWidth * image.size.width;
+    
+    [title drawInRect:CGRectMake(leftMargin, topMargin, image.size.width - leftMargin - rightMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xFFFFFF)}];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultImage;
 }
 
 #pragma mark - 压缩多张图片 最大宽高1280 类似于微信算法

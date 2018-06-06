@@ -35,7 +35,7 @@
         NSMutableArray * postArray = [[NSMutableArray alloc] init];
         for (DTieModel * tieModel in posts) {
             NSMutableDictionary * post = [[NSMutableDictionary alloc] init];
-            [post setObject:@(tieModel.cid) forKey:@"securitymemberId"];
+            [post setObject:@(tieModel.postId) forKey:@"securitymemberId"];
             if (groupId) {
                 [post setObject:@(groupId) forKey:@"securitygroupId"];
             }

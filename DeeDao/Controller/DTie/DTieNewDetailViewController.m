@@ -9,9 +9,19 @@
 #import "DTieNewDetailViewController.h"
 #import "DTieReadView.h"
 #import "WeChatManager.h"
+#import "UserManager.h"
+#import "DDTool.h"
+#import "DTieShareViewController.h"
 #import "DTieNewEditViewController.h"
+#import <WXApi.h>
+#import "RDAlertView.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "SecurityFriendController.h"
+#import <UIImageView+WebCache.h>
+#import "TransPostRequest.h"
+#import "DTieShareView.h"
 
-@interface DTieNewDetailViewController ()
+@interface DTieNewDetailViewController ()<SecurityFriendDelegate, DTieShareDelegate>
 
 @property (nonatomic, strong) DTieReadView * readView;
 @property (nonatomic, strong) DTieModel * model;
@@ -45,17 +55,100 @@
 
 - (void)shareButtonDidClicked
 {
-    NSMutableArray * shareSource = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; self.model.details; i++) {
-        DTieEditModel * model = [self.model.details objectAtIndex:i];
-        if (model.type == DTieEditType_Image) {
-            [shareSource addObject:model];
-            if (shareSource.count >= 9) {
-                break;
+    DTieShareView * share = [[DTieShareView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    share.delegate = self;
+    [share show];
+}
+
+- (void)DTieShareDidSelectIndex:(NSInteger)index
+{
+    if (index == 0) {
+        NSMutableArray * shareSource = [[NSMutableArray alloc] init];
+        NSMutableArray * urlSource = [[NSMutableArray alloc] init];
+        for (NSInteger i = 0; i < self.model.details.count; i++) {
+            DTieEditModel * model = [self.model.details objectAtIndex:i];
+            if (model.type == DTieEditType_Image) {
+                if (model.image) {
+                    [shareSource addObject:model.image];
+                }else if (!isEmptyString(model.detailContent)) {
+                    [urlSource addObject:model.detailContent];
+                }
             }
         }
+        
+        if (urlSource.count > 0) {
+            
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取图片" inView:self.view];
+            __block NSUInteger count = 0;
+            for (NSString * path in urlSource) {
+                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:path] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                    
+                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
+                    [shareSource addObject:image];
+                    count++;
+                    if (count == urlSource.count) {
+                        [hud hideAnimated:YES];
+                        DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource];
+                        [self presentViewController:share animated:YES completion:nil];
+                    }
+                }];
+            }
+        }else{
+            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource];
+            [self presentViewController:share animated:YES completion:nil];
+        }
+    }else if (index == 1) {
+        for (NSInteger i = 0; i < self.model.details.count; i++) {
+            DTieEditModel * model = [self.model.details objectAtIndex:i];
+            if (model.type == DTieEditType_Image && model.image) {
+                [[WeChatManager shareManager] shareMiniProgramWithPostID:self.model.postId image:model.image];
+            }
+        }
+    }else if (index == 2) {
+        SecurityFriendController * friend = [[SecurityFriendController alloc] init];
+        friend.delegate = self;
+        [self.navigationController pushViewController:friend animated:YES];
+    }else if (index == 3) {
+        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", self.model.postId];
+        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
+        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+            
+        } bold:NO];
+        RDAlertAction * rdaction2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+            
+            NSString * preText = [UserManager shareManager].PasteboardText;
+            if (isEmptyString(preText)) {
+                preText = @"";
+            }else{
+                preText = [preText stringByAppendingString:@"\n"];
+            }
+            
+            NSString * text = [NSString stringWithFormat:@"%@%@\n%@\n%@\%@", preText, self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.sceneAddress, urlLink];
+            [UserManager shareManager].PasteboardText = text;
+            
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            pasteboard.string = text;
+            [MBProgressHUD showTextHUDWithText:@"复制成功" inView:self.view];
+        } bold:NO];
+        [alertView addActions:@[rdaction1, rdaction2]];
+        [alertView show];
     }
-    [[WeChatManager shareManager] shareTimeLineWithImages:shareSource title:@"" viewController:self];
+}
+
+- (void)securityFriendDidSelectWith:(UserModel *)model
+{
+    TransPostRequest * request = [[TransPostRequest alloc] initWithPostID:self.model.cid userList:@[@(model.cid)]];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发成功" inView:self.view];
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+    }];
 }
 
 - (void)editButtonDidClicked
@@ -120,6 +213,7 @@
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
+        make.right.mas_equalTo(-270 * scale);
     }];
     
     UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
@@ -133,11 +227,11 @@
     }];
     
     UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [editButton setImage:[UIImage imageNamed:@"DTieEdit"] forState:UIControlStateNormal];
+    [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
     [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:editButton];
     [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+        make.right.mas_equalTo(shareButton.mas_left).offset(0 * scale);
         make.bottom.mas_equalTo(-20 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];

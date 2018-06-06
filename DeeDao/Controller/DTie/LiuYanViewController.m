@@ -133,13 +133,17 @@
             if (KIsDictionary(data)) {
                 CommentModel * model = [CommentModel mj_objectWithKeyValues:data];
                 model.commentatorName = [DDTool replaceUnicode:model.commentatorName];
-                [self.dataSource addObject:model];
-                NSIndexPath * indexPath =[NSIndexPath indexPathForRow:self.dataSource.count - 1 inSection:0];
+                [self.dataSource insertObject:model atIndex:0];
+                NSIndexPath * indexPath =[NSIndexPath indexPathForRow:0 inSection:0];
                 [self.tableView beginUpdates];
                 [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
                 [self.tableView endUpdates];
                 [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             }
+        }
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(liuyanDidComplete)]) {
+            [self.delegate liuyanDidComplete];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

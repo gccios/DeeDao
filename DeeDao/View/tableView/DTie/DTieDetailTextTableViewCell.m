@@ -107,9 +107,9 @@
     self.detailLabel.attributedText = attributeStr;
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-        self.effectView.hidden = NO;
-    }else{
         self.effectView.hidden = YES;
+    }else{
+        self.effectView.hidden = NO;
     }
 }
 

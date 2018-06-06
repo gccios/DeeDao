@@ -12,6 +12,7 @@
 #import <UIImageView+WebCache.h>
 #import "DDTool.h"
 #import "DDShareManager.h"
+#import "DDLocationManager.h"
 
 @interface DDCollectionTableViewCell ()
 
@@ -28,6 +29,8 @@
 @property (nonatomic, strong) UILabel * readLabel;
 
 @property (nonatomic, strong) UILabel * lastLabel;
+
+@property (nonatomic, strong) UIVisualEffectView * effectView;
 
 @end
 
@@ -128,6 +131,17 @@
     UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
     self.baseImageView.userInteractionEnabled = YES;
     [self.baseImageView addGestureRecognizer:longPress];
+    
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    self.effectView.alpha = .98f;
+    [self.contentView addSubview:self.effectView];
+    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(24 * scale);
+        make.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(-24 * scale);
+    }];
+    self.effectView.hidden = YES;
 }
 
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
@@ -161,6 +175,40 @@
         self.baseReadView.hidden = NO;
         self.baseImageView.hidden = YES;
         self.readLabel.text = [DDTool getTextWithHtml:model.detailContent];
+    }
+}
+
+- (void)configWithModel:(DTieEditModel *)model Dtie:(id)dtieModel
+{
+    self.playImageView.hidden = YES;
+    if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
+        [self.baseImageView setImage:[UIImage new]];
+        self.firstReadView.hidden = YES;
+        self.baseReadView.hidden = YES;
+        self.baseImageView.hidden = NO;
+        
+        if (!isEmptyString(model.detailContent)) {
+            [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.detailContent]]];
+            
+        }
+        
+        if (model.type == DTieEditType_Video) {
+            self.playImageView.hidden = NO;
+        }
+        
+    }else if (model.type == DTieEditType_Text){
+        self.firstReadView.hidden = YES;
+        self.baseReadView.hidden = NO;
+        self.baseImageView.hidden = YES;
+        self.readLabel.text = [DDTool getTextWithHtml:model.detailContent];
+    }
+    
+    if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+        self.baseImageView.userInteractionEnabled = YES;
+        self.effectView.hidden = YES;
+    }else{
+        self.baseImageView.userInteractionEnabled = NO;
+        self.effectView.hidden = NO;
     }
 }
 

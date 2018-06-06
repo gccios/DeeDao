@@ -23,11 +23,13 @@
 #import "DDLocationManager.h"
 #import "DDShareManager.h"
 #import "LookImageViewController.h"
+#import "DDDazhaohuView.h"
+#import "MBProgressHUD+DDHUD.h"
 
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
 
-@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource>
+@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete>
 
 @property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UIImageView * firstImageView;
@@ -86,12 +88,17 @@
             if (model.image) {
                 self.firstImage = model.image;
             }else{
-                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:model.detailContent] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                
+                NSString * imageURL = self.model.postFirstPicture;
+                if (isEmptyString(imageURL)) {
+                    imageURL = model.detailContent;
+                }
+                
+                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:imageURL] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
                     
                 } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:model.detailContent toDisk:YES completion:nil];
-                    model.image = image;
-                    self.firstImage = model.image;
+                    [[SDImageCache sharedImageCache] storeImage:image forKey:imageURL toDisk:YES completion:nil];
+                    self.firstImage = image;
                     [self configHeaderView];
                 }];
             }
@@ -149,21 +156,36 @@
 
 - (void)dazhaohuButtonDidClicked
 {
-    self.dazhaohuButton.enabled = NO;
+    if (self.isSelfFlg) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self];
+        return;
+    }
+    BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model];
+    if (!canHandle) {
+        [MBProgressHUD showTextHUDWithText:[NSString stringWithFormat:@"只能和%ld米之内的的帖子打招呼", [DDLocationManager shareManager].distance] inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
     
-    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:@""];
-    
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    DDDazhaohuView * view = [[DDDazhaohuView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    view.block = ^(NSString *text) {
+        self.dazhaohuButton.enabled = NO;
         
-        self.model.dzfFlg = 1;
-        self.model.dzfCount++;
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:text];
         
-        self.dazhaohuButton.enabled = YES;
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        self.dazhaohuButton.enabled = YES;
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        self.dazhaohuButton.enabled = YES;
-    }];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.dzfFlg = 1;
+            self.model.dzfCount++;
+            
+            self.dazhaohuButton.enabled = YES;
+            [MBProgressHUD showTextHUDWithText:@"对方已收到您的信息" inView:[UIApplication sharedApplication].keyWindow];
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.dazhaohuButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.dazhaohuButton.enabled = YES;
+        }];
+    };
+    [view show];
 }
 
 - (void)jubaoButtonDidClicked
@@ -173,6 +195,11 @@
 
 - (void)shoucangButtonDidClicked
 {
+    if (self.isSelfFlg) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self];
+        return;
+    }
+    
     self.shoucangButton.enabled = NO;
     if (self.model.collectFlg) {
         
@@ -210,6 +237,10 @@
 
 - (void)woyaoyueButtonDidClicked
 {
+    if (self.isSelfFlg) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self];
+        return;
+    }
     self.woyaoyueButton.enabled = NO;
     if (self.model.wyyFlg) {
         
@@ -249,8 +280,15 @@
 {
     if (self.parentDDViewController) {
         LiuYanViewController * liuyan = [[LiuYanViewController alloc] initWithPostID:self.model.cid commentId:self.model.authorId];
+        liuyan.delegate = self;
         [self.parentDDViewController pushViewController:liuyan animated:YES];
     }
+}
+
+- (void)liuyanDidComplete
+{
+    self.model.messageCount += 1;
+    self.liuyanLabel.text = [NSString stringWithFormat:@"共%ld条留言，查看或评论...", self.model.messageCount];
 }
 
 - (void)userinfoDidClicked
@@ -273,20 +311,20 @@
     if (model.type == DTieEditType_Image) {
         DTieDetailImageTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailImageTableViewCell" forIndexPath:indexPath];
         
-        [cell configWithModel:model];
+        [cell configWithModel:model Dtie:self.model];
         
         return cell;
     }else if (model.type == DTieEditType_Video) {
         DTieDetailVideoTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailVideoTableViewCell" forIndexPath:indexPath];
         
-        [cell configWithModel:model];
+        [cell configWithModel:model Dtie:self.model];
         
         return cell;
     }
     
     DTieDetailTextTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailTextTableViewCell" forIndexPath:indexPath];
     
-    [cell configWithModel:model];
+    [cell configWithModel:model Dtie:self.model];
     
     return cell;
 }
@@ -478,8 +516,14 @@
     }];
     
     self.dazhaohuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"打招呼+0"];
-    [self.dazhaohuButton setTitle:[NSString stringWithFormat:@"打招呼+%ld", self.model.dzfCount] forState:UIControlStateNormal];
-    [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
+    if (self.isSelfFlg) {
+        [self.dazhaohuButton setTitle:[NSString stringWithFormat:@"打招呼+%ld", self.model.dzfCount] forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
+        self.dazhaohuButton.userInteractionEnabled = NO;
+    }else{
+        [self.dazhaohuButton setTitle:@"" forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"sayhi"] forState:UIControlStateNormal];
+    }
     [userView addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_updateConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-20 * scale);
