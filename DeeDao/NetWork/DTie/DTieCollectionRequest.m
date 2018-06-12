@@ -17,7 +17,9 @@
         self.methodName = @"post/collection/savePostCollection";
         [self setIntegerValue:postId forParamKey:@"postId"];
         [self setIntegerValue:type forParamKey:@"type"];
-        [self setIntegerValue:subType forParamKey:@"subType"];
+        if (subType != 0) {
+            [self setIntegerValue:subType forParamKey:@"subType"];
+        }
         [self setValue:remark forParamKey:@"remark"];
     }
     return self;

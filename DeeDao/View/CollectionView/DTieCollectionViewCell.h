@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) UIImageView * contenImageView;
 
+@property (nonatomic, strong) UIView * coverView;
+
 @property (nonatomic, strong) NSIndexPath * indexPath;
 
 @property (nonatomic, copy) void (^deleteButtonHandle)(void);

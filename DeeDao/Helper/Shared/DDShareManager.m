@@ -15,7 +15,7 @@
 
 @interface DDShareManager ()
 
-@property (nonatomic, weak) UIImage * handleImage;
+@property (nonatomic, strong) ShareImageModel * handleImage;
 
 @property (nonatomic, strong) UIView * handleView;
 @property (nonatomic, strong) UIButton * savePhotoButton;
@@ -79,9 +79,7 @@
     if (self.handleImage) {
         [DDTool userLibraryAuthorizationStatusWithSuccess:^{
             
-            UIImage * temImage = [self image:self.handleImage addTitle:@"这是一个帖子的标题" text:@"地到生活，到地可见" codeImage:nil];
-            
-            [DDTool saveImageInSystemPhoto:temImage];
+            [DDTool saveImageInSystemPhoto:self.handleImage.image];
             [self hiddenHandleView];
         } failure:^{
             [MBProgressHUD showTextHUDWithText:@"没有相册访问权限" inView:self.handleView];
@@ -89,48 +87,7 @@
     }
 }
 
-- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage
-{
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
-    
-    CGFloat width = image.size.width;
-    CGFloat height = image.size.height;
-    
-    CGFloat fontSize = 17.f / kMainBoundsWidth * width;
-    CGFloat contentHeight = 120.f / kMainBoundsWidth * width;
-    CGFloat originY = image.size.height - contentHeight;
-    CGFloat labelHeight = 20.f / kMainBoundsWidth * width;
-    CGFloat topMargin = 25.f / kMainBoundsWidth * width;
-    CGFloat leftMargin = 25.f / kMainBoundsWidth * width;
-    CGFloat rightMargin = 110.f / kMainBoundsWidth * width;
-    
-    CGFloat logoWidth = 70.f / kMainBoundsWidth * width;
-    CGFloat logoTopMargin = 10.f / kMainBoundsWidth * width;
-    CGFloat logoRightMargin = 100.f / kMainBoundsWidth * width;
-    CGFloat logoFontSize = 15.f / kMainBoundsWidth * width;
-    
-    [image drawInRect:CGRectMake(0, 0, width, height)];
-    
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSetFillColorWithColor(context, [[UIColor blackColor] colorWithAlphaComponent:.5f].CGColor);
-    CGContextFillRect(context, CGRectMake(0, originY, width, contentHeight));
-    
-    [title drawInRect:CGRectMake(leftMargin, originY + topMargin, width - leftMargin - rightMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
-    
-    [text drawInRect:CGRectMake(leftMargin, originY + topMargin + fontSize + topMargin, width - leftMargin - rightMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangLight(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
-    
-    UIImage * logoImage = [UIImage imageNamed:@"shareFriend"];
-    [logoImage drawInRect:CGRectMake(width - logoRightMargin, originY + logoTopMargin, logoWidth, logoWidth)];
-    
-    NSString * logoText = @"DeeDao地到";
-    [logoText drawInRect:CGRectMake(width - logoRightMargin, originY + logoTopMargin + logoWidth, width - leftMargin - rightMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangRegular(logoFontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
-    
-    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return resultImage;
-}
-
-- (void)showHandleViewWithImage:(UIImage *)image
+- (void)showHandleViewWithImage:(ShareImageModel *)image
 {
     if (nil == image) {
         return;

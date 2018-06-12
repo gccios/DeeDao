@@ -18,6 +18,7 @@
 #import "WeChatManager.h"
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
+NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpdateNotification";
 
 @interface DTieNewEditViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -41,6 +42,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 
 @property (nonatomic, copy) NSString * firstImageURL;
 @property (nonatomic, assign) NSInteger sharePostId;
+
+@property (nonatomic, assign) BOOL isPflg;
 
 @end
 
@@ -71,12 +74,23 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     [self.shareImages removeAllObjects];
     __block NSInteger tempCount = 0;
     
+    if (self.contenView.modleSources.count == 0) {
+        [hud hideAnimated:YES];
+        success(details);
+        return;
+    }
+    
     for (NSInteger i = 0; i < self.contenView.modleSources.count; i++) {
         
         DTieEditModel * model = [self.contenView.modleSources objectAtIndex:i];
+        
+        if (model.pFlag == 1) {
+            self.isPflg = YES;
+        }
+        
         if (model.type == DTieEditType_Image) {
             
-            if (model.image && model.shareEnable) {
+            if (model.image && model.shareEnable == 1) {
                 if (self.shareImages.count < 9) {
                     [self.shareImages addObject:model.image];
                 }
@@ -92,7 +106,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                                         @"datadictionaryType":@"CONTENT_IMG",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":@"",
-                                        @"pFlg":@(model.pFlag)};
+                                        @"pFlg":@(model.pFlag),
+                                        @"wxCansee":@(model.shareEnable)};
                 [details addObject:dict];
                 tempCount++;
                 if (tempCount == self.contenView.modleSources.count) {
@@ -115,7 +130,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                                                 @"datadictionaryType":@"CONTENT_IMG",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":@"",
-                                                @"pFlg":@(model.pFlag)};
+                                                @"pFlg":@(model.pFlag),
+                                                @"wxCansee":@(model.shareEnable)};
                         [details addObject:dict];
                         tempCount++;
                         if (tempCount == self.contenView.modleSources.count) {
@@ -143,7 +159,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                                     @"datadictionaryType":@"CONTENT_TEXT",
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":@"",
-                                    @"pFlg":@(model.pFlag)};
+                                    @"pFlg":@(model.pFlag),
+                                    @"wxCansee":@(model.shareEnable)};
             [details addObject:dict];
             tempCount++;
             if (tempCount == self.contenView.modleSources.count) {
@@ -156,7 +173,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                                         @"datadictionaryType":@"CONTENT_VIDEO",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":model.textInformation,
-                                        @"pFlg":@(model.pFlag)};
+                                        @"pFlg":@(model.pFlag),
+                                        @"wxCansee":@(model.shareEnable)};
                 tempCount++;
                 [details addObject:dict];
                 if (tempCount == self.contenView.modleSources.count) {
@@ -179,8 +197,12 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                                                 @"datadictionaryType":@"CONTENT_VIDEO",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
-                                                @"pFlg":@(model.pFlag)};
+                                                @"pFlg":@(model.pFlag),
+                                                @"wxCansee":@(model.shareEnable)};
                         [details addObject:dict];
+                        
+                        [[NSFileManager defaultManager] removeItemAtURL:model.videoURL error:nil];
+                        
                         tempCount++;
                         if (tempCount == self.contenView.modleSources.count) {
                             [hud hideAnimated:YES];
@@ -252,8 +274,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
         }
     }];
     
-    if (details.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"不能发布空贴哟~" inView:self.view];
+    if (details.count == 0 && status == 1) {
+        [MBProgressHUD showTextHUDWithText:@"不能发布空帖哟~" inView:self.view];
         return;
     }
     
@@ -280,12 +302,47 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
         postId = self.editModel.postId;
     }
     
+    NSInteger landAccountFlg = self.quanxianView.landAccountFlg;
+    
     NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
-    for (SecurityGroupModel * groupModel in self.quanxianView.allowToSeeList) {
-        [allowToSeeList addObject:@(groupModel.cid)];
+    if (landAccountFlg == 4) {
+        for (SecurityGroupModel * groupModel in self.quanxianView.selectSource) {
+            if (groupModel.cid == -1) {
+                if (landAccountFlg == 5) {
+                    landAccountFlg = 6;
+                }else{
+                    landAccountFlg = 3;
+                }
+            }else if (groupModel.cid == -2){
+                if (landAccountFlg == 3) {
+                    landAccountFlg = 6;
+                }else{
+                    landAccountFlg = 5;
+                }
+            }else{
+                NSInteger remindFlg = 0;
+                if (groupModel.isNotification) {
+                    remindFlg = 1;
+                }
+                [allowToSeeList addObject:@{@"securityGroupId":@(groupModel.cid), @"remindFlg":@(remindFlg)}];
+            }
+        }
+        
+        if (allowToSeeList.count > 0) {
+            if (landAccountFlg == 2) {
+                landAccountFlg = 2;
+            }else if (landAccountFlg == 3) {
+                landAccountFlg = 3;
+            }else if (landAccountFlg == 5) {
+                landAccountFlg = 7;
+            }else if (landAccountFlg == 6) {
+                landAccountFlg = 6;
+            }
+        }
+        
     }
     
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:self.contenView.titleTextField.text address:address addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:self.quanxianView.landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:self.contenView.titleTextField.text address:address addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -295,13 +352,23 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
                 [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
                 DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
                 self.sharePostId = DTie.postId;
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
+                
+                if (self.needPopTwoVC) {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:DTieCollectionNeedUpdateNotification object:nil];
+                    
+                    NSArray * vcArray = self.navigationController.viewControllers;
+                    UIViewController * vc = [vcArray objectAtIndex:vcArray.count - 3];
+                    [self.navigationController popToViewController:vc animated:YES];
+                }else{
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+                
+                if (status == 1) {
+                    [self checkShare];
+                }
             }
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
-        [self.navigationController popViewControllerAnimated:YES];
-        
-        if (status == 1) {
-            [self checkShare];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -319,15 +386,20 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
         return;
     }
     
+    if (![WXApi isWXAppInstalled]) {
+        return;
+    }
+    
     if (self.quanxianView.shareType == 1) {
         if (self.shareImages && self.shareImages.count > 0) {
-            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareImages];
+            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareImages title:self.contenView.titleTextField.text pflg:self.isPflg postId:self.sharePostId];
             [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:share animated:YES completion:nil];
         }
     }else{
         
+        NSInteger postID = self.sharePostId;
         if (self.sharePostId == 0) {
-            return;
+            postID = self.editModel.cid;
         }
         
         [WeChatManager shareManager].isShare = YES;
@@ -335,7 +407,7 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
         if (self.shareImages && self.shareImages.count > 0) {
             image = [self.shareImages firstObject];
         }
-        [[WeChatManager shareManager] shareMiniProgramWithPostID:self.editModel.cid image:image];
+        [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:YES];
     }
 }
 
@@ -447,6 +519,22 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     model.authorId = [UserManager shareManager].user.cid;
     model.portraituri = [UserManager shareManager].user.portraituri;
     model.sceneAddress = self.contenView.locationLabel.text;
+    model.updateTime = [[NSDate date] timeIntervalSince1970];
+    
+    double lon;
+    double lat;
+    if (self.contenView.choosePOI) {
+        lon = self.contenView.choosePOI.pt.longitude;
+        lat = self.contenView.choosePOI.pt.latitude;
+    }else if (self.editModel){
+        lon = self.editModel.sceneAddressLng;
+        lat = self.editModel.sceneAddressLat;
+    }else{
+        lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
+        lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;
+    }
+    model.sceneAddressLat = lat;
+    model.sceneAddressLng = lon;
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
@@ -565,8 +653,8 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"编辑D贴";
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
+    titleLabel.text = @"编辑D帖";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -607,7 +695,27 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要放弃当前编辑的内容？" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        
+    }];
+    
+    UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        if (self.needPopTwoVC) {
+            
+            NSArray * vcArray = self.navigationController.viewControllers;
+            UIViewController * vc = [vcArray objectAtIndex:vcArray.count - 3];
+            [self.navigationController popToViewController:vc animated:YES];
+            
+        }else{
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+    }];
+    
+    [alert addAction:action1];
+    [alert addAction:action2];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (DTieContentView *)contenView
@@ -644,6 +752,22 @@ NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
     [super touchesBegan:touches withEvent:event];
     if ([self.contenView.titleTextField isFirstResponder]) {
         [self.contenView.titleTextField resignFirstResponder];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    //开启iOS7的滑动返回效果
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = YES;
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    //关闭iOS7的滑动返回效果
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UserManager.h"
 #import <WXApi.h>
 
 extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功通知
@@ -16,12 +17,18 @@ extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录�
 
 @property (nonatomic, assign) BOOL isShare;
 
+@property (nonatomic, strong) NSMutableArray * titleList;
+
 + (instancetype)shareManager;
 
 - (void)loginWithWeChat;
 
 - (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController;
 
-- (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image;
+- (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image isShare:(BOOL)isShare;
+
+- (void)shareMiniProgramWithUser:(UserModel *)model;
+
+- (void)getMiniProgromCodeWithPostID:(NSInteger)postID handle:(void (^)(UIImage * image))handle;
 
 @end

@@ -17,7 +17,9 @@
         self.methodName = @"post/search/selectPostBySearch";
         self.httpMethod = BGNetworkRequestHTTPPost;
         
-        [self setValue:keyWord forParamKey:@"keyWord"];
+        if (!isEmptyString(keyWord)) {
+            [self setValue:keyWord forParamKey:@"keyWord"];
+        }
         [self setDoubleValue:lat1 forParamKey:@"lat1"];
         [self setDoubleValue:lng1 forParamKey:@"lng1"];
         [self setDoubleValue:lat2 forParamKey:@"lat2"];

@@ -10,4 +10,6 @@
 
 @interface DDDTieViewController : DDTabHomeViewController
 
+- (void)deleteDtieWithIndexPath:(NSIndexPath *)indexPath;
+
 @end

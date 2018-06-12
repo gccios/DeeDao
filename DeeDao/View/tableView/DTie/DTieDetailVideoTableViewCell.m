@@ -12,6 +12,7 @@
 #import <Masonry.h>
 #import <AVKit/AVKit.h>
 #import "DDLocationManager.h"
+#import "UserManager.h"
 
 @interface DTieDetailVideoTableViewCell ()
 
@@ -19,7 +20,9 @@
 @property (nonatomic, strong) UIImageView * playImageView;;
 @property (nonatomic, strong) DTieEditModel * model;
 
+@property (nonatomic, strong) UIImageView * quanxianImageView;
 @property (nonatomic, strong) UIVisualEffectView * effectView;
+@property (nonatomic, strong) UIView * coverView;
 
 @end
 
@@ -47,6 +50,7 @@
         make.left.right.mas_equalTo(0);
         make.bottom.mas_equalTo(-24 * scale);
     }];
+    self.detailImageView.clipsToBounds = YES;
     
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDidTap:)];
     self.detailImageView.userInteractionEnabled = YES;
@@ -60,15 +64,53 @@
         make.width.height.mas_equalTo(150 * scale);
     }];
     
+    self.coverView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.detailImageView addSubview:self.coverView];
+    [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.coverView.hidden = YES;
+    
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
     self.effectView.alpha = .98f;
-    [self.contentView addSubview:self.effectView];
+    [self.coverView addSubview:self.effectView];
     [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(0);
+        make.edges.mas_equalTo(0);
+    }];
+    
+    UIImageView * deedaoImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    deedaoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [deedaoImageView setImage:[UIImage imageNamed:@"Dtie"]];
+    [self.coverView addSubview:deedaoImageView];
+    [deedaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(-30 * scale);
         make.width.height.mas_equalTo(150 * scale);
     }];
-    self.effectView.hidden = YES;
+    
+    UILabel * deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    deedaoLabel.font = kPingFangMedium(42 * scale);
+    deedaoLabel.text = @"到 地 体 验";
+    deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    [self.coverView addSubview:deedaoLabel];
+    [deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(70 * scale);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    self.quanxianImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.quanxianImageView setImage:[UIImage imageNamed:@"zuozhewx"]];
+    [self.contentView addSubview:self.quanxianImageView];
+    [self.quanxianImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.detailImageView.mas_bottom);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    self.quanxianImageView.hidden = YES;
 }
 
 - (void)imageDidTap:(UITapGestureRecognizer *)tap
@@ -109,27 +151,57 @@
     }
 }
 
-- (void)configWithModel:(DTieEditModel *)model Dtie:(id)dtieModel
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
     self.model = model;
     if (model.image) {
         [self.detailImageView setImage:model.image];
     }else{
-        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
         
-        if (image) {
-            [self.detailImageView setImage:image];
-        }else{
-            [self.detailImageView setImage:[UIImage new]];
-        }
+        [self.detailImageView sd_setImageWithURL:[NSURL URLWithString:model.detailContent] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+            model.image = image;
+        }];
     }
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
         self.detailImageView.userInteractionEnabled = YES;
-        self.effectView.hidden = YES;
+        self.coverView.hidden = YES;
     }else{
         self.detailImageView.userInteractionEnabled = NO;
-        self.effectView.hidden = NO;
+        self.coverView.hidden = NO;
+    }
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if (dtieModel.authorId == [UserManager shareManager].user.cid) {
+        
+        NSString * imageName = @"";
+        if (model.wxCanSee == 1 || model.shareEnable == 1) {
+            imageName = @"zuozhewx";
+            if (model.pFlag == 1) {
+                imageName = @"zuozhewxdd";
+            }
+        }else if (model.pFlag == 1) {
+            imageName = @"zuozhedd";
+        }
+        
+        if (isEmptyString(imageName)) {
+            self.quanxianImageView.hidden = YES;
+        }else{
+            [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
+            self.quanxianImageView.hidden = NO;
+        }
+        if (isEmptyString(imageName)) {
+            [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-24 * scale);
+            }];
+            self.quanxianImageView.hidden = YES;
+        }else{
+            [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-96 * scale);
+            }];
+            [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
+            self.quanxianImageView.hidden = NO;
+        }
     }
 }
 

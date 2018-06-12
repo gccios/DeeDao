@@ -12,6 +12,7 @@
 #import "UserManager.h"
 #import "UserLogoutRequest.h"
 #import "PassWordSetViewController.h"
+#import "HelpAndAdviceController.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface DDSystemViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -120,6 +121,10 @@
     if (indexPath.row == 0) {
 //        DDSystemAlertController * alert = [[DDSystemAlertController alloc] init];
 //        [self.navigationController pushViewController:alert animated:YES];
+        
+        HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
+        [self.navigationController pushViewController:help animated:YES];
+        
     }else if (indexPath.row == 1){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
         
@@ -192,7 +197,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"系统设置";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

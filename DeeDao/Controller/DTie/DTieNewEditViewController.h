@@ -10,8 +10,11 @@
 #import "DTieModel.h"
 
 extern NSString * const DTieDidCreateNewNotification;
+extern NSString * const DTieCollectionNeedUpdateNotification;
 
 @interface DTieNewEditViewController : DDViewController
+
+@property (nonatomic, assign) BOOL needPopTwoVC;
 
 - (instancetype)initWithDtieModel:(DTieModel *)model;
 

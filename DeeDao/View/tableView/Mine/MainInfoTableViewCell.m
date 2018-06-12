@@ -67,7 +67,7 @@
 - (void)configInfo:(NSString *)info time:(NSString *)time
 {
     if (isEmptyString(info)) {
-        self.infoLabel.text = @"暂无消息内容";
+        self.infoLabel.text = @"";
     }else{
         self.infoLabel.text = info;
     }

@@ -13,10 +13,10 @@
 #import "DDTool.h"
 #import "DTieShareViewController.h"
 #import "DTieNewEditViewController.h"
-#import <WXApi.h>
 #import "RDAlertView.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "SecurityFriendController.h"
+#import "CreateDTieRequest.h"
 #import <UIImageView+WebCache.h>
 #import "TransPostRequest.h"
 #import "DTieShareView.h"
@@ -44,13 +44,6 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateDTieContent) name:DTieDidCreateNewNotification object:nil];
-}
-
-- (void)updateDTieContent
-{
-    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)shareButtonDidClicked
@@ -63,6 +56,7 @@
 - (void)DTieShareDidSelectIndex:(NSInteger)index
 {
     if (index == 0) {
+        BOOL pflg = NO;
         NSMutableArray * shareSource = [[NSMutableArray alloc] init];
         NSMutableArray * urlSource = [[NSMutableArray alloc] init];
         for (NSInteger i = 0; i < self.model.details.count; i++) {
@@ -73,6 +67,9 @@
                 }else if (!isEmptyString(model.detailContent)) {
                     [urlSource addObject:model.detailContent];
                 }
+            }
+            if (model.pFlag == 1) {
+                pflg = YES;
             }
         }
         
@@ -89,20 +86,57 @@
                     count++;
                     if (count == urlSource.count) {
                         [hud hideAnimated:YES];
-                        DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource];
+                        
+                        NSInteger postId = self.model.cid;
+                        if (postId == 0) {
+                            postId = self.model.postId;
+                        }
+                        
+                        DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
                         [self presentViewController:share animated:YES completion:nil];
                     }
                 }];
             }
         }else{
-            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource];
+            NSInteger postId = self.model.cid;
+            if (postId == 0) {
+                postId = self.model.postId;
+            }
+            
+            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
             [self presentViewController:share animated:YES completion:nil];
         }
     }else if (index == 1) {
         for (NSInteger i = 0; i < self.model.details.count; i++) {
             DTieEditModel * model = [self.model.details objectAtIndex:i];
-            if (model.type == DTieEditType_Image && model.image) {
-                [[WeChatManager shareManager] shareMiniProgramWithPostID:self.model.postId image:model.image];
+            if (model.type == DTieEditType_Image) {
+                NSInteger postId = self.model.postId;
+                if (postId == 0) {
+                    postId = self.model.cid;
+                }
+                if (model.image) {
+                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:model.image isShare:NO];
+                }else{
+                    NSString * urlPath = self.model.postFirstPicture;
+                    if (isEmptyString(urlPath)) {
+                        urlPath = model.detailContent;
+                    }
+                    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+                    [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                        
+                    } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                        [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
+                        
+                        if (image) {
+                            [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:image isShare:NO];
+                        }else{
+                            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:self.view];
+                        }
+                        
+                        [hud hideAnimated:YES];
+                    }];
+                }
+                break;
             }
         }
     }else if (index == 2) {
@@ -110,29 +144,58 @@
         friend.delegate = self;
         [self.navigationController pushViewController:friend animated:YES];
     }else if (index == 3) {
-        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", self.model.postId];
-        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
-        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
-            
-        } bold:NO];
-        RDAlertAction * rdaction2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
-            
-            NSString * preText = [UserManager shareManager].PasteboardText;
-            if (isEmptyString(preText)) {
-                preText = @"";
+        
+//        if ([UserManager shareManager].user.bloggerFlg != 1) {
+//            [MBProgressHUD showTextHUDWithText:@"该功能只支持博主使用" inView:self.view];
+//            return;
+//        }
+        
+        NSString * urlLink = [NSString stringWithFormat:@"pages/index/index?postId=%ld", self.model.postId];
+//        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
+//        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+//
+//        } bold:NO];
+//        RDAlertAction * rdaction2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+//
+//            NSString * preText = [UserManager shareManager].PasteboardText;
+//            if (isEmptyString(preText)) {
+//                preText = @"";
+//            }else{
+//                preText = [preText stringByAppendingString:@"\n"];
+//            }
+        
+        NSString * text = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n\n", self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.sceneAddress, urlLink];
+        
+        NSError * error = nil;
+        NSFileManager * manager = [NSFileManager defaultManager];
+        if ([manager fileExistsAtPath:DDBloggerLinkPath]) {
+            NSFileHandle * writeHandle = [NSFileHandle fileHandleForWritingAtPath:DDBloggerLinkPath];
+            if (writeHandle) {
+                [writeHandle seekToEndOfFile];
+                NSData * linkData = [text dataUsingEncoding:NSUTF8StringEncoding];
+                [writeHandle writeData:linkData];
+                [writeHandle closeFile];
             }else{
-                preText = [preText stringByAppendingString:@"\n"];
+                error = [NSError new];
             }
-            
-            NSString * text = [NSString stringWithFormat:@"%@%@\n%@\n%@\%@", preText, self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.sceneAddress, urlLink];
-            [UserManager shareManager].PasteboardText = text;
-            
-            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-            pasteboard.string = text;
-            [MBProgressHUD showTextHUDWithText:@"复制成功" inView:self.view];
-        } bold:NO];
-        [alertView addActions:@[rdaction1, rdaction2]];
-        [alertView show];
+        }else{
+            [text writeToFile:DDBloggerLinkPath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        }
+        
+        if (error) {
+            [MBProgressHUD showTextHUDWithText:@"获取失败" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"获取成功,请到我的博主链接查看" inView:self.view];
+        }
+        
+//            [UserManager shareManager].PasteboardText = text;
+        
+//            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//            pasteboard.string = text;
+//            [MBProgressHUD showTextHUDWithText:@"复制成功" inView:self.view];
+//        } bold:NO];
+//        [alertView addActions:@[rdaction1, rdaction2]];
+//        [alertView show];
     }
 }
 
@@ -153,8 +216,27 @@
 
 - (void)editButtonDidClicked
 {
-    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:self.model];
-    [self.navigationController pushViewController:edit animated:YES];
+    NSInteger postID = self.model.cid;
+    if (postID == 0) {
+        postID = self.model.postId;
+    }
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:self.model.postSummary address:self.model.sceneAddress addressLng:self.model.sceneAddressLng addressLat:self.model.sceneAddressLat status:0 remindFlg:1 firstPic:self.model.postFirstPicture postID:self.model.cid landAccountFlg:self.model.landAccountFlg allowToSeeList:self.model.allowToSeeList sceneTime:self.model.sceneTime];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        self.model.status = 0;
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
+        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:self.model];
+        edit.needPopTwoVC = YES;
+        [self.navigationController pushViewController:edit animated:YES];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
 }
 
 - (void)createViews
@@ -206,7 +288,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = self.model.postSummary;
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -226,25 +308,22 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
-    [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:editButton];
-    [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(shareButton.mas_left).offset(0 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+        [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
+        [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.topView addSubview:editButton];
+        [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(shareButton.mas_left).offset(0 * scale);
+            make.bottom.mas_equalTo(-20 * scale);
+            make.width.height.mas_equalTo(100 * scale);
+        }];
+    }
 }
 
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -16,7 +16,10 @@
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "DTieNewEditViewController.h"
+#import "MBProgressHUD+DDHUD.h"
+#import "DDTelLoginViewController.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
+#import <WXApi.h>
 
 @interface AppDelegate ()
 
@@ -58,8 +61,16 @@
     [self.window makeKeyAndVisible];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:DDUserDidLoginOutNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userShouldRelogin) name:@"UserShouldBackToRelogin" object:nil];
     
     return YES;
+}
+
+- (void)userShouldRelogin
+{
+    [[UserManager shareManager] logoutAccount];
+    [self createRootViewController];
+    [MBProgressHUD showTextHUDWithText:@"登录状态已失效，请重新登录" inView:self.window];
 }
 
 //用户登出
@@ -71,14 +82,25 @@
 
 - (void)createRootViewController
 {
-    LoginViewController * login = [[LoginViewController alloc] init];
-    self.window.rootViewController = login;
-    login.loginSucess = ^{
-        
-        DDTabBarController * tab = [[DDTabBarController alloc] init];
-        self.window.rootViewController = tab;
-        
-    };
+    if ([WXApi isWXAppInstalled]) {
+        LoginViewController * login = [[LoginViewController alloc] init];
+        self.window.rootViewController = login;
+        login.loginSucess = ^{
+            
+            DDTabBarController * tab = [[DDTabBarController alloc] init];
+            self.window.rootViewController = tab;
+            
+        };
+    }else{
+        DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
+        self.window.rootViewController = login;
+        login.loginSucess = ^{
+            
+            DDTabBarController * tab = [[DDTabBarController alloc] init];
+            self.window.rootViewController = tab;
+            
+        };
+    }
 }
 
 // 支持所有iOS系统
@@ -131,7 +153,8 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserDidLoginOutNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UserShouldBackToRelogin" object:nil];
 }
-
 
 @end

@@ -57,6 +57,8 @@
 @property (nonatomic, assign) CLLocationCoordinate2D markCoordinate;
 @property (nonatomic, strong) BMKCircle * circle;
 
+@property (nonatomic, assign) BOOL isMotion;
+
 @end
 
 @implementation DDFoundViewController
@@ -99,8 +101,8 @@
     userlocationStyle.isAccuracyCircleShow = NO;
     userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
     userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+    userlocationStyle.locationViewImgName = @"currentLocation";
     [self.mapView updateLocationViewWithParam:userlocationStyle];
-//    self.mapView.show
     self.mapView.showsUserLocation = YES;
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
     self.mapView.buildingsEnabled = NO;
@@ -203,7 +205,7 @@
     self.timeLabel.layer.shadowRadius = 10 * scale;
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self showTipWithText:@"摇一摇以刷新附近D贴"];
+        [self showTipWithText:@"摇一摇以刷新附近D帖"];
     });
 }
 
@@ -223,7 +225,7 @@
 
 - (void)backLocationButtonDidClicked
 {
-    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.017, .017));
     BMKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
     [self.mapView setRegion:adjustedRegion animated:YES];
     self.isFirst = NO;
@@ -237,11 +239,11 @@
     if (self.circle) {
         [self.mapView removeOverlay:self.circle];
     }
-    self.circle = [BMKCircle circleWithCenterCoordinate:coors radius:500];
+    self.circle = [BMKCircle circleWithCenterCoordinate:coors radius:[DDLocationManager shareManager].distance];
     [self.mapView addOverlay:self.circle];
     
     if (self.isFirst) {
-        BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.005, .005));
+        BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.017, .017));
         BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
         [_mapView setRegion:adjustedRegion animated:YES];
         self.isFirst = NO;
@@ -272,24 +274,38 @@
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data) && data.count > 0) {
+                [self.mapView removeAnnotations:self.pointArray];
                 [self.mapSource removeAllObjects];
                 [self.pointArray removeAllObjects];
+                
+                NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
+                
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.mapSource addObject:model];
                     
                     BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
                     annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
-                    [self.pointArray addObject:annotation];
+                    [tempPointArray addObject:annotation];
                 }
+                [self.pointArray addObjectsFromArray:[[tempPointArray reverseObjectEnumerator] allObjects]];
                 [self.mapView addAnnotations:self.pointArray];
 //                [self meterDistance];
             }
         }
         
+        if (self.isMotion) {
+            [MBProgressHUD showTextHUDWithText:@"刷新成功" inView:self.view];
+            self.isMotion = NO;
+        }
+        
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        self.isMotion = NO;
+        
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        self.isMotion = NO;
         
     }];
 }
@@ -344,16 +360,21 @@
 }
 
 #pragma mark - BMKMapViewDelegate
-- (void)mapview:(BMKMapView *)mapView onLongClick:(CLLocationCoordinate2D)coordinate
+- (void)mapView:(BMKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    self.markCoordinate = coordinate;
-    DTieFoundEditView * edit = [[DTieFoundEditView alloc] initWithFrame:CGRectZero coordinate:coordinate];
-    [self.view addSubview:edit];
-    [edit mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(0);
-    }];
-    edit.delegate = self;
+    [self requestMapViewLocations];
 }
+
+//- (void)mapview:(BMKMapView *)mapView onLongClick:(CLLocationCoordinate2D)coordinate
+//{
+//    self.markCoordinate = coordinate;
+//    DTieFoundEditView * edit = [[DTieFoundEditView alloc] initWithFrame:CGRectZero coordinate:coordinate];
+//    [self.view addSubview:edit];
+//    [edit mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.mas_equalTo(0);
+//    }];
+//    edit.delegate = self;
+//}
 
 - (BMKOverlayView *)mapView:(BMKMapView *)mapView viewForOverlay:(id<BMKOverlay>)overlay
 {
@@ -378,16 +399,20 @@
     NSInteger index = [self.pointArray indexOfObject:annotation];
     DTieModel * model = [self.mapSource objectAtIndex:index];
     
-    CGFloat scale = kMainBoundsWidth / 414.f;
-    
     if ([view viewWithTag:888]) {
         UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }else{
-        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3* scale, 3 * scale, 46 * scale, 46 * scale)];
+        
+        CGFloat width = view.frame.size.width;
+        CGFloat logoWidth = width * 47.5f / 52.f;
+        CGFloat origin = (width - logoWidth) / 2;
+        
+        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(origin, origin, logoWidth, logoWidth)];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.tag = 888;
         [view addSubview:imageView];
-        [DDViewFactoryTool cornerRadius:23 * scale withView:imageView];
+        [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }
     
@@ -429,7 +454,7 @@
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"发现";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -473,9 +498,9 @@
 - (void)sourceButtonDidClicked
 {
     if (self.sourceType == 1) {
-        self.sourceType = 2;
-        [self.sourceButton setTitle:@"收藏" forState:UIControlStateNormal];
-    }else if (self.sourceType == 2) {
+        self.sourceType = 8;
+        [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
+    }else if (self.sourceType == 8) {
         self.sourceType = 6;
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
     }else{
@@ -523,6 +548,7 @@
     if (motion == UIEventSubtypeMotionShake) {
         NSLog(@"手机开始摇动");
         AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);//让手机震动
+        self.isMotion = YES;
         [self requestMapViewLocations];
     }
 }

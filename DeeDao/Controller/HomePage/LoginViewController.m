@@ -12,7 +12,7 @@
 #import "WeChatManager.h"
 #import "UserLoginWXRequest.h"
 #import "DDTelLoginViewController.h"
-#import <WXApi.h>
+#import "AgreementViewController.h"
 
 @interface LoginViewController ()
 
@@ -30,9 +30,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    //判断是否是微信登录
-    self.isInstallWeChat = [WXApi isWXAppInstalled];
     
     [self createViews];
 }
@@ -118,6 +115,8 @@
     [self showLoginWithWeChatButton];
     self.loginButton.alpha = .5f;
     
+    [self agreementButtonDidClicked];
+    
 //    if ([UserManager shareManager].isLogin) {
 //         [self performSelector:@selector(showLoginWithWeChatButton) withObject:nil afterDelay:.5f];
 //    }else{
@@ -127,7 +126,8 @@
 
 - (void)readButtonDidClicked
 {
-    
+    AgreementViewController * agreement = [[AgreementViewController alloc] init];
+    [self presentViewController:agreement animated:YES completion:nil];
 }
 
 - (void)registerButtonDidClicked

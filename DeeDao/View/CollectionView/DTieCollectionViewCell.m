@@ -57,16 +57,16 @@
     gradientLayer.locations = @[@0, @1.0];
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth / 2 + 1, 20 * scale);
     
-    UIView * coverView = [[UIView alloc] initWithFrame:CGRectZero];
-    coverView.backgroundColor = UIColorFromRGB(0xEFEFF4);
-    [self.contentView addSubview:coverView];
-    [coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.coverView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.coverView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self.contentView addSubview:self.coverView];
+    [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
         make.bottom.mas_equalTo(5);
         make.right.mas_equalTo(0);
         make.height.mas_equalTo(50 * scale);
     }];
-    [coverView.layer addSublayer:gradientLayer];
+    [self.coverView.layer addSublayer:gradientLayer];
     
     self.contenImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     self.contenImageView.backgroundColor = [[UIColor whiteColor] colorWithAlphaComponent:.7f];
@@ -171,7 +171,7 @@
     }
     
     NSURL * imageURL = [NSURL URLWithString:model.postFirstPicture];
-    [self.contenImageView sd_setImageWithURL:imageURL];
+    [self.contenImageView sd_setImageWithURL:imageURL placeholderImage:[UIImage imageNamed:@"list_bg"]];
     
     switch (model.dTieType) {
         case DTieType_Add:

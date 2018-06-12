@@ -12,11 +12,12 @@
 #import "MailBigTableViewCell.h"
 #import "MailDetailViewController.h"
 #import "MailMessageRequest.h"
+#import "MBProgressHUD+DDHUD.h"
 #import <BGUploadRequest.h>
 #import <MJRefresh.h>
 #import <AFHTTPSessionManager.h>
 
-@interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource, DTieMailDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -141,7 +142,21 @@
     MailModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
     MailDetailViewController * detail = [[MailDetailViewController alloc] initMailModel:model];
+    detail.delegate = self;
     [self.navigationController pushViewController:detail animated:YES];
+}
+
+- (void)userDidAgreementFriend:(MailModel *)model
+{
+    NSInteger index = [self.dataSource indexOfObject:model];
+    NSIndexPath * indexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    NSInteger mailId = model.cid;
+    [self deleteMailWithID:mailId];
+    
+    [self.dataSource removeObjectAtIndex:indexPath.row];
+    [self.tableView beginUpdates];
+    [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+    [self.tableView endUpdates];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -223,7 +238,7 @@
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"邮筒";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -8,6 +8,8 @@
 
 #import "DTieShareView.h"
 #import "DDViewFactoryTool.h"
+#import "UserManager.h"
+#import <WXApi.h>
 #import <Masonry.h>
 
 @implementation DTieShareView
@@ -26,10 +28,36 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(removeFromSuperview)];
     [self addGestureRecognizer:tap];
     
-    NSArray * imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareFriend", @"sharebozhu"];
-    NSArray * titles = @[@"微信朋友圈", @"微信好友或群", @"地到好友", @"地到博主"];
+    NSArray * imageNames;
+    NSArray * titles;
+    NSInteger startTag;
+    
+    BOOL isInstallWX = [WXApi isWXAppInstalled];
+    BOOL isBozhu = NO;;
+    if ([UserManager shareManager].user.bloggerFlg == 1) {
+        isBozhu = YES;
+    }
+    
+    if (isBozhu && isInstallWX) {
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareFriend", @"sharebozhu"];
+        titles = @[@"微信朋友圈", @"微信好友或群", @"地到好友", @"地到博主"];
+        startTag = 10;
+    }else if (isBozhu && !isInstallWX) {
+        imageNames = @[@"shareFriend", @"sharebozhu"];
+        titles = @[@"地到好友", @"地到博主"];
+        startTag = 12;
+    }else if (!isBozhu && isInstallWX) {
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareFriend"];
+        titles = @[@"微信朋友圈", @"微信好友或群", @"地到好友"];
+        startTag = 10;
+    }else{
+        imageNames = @[@"shareFriend"];
+        titles = @[@"地到好友"];
+        startTag = 12;
+    }
+    
     CGFloat width = kMainBoundsWidth / imageNames.count;
-    CGFloat height = width;
+    CGFloat height = kMainBoundsWidth / 4.f;
     if (KIsiPhoneX) {
         height += 38.f;
     }
@@ -37,7 +65,7 @@
     for (NSInteger i = 0; i < imageNames.count; i++) {
         UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor whiteColor];
-        button.tag = 10 + i;
+        button.tag = startTag + i;
         [button addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:button];
         [button mas_makeConstraints:^(MASConstraintMaker *make) {

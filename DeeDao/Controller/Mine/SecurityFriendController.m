@@ -8,6 +8,7 @@
 
 #import "SecurityFriendController.h"
 #import "DDFriendTableViewCell.h"
+#import "DDChooseFriendCell.h"
 #import "DDFriendTableHeaderView.h"
 #import "SelectFriendRequest.h"
 
@@ -21,6 +22,9 @@
 @property (nonatomic, strong) NSMutableDictionary * dataDict;
 @property (nonatomic, strong) NSArray * nameKeys;
 
+@property (nonatomic, assign) BOOL isSingle;
+@property (nonatomic, strong) NSMutableArray * selectFriend;
+
 @end
 
 @implementation SecurityFriendController
@@ -30,6 +34,26 @@
     if (self = [super init]) {
         self.dataDict = [NSMutableDictionary dictionaryWithDictionary:dataDict];
         self.nameKeys = nameKeys;
+        self.isSingle = YES;
+    }
+    return self;
+}
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.isSingle = YES;
+    }
+    return self;
+}
+
+- (instancetype)initMulSelectWithDataDict:(NSDictionary *)dataDict nameKeys:(NSArray *)nameKeys selectModels:(NSMutableArray *)selectFriend
+{
+    if (self = [super init]) {
+        self.dataDict = [NSMutableDictionary dictionaryWithDictionary:dataDict];
+        self.nameKeys = nameKeys;
+        self.selectFriend = selectFriend;
+        self.isSingle = NO;
     }
     return self;
 }
@@ -80,6 +104,10 @@
             // 获取并返回首字母
             NSString * firstLetterString =model.firstLetter;
             
+            if (isEmptyString(firstLetterString)) {
+                continue;
+            }
+            
             //如果该字母对应的联系人模型不为空,则将此联系人模型添加到此数组中
             if (self.dataDict[firstLetterString])
             {
@@ -116,6 +144,7 @@
     self.tableView.backgroundColor = self.view.backgroundColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 150 * scale;
+    [self.tableView registerClass:[DDChooseFriendCell class] forCellReuseIdentifier:@"DDChooseFriendCell"];
     [self.tableView registerClass:[DDFriendTableViewCell class] forCellReuseIdentifier:@"DDFriendTableViewCell"];
     [self.tableView registerClass:[DDFriendTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"DDFriendTableHeaderView"];
     self.tableView.delegate = self;
@@ -135,8 +164,22 @@
     NSArray * data = [self.dataDict objectForKey:key];
     UserModel * model = [data objectAtIndex:indexPath.row];
     
-    if (self.delegate && [self.delegate respondsToSelector:@selector(securityFriendDidSelectWith:)]) {
-        [self.delegate securityFriendDidSelectWith:model];
+    if (self.isSingle) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(securityFriendDidSelectWith:)]) {
+            [self.delegate securityFriendDidSelectWith:model];
+        }
+    }else{
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.cid];
+        NSArray * tempArray = [self.selectFriend filteredArrayUsingPredicate:predicate];
+        
+        DDChooseFriendCell * cell = [tableView cellForRowAtIndexPath:indexPath];
+        if (tempArray && tempArray.count > 0) {
+            [self.selectFriend removeObjectsInArray:tempArray];
+            [cell configIsChoose:NO];
+        }else{
+            [self.selectFriend addObject:model];
+            [cell configIsChoose:YES];
+        }
     }
 }
 
@@ -155,11 +198,32 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DDFriendTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDFriendTableViewCell" forIndexPath:indexPath];
+    if (self.isSingle) {
+        DDFriendTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDFriendTableViewCell" forIndexPath:indexPath];
+        
+        NSString * key = [self.nameKeys objectAtIndex:indexPath.section];
+        NSArray * data = [self.dataDict objectForKey:key];
+        UserModel * model = [data objectAtIndex:indexPath.row];
+        
+        [cell configWithModel:model];
+        
+        return cell;
+    }
+    
+    DDChooseFriendCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDChooseFriendCell" forIndexPath:indexPath];
     
     NSString * key = [self.nameKeys objectAtIndex:indexPath.section];
     NSArray * data = [self.dataDict objectForKey:key];
     UserModel * model = [data objectAtIndex:indexPath.row];
+    
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.cid];
+    NSArray * tempArray = [self.selectFriend filteredArrayUsingPredicate:predicate];
+    
+    if (tempArray && tempArray.count > 0) {
+        [cell configIsChoose:YES];
+    }else{
+        [cell configIsChoose:NO];
+    }
     
     [cell configWithModel:model];
     
@@ -217,7 +281,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"选择好友";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -225,6 +289,28 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
+    
+    if (!self.isSingle) {
+        UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
+        [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
+        saveButton.layer.borderWidth = .5f;
+        saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+        [saveButton addTarget:self action:@selector(saveButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.topView addSubview:saveButton];
+        [saveButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(144 * scale);
+            make.height.mas_equalTo(72 * scale);
+            make.centerY.mas_equalTo(titleLabel);
+            make.right.mas_equalTo(-60 * scale);
+        }];
+    }
+}
+
+- (void)saveButtonDidClicked
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(friendDidMulSelectComplete)]) {
+        [self.delegate friendDidMulSelectComplete];
+    }
 }
 
 - (void)backButtonDidClicked

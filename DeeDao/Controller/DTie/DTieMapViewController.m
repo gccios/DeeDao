@@ -195,16 +195,19 @@
     NSInteger index = [self.pointArray indexOfObject:annotation];
     DTieModel * model = [self.mapSource objectAtIndex:index];
     
-    CGFloat scale = kMainBoundsWidth / 414.f;
-    
     if ([view viewWithTag:888]) {
         UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }else{
-        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(3* scale, 3 * scale, 46 * scale, 46 * scale)];
+        CGFloat width = view.frame.size.width;
+        CGFloat logoWidth = width * 47.5f / 52.f;
+        CGFloat origin = (width - logoWidth) / 2;
+        
+        UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(origin, origin, logoWidth, logoWidth)];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
         imageView.tag = 888;
         [view addSubview:imageView];
-        [DDViewFactoryTool cornerRadius:23 * scale withView:imageView];
+        [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
         [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     }
     
@@ -255,8 +258,8 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"D贴";
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
+    titleLabel.text = @"D帖";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -282,6 +285,7 @@
         userlocationStyle.isAccuracyCircleShow = YES;
         userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
         userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+        userlocationStyle.locationViewImgName = @"currentLocation";
         [_mapView updateLocationViewWithParam:userlocationStyle];
         _mapView.showsUserLocation = YES;
         _mapView.userTrackingMode = BMKUserTrackingModeNone;

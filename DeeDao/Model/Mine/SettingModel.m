@@ -25,7 +25,7 @@
         switch (type) {
             case SettingType_Collect:
             {
-                self.title = @"D贴/系列被收藏提示";
+                self.title = @"D帖/系列被收藏提示";
                 self.status = [DDUserDefaultsGet(SettingCollect) boolValue];
                 self.systemKey = SettingCollect;
             }
@@ -33,7 +33,7 @@
                 
             case SettingType_ArriveCollect:
             {
-                self.title = @"到达收藏用户D贴附近提示";
+                self.title = @"到达收藏用户D帖附近提示";
                 self.status = [DDUserDefaultsGet(SettingArriveCollect) boolValue];
                 self.systemKey = SettingArriveCollect;
             }
@@ -42,7 +42,7 @@
                 
             case SettingType_ArriveFollow:
             {
-                self.title = @"到达关注用户D贴附近提示";
+                self.title = @"到达关注用户D帖附近提示";
                 self.status = [DDUserDefaultsGet(SettingArriveFollow) boolValue];
                 self.systemKey = SettingArriveFollow;
             }

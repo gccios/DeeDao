@@ -13,13 +13,18 @@
 #import "DDShareManager.h"
 #import "LookImageViewController.h"
 #import "DDLocationManager.h"
+#import "UserManager.h"
 
 @interface DTieDetailImageTableViewCell ()
 
 @property (nonatomic, strong) UIImageView * detailImageView;
+@property (nonatomic, strong) DTieModel * dtieModel;
 @property (nonatomic, strong) DTieEditModel * model;
 
+@property (nonatomic, strong) UIImageView * quanxianImageView;
+
 @property (nonatomic, strong) UIVisualEffectView * effectView;
+@property (nonatomic, strong) UIView * converView;
 
 @end
 
@@ -48,6 +53,7 @@
         make.left.right.mas_equalTo(0);
         make.bottom.mas_equalTo(-24 * scale);
     }];
+    self.detailImageView.clipsToBounds = YES;
     
     UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDidTap:)];
@@ -55,16 +61,53 @@
     [self.detailImageView addGestureRecognizer:longPress];
     [self.detailImageView addGestureRecognizer:tap];
     
+    self.converView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.detailImageView addSubview:self.converView];
+    [self.converView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.converView.hidden = YES;
+    
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
     self.effectView.alpha = .98f;
-    [self.contentView addSubview:self.effectView];
+    [self.converView addSubview:self.effectView];
     [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
-        make.left.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(-24 * scale);
+        make.edges.mas_equalTo(0);
     }];
-    self.effectView.hidden = YES;
+    
+    UIImageView * deedaoImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    deedaoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [deedaoImageView setImage:[UIImage imageNamed:@"Dtie"]];
+    [self.converView addSubview:deedaoImageView];
+    [deedaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(-30 * scale);
+        make.width.height.mas_equalTo(150 * scale);
+    }];
+    
+    UILabel * deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    deedaoLabel.font = kPingFangMedium(42 * scale);
+    deedaoLabel.text = @"到 地 体 验";
+    deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    [self.converView addSubview:deedaoLabel];
+    [deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(70 * scale);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    self.quanxianImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.quanxianImageView setImage:[UIImage imageNamed:@"zuozhewx"]];
+    [self.contentView addSubview:self.quanxianImageView];
+    [self.quanxianImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.detailImageView.mas_bottom);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    self.quanxianImageView.hidden = YES;
 }
 
 - (void)imageDidTap:(UITapGestureRecognizer *)tap
@@ -87,7 +130,21 @@
 
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
 {
-    [[DDShareManager shareManager] showHandleViewWithImage:self.detailImageView.image];
+    ShareImageModel * model = [[ShareImageModel alloc] init];
+    NSInteger postId = self.dtieModel.cid;
+    if (postId == 0) {
+        postId = self.dtieModel.postId;
+    }
+    model.postId = postId;
+    model.image = self.detailImageView.image;
+    model.title = self.dtieModel.postSummary;
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
+    NSArray * tempArray = [self.dtieModel.details filteredArrayUsingPredicate:predicate];
+    if (tempArray && tempArray.count > 0) {
+        model.pflg = 1;
+    }
+    
+    [[DDShareManager shareManager] showHandleViewWithImage:model];
 }
 
 - (void)configWithModel:(DTieEditModel *)model
@@ -110,6 +167,7 @@
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
     self.model = model;
+    self.dtieModel = dtieModel;
     
     if (model.image) {
         [self.detailImageView setImage:model.image];
@@ -125,10 +183,37 @@
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
         self.detailImageView.userInteractionEnabled = YES;
-        self.effectView.hidden = YES;
+        self.converView.hidden = YES;
     }else{
         self.detailImageView.userInteractionEnabled = NO;
-        self.effectView.hidden = NO;
+        self.converView.hidden = NO;
+    }
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if (dtieModel.authorId == [UserManager shareManager].user.cid) {
+        
+        NSString * imageName = @"";
+        if (model.wxCanSee == 1 || model.shareEnable == 1) {
+            imageName = @"zuozhewx";
+            if (model.pFlag == 1) {
+                imageName = @"zuozhewxdd";
+            }
+        }else if (model.pFlag == 1) {
+            imageName = @"zuozhedd";
+        }
+        
+        if (isEmptyString(imageName)) {
+            [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-24 * scale);
+            }];
+            self.quanxianImageView.hidden = YES;
+        }else{
+            [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-96 * scale);
+            }];
+            [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
+            self.quanxianImageView.hidden = NO;
+        }
     }
 }
 

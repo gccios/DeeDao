@@ -15,6 +15,9 @@
 #import <Photos/Photos.h>
 #import "MBProgressHUD+DDHUD.h"
 #import <SDWebImageManager.h>
+#import "WeChatManager.h"
+#import "DDLocationManager.h"
+#import "ApplicationConfigRequest.h"
 
 @implementation DDTool
 
@@ -46,6 +49,35 @@
     
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
+    
+    [self getApplicationConfigFromSever];
+}
+
++ (void)getApplicationConfigFromSever
+{
+    ApplicationConfigRequest * request = [[ApplicationConfigRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                NSInteger distance = [[data objectForKey:@"distance"] integerValue];
+                if (distance > 0) {
+                    [DDLocationManager shareManager].distance = distance;
+                }
+                
+                NSArray * titleList = [data objectForKey:@"random"];
+                if (KIsArray(titleList)) {
+                    [[WeChatManager shareManager].titleList addObjectsFromArray:titleList];
+                }
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 + (NSString *)getTimeStampMS

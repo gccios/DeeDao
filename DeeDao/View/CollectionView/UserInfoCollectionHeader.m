@@ -127,7 +127,7 @@
     }];
     
     UILabel * liebiao = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    liebiao.text = @"公开的D贴";
+    liebiao.text = @"公开的D帖";
     [self addSubview:liebiao];
     [liebiao mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);

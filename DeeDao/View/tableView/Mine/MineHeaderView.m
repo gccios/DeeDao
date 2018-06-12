@@ -36,6 +36,14 @@
     self.backgroundColor = [UIColor whiteColor];
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
+    [self addSubview:headerBGView];
+    [headerBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.height.mas_equalTo(176 * scale);
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(44 * scale);
+    }];
+    
     self.headerImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [self addSubview:self.headerImageView];
     [self.headerImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -46,6 +54,18 @@
     self.headerImageView.layer.cornerRadius = 144 * scale / 2;
     self.headerImageView.layer.masksToBounds = YES;
     [self.headerImageView sd_setImageWithURL:[NSURL URLWithString:[UserManager shareManager].user.portraituri]];
+    
+    if ([UserManager shareManager].user.bloggerFlg == 1) {
+        UIImageView * bozhuImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+        [bozhuImageView setImage:[UIImage imageNamed:@"bozhuTag"]];
+        [self addSubview:bozhuImageView];
+        [bozhuImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.headerImageView.mas_bottom).offset(-15 * scale);
+            make.width.mas_equalTo(150 * scale);
+            make.height.mas_equalTo(42 * scale);
+            make.centerX.mas_equalTo(self.headerImageView);
+        }];
+    }
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     self.nameLabel.text = [UserManager shareManager].user.nickname;

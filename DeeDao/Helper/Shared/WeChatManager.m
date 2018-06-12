@@ -8,7 +8,9 @@
 
 #import "WeChatManager.h"
 #import "MBProgressHUD+DDHUD.h"
-#import "ShareImageItem.h"
+#import "ShareImageModel.h"
+#import <AFHTTPSessionManager.h>
+#import <UIImageView+WebCache.h>
 #import <Social/Social.h>
 
 #define KCompressibilityFactor 1280.00  
@@ -20,6 +22,8 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 
 @property (nonatomic, strong) SLComposeViewController * slCompose;
 
+@property (nonatomic, copy) NSString * miniProgramToken;
+
 @end
 
 @implementation WeChatManager
@@ -30,6 +34,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     static WeChatManager * instance;
     dispatch_once(&once, ^{
         instance = [[self alloc] init];
+        [instance getMiniProgramAccessToken];
     });
     return instance;
 }
@@ -46,63 +51,54 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 
 - (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController
 {
-//    BOOL ret = [SLComposeViewController isAvailableForServiceType:@"com.tencent.xin.sharetimeline"];
-//
-//    self.slCompose = [SLComposeViewController composeViewControllerForServiceType:@"com.tencent.xin.sharetimeline"];
-//    if (!self.slCompose) {
-//        [MBProgressHUD showTextHUDWithText:@"系统错误" inView:viewController.view];
-//        return;
-//    }
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
     
     NSMutableArray * shareItems = [[NSMutableArray alloc] init];
+    __block NSInteger count = 0;
     for (NSInteger i = 0; i < images.count; i++) {
-//        NSString * path = [NSString stringWithFormat:@"%@/TimeLine%ld.jpg", DDDocumentPath, i];
         
-        UIImage * image = [self getJPEGImagerImg:[images objectAtIndex:i]];
-        UIImage * result = [self image:image addTitle:@"测试加文字测试加文字测试加文字测试加文字测试加文字测试加文字" text:@"" codeImage:nil];
-//        BOOL ret = [UIImagePNGRepresentation(image) writeToFile:path atomically:YES];
-//        if (ret) {
-//            NSLog(@"写入成功%@", path);
-//        }else{
-//            NSLog(@"写入失败%@", path);
-//        }
-//        ShareImageItem * item = [[ShareImageItem alloc] initWithData:image andFile:[NSURL URLWithString:path]];
-        [shareItems addObject:result];
+        ShareImageModel * model = [images objectAtIndex:i];
+        UIImage * bgImage = [self getJPEGImagerImg:model.image];
         
-//        [self.slCompose addURL:[NSURL URLWithString:@"http://www.baidu.com"]];
-    }
-//    [viewController presentViewController:self.slCompose animated:YES completion:^{
-//
-//    }];
-//    self.slCompose.completionHandler = ^(SLComposeViewControllerResult result) {
-//
-//    };
-    
-    UIActivityViewController * activityView = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
-    activityView.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
-        if (activityError) {
-            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
-        }else{
-            if (completed) {
-                [MBProgressHUD showTextHUDWithText:@"分享成功" inView:viewController.view];
-                [viewController dismissViewControllerAnimated:YES completion:nil];
-            }else{
-                [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
+            model.codeImage = image;
+            
+            UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.pflg];
+            [shareItems addObject:[self getJPEGImagerImg:result]];
+            
+            count++;
+            if (count == images.count) {
+                [hud hideAnimated:YES];
+                UIActivityViewController * activityView = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
+                activityView.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
+                    if (activityError) {
+                        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                    }else{
+                        if (completed) {
+                            [MBProgressHUD showTextHUDWithText:@"分享成功" inView:viewController.view];
+                            [viewController dismissViewControllerAnimated:YES completion:nil];
+                        }else{
+                            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                        }
+                    }
+                };
+                
+                [viewController presentViewController:activityView animated:YES completion:nil];
             }
-        }
-    };
-
-    [viewController presentViewController:activityView animated:YES completion:nil];
+            
+        }];
+        
+    }
 }
 
-- (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image
+- (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image isShare:(BOOL)isShare
 {
-    self.isShare = YES;
+    self.isShare = isShare;
     
     WXMiniProgramObject * program = [WXMiniProgramObject object];
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
-    program.path = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", postID];
+    program.path = [NSString stringWithFormat:@"pages/index/index?postId=%ld", postID];
     program.miniProgramType = WXMiniProgramTypeTest;
     
     NSData*  data = [NSData data];
@@ -131,24 +127,221 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     [WXApi sendReq:req];
 }
 
-#pragma mark - 向图片中添加文字和小程序码
-- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage
+- (void)shareMiniProgramWithUser:(UserModel *)model
 {
-    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    WXMiniProgramObject * program = [WXMiniProgramObject object];
+    program.webpageUrl = @"http://www.deedao.com";
+    program.userName = @"gh_3714b00f2a4c";
+    program.path = [NSString stringWithFormat:@"pages/index/index?authorId=%ld", model.cid];
+    program.miniProgramType = WXMiniProgramTypeTest;
     
-    CGFloat fontSize = 17.f / kMainBoundsWidth * image.size.width;
-    CGFloat contentHeight = fontSize * 7.f;
-    CGFloat originY = image.size.height - contentHeight;
-    CGFloat labelHeight = 20.f / kMainBoundsWidth * image.size.width;
-    CGFloat topMargin = 15.f / kMainBoundsWidth * image.size.width;
-    CGFloat leftMargin = 25.f / kMainBoundsWidth * image.size.width;
-    CGFloat rightMargin = 110.f / kMainBoundsWidth * image.size.width;
+    UIImage * image = [self imageWithModel:model];
     
-    [title drawInRect:CGRectMake(leftMargin, topMargin, image.size.width - leftMargin - rightMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xFFFFFF)}];
+    NSData*  data = [NSData data];
+    data = UIImageJPEGRepresentation(image, 1);
+    float tempX = 0.9;
+    NSInteger length = data.length;
+    while (data.length > 127*1024) {
+        data = UIImageJPEGRepresentation(image, tempX);
+        tempX -= 0.1;
+        if (data.length == length) {
+            break;
+        }
+        length = data.length;
+    }
+    
+    program.hdImageData = data;
+    
+    WXMediaMessage * mediaMessage = [WXMediaMessage message];
+    mediaMessage.title = @"DeeDao地到";
+    mediaMessage.description = model.nickname;
+    mediaMessage.mediaObject = program;
+    mediaMessage.thumbData = nil;
+    
+    SendMessageToWXReq * req = [[SendMessageToWXReq alloc] init];
+    req.message = mediaMessage;
+    req.scene = WXSceneSession;
+    [WXApi sendReq:req];
+}
+
+#pragma mark - 获取用户的名片图片
+- (UIImage *)imageWithModel:(UserModel *)model
+{
+    UIImage * BGImage = [UIImage imageNamed:@"miniProgramBG"];
+    CGFloat width = BGImage.size.width;
+    CGFloat height = BGImage.size.height;
+    
+    UIImage * logoImage = [[SDImageCache sharedImageCache] imageFromCacheForKey:model.portraituri];
+    logoImage = [self clipUserLogo:logoImage];
+    
+    UIGraphicsBeginImageContextWithOptions(BGImage.size, NO, [UIScreen mainScreen].scale);
+    
+    [BGImage drawInRect:CGRectMake(0, 0, width, height)];
+    
+    CGFloat originY = height / 5;
+    CGFloat logoWidth = height / 4;
+    CGFloat originX = (width - logoWidth) / 2;
+    
+    CGFloat titleSize = logoWidth / 5 * 2;
+    NSString * name = model.nickname;
+    NSString * city = @"";
+    if (!isEmptyString(model.country)) {
+        city = [city stringByAppendingString:model.country];
+    }
+    if (!isEmptyString(model.province)) {
+        city = [city stringByAppendingString:model.province];
+    }
+    if (!isEmptyString(model.city)) {
+        city = [city stringByAppendingString:model.city];
+    }
+    
+    NSMutableParagraphStyle* style = [[NSMutableParagraphStyle alloc] init];
+    [style setAlignment:NSTextAlignmentCenter];
+    [name drawInRect:CGRectMake(0, originY + logoWidth + titleSize/3, width, height) withAttributes:@{NSFontAttributeName:kPingFangMedium(titleSize), NSForegroundColorAttributeName:UIColorFromRGB(0xFFFFFF), NSParagraphStyleAttributeName:style}];
+    
+    NSMutableParagraphStyle* style2 = [[NSMutableParagraphStyle alloc] init];
+    [style2 setAlignment:NSTextAlignmentCenter];
+    [city drawInRect:CGRectMake(0, originY + logoWidth + titleSize +titleSize/2, width, height) withAttributes:@{NSFontAttributeName:kPingFangLight(titleSize/3*2), NSForegroundColorAttributeName:UIColorFromRGB(0xFFFFFF), NSParagraphStyleAttributeName:style2}];
+    
+    [logoImage drawInRect:CGRectMake(originX, originY, logoWidth, logoWidth)];
     
     UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return resultImage;
+}
+
+- (UIImage *)clipUserLogo:(UIImage *)image
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    //绘制边框的圆
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextAddEllipseInRect(context, CGRectMake(0, 0, image.size.width, image.size.height));
+    
+    //剪切可视范围
+    CGContextClip(context);
+    
+    [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+    
+    UIImage *iconImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return iconImage;
+}
+
+#pragma mark - 向图片中添加文字和小程序码
+- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage pflg:(BOOL)pflag
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+    
+    CGFloat fontSize = 15.f / kMainBoundsWidth * width;
+    CGFloat contentHeight = 120.f / kMainBoundsWidth * width;
+    CGFloat originY = image.size.height - contentHeight;
+    CGFloat labelHeight = 20.f / kMainBoundsWidth * width;
+    CGFloat topMargin = 55.f / kMainBoundsWidth * width;
+    
+    if (pflag) {
+        topMargin = 45.f / kMainBoundsWidth * width;
+    }
+    
+    CGFloat leftMargin = 15.f / kMainBoundsWidth * width;
+    //    CGFloat rightMargin = 110.f / kMainBoundsWidth * width;
+    
+    CGFloat logoWidth = 70.f / kMainBoundsWidth * width;
+    CGFloat logoTopMargin = 10.f / kMainBoundsWidth * width;
+    //    CGFloat logoRightMargin = 100.f / kMainBoundsWidth * width;
+    //    CGFloat logoFontSize = 15.f / kMainBoundsWidth * width;
+    
+    [image drawInRect:CGRectMake(0, 0, width, height)];
+    
+    UIImage * logoImage = [UIImage imageNamed:@"letterLogo"];
+    [logoImage drawInRect:CGRectMake(width - leftMargin - logoWidth, leftMargin, logoWidth, 36.f / 50.f * logoWidth)];
+    
+    UIImage * coverImage = [UIImage imageNamed:@"wxCover"];
+    [coverImage drawInRect:CGRectMake(0, originY, width, contentHeight)];
+    
+    [title drawInRect:CGRectMake(leftMargin + logoWidth + leftMargin, originY + topMargin, width - leftMargin - logoWidth - leftMargin - leftMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangRegular(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
+    
+    [text drawInRect:CGRectMake(leftMargin + logoWidth + leftMargin, originY + topMargin + fontSize + fontSize / 4 * 3, width - leftMargin - logoWidth - leftMargin - leftMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangRegular(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
+    
+    UIImage * codeDefaultImage = codeImage;
+    if (nil == codeDefaultImage) {
+        codeDefaultImage = [UIImage imageNamed:@"gongzhongCode"];
+    }
+    [codeDefaultImage drawInRect:CGRectMake(leftMargin, height - logoTopMargin - logoWidth, logoWidth, logoWidth)];
+    
+    if (pflag) {
+        NSString * flagTitle = @"到地体验更多精彩";
+        [flagTitle drawInRect:CGRectMake(leftMargin + logoWidth + leftMargin, originY + topMargin + fontSize + fontSize + fontSize, width - leftMargin - logoWidth - leftMargin - leftMargin, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangRegular(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
+    }
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultImage;
+}
+
+- (void)getMiniProgramAccessToken
+{
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.requestSerializer.timeoutInterval = 15.f;
+    [manager GET:@"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5765078c1f5bb0f6&secret=3dceca0d57bee7e9a25bc60ea8a3d0d4" parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseObject options:kNilOptions error:nil];
+        if (KIsDictionary(dict)) {
+            self.miniProgramToken = [dict objectForKey:@"access_token"];
+            NSInteger expires = [[dict objectForKey:@"expires_in"] integerValue];
+            [self performSelector:@selector(getMiniProgramAccessToken) withObject:nil afterDelay:expires - 15];
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
+}
+
+- (void)getMiniProgromCodeWithPostID:(NSInteger)postID handle:(void (^)(UIImage *))handle
+{
+    if (isEmptyString(self.miniProgramToken)) {
+        return;
+    }
+    
+    NSString * urlStr = [NSString stringWithFormat:@"https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%@", self.miniProgramToken];
+    
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.requestSerializer.timeoutInterval = 15.f;
+    
+    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"postId/%ld", postID],
+                                      @"page" :@"pages/index/index",
+                                      @"width":@(430)
+                                      } progress:^(NSProgress * _Nonnull uploadProgress) {
+                                          
+                                      } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                                          
+                                          UIImage * image = [UIImage imageWithData:responseObject];
+                                          if (image) {
+                                              
+                                              if (handle) {
+                                                  handle(image);
+                                              }
+                                              
+                                          }else{
+                                              if (handle) {
+                                                  handle(nil);
+                                              }
+                                          }
+                                          
+                                      } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                                          if (handle) {
+                                              handle(nil);
+                                          }
+                                      }];
 }
 
 #pragma mark - 压缩多张图片 最大宽高1280 类似于微信算法
@@ -210,6 +403,14 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     }else {
         
     }
+}
+
+- (NSMutableArray *)titleList
+{
+    if (!_titleList) {
+        _titleList = [[NSMutableArray alloc] init];
+    }
+    return _titleList;
 }
 
 @end

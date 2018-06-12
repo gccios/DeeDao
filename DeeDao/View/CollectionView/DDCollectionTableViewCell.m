@@ -31,6 +31,9 @@
 @property (nonatomic, strong) UILabel * lastLabel;
 
 @property (nonatomic, strong) UIVisualEffectView * effectView;
+@property (nonatomic, strong) UIView * coverView;
+
+@property (nonatomic, strong) DTieModel * dtieModel;
 
 @end
 
@@ -50,11 +53,12 @@
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    self.baseImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"test"]];
+    self.baseImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"imageKong"]];
     [self.contentView addSubview:self.baseImageView];
     [self.baseImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
+    self.baseImageView.clipsToBounds = YES;
     
     self.firstReadView = [[UIView alloc] init];
     [self.contentView addSubview:self.firstReadView];
@@ -132,22 +136,64 @@
     self.baseImageView.userInteractionEnabled = YES;
     [self.baseImageView addGestureRecognizer:longPress];
     
-    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
-    self.effectView.alpha = .98f;
-    [self.contentView addSubview:self.effectView];
-    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.coverView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.contentView addSubview:self.coverView];
+    [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(24 * scale);
         make.left.right.mas_equalTo(0);
         make.bottom.mas_equalTo(-24 * scale);
     }];
-    self.effectView.hidden = YES;
+    self.coverView.hidden = YES;
+    
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    self.effectView.alpha = .98f;
+    [self.coverView addSubview:self.effectView];
+    [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    UIImageView * deedaoImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    deedaoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [deedaoImageView setImage:[UIImage imageNamed:@"Dtie"]];
+    [self.coverView addSubview:deedaoImageView];
+    [deedaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(-30 * scale);
+        make.width.height.mas_equalTo(150 * scale);
+    }];
+    
+    UILabel * deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    deedaoLabel.font = kPingFangMedium(42 * scale);
+    deedaoLabel.text = @"到 地 体 验";
+    deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    [self.coverView addSubview:deedaoLabel];
+    [deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(70 * scale);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
 }
 
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
 {
     if (self.playImageView.isHidden) {
-         [[DDShareManager shareManager] showHandleViewWithImage:self.baseImageView.image];
+        ShareImageModel * model = [[ShareImageModel alloc] init];
+        NSInteger postId = self.dtieModel.cid;
+        if (postId == 0) {
+            postId = self.dtieModel.postId;
+        }
+        model.postId = postId;
+        model.image = self.baseImageView.image;
+        model.title = self.dtieModel.postSummary;
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
+        NSArray * tempArray = [self.dtieModel.details filteredArrayUsingPredicate:predicate];
+        if (tempArray && tempArray.count > 0) {
+            model.pflg = 1;
+        }
+         [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }
 
@@ -161,7 +207,7 @@
         self.baseImageView.hidden = NO;
         
         if (isEmptyString(model.detailContent)) {
-            [self.baseImageView setImage:[UIImage imageNamed:@"test"]];
+            [self.baseImageView setImage:[UIImage imageNamed:@"imageKong"]];
         }else{
             [self.baseImageView sd_setImageWithURL:[NSURL URLWithString:[DDTool getImageURLWithHtml:model.detailContent]]];
         }
@@ -178,8 +224,9 @@
     }
 }
 
-- (void)configWithModel:(DTieEditModel *)model Dtie:(id)dtieModel
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
+    self.dtieModel = dtieModel;
     self.playImageView.hidden = YES;
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
         [self.baseImageView setImage:[UIImage new]];
@@ -192,9 +239,21 @@
             
         }
         
-        if (model.type == DTieEditType_Video) {
+        if (model.type == DTieEditType_Image) {
+            self.baseImageView.contentMode = UIViewContentModeScaleAspectFit;
+            [self.baseImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.edges.mas_equalTo(0);
+            }];
+        }else{
+            self.baseImageView.contentMode = UIViewContentModeScaleAspectFill;
             self.playImageView.hidden = NO;
+            [self.baseImageView mas_remakeConstraints:^(MASConstraintMaker *make) {
+                make.left.right.mas_equalTo(0);
+                make.center.mas_equalTo(0);
+                make.height.mas_equalTo(self.baseImageView.mas_width).multipliedBy(9.f / 16.f);
+            }];
         }
+        
         
     }else if (model.type == DTieEditType_Text){
         self.firstReadView.hidden = YES;
@@ -205,10 +264,10 @@
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
         self.baseImageView.userInteractionEnabled = YES;
-        self.effectView.hidden = YES;
+        self.coverView.hidden = YES;
     }else{
         self.baseImageView.userInteractionEnabled = NO;
-        self.effectView.hidden = NO;
+        self.coverView.hidden = NO;
     }
 }
 

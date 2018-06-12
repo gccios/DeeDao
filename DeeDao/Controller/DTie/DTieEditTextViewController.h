@@ -12,6 +12,8 @@
 
 - (void)DTEditTextDidFinished:(NSString *)text;
 
+- (void)DTEditTextDidCancle;
+
 @end
 
 @interface DTieEditTextViewController : DDViewController

@@ -256,7 +256,7 @@
 //        make.width.mas_equalTo(kMainBoundsWidth - 120 * scale);
 //    }];
 //
-//    UIButton * addSeriButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"将当前D贴加入已有系列或新建系列中"];
+//    UIButton * addSeriButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"将当前D帖加入已有系列或新建系列中"];
 //    [footerView addSubview:addSeriButton];
 //    [addSeriButton mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.top.mas_equalTo(line1.mas_bottom);
@@ -366,7 +366,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = self.model.postSummary;
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

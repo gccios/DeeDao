@@ -201,8 +201,13 @@
 
 - (void)shareButtonDidClicked
 {
-    self.model.shareEnable = !self.model.shareEnable;
-    if (self.model.shareEnable) {
+    if (self.model.shareEnable == 0) {
+        self.model.shareEnable = 1;
+    }else{
+        self.model.shareEnable = 0;
+    }
+    
+    if (self.model.shareEnable == 1) {
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
     }else{
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];

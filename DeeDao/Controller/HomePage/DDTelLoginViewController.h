@@ -15,6 +15,8 @@ typedef enum : NSUInteger {
 
 @interface DDTelLoginViewController : DDViewController
 
+@property (nonatomic, copy) void (^loginSucess)(void);
+
 - (instancetype)initWithDDTelLoginType:(DDTelLoginPageType)type;
 
 @end

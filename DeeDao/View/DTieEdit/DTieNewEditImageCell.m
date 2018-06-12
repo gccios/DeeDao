@@ -12,6 +12,7 @@
 #import <UIImageView+WebCache.h>
 #import "DDShareManager.h"
 #import "MBProgressHUD+DDHUD.h"
+#import <WXApi.h>
 
 @interface DTieNewEditImageCell()
 
@@ -63,7 +64,7 @@
         [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseno"]];
     }
     
-    if (self.model.shareEnable) {
+    if (self.model.shareEnable == 1) {
         self.shareEnbale = YES;
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
     }else{
@@ -143,6 +144,10 @@
         make.height.mas_equalTo(120 * scale);
     }];
     
+    if (![WXApi isWXAppInstalled]) {
+        self.shareButton.hidden = YES;
+    }
+    
     self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     self.shareLabel.text = @"微信分享";
     [self.shareButton addSubview:self.shareLabel];
@@ -195,15 +200,20 @@
 
 - (void)shareButtonDidClicked
 {
-    if (self.model.shareEnable == NO) {
+    if (self.model.shareEnable == 0) {
         if ([DDShareManager shareManager].editShareCount >= 9) {
             [MBProgressHUD showTextHUDWithText:@"最多只能分享九张图片" inView:[UIApplication sharedApplication].keyWindow];
             return;
         }
     }
     
-    self.model.shareEnable = !self.model.shareEnable;
-    if (self.model.shareEnable) {
+    if (self.model.shareEnable == 0) {
+        self.model.shareEnable = 1;
+    }else{
+        self.model.shareEnable = 0;
+    }
+    
+    if (self.model.shareEnable == 1) {
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
         [DDShareManager shareManager].editShareCount += 1;
     }else{

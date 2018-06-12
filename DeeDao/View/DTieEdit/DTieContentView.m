@@ -24,6 +24,7 @@
 #import "LookImageViewController.h"
 #import <AVKit/AVKit.h>
 #import "DDShareManager.h"
+#import <WXApi.h>
 
 @interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate>
 
@@ -72,7 +73,7 @@
 #pragma mark - 时间和地点的选择
 - (void)timeViewDidTap
 {
-    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+    [self endEdit];
     [self.datePicker showDateTimePickerViewWithDate:[NSDate dateWithTimeIntervalSince1970:self.createTime/1000]];
 }
 
@@ -86,7 +87,7 @@
 
 - (void)chooseLocation
 {
-    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+    [self endEdit];
     DTieChooseLocationController * chosse = [[DTieChooseLocationController alloc] init];
     if (self.choosePOI) {
         chosse.startPoi = self.choosePOI;
@@ -105,6 +106,8 @@
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
 {
 //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在处理图片" inView:self.parentDDViewController.view];
+    
+    BOOL isWXInstall = [WXApi isWXAppInstalled];
     
     NSMutableArray * models = [[NSMutableArray alloc] init];
     for (NSInteger i = 0; i < photos.count; i++) {
@@ -126,10 +129,13 @@
         
         DTieEditModel * model = [[DTieEditModel alloc] init];
         model.type = DTieEditType_Image;
+        if (isWXInstall) {
+            model.shareEnable = 1;
+        }
         model.image = [UIImage imageWithData:data];
         
         if ([DDShareManager shareManager].editShareCount >= 9) {
-            model.shareEnable = NO;
+            model.shareEnable = 0;
         }else{
             [DDShareManager shareManager].editShareCount += 1;
         }
@@ -166,6 +172,7 @@
         [weakCamera dismissViewControllerAnimated:YES completion:nil];
         DTieEditModel * model = [[DTieEditModel alloc] init];
         model.type = DTieEditType_Video;
+        model.shareEnable = 0;
         model.image = thumbnailImage;
         model.videoURL = videoUrl;
         
@@ -195,6 +202,10 @@
             [self.tableView beginUpdates];
             [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.insertIndex-1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
             [self.tableView endUpdates];
+        }else{
+            self.currentModel.detailsContent = text;
+            NSInteger index = [self.modleSources indexOfObject:self.currentModel];
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
         }
         
     }else{
@@ -204,6 +215,7 @@
         }else{
             DTieEditModel * model = [[DTieEditModel alloc] init];
             model.type = DTieEditType_Text;
+            model.shareEnable = 0;
             model.detailContent = text;
             
             [self.modleSources insertObject:model atIndex:self.insertIndex];
@@ -212,6 +224,11 @@
             [self.tableView endUpdates];
         }
     }
+    self.currentModel = nil;
+}
+
+- (void)DTEditTextDidCancle
+{
     self.currentModel = nil;
 }
 
@@ -225,6 +242,8 @@
 //展示进行选择添加项
 - (void)showChooseViewWithButton:(UIButton *)button insertIndex:(NSInteger)insertIndex;
 {
+    [self endEdit];
+    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.chooseButton = button;
@@ -388,6 +407,9 @@
         make.edges.mas_equalTo(0);
     }];
     
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(endEdit)];
+    [self.tableView addGestureRecognizer:tap];
+    
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
     
     UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
@@ -452,7 +474,12 @@
     
     if (indexPath && indexPath.row < self.modleSources.count) {
         
-        [self.modleSources removeObjectAtIndex:indexPath.row];
+        DTieEditModel * model = [self.modleSources objectAtIndex:indexPath.row];
+        if (model.shareEnable) {
+            [DDShareManager shareManager].editShareCount--;
+        }
+        
+        [self.modleSources removeObject:model];
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
         [self.tableView endUpdates];
@@ -602,6 +629,7 @@
     cell.preViewHandle = ^{
         
         DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:weakCell.model.detailsContent placeholder:@"请输入文字"];
+        weakSelf.currentModel = model;
         text.delegate = self;
         [weakSelf.parentDDViewController presentViewController:text animated:YES completion:nil];
     };
@@ -636,6 +664,13 @@
         _modleSources = [[NSMutableArray alloc] init];
     }
     return _modleSources;
+}
+
+- (void)endEdit
+{
+    if (self.titleTextField.isFirstResponder) {
+        [self.titleTextField resignFirstResponder];
+    }
 }
 
 //- (TZImagePickerController *)picker

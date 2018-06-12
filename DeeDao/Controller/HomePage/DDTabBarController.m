@@ -42,7 +42,7 @@
     
     DDDTieViewController * DTie = [[DDDTieViewController alloc] init];
     DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:DTie];
-    UITabBarItem * tabBarItem1 = [self tabBarItemWithImageName:@"Dtie" selectName:@"DtieSelect" title:@"D贴"];
+    UITabBarItem * tabBarItem1 = [self tabBarItemWithImageName:@"Dtie" selectName:@"DtieSelect" title:@"D帖"];
     [na setTabBarItem:tabBarItem1];
     [vcArray addObject:na];
     

@@ -56,7 +56,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    self.baseImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"test"]];
+    self.baseImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"shuBG"]];
     [self.baseView addSubview:self.baseImageView];
     [self.baseImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
@@ -89,9 +89,12 @@
 
 - (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag
 {
-    [self.dataSource removeAllObjects];
+    self.request = nil;
+    self.tableView.hidden = YES;
+    
     self.tableView.tag = tag;
     self.isFirstRead = YES;
+    
     [self.baseImageView setImage:[UIImage new]];
     [self.baseImageView sd_cancelCurrentAnimationImagesLoad];
     [self.baseImageView sd_cancelCurrentImageLoad];
@@ -127,7 +130,6 @@
         return;
     }
     
-    self.tableView.hidden = YES;
 //    [DTieDetailRequest cancelRequest];
     
     NSInteger postID = model.postId;

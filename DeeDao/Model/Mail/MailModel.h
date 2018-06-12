@@ -23,6 +23,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) NSString * portraitUri;
 @property (nonatomic, copy) NSString * nickName;
 
+@property (nonatomic, copy) NSString * postFirstPicture;
+@property (nonatomic, assign) NSInteger postId;
 @property (nonatomic, assign) NSInteger createPerson;
 @property (nonatomic, assign) NSInteger createTime;
 @property (nonatomic, assign) NSInteger deleteFlg;
@@ -39,6 +41,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger mailTypeId;
 @property (nonatomic, copy) NSString * mailUrl;
 @property (nonatomic, assign) NSInteger updatePerson;
+@property (nonatomic, copy) NSString * mailPostSummary;
 @property (nonatomic, assign) NSInteger updateTime;
 
 + (NSString *)getTitleWithMailTypeId:(NSInteger)typeId;

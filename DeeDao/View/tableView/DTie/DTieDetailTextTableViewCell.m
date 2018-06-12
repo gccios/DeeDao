@@ -10,12 +10,15 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import "DDLocationManager.h"
+#import "UserManager.h"
 
 @interface DTieDetailTextTableViewCell ()
 
 @property (nonatomic, strong) UILabel * detailLabel;
 
+@property (nonatomic, strong) UIImageView * quanxianImageView;
 @property (nonatomic, strong) UIVisualEffectView * effectView;
+@property (nonatomic, strong) UIView * coverView;
 
 @end
 
@@ -45,17 +48,53 @@
         make.bottom.mas_equalTo(-24 * scale);
     }];
     
+    self.coverView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.detailLabel addSubview:self.coverView];
+    [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.coverView.hidden = YES;
+    
     UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
     self.effectView = [[UIVisualEffectView alloc] initWithEffect:effect];
     self.effectView.alpha = .98f;
-    [self.contentView addSubview:self.effectView];
+    [self.coverView addSubview:self.effectView];
     [self.effectView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-24 * scale);
+        make.edges.mas_equalTo(0);
     }];
-    self.effectView.hidden = YES;
+    
+    UIImageView * deedaoImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    deedaoImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [deedaoImageView setImage:[UIImage imageNamed:@"Dtie"]];
+    [self.coverView addSubview:deedaoImageView];
+    [deedaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(-30 * scale);
+        make.width.height.mas_equalTo(150 * scale);
+    }];
+    
+    UILabel * deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    deedaoLabel.font = kPingFangMedium(42 * scale);
+    deedaoLabel.text = @"到 地 体 验";
+    deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    [self.coverView addSubview:deedaoLabel];
+    [deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.centerY.mas_equalTo(70 * scale);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    self.quanxianImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    [self.quanxianImageView setImage:[UIImage imageNamed:@"zuozhewx"]];
+    [self.contentView addSubview:self.quanxianImageView];
+    [self.quanxianImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.detailLabel.mas_bottom);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    self.quanxianImageView.hidden = YES;
 }
 
 - (void)configWithCanSee:(BOOL)cansee
@@ -85,9 +124,12 @@
     self.detailLabel.attributedText = attributeStr;
 }
 
-- (void)configWithModel:(DTieEditModel *)model Dtie:(id)dtieModel
+- (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
     NSString * text = model.detailContent;
+    if (isEmptyString(text)) {
+        text = model.detailsContent;
+    }
     
     NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
     paraStyle.lineBreakMode = NSLineBreakByCharWrapping;
@@ -107,9 +149,42 @@
     self.detailLabel.attributedText = attributeStr;
     
     if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-        self.effectView.hidden = YES;
+        self.coverView.hidden = YES;
     }else{
-        self.effectView.hidden = NO;
+        self.coverView.hidden = NO;
+    }
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if (dtieModel.authorId == [UserManager shareManager].user.cid) {
+        
+        NSString * imageName = @"";
+        if (model.wxCanSee == 1 || model.shareEnable == 1) {
+            imageName = @"zuozhewx";
+            if (model.pFlag == 1) {
+                imageName = @"zuozhewxdd";
+            }
+        }else if (model.pFlag == 1) {
+            imageName = @"zuozhedd";
+        }
+        
+        if (isEmptyString(imageName)) {
+            self.quanxianImageView.hidden = YES;
+        }else{
+            [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
+            self.quanxianImageView.hidden = NO;
+        }
+        if (isEmptyString(imageName)) {
+            [self.detailLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-24 * scale);
+            }];
+            self.quanxianImageView.hidden = YES;
+        }else{
+            [self.detailLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.bottom.mas_equalTo(-96 * scale);
+            }];
+            [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
+            self.quanxianImageView.hidden = NO;
+        }
     }
 }
 

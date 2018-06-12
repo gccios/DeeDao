@@ -30,6 +30,7 @@
 @property (nonatomic, copy) NSString * phone;
 @property (nonatomic, copy) NSString * signature;
 @property (nonatomic, strong) NSArray * postBeanList;
+@property (nonatomic, assign) NSInteger bloggerFlg;
 
 @property (nonatomic, copy) NSString * firstLetter;
 

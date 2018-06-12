@@ -18,21 +18,46 @@
         
         self.methodName = @"post/savePost";
         self.httpMethod = BGNetworkRequestHTTPPost;
-        [self setValue:address forParamKey:@"createAddress"];
-        [self setValue:address forParamKey:@"createBuilding"];
-        [self setDoubleValue:addressLng forParamKey:@"createAddressLng"];
-        [self setDoubleValue:addressLat forParamKey:@"createAddressLat"];
-        [self setValue:title forParamKey:@"postSummary"];
-        [self setValue:array forParamKey:@"postDetailList"];
+        
+        if (isEmptyString([DDLocationManager shareManager].result.address)) {
+            [self setValue:@"" forParamKey:@"createAddress"];
+            [self setValue:@"" forParamKey:@"createBuilding"];
+        }else{
+            [self setValue:[DDLocationManager shareManager].result.address forParamKey:@"createAddress"];
+            [self setValue:[DDLocationManager shareManager].result.address forParamKey:@"createBuilding"];
+        }
+        
+        [self setDoubleValue:[DDLocationManager shareManager].result.location.longitude forParamKey:@"createAddressLng"];
+        [self setDoubleValue:[DDLocationManager shareManager].result.location.latitude forParamKey:@"createAddressLat"];
+        
+        if (!isEmptyString(address)) {
+            [self setValue:address forParamKey:@"sceneAddress"];
+            [self setValue:address forParamKey:@"sceneBuilding"];
+        }
+        [self setDoubleValue:addressLng forParamKey:@"sceneAddressLng"];
+        [self setDoubleValue:addressLat forParamKey:@"sceneAddressLat"];
+        
+        if (!isEmptyString(title)) {
+            [self setValue:title forParamKey:@"postSummary"];
+        }
+        if (array) {
+            [self setValue:array forParamKey:@"postDetailList"];
+        }
+        if (!isEmptyString(firstPic)) {
+            [self setValue:firstPic forParamKey:@"postFirstPicture"];
+        }
+        
         [self setValue:@[@(addressLng),@(addressLat)] forParamKey:@"position"];
         [self setIntegerValue:status forParamKey:@"status"];
         [self setIntegerValue:remindFlg forParamKey:@"remindFlg"];
-        [self setValue:firstPic forParamKey:@"postFirstPicture"];
         [self setIntegerValue:5 forParamKey:@"postTypeId"];
         [self setIntegerValue:landAccountFlg forParamKey:@"landAccountFlg"];
+        [self setIntegerValue:1 forParamKey:@"remindFlg"];
         
         NSString * sceneTimeStr = [DDTool getTimeWithFormat:@"yyyy-MM-dd HH:mm" time:sceneTime];
-        [self setValue:sceneTimeStr forParamKey:@"sceneTime"];
+        if (!isEmptyString(sceneTimeStr)) {
+            [self setValue:sceneTimeStr forParamKey:@"sceneTime"];
+        }
         
         if (allowToSeeList) {
             [self setValue:allowToSeeList forParamKey:@"allowToSeeList"];

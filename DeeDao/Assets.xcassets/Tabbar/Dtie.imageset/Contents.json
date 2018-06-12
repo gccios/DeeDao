@@ -2,10 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
+      "filename" : "Dtie.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
+      "filename" : "Dtie@2x.png",
       "scale" : "2x"
     },
     {

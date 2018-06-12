@@ -100,7 +100,7 @@
     coverView.layer.shadowOpacity = .2f;
     coverView.layer.shadowOffset = CGSizeMake(0, -12 * scale);
     
-    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [self.userView addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(30 * scale);
@@ -110,7 +110,7 @@
     [DDViewFactoryTool cornerRadius:96 * scale / 2 withView:self.logoImageView];
     
     self.InfoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-//    self.InfoLabel.text = @"分享了一个D贴/系列给你";
+//    self.InfoLabel.text = @"分享了一个D帖/系列给你";
     [self.userView addSubview:self.InfoLabel];
     [self.InfoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(25 * scale);

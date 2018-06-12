@@ -174,7 +174,7 @@
     }];
     
     UILabel * addLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-    addLabel.text = @"选择D贴加入系列";
+    addLabel.text = @"选择D帖加入系列";
     [addButton addSubview:addLabel];
     [addLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
@@ -288,7 +288,7 @@
     }
     
     if (self.dataSource.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"至少需要一个D贴" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"至少需要一个D帖" inView:self.view];
         return;
     }
     
@@ -393,7 +393,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"新增系列";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

@@ -117,15 +117,15 @@
                 
             }
         }
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         
     }];
 }
@@ -164,8 +164,8 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"添加D贴系列";
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
+    titleLabel.text = @"添加D帖系列";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

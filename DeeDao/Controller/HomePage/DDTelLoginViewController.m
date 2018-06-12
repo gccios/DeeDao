@@ -14,6 +14,7 @@
 #import "MBProgressHUD+DDHUD.h"
 #import "UserManager.h"
 #import "WeChatManager.h"
+#import "AgreementViewController.h"
 
 @interface DDTelLoginViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -119,6 +120,10 @@
                 [[UserManager shareManager] saveUserInfo];
                 
                 [self dismissViewControllerAnimated:YES completion:nil];
+                
+                if (self.loginSucess) {
+                    self.loginSucess();
+                }
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:DDUserDidLoginWithTelNumberNotification object:nil];
                 
@@ -338,6 +343,9 @@
         make.height.mas_equalTo(60 * scale);
         make.top.mas_equalTo(self.loginButton.mas_bottom).offset(250 * scale);
     }];
+    if (![WXApi isWXAppInstalled]) {
+        self.rightHandleButton.hidden = YES;
+    }
     
     self.forgetButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"忘记密码?"];
     
@@ -360,11 +368,14 @@
     [self.telNumberField addTarget:self action:@selector(textFieldValueDidChange) forControlEvents:UIControlEventEditingChanged];
     [self.codeField addTarget:self action:@selector(textFieldValueDidChange) forControlEvents:UIControlEventEditingChanged];
     [self.passwordField addTarget:self action:@selector(textFieldValueDidChange) forControlEvents:UIControlEventEditingChanged];
+    
+    [self agreementButtonDidClicked];
 }
 
 - (void)readButtonDidClicked
 {
-    
+    AgreementViewController * agreement = [[AgreementViewController alloc] init];
+    [self presentViewController:agreement animated:YES completion:nil];
 }
 
 - (void)textFieldValueDidChange

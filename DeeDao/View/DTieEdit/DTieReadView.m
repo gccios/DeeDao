@@ -25,6 +25,11 @@
 #import "LookImageViewController.h"
 #import "DDDazhaohuView.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DTiePOIViewController.h"
+#import "JubaoRequest.h"
+#import "GetDtieSecurityRequest.h"
+#import "DTieSecurityViewController.h"
+#import "DDTool.h"
 
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
@@ -145,13 +150,27 @@
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
 {
     if (self.parentDDViewController) {
-        [[DDShareManager shareManager] showHandleViewWithImage:self.firstImageView.image];
+        ShareImageModel * model = [[ShareImageModel alloc] init];
+        NSInteger postId = self.model.cid;
+        if (postId == 0) {
+            postId = self.model.postId;
+        }
+        model.postId = postId;
+        model.image = self.firstImageView.image;
+        model.title = self.model.postSummary;
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
+        NSArray * tempArray = [self.model.details filteredArrayUsingPredicate:predicate];
+        if (tempArray && tempArray.count > 0) {
+            model.pflg = 1;
+        }
+        [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }
 
 - (void)locationButtonDidClicked
 {
-    [[DDLocationManager shareManager] mapNavigationToLongitude:self.model.sceneAddressLng latitude:self.model.sceneAddressLat poiName:self.model.sceneAddress withViewController:self.parentDDViewController];
+    DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:self.model];
+    [self.parentDDViewController pushViewController:poi animated:YES];
 }
 
 - (void)dazhaohuButtonDidClicked
@@ -160,6 +179,12 @@
         [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self];
         return;
     }
+    
+    if (self.model.dzfFlg == 1) {
+        [MBProgressHUD showTextHUDWithText:@"您已经打过招呼了" inView:self.parentDDViewController.view];
+        return;
+    }
+    
     BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model];
     if (!canHandle) {
         [MBProgressHUD showTextHUDWithText:[NSString stringWithFormat:@"只能和%ld米之内的的帖子打招呼", [DDLocationManager shareManager].distance] inView:[UIApplication sharedApplication].keyWindow];
@@ -170,7 +195,7 @@
     view.block = ^(NSString *text) {
         self.dazhaohuButton.enabled = NO;
         
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:text];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:2 subType:1 remark:text];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -190,7 +215,26 @@
 
 - (void)jubaoButtonDidClicked
 {
+    if (self.isSelfFlg) {
+        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self];
+        return;
+    }
     
+    [JubaoRequest cancelRequest];
+    JubaoRequest * jubao = [[JubaoRequest alloc] initWithPostViewId:self.model.cid postComplaintContent:@"" complaintOwner:[UserManager shareManager].user.cid];
+    [jubao sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"举报成功，稍后我们会对内容进行核实" inView:self.parentDDViewController.view];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"举报失败" inView:self.parentDDViewController.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [MBProgressHUD showTextHUDWithText:@"举报失败" inView:self.parentDDViewController.view];
+        
+    }];
 }
 
 - (void)shoucangButtonDidClicked
@@ -203,7 +247,7 @@
     self.shoucangButton.enabled = NO;
     if (self.model.collectFlg) {
         
-        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:self.model.postId];
+        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:self.model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             self.model.collectFlg = 0;
@@ -218,7 +262,7 @@
         }];
         
     }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:0 remark:@""];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:0 subType:0 remark:@""];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -333,10 +377,13 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     DTieEditModel * model = [self.modelSources objectAtIndex:indexPath.row];
-    if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
+    
+    CGFloat height = 0.1f;
+    
+    if (model.type == DTieEditType_Image) {
         
         if (model.image) {
-            return [DDTool getHeightWithImage:model.image] + 48 * scale;
+            height = [DDTool getHeightWithImage:model.image] + 48 * scale;
         }else{
             UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
             
@@ -351,19 +398,27 @@
                     [self.tableView endUpdates];
                 }];
             }else{
-                return [DDTool getHeightWithImage:image] + 48 * scale;
+                height = [DDTool getHeightWithImage:image] + 48 * scale;
             }
         }
         
+    }else if (model.type == DTieEditType_Video){
+        
+        height = kMainBoundsWidth / 16.f * 9;
+        
+        
     }else if (model.type == DTieEditType_Text) {
         
-        CGFloat height = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 60 * scale;
-        
-        return height;
-        
+        height = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 60 * scale;
     }
     
-    return .1f;
+    if (self.isSelfFlg) {
+        if (model.wxCanSee == 1 || model.pFlag == 1 || model.shareEnable == 1) {
+            height += 72 * scale;
+        }
+    }
+    
+    return height;
 }
 
 - (void)createDTieReadView
@@ -393,16 +448,33 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIView * footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 315 * scale)];
+    UIView * footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 380 * scale)];
+    
+    UILabel * lastUpdateTimeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+    [footerView addSubview:lastUpdateTimeLabel];
+    if (self.model.updateTime > 0) {
+        lastUpdateTimeLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.updateTime]];
+    }else{
+        lastUpdateTimeLabel.text = @"最后更新时间：无";
+    }
+    [footerView addSubview:lastUpdateTimeLabel];
+    [lastUpdateTimeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(90 * scale);
+        make.top.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(50 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
     
     self.jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@"举报"];
     [self.jubaoButton setImage:[UIImage imageNamed:@"jubaono"] forState:UIControlStateNormal];
-    [footerView addSubview:self.jubaoButton];
-    [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(90 * scale);
-        make.top.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(75 * scale);
-    }];
+    if (!self.isSelfFlg) {
+        [footerView addSubview:self.jubaoButton];
+        [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(90 * scale);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }
     
     self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@"收藏+0"];
     [self.shoucangButton setTitle:[NSString stringWithFormat:@"收藏+%ld", self.model.collectCount] forState:UIControlStateNormal];
@@ -412,11 +484,19 @@
         [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
     }
     [footerView addSubview:self.shoucangButton];
-    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(0);
-        make.top.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(75 * scale);
-    }];
+    if (self.isSelfFlg) {
+        [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(90 * scale);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }else{
+        [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(0);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }
     
     self.woyaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@"我要约+0"];
     [self.woyaoyueButton setTitle:[NSString stringWithFormat:@"我要约+%ld", self.model.wyyCount] forState:UIControlStateNormal];
@@ -426,11 +506,31 @@
         [self.woyaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
     }
     [footerView addSubview:self.woyaoyueButton];
-    [self.woyaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-90 * scale);
-        make.top.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(75 * scale);
-    }];
+    if (self.isSelfFlg) {
+        [self.woyaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(0);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }else{
+        [self.woyaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-90 * scale);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }
+    
+    UIButton * seeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@"查看浏览权限"];
+    [seeButton setImage:[UIImage imageNamed:@"chakanquanxian"] forState:UIControlStateNormal];
+    if (self.isSelfFlg) {
+        [footerView addSubview:seeButton];
+        [seeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-90 * scale);
+            make.top.mas_equalTo(lastUpdateTimeLabel.mas_bottom).offset(40 * scale);
+            make.height.mas_equalTo(75 * scale);
+        }];
+    }
+    [seeButton addTarget:self action:@selector(seeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.liuyanButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.liuyanButton setBackgroundColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.3f]];
@@ -453,6 +553,73 @@
     }];
     
     self.tableView.tableFooterView = footerView;
+}
+
+- (void)seeButtonDidClicked
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.parentDDViewController.view];
+    GetDtieSecurityRequest * request = [[GetDtieSecurityRequest alloc] initWithModel:self.model];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        
+        NSMutableArray * modelList =  [[NSMutableArray alloc] init];
+        NSInteger accountFlg = self.model.landAccountFlg;
+        
+        SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+        model1.cid = -1;
+        model1.securitygroupName = @"所有朋友";
+        model1.securitygroupPropName = @"所有朋友可见";
+        model1.isChoose = YES;
+        model1.isNotification = YES;
+        
+        SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+        model2.cid = -2;
+        model2.securitygroupName = @"关注我的人";
+        model2.securitygroupPropName = @"关注我的人可见";
+        model2.isChoose = YES;
+        model2.isNotification = YES;
+        if (accountFlg == 3) {
+            [modelList addObject:model1];
+        }else if (accountFlg == 5) {
+            [modelList addObject:model2];
+        }else if (accountFlg == 6) {
+            [modelList addObject:model1];
+            [modelList addObject:model2];
+        }else if (accountFlg == 7) {
+            [modelList addObject:model2];
+        }
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            for (NSDictionary * dict in data) {
+                SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:dict];
+                [modelList addObject:model];
+            }
+        }
+        
+        if (modelList.count > 0) {
+            DTieSecurityViewController * vc = [[DTieSecurityViewController alloc] initWithSecurityList:modelList];
+            [self.parentDDViewController pushViewController:vc animated:YES];
+        }else{
+            if (accountFlg == 1) {
+                [MBProgressHUD showTextHUDWithText:@"当前权限设置为公开" inView:self.parentDDViewController.view];
+            }else if (accountFlg == 2) {
+                [MBProgressHUD showTextHUDWithText:@"当前权限设置为隐私" inView:self.parentDDViewController.view];
+            }else{
+                [MBProgressHUD showTextHUDWithText:@"没有权限设置" inView:self.parentDDViewController.view];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        
+    }];
 }
 
 #pragma mark - 创建tableView头视图
@@ -523,6 +690,11 @@
     }else{
         [self.dazhaohuButton setTitle:@"" forState:UIControlStateNormal];
         [self.dazhaohuButton setImage:[UIImage imageNamed:@"sayhi"] forState:UIControlStateNormal];
+        
+        BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model];
+        if (!canHandle) {
+            self.dazhaohuButton.alpha = 0.7f;
+        }
     }
     [userView addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_updateConstraints:^(MASConstraintMaker *make) {

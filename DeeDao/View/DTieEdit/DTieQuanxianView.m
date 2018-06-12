@@ -12,6 +12,7 @@
 #import <Masonry.h>
 #import "DTieNewSecurityCell.h"
 #import "MBProgressHUD+DDHUD.h"
+#import <WXApi.h>
 
 @interface DTieQuanxianView () <UITableViewDelegate, UITableViewDataSource>
 
@@ -35,7 +36,6 @@
 @property (nonatomic, strong) UIView * miquanContenView;
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) NSMutableArray * dataSource;
-@property (nonatomic, strong) NSMutableArray * selectSource;
 
 @end
 
@@ -69,6 +69,21 @@
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
                 [self.dataSource removeAllObjects];
+                [self.selectSource removeAllObjects];
+                
+                SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+                model1.cid = -1;
+                model1.securitygroupName = @"所有朋友";
+                model1.isChoose = YES;
+                model1.isNotification = YES;
+                [self.dataSource addObject:model1];
+                
+                SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+                model2.cid = -2;
+                model2.securitygroupName = @"关注我的人";
+                model2.isChoose = YES;
+                model2.isNotification = YES;
+                [self.dataSource addObject:model2];
                 
                 for (NSInteger i = 0; i < data.count; i++) {
                     NSDictionary * dict = [data objectAtIndex:i];
@@ -76,6 +91,15 @@
                     SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:result];
                     [self.dataSource addObject:model];
                 }
+                
+                [self.selectSource addObject:model1];
+                [self.selectSource addObject:model2];
+                [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
+                [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
+                [self configMiquanLabelText:@"小密圈(默认密圈)"];
+                self.landAccountFlg = 2;
+                self.currentQuanxianButton = self.miquanButton;
+                
                 [self.tableView reloadData];
             }
         }
@@ -105,21 +129,18 @@
         [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
         [self configQuanxianLabelText:@"浏览权限（隐私）"];
-        self.landAccountFlg = 0;
+        self.landAccountFlg = 2;
         self.currentQuanxianButton = button;
     }
 }
 
 - (void)miquanButtonDidClicked:(UIButton *)button
 {
-    if (self.currentQuanxianButton != button) {
-        
-        if (self.dataSource.count == 0) {
-            [self requestSecuritySource];
-        }else{
-            [self showChooseMiquanView];
-            [MBProgressHUD showTextHUDWithText:@"暂未获得小密圈" inView:self];
-        }
+    if (self.dataSource.count == 0) {
+        [self requestSecuritySource];
+        [MBProgressHUD showTextHUDWithText:@"暂未获得小密圈" inView:self];
+    }else{
+        [self showChooseMiquanView];
     }
 }
 
@@ -137,7 +158,7 @@
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
     [self configQuanxianLabelText:@"浏览权限（小密圈）"];
-    self.landAccountFlg = 2;
+    self.landAccountFlg = 4;
     self.currentQuanxianButton = self.miquanButton;
     
     [self.selectSource removeAllObjects];
@@ -146,6 +167,12 @@
             [self.selectSource addObject:model];
         }
     }
+    if (self.selectSource.count == 0) {
+        [MBProgressHUD showTextHUDWithText:@"请至少选择一个" inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
+    
+    [self configMiquanLabelText:@"小密圈(默认密圈)"];
     
     [self hiddenMiquanView];
 }
@@ -230,14 +257,14 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    UIImageView * quanxianAlert = [[UIImageView alloc] initWithFrame:CGRectZero];
-    [quanxianAlert setImage:[UIImage imageNamed:@"alertEdit"]];
-    [self.quanxianButton addSubview:quanxianAlert];
-    [quanxianAlert mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
-        make.width.height.mas_equalTo(72 * scale);
-    }];
+//    UIImageView * quanxianAlert = [[UIImageView alloc] initWithFrame:CGRectZero];
+//    [quanxianAlert setImage:[UIImage imageNamed:@"alertEdit"]];
+//    [self.quanxianButton addSubview:quanxianAlert];
+//    [quanxianAlert mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(0);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.width.height.mas_equalTo(72 * scale);
+//    }];
     
     self.quanxianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     [self.quanxianButton addSubview:self.quanxianLabel];
@@ -257,14 +284,14 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    UIImageView * shareAlert = [[UIImageView alloc] initWithFrame:CGRectZero];
-    [shareAlert setImage:[UIImage imageNamed:@"alertEdit"]];
-    [self.shareButton addSubview:shareAlert];
-    [shareAlert mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
-        make.width.height.mas_equalTo(72 * scale);
-    }];
+//    UIImageView * shareAlert = [[UIImageView alloc] initWithFrame:CGRectZero];
+//    [shareAlert setImage:[UIImage imageNamed:@"alertEdit"]];
+//    [self.shareButton addSubview:shareAlert];
+//    [shareAlert mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(0);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.width.height.mas_equalTo(72 * scale);
+//    }];
     
     self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     [self.shareButton addSubview:self.shareLabel];
@@ -275,7 +302,7 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    NSString * quanxianText = @"浏览权限（公开）";
+    NSString * quanxianText = @"浏览权限（小密圈）";
     [self configQuanxianLabelText:quanxianText];
     
     NSString * shareText = @"微信分享（分享到朋友圈）";
@@ -327,6 +354,7 @@
         make.top.mas_equalTo(yinsiButton.mas_bottom);
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(buttonHeight);
+        make.right.mas_lessThanOrEqualTo(-60 * scale);
     }];
     [self configMiquanLabelText:@"小密圈（默认密圈）"];
     [self.miquanButton addTarget:self action:@selector(miquanButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -370,6 +398,10 @@
     self.showQuanxian = YES;
     self.shareView.hidden = YES;
     self.showShare = NO;
+    
+    if (![WXApi isWXAppInstalled]) {
+        self.shareButton.hidden = YES;
+    }
     
     [self.quanxianButton addTarget:self action:@selector(quanxianButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -448,10 +480,42 @@
         make.top.mas_equalTo(tipLabel.mas_bottom).offset(40 * scale);
         make.bottom.mas_equalTo(sureButton.mas_top).offset(-60 * scale);
     }];
+    
+    SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+    model1.cid = -1;
+    model1.securitygroupName = @"所有朋友";
+    model1.isChoose = YES;
+    model1.isNotification = YES;
+    [self.dataSource addObject:model1];
+    
+    SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+    model2.cid = -2;
+    model2.securitygroupName = @"关注我的人";
+    model2.isChoose = YES;
+    model2.isNotification = YES;
+    [self.dataSource addObject:model2];
+    [self.selectSource addObject:model1];
+    [self.selectSource addObject:model2];
+    [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
+    [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
+    [self configMiquanLabelText:@"小密圈(默认密圈)"];
+    self.landAccountFlg = 2;
+    self.currentQuanxianButton = self.miquanButton;
+    
+    [self.tableView reloadData];
 }
 
 - (void)configMiquanLabelText:(NSString *)text
 {
+    if (self.selectSource && self.selectSource.count > 0) {
+        NSString * title = @"";
+        for (SecurityGroupModel * model in self.selectSource) {
+            title = [title stringByAppendingString:[NSString stringWithFormat:@"%@,", model.securitygroupName]];
+        }
+        title = [title substringToIndex:title.length - 1];
+        text = [NSString stringWithFormat:@"小密圈(%@)", title];
+    }
+    
     NSInteger length = text.length;
     NSMutableAttributedString * attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName:self.miquanButton.titleLabel.font, NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
     [attributedString addAttributes:@{NSFontAttributeName:self.quanxianLabel.font, NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)} range:NSMakeRange(4, length - 5)];
@@ -488,14 +552,6 @@
     [cell configWithModel:model];
     
     return cell;
-}
-
-- (NSMutableArray *)allowToSeeList
-{
-    if (!_allowToSeeList) {
-        _allowToSeeList = [[NSMutableArray alloc] init];
-    }
-    return _allowToSeeList;
 }
 
 - (NSMutableArray *)dataSource

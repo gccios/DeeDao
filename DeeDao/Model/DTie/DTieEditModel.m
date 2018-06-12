@@ -15,7 +15,6 @@
 {
     if (self = [super init]) {
         self.detailsContent = @"";
-        self.shareEnable = YES;
     }
     return self;
 }
@@ -49,6 +48,12 @@
     
     _detailsContent = detailContent;
     _detailContent = detailContent;
+}
+
+- (void)setWxCanSee:(NSInteger)wxCanSee
+{
+    _wxCanSee = wxCanSee;
+    _shareEnable = wxCanSee;
 }
 
 @end

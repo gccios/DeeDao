@@ -54,6 +54,9 @@
     }];
     
     [self createTopViews];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(endEdit)];
+    [self.tableView addGestureRecognizer:tap];
 }
 
 - (void)createTopViews
@@ -90,7 +93,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"个人信息";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -99,23 +102,23 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
-    saveButton.layer.borderWidth = .5f;
-    saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
-    [saveButton addTarget:self action:@selector(saveButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:saveButton];
-    [saveButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(144 * scale);
-        make.height.mas_equalTo(72 * scale);
-        make.centerY.mas_equalTo(titleLabel);
-        make.right.mas_equalTo(-60 * scale);
-    }];
+//    UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
+//    [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
+//    saveButton.layer.borderWidth = .5f;
+//    saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+//    [saveButton addTarget:self action:@selector(saveButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:saveButton];
+//    [saveButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.mas_equalTo(144 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//        make.centerY.mas_equalTo(titleLabel);
+//        make.right.mas_equalTo(-60 * scale);
+//    }];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 6;
+    return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -147,6 +150,7 @@
     if (indexPath.row == 0) {
         [self selectImageFromAlbum];
     }
+    [self endEdit];
 }
 
 #pragma mark 从相册获取图片或视频
@@ -197,6 +201,17 @@
         _imagePickerController.allowsEditing = YES;
     }
     return _imagePickerController;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    [self endEdit];
+}
+
+- (void)endEdit
+{
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
 }
 
 - (void)didReceiveMemoryWarning {

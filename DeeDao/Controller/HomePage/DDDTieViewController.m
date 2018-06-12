@@ -85,12 +85,12 @@
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         //        [hud hideAnimated:YES];
-        //        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         [self.collectionView.mj_header endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
         //        [hud hideAnimated:YES];
-        //        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+        //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         [self.collectionView.mj_header endRefreshing];
     }];
 }
@@ -120,12 +120,12 @@
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
 //        [hud hideAnimated:YES];
-//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+//        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         [self.collectionView.mj_footer endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
 //        [hud hideAnimated:YES];
-//        [MBProgressHUD showTextHUDWithText:@"获取D贴失败" inView:self.view];
+//        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
         [self.collectionView.mj_footer endRefreshing];
     }];
 }
@@ -175,7 +175,7 @@
     [self.collectionView addGestureRecognizer:self.longPress];
     
 //    /*
-//     D贴顶部下拉资源管理
+//     D帖顶部下拉资源管理
 //     */
 //    CGFloat managerViewHeight = 288 * scale;
 //    self.DTieManagerView = [[UIView alloc] initWithFrame:CGRectMake(0, -managerViewHeight, kMainBoundsWidth, managerViewHeight)];
@@ -197,7 +197,7 @@
 //    }];
 //
 //    UILabel * managerTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-//    managerTitleLabel.text = @"D贴素材管理";
+//    managerTitleLabel.text = @"D帖素材管理";
 //    [self.DTieManagerView addSubview:managerTitleLabel];
 //    [managerTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.centerY.mas_equalTo(-50 * scale / 2);
@@ -206,7 +206,7 @@
 //    }];
 //
 //    UILabel * managerSubtitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-//    managerSubtitleLabel.text = @"展开所有D贴照片和视频";
+//    managerSubtitleLabel.text = @"展开所有D帖照片和视频";
 //    [self.DTieManagerView addSubview:managerSubtitleLabel];
 //    [managerSubtitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.top.mas_equalTo(managerTitleLabel.mas_bottom).offset(10 * scale);
@@ -261,8 +261,8 @@
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"我的D贴";
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
+    titleLabel.text = @"我的D帖";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60.5 * scale);
@@ -363,9 +363,7 @@
             
         default:
         {
-            NSMutableArray * array = [[NSMutableArray alloc] initWithArray:self.dataSource];
-            [array removeObjectAtIndex:0];
-            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:array index:indexPath.row - 1];
+            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
             [self.navigationController pushViewController:collection animated:YES];
         }
             break;
@@ -387,9 +385,6 @@
     
     [cell configWithDTieModel:model];
     [cell confiEditEnable:self.isEdit];
-    if (indexPath.row == 0) {
-        [cell confiEditEnable:NO];
-    }
     
     __weak typeof(self) weakSelf = self;
     __weak typeof(cell) weakCell = cell;

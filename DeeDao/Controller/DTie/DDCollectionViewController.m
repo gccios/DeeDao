@@ -21,6 +21,9 @@
 #import "UserInfoViewController.h"
 #import "DDShareManager.h"
 #import "UserManager.h"
+#import "DDDTieViewController.h"
+#import "DTiePOIViewController.h"
+#import "DDDazhaohuView.h"
 #import "DDLocationManager.h"
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
@@ -58,6 +61,16 @@
     
     [self createViews];
     [self createTopView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadCurrentPage) name:DTieCollectionNeedUpdateNotification object:nil];
+}
+
+- (void)reloadCurrentPage
+{
+    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
+    model.details = nil;
+    
+    [self.pagerView.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:self.pagerView.curIndex inSection:0]]];
 }
 
 - (void)createViews
@@ -167,7 +180,8 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
     if (model) {
-        [[DDLocationManager shareManager] mapNavigationToLongitude:model.sceneAddressLng latitude:model.sceneAddressLat poiName:model.sceneAddress withViewController:self];
+        DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:model];
+        [self.navigationController pushViewController:poi animated:YES];
     }
 }
 
@@ -275,22 +289,38 @@
         return;
     }
     
-    self.dazhaohuButton.enabled = NO;
+    if (model.dzfFlg == 1) {
+        [MBProgressHUD showTextHUDWithText:@"您已经打过招呼了" inView:self.view];
+        return;
+    }
     
-    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:1 remark:@""];
+    BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:model];
+    if (!canHandle) {
+        [MBProgressHUD showTextHUDWithText:[NSString stringWithFormat:@"只能和%ld米之内的的帖子打招呼", [DDLocationManager shareManager].distance] inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
     
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    DDDazhaohuView * view = [[DDDazhaohuView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    view.block = ^(NSString *text) {
+        self.dazhaohuButton.enabled = NO;
         
-        model.dzfFlg = 1;
-        model.dzfCount++;
-        [self reloadPageWithIndex:self.pagerView.curIndex];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:2 subType:1 remark:@""];
         
-        self.dazhaohuButton.enabled = YES;
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        self.dazhaohuButton.enabled = YES;
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        self.dazhaohuButton.enabled = YES;
-    }];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.dzfFlg = 1;
+            model.dzfCount++;
+            [self reloadPageWithIndex:self.pagerView.curIndex];
+            
+            self.dazhaohuButton.enabled = YES;
+            [MBProgressHUD showTextHUDWithText:@"对方已收到您的信息" inView:[UIApplication sharedApplication].keyWindow];
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.dazhaohuButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.dazhaohuButton.enabled = YES;
+        }];
+    };
+    [view show];
 }
 
 - (void)pagerView:(TYCyclePagerView *)pageView didScrollFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
@@ -301,7 +331,26 @@
 - (void)reloadPageWithIndex:(NSInteger)index
 {
     DTieModel * model = [self.dataSource objectAtIndex:index];
+    
     if (model) {
+        
+        if (model.deleteFlg == 1) {
+            
+            [MBProgressHUD showTextHUDWithText:@"帖子已被作者删除" inView:self.view];
+            
+            [self.dataSource removeObjectAtIndex:index];
+            [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+            
+            NSArray * vcs = self.navigationController.viewControllers;
+            UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
+            if ([vc isKindOfClass:[DDDTieViewController class]]) {
+                DDDTieViewController * tie = (DDDTieViewController *)vc;
+                [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+            }
+            
+            return;
+        }
+        
         [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
         self.nameLabel.text = model.nickname;
         
@@ -320,16 +369,21 @@
             [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueno"]];
         }
         
-        if (model.dzfFlg) {
-            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
+        BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:model];
+        if (canHandle) {
+            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanyes"]];
         }else{
-            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuzuozhe"]];
+            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanno"]];
         }
         
         if (model.collectFlg) {
             [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangyes"]];
         }else{
             [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangno"]];
+        }
+        
+        if (model.authorId == [UserManager shareManager].user.cid) {
+            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanno"]];
         }
         
         self.titleLabel.text = model.postSummary;
@@ -369,11 +423,15 @@
 - (void)pagerView:(TYCyclePagerView *)pageView didSelectedItemCell:(__kindof UICollectionViewCell *)cell atIndex:(NSInteger)index
 {
     DTieModel * model = [self.dataSource objectAtIndex:index];
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
     
     if (model.dTieType == DTieType_Edit) {
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
         
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             [hud hideAnimated:YES];
             
@@ -395,6 +453,10 @@
     }
     
     if (model.details) {
+        if (model.ifCanSee == 0) {
+            [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
+            return;
+        }
         DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:model];
         [self.navigationController pushViewController:detail animated:NO];
     }else{
@@ -437,7 +499,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"浏览D贴";
+    self.titleLabel.text = @"浏览D帖";
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -475,6 +537,11 @@
 {
     [super viewDidAppear:animated];
     [self reloadPageWithIndex:self.pagerView.curIndex];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieCollectionNeedUpdateNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

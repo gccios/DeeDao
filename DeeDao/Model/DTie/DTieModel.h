@@ -22,6 +22,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, assign) DTieType dTieType;
 
+@property (nonatomic, assign) NSInteger ifCanSee;
+
 @property (nonatomic, assign) NSInteger cid;
 @property (nonatomic, assign) NSInteger authorId;
 @property (nonatomic, assign) NSInteger collectCount;
@@ -47,6 +49,9 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger wyyCount;
 @property (nonatomic, assign) NSInteger wyyFlg;
 @property (nonatomic, assign) NSInteger createTime;
+@property (nonatomic, assign) NSInteger deleteFlg;
+@property (nonatomic, assign) NSInteger landAccountFlg;
+@property (nonatomic, strong) NSArray * allowToSeeList;
 
 @property (nonatomic, strong) NSArray * postPictureList;
 @property (nonatomic, strong) NSArray * wyyList;

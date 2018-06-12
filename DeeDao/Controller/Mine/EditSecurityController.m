@@ -96,6 +96,10 @@
             // 获取并返回首字母
             NSString * firstLetterString =model.firstLetter;
             
+            if (isEmptyString(firstLetterString)) {
+                continue;
+            }
+            
             //如果该字母对应的联系人模型不为空,则将此联系人模型添加到此数组中
             if (self.dataDict[firstLetterString])
             {
@@ -165,7 +169,7 @@
     if (self.dataSource.count == 0) {
         [self requestFriendList];
     }
-    SecurityFriendController * friend = [[SecurityFriendController alloc] initWithDataDict:self.dataDict nameKeys:self.nameKeys];
+    SecurityFriendController * friend = [[SecurityFriendController alloc] initMulSelectWithDataDict:self.dataDict nameKeys:self.nameKeys selectModels:self.selectFriend];
     friend.delegate = self;
     [self.navigationController pushViewController:friend animated:YES];
 }
@@ -183,6 +187,12 @@
         [self.collectionView reloadData];
         [self.navigationController popViewControllerAnimated:YES];
     }
+}
+
+- (void)friendDidMulSelectComplete
+{
+    [self.collectionView reloadData];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -255,31 +265,24 @@
         return;
     }
     
-//    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
-//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//
-//    NSString * url = [NSString stringWithFormat:@"%@/scyGroup/delScyGroup", HOSTURL];
-//    [manager POST:url parameters:@{@"id":@(self.model.cid)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
-//
-//    } progress:^(NSProgress * _Nonnull uploadProgress) {
-//
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//
-//    }];
-    
-    DeleteSecurityRequest * request = [[DeleteSecurityRequest alloc] initWithGroupID:self.model.cid];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+    NSString * url = [NSString stringWithFormat:@"%@/scyGroup/delScyGroup", HOSTURL];
+    [manager POST:url parameters:@{@"scyGroupId":@(self.model.cid)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+
         [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.navigationController.view];
         if (self.delegate && [self.delegate respondsToSelector:@selector(securityGroupDidEdit)]) {
             [self.delegate securityGroupDidEdit];
         }
         [self.navigationController popViewControllerAnimated:YES];
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
     }];
 }
@@ -325,7 +328,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"编辑小密圈";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

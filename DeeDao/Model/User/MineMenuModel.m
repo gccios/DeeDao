@@ -39,7 +39,7 @@
                 
             {
                 self.imageName = @"address";
-                self.title = @"我的通讯录";
+                self.title = @"关系列表";
             }
                 
                 break;
@@ -58,6 +58,15 @@
             {
                 self.imageName = @"system";
                 self.title = @"系统设置";
+            }
+                
+                break;
+                
+            case MineMenuType_Blogger:
+                
+            {
+                self.imageName = @"achievement";
+                self.title = @"博主链接";
             }
                 
                 break;

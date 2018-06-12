@@ -13,7 +13,8 @@ typedef enum : NSUInteger {
     MineMenuType_Achievement,
     MineMenuType_Address,
     MineMenuType_Private,
-    MineMenuType_System
+    MineMenuType_System,
+    MineMenuType_Blogger
 } MineMenuType;
 
 @interface MineMenuModel : NSObject

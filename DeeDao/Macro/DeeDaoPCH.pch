@@ -12,7 +12,7 @@
 /*
  服务器地址
  */
-#define TEST_DEV_TYPE 0 //测试环境切换宏，1代表线上环境，0代表测试环境
+#define TEST_DEV_TYPE 1 //测试环境切换宏，1代表线上环境，0代表测试环境
 
 #if TEST_DEV_TYPE
 #define HOSTURL @"https://portal.deedao.com" //正式地址
@@ -21,8 +21,8 @@
 #define NSLog(...) {}
 
 #else
-//#define HOSTURL @"http://10.93.20.171:8080"  //测试地址
-#define HOSTURL @"https://portal.deedao.com"
+#define HOSTURL @"http://10.93.20.171:8080"  //测试地址
+//#define HOSTURL @"https://portal.deedao.com"
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
 #define NSLog(...) NSLog(__VA_ARGS__)
@@ -59,6 +59,7 @@
  */
 #define DDDocumentPath [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0]
 #define DDUserInfoPath [NSString stringWithFormat:@"%@/DDUserInfo.plist", DDDocumentPath]
+#define DDBloggerLinkPath [NSString stringWithFormat:@"%@/DDBloggerLink.txt", DDDocumentPath]
 
 /*
  特需判断

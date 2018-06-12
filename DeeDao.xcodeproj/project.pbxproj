@@ -51,11 +51,14 @@
 		06286AA720BFA6F100434068 /* JZLocationConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AA520BFA6F100434068 /* JZLocationConverter.m */; };
 		06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 06286AA820BFC8E500434068 /* mapChooseBG.jpeg */; };
 		06286AAC20BFDDE700434068 /* DTieNewEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */; };
-		06286AB020BFE6D500434068 /* ShareImageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AAF20BFE6D500434068 /* ShareImageItem.m */; };
 		06286AB420BFFF2300434068 /* DTieContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB320BFFF2300434068 /* DTieContentView.m */; };
 		06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB620BFFF3500434068 /* DTieQuanxianView.m */; };
 		06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB920C014D800434068 /* DTieNewEditImageCell.m */; };
 		06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */; };
+		062EFCC320CE24D80019FF68 /* DDTabCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */; };
+		062EFCC520CE5B5E0019FF68 /* miniProgramBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 062EFCC420CE5B5E0019FF68 /* miniProgramBG.png */; };
+		062EFCC820CE78E50019FF68 /* BloggerLinkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 062EFCC720CE78E50019FF68 /* BloggerLinkViewController.m */; };
+		062EFCCB20CE7E1B0019FF68 /* BloggerTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 062EFCCA20CE7E1B0019FF68 /* BloggerTextView.m */; };
 		06301B4220A6D309003580CA /* XFCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3A20A6D309003580CA /* XFCameraButton.m */; };
 		06301B4320A6D309003580CA /* XFCameraController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06301B3C20A6D309003580CA /* XFCameraController.m */; };
 		06301B4420A6D309003580CA /* XFCameraController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 06301B3D20A6D309003580CA /* XFCameraController.xib */; };
@@ -132,9 +135,10 @@
 		066033F220B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033EA20B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m */; };
 		066033F920B2BF3D00A54D81 /* OnlyMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033F820B2BF3D00A54D81 /* OnlyMapViewController.m */; };
 		066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033FB20B2D9C000A54D81 /* DTieFoundEditView.m */; };
+		0671DE4B20CA24A8007D9F4E /* ShareImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0671DE4A20CA24A8007D9F4E /* ShareImageModel.m */; };
+		0671DE5120CA282C007D9F4E /* SelectAttentionMeReuqest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0671DE5020CA282C007D9F4E /* SelectAttentionMeReuqest.m */; };
 		06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F3320A28BD9007875A7 /* AppDelegate.m */; };
 		06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 06733F3B20A28BDA007875A7 /* Assets.xcassets */; };
-		06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */; };
 		06733F4220A28BDA007875A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F4120A28BDA007875A7 /* main.m */; };
 		06733F4C20A28BDA007875A7 /* DeeDaoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F4B20A28BDA007875A7 /* DeeDaoTests.m */; };
 		06733F5720A28BDB007875A7 /* DeeDaoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F5620A28BDB007875A7 /* DeeDaoUITests.m */; };
@@ -172,16 +176,27 @@
 		06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */; };
 		06C6022820C432870009E536 /* RDAlertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022420C432870009E536 /* RDAlertAction.m */; };
 		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
+		06CF7BBC20CF6881008BBC05 /* gongzhongCode.png in Resources */ = {isa = PBXBuildFile; fileRef = 06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */; };
 		06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1488C20C6DDDB00DB010A /* DTieShareView.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
 		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
 		06DCC8F620C3BE55000194CA /* DTieDeleteRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */; };
 		06DCC8F920C3CB5F000194CA /* SelectAttentionRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */; };
+		06E0A13020CED14700B9C4B0 /* GetDtieSecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E0A12F20CED14700B9C4B0 /* GetDtieSecurityRequest.m */; };
+		06E0A13320CED48700B9C4B0 /* DTieSecurityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E0A13220CED48700B9C4B0 /* DTieSecurityViewController.m */; };
+		06E0A13620CEDB7700B9C4B0 /* ApplicationConfigRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E0A13520CEDB7700B9C4B0 /* ApplicationConfigRequest.m */; };
 		06E209DB20B035BB00EA541B /* MainInfoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209DA20B035BB00EA541B /* MainInfoTableViewCell.m */; };
 		06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209DD20B03E5900EA541B /* DDSystemAlertController.m */; };
 		06E209E420B03F1800EA541B /* SystemAlertTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209E320B03F1800EA541B /* SystemAlertTableViewCell.m */; };
 		06E209E820B03FAC00EA541B /* SettingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E209E720B03FAC00EA541B /* SettingModel.m */; };
+		06E5556620C8CBA000C0CE9D /* DTiePOIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5556520C8CBA000C0CE9D /* DTiePOIViewController.m */; };
+		06E5556920C8D71F00C0CE9D /* DTiePOIRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5556820C8D71F00C0CE9D /* DTiePOIRequest.m */; };
+		06E5556C20C8E07700C0CE9D /* CollectionLineTitleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5556B20C8E07700C0CE9D /* CollectionLineTitleView.m */; };
+		06E5556F20C930B300C0CE9D /* JubaoRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5556E20C930B300C0CE9D /* JubaoRequest.m */; };
+		06E5557220C9335E00C0CE9D /* HelpAndAdviceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5557120C9335E00C0CE9D /* HelpAndAdviceController.m */; };
+		06E5557520C93E8A00C0CE9D /* AgreementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5557420C93E8A00C0CE9D /* AgreementViewController.m */; };
+		06E5557820C954CF00C0CE9D /* DDChooseFriendCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06E5557720C954CF00C0CE9D /* DDChooseFriendCell.m */; };
 		06EB1C4420C0E14600684A71 /* LookImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06EB1C4220C0E14600684A71 /* LookImageViewController.m */; };
 		06EB1C4720C10EC900684A71 /* DTieReadView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06EB1C4620C10EC900684A71 /* DTieReadView.m */; };
 		06EB1C4A20C11E4300684A71 /* DTieNewSecurityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06EB1C4920C11E4300684A71 /* DTieNewSecurityCell.m */; };
@@ -301,8 +316,6 @@
 		06286AA820BFC8E500434068 /* mapChooseBG.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mapChooseBG.jpeg; sourceTree = "<group>"; };
 		06286AAA20BFDDE700434068 /* DTieNewEditViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditViewController.h; sourceTree = "<group>"; };
 		06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditViewController.m; sourceTree = "<group>"; };
-		06286AAE20BFE6D500434068 /* ShareImageItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareImageItem.h; sourceTree = "<group>"; };
-		06286AAF20BFE6D500434068 /* ShareImageItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareImageItem.m; sourceTree = "<group>"; };
 		06286AB220BFFF2300434068 /* DTieContentView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieContentView.h; sourceTree = "<group>"; };
 		06286AB320BFFF2300434068 /* DTieContentView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieContentView.m; sourceTree = "<group>"; };
 		06286AB520BFFF3500434068 /* DTieQuanxianView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieQuanxianView.h; sourceTree = "<group>"; };
@@ -311,6 +324,13 @@
 		06286AB920C014D800434068 /* DTieNewEditImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditImageCell.m; sourceTree = "<group>"; };
 		06286ABB20C0152C00434068 /* DTieNewEditTextCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditTextCell.h; sourceTree = "<group>"; };
 		06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditTextCell.m; sourceTree = "<group>"; };
+		062EFCC120CE24D80019FF68 /* DDTabCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDTabCollectionViewCell.h; sourceTree = "<group>"; };
+		062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTabCollectionViewCell.m; sourceTree = "<group>"; };
+		062EFCC420CE5B5E0019FF68 /* miniProgramBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = miniProgramBG.png; sourceTree = "<group>"; };
+		062EFCC620CE78E50019FF68 /* BloggerLinkViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BloggerLinkViewController.h; sourceTree = "<group>"; };
+		062EFCC720CE78E50019FF68 /* BloggerLinkViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BloggerLinkViewController.m; sourceTree = "<group>"; };
+		062EFCC920CE7E1B0019FF68 /* BloggerTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BloggerTextView.h; sourceTree = "<group>"; };
+		062EFCCA20CE7E1B0019FF68 /* BloggerTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BloggerTextView.m; sourceTree = "<group>"; };
 		06301B3A20A6D309003580CA /* XFCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraButton.m; sourceTree = "<group>"; };
 		06301B3B20A6D309003580CA /* XFCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XFCameraButton.h; sourceTree = "<group>"; };
 		06301B3C20A6D309003580CA /* XFCameraController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XFCameraController.m; sourceTree = "<group>"; };
@@ -460,11 +480,14 @@
 		066033F820B2BF3D00A54D81 /* OnlyMapViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnlyMapViewController.m; sourceTree = "<group>"; };
 		066033FA20B2D9C000A54D81 /* DTieFoundEditView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieFoundEditView.h; sourceTree = "<group>"; };
 		066033FB20B2D9C000A54D81 /* DTieFoundEditView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieFoundEditView.m; sourceTree = "<group>"; };
+		0671DE4920CA24A8007D9F4E /* ShareImageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareImageModel.h; sourceTree = "<group>"; };
+		0671DE4A20CA24A8007D9F4E /* ShareImageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareImageModel.m; sourceTree = "<group>"; };
+		0671DE4F20CA282C007D9F4E /* SelectAttentionMeReuqest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectAttentionMeReuqest.h; sourceTree = "<group>"; };
+		0671DE5020CA282C007D9F4E /* SelectAttentionMeReuqest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectAttentionMeReuqest.m; sourceTree = "<group>"; };
 		06733F2F20A28BD9007875A7 /* DeeDao.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeeDao.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		06733F3220A28BD9007875A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		06733F3320A28BD9007875A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		06733F3B20A28BDA007875A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		06733F3E20A28BDA007875A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		06733F4020A28BDA007875A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		06733F4120A28BDA007875A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		06733F4720A28BDA007875A7 /* DeeDaoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DeeDaoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -541,6 +564,7 @@
 		06C6022520C432870009E536 /* RDAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertView.h; sourceTree = "<group>"; };
 		06C6022620C432870009E536 /* RDAlertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertAction.h; sourceTree = "<group>"; };
 		06C6022720C432870009E536 /* RDAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertView.m; sourceTree = "<group>"; };
+		06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gongzhongCode.png; sourceTree = "<group>"; };
 		06D1488B20C6DDDB00DB010A /* DTieShareView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieShareView.h; sourceTree = "<group>"; };
 		06D1488C20C6DDDB00DB010A /* DTieShareView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieShareView.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
@@ -553,6 +577,12 @@
 		06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieDeleteRequest.m; sourceTree = "<group>"; };
 		06DCC8F720C3CB5F000194CA /* SelectAttentionRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectAttentionRequest.h; sourceTree = "<group>"; };
 		06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectAttentionRequest.m; sourceTree = "<group>"; };
+		06E0A12E20CED14700B9C4B0 /* GetDtieSecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GetDtieSecurityRequest.h; sourceTree = "<group>"; };
+		06E0A12F20CED14700B9C4B0 /* GetDtieSecurityRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GetDtieSecurityRequest.m; sourceTree = "<group>"; };
+		06E0A13120CED48700B9C4B0 /* DTieSecurityViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieSecurityViewController.h; sourceTree = "<group>"; };
+		06E0A13220CED48700B9C4B0 /* DTieSecurityViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSecurityViewController.m; sourceTree = "<group>"; };
+		06E0A13420CEDB7700B9C4B0 /* ApplicationConfigRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ApplicationConfigRequest.h; sourceTree = "<group>"; };
+		06E0A13520CEDB7700B9C4B0 /* ApplicationConfigRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ApplicationConfigRequest.m; sourceTree = "<group>"; };
 		06E209D920B035BB00EA541B /* MainInfoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainInfoTableViewCell.h; sourceTree = "<group>"; };
 		06E209DA20B035BB00EA541B /* MainInfoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainInfoTableViewCell.m; sourceTree = "<group>"; };
 		06E209DC20B03E5900EA541B /* DDSystemAlertController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDSystemAlertController.h; sourceTree = "<group>"; };
@@ -561,6 +591,20 @@
 		06E209E320B03F1800EA541B /* SystemAlertTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SystemAlertTableViewCell.m; sourceTree = "<group>"; };
 		06E209E620B03FAC00EA541B /* SettingModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SettingModel.h; sourceTree = "<group>"; };
 		06E209E720B03FAC00EA541B /* SettingModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SettingModel.m; sourceTree = "<group>"; };
+		06E5556420C8CBA000C0CE9D /* DTiePOIViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTiePOIViewController.h; sourceTree = "<group>"; };
+		06E5556520C8CBA000C0CE9D /* DTiePOIViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTiePOIViewController.m; sourceTree = "<group>"; };
+		06E5556720C8D71F00C0CE9D /* DTiePOIRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTiePOIRequest.h; sourceTree = "<group>"; };
+		06E5556820C8D71F00C0CE9D /* DTiePOIRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTiePOIRequest.m; sourceTree = "<group>"; };
+		06E5556A20C8E07700C0CE9D /* CollectionLineTitleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionLineTitleView.h; sourceTree = "<group>"; };
+		06E5556B20C8E07700C0CE9D /* CollectionLineTitleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CollectionLineTitleView.m; sourceTree = "<group>"; };
+		06E5556D20C930B300C0CE9D /* JubaoRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JubaoRequest.h; sourceTree = "<group>"; };
+		06E5556E20C930B300C0CE9D /* JubaoRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JubaoRequest.m; sourceTree = "<group>"; };
+		06E5557020C9335E00C0CE9D /* HelpAndAdviceController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HelpAndAdviceController.h; sourceTree = "<group>"; };
+		06E5557120C9335E00C0CE9D /* HelpAndAdviceController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HelpAndAdviceController.m; sourceTree = "<group>"; };
+		06E5557320C93E8A00C0CE9D /* AgreementViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AgreementViewController.h; sourceTree = "<group>"; };
+		06E5557420C93E8A00C0CE9D /* AgreementViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AgreementViewController.m; sourceTree = "<group>"; };
+		06E5557620C954CF00C0CE9D /* DDChooseFriendCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDChooseFriendCell.h; sourceTree = "<group>"; };
+		06E5557720C954CF00C0CE9D /* DDChooseFriendCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDChooseFriendCell.m; sourceTree = "<group>"; };
 		06EB1C4220C0E14600684A71 /* LookImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LookImageViewController.m; sourceTree = "<group>"; };
 		06EB1C4320C0E14600684A71 /* LookImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LookImageViewController.h; sourceTree = "<group>"; };
 		06EB1C4520C10EC900684A71 /* DTieReadView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieReadView.h; sourceTree = "<group>"; };
@@ -655,6 +699,8 @@
 				066033B720B26BAC00A54D81 /* DDHandleView.m */,
 				066033FA20B2D9C000A54D81 /* DTieFoundEditView.h */,
 				066033FB20B2D9C000A54D81 /* DTieFoundEditView.m */,
+				062EFCC920CE7E1B0019FF68 /* BloggerTextView.h */,
+				062EFCCA20CE7E1B0019FF68 /* BloggerTextView.m */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -691,8 +737,6 @@
 			children = (
 				06EB1C4320C0E14600684A71 /* LookImageViewController.h */,
 				06EB1C4220C0E14600684A71 /* LookImageViewController.m */,
-				06286AAE20BFE6D500434068 /* ShareImageItem.h */,
-				06286AAF20BFE6D500434068 /* ShareImageItem.m */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -797,6 +841,8 @@
 				060F006120AC493A00C810A1 /* DTieDetailRequest.m */,
 				0674E68520AEBC1B006961E1 /* DTieSearchRequest.h */,
 				0674E68620AEBC1B006961E1 /* DTieSearchRequest.m */,
+				06E5556720C8D71F00C0CE9D /* DTiePOIRequest.h */,
+				06E5556820C8D71F00C0CE9D /* DTiePOIRequest.m */,
 				06DCC8F420C3BE55000194CA /* DTieDeleteRequest.h */,
 				06DCC8F520C3BE55000194CA /* DTieDeleteRequest.m */,
 				06102AC620B465A200FF3278 /* DTieCollectionRequest.h */,
@@ -813,6 +859,8 @@
 				06102AE320B47E5A00FF3278 /* AddCommentRequest.m */,
 				0647F30820B661D6009B7C27 /* SeriesDetailRequest.h */,
 				0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */,
+				06E0A12E20CED14700B9C4B0 /* GetDtieSecurityRequest.h */,
+				06E0A12F20CED14700B9C4B0 /* GetDtieSecurityRequest.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -872,6 +920,12 @@
 				061EDD6E20C56E1600066E73 /* PassWordSetViewController.m */,
 				061EDD7020C5709000066E73 /* ForgetPasswordViewController.h */,
 				061EDD7120C5709000066E73 /* ForgetPasswordViewController.m */,
+				06E5557020C9335E00C0CE9D /* HelpAndAdviceController.h */,
+				06E5557120C9335E00C0CE9D /* HelpAndAdviceController.m */,
+				06E5557320C93E8A00C0CE9D /* AgreementViewController.h */,
+				06E5557420C93E8A00C0CE9D /* AgreementViewController.m */,
+				062EFCC620CE78E50019FF68 /* BloggerLinkViewController.h */,
+				062EFCC720CE78E50019FF68 /* BloggerLinkViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -991,7 +1045,6 @@
 				06733F7420A296DF007875A7 /* Macro */,
 				06733F6C20A29343007875A7 /* Resource */,
 				06733F3B20A28BDA007875A7 /* Assets.xcassets */,
-				06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */,
 				06733F4020A28BDA007875A7 /* Info.plist */,
 				06733F4120A28BDA007875A7 /* main.m */,
 			);
@@ -1092,6 +1145,7 @@
 		06733F6C20A29343007875A7 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */,
 				06286AA820BFC8E500434068 /* mapChooseBG.jpeg */,
 				063E7D1920BE601E004AFF63 /* custom_config_0323 */,
 				06733F6D20A2934B007875A7 /* Image */,
@@ -1102,6 +1156,7 @@
 		06733F6D20A2934B007875A7 /* Image */ = {
 			isa = PBXGroup;
 			children = (
+				062EFCC420CE5B5E0019FF68 /* miniProgramBG.png */,
 				064B349C20A92C5500B7D0E4 /* chengjiuBG.png */,
 				06733F6F20A29379007875A7 /* BG.png */,
 			);
@@ -1199,6 +1254,8 @@
 				064F0B4520A489BB007C0A4F /* MineMenuModel.m */,
 				061994A520B5091700AD64AB /* SecurityGroupModel.h */,
 				061994A620B5091700AD64AB /* SecurityGroupModel.m */,
+				0671DE4920CA24A8007D9F4E /* ShareImageModel.h */,
+				0671DE4A20CA24A8007D9F4E /* ShareImageModel.m */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -1208,6 +1265,8 @@
 			children = (
 				06733F9D20A2EB4D007875A7 /* UserLoginWXRequest.h */,
 				06733F9E20A2EB4D007875A7 /* UserLoginWXRequest.m */,
+				06E0A13420CEDB7700B9C4B0 /* ApplicationConfigRequest.h */,
+				06E0A13520CEDB7700B9C4B0 /* ApplicationConfigRequest.m */,
 				066033BF20B2AD7C00A54D81 /* UserLogoutRequest.h */,
 				066033C020B2AD7C00A54D81 /* UserLogoutRequest.m */,
 				0685A53120C693900050424D /* GetTelCodeRequest.h */,
@@ -1232,8 +1291,12 @@
 				0647F31E20B6A3AB009B7C27 /* SelectFriendRequest.m */,
 				06DCC8F720C3CB5F000194CA /* SelectAttentionRequest.h */,
 				06DCC8F820C3CB5F000194CA /* SelectAttentionRequest.m */,
+				0671DE4F20CA282C007D9F4E /* SelectAttentionMeReuqest.h */,
+				0671DE5020CA282C007D9F4E /* SelectAttentionMeReuqest.m */,
 				0647F32020B6B1DF009B7C27 /* SaveUserRequest.h */,
 				0647F32120B6B1DF009B7C27 /* SaveUserRequest.m */,
+				06E5556D20C930B300C0CE9D /* JubaoRequest.h */,
+				06E5556E20C930B300C0CE9D /* JubaoRequest.m */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -1272,6 +1335,10 @@
 				06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */,
 				0623471120BBDCB400B1894E /* DDShareImageCollectionViewCell.h */,
 				0623471220BBDCB400B1894E /* DDShareImageCollectionViewCell.m */,
+				06E5556A20C8E07700C0CE9D /* CollectionLineTitleView.h */,
+				06E5556B20C8E07700C0CE9D /* CollectionLineTitleView.m */,
+				062EFCC120CE24D80019FF68 /* DDTabCollectionViewCell.h */,
+				062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -1331,6 +1398,8 @@
 				064B34AF20A941A600B7D0E4 /* DDSystemTableViewCell.m */,
 				064B34B420A95CC100B7D0E4 /* DDFriendTableViewCell.h */,
 				064B34B520A95CC100B7D0E4 /* DDFriendTableViewCell.m */,
+				06E5557620C954CF00C0CE9D /* DDChooseFriendCell.h */,
+				06E5557720C954CF00C0CE9D /* DDChooseFriendCell.m */,
 				064B34C120A99E1300B7D0E4 /* DDPrivateTableViewCell.h */,
 				064B34C220A99E1300B7D0E4 /* DDPrivateTableViewCell.m */,
 				064B34B720A96D5200B7D0E4 /* DDFriendTableHeaderView.h */,
@@ -1401,6 +1470,10 @@
 				06286AAB20BFDDE700434068 /* DTieNewEditViewController.m */,
 				06EB1C4B20C1697C00684A71 /* DTieNewDetailViewController.h */,
 				06EB1C4C20C1697C00684A71 /* DTieNewDetailViewController.m */,
+				06E0A13120CED48700B9C4B0 /* DTieSecurityViewController.h */,
+				06E0A13220CED48700B9C4B0 /* DTieSecurityViewController.m */,
+				06E5556420C8CBA000C0CE9D /* DTiePOIViewController.h */,
+				06E5556520C8CBA000C0CE9D /* DTiePOIViewController.m */,
 				06FCD62620A53F7300E6EAA4 /* DTieEditViewController.h */,
 				06FCD62720A53F7300E6EAA4 /* DTieEditViewController.m */,
 				060F004A20ABFAC800C810A1 /* DTieEditReadViewController.h */,
@@ -1571,12 +1644,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06CF7BBC20CF6881008BBC05 /* gongzhongCode.png in Resources */,
 				063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */,
-				06733F3F20A28BDA007875A7 /* LaunchScreen.storyboard in Resources */,
 				06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
 				064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */,
 				06301B4420A6D309003580CA /* XFCameraController.xib in Resources */,
+				062EFCC520CE5B5E0019FF68 /* miniProgramBG.png in Resources */,
 				06733F7020A29379007875A7 /* BG.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1655,6 +1729,7 @@
 				0647F31320B67E20009B7C27 /* UserInfoCollectionHeader.m in Sources */,
 				061994B020B5195300AD64AB /* SecurityHeaderView.m in Sources */,
 				06286AA720BFA6F100434068 /* JZLocationConverter.m in Sources */,
+				06E0A13620CEDB7700B9C4B0 /* ApplicationConfigRequest.m in Sources */,
 				069FF65120C05D7C00C15D4F /* RTDragCellTableView.m in Sources */,
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
@@ -1667,6 +1742,7 @@
 				061994B320B5196600AD64AB /* SecurityFooterView.m in Sources */,
 				06102AC820B465A200FF3278 /* DTieCollectionRequest.m in Sources */,
 				0674E68720AEBC1B006961E1 /* DTieSearchRequest.m in Sources */,
+				06E0A13320CED48700B9C4B0 /* DTieSecurityViewController.m in Sources */,
 				06733F7320A293B9007875A7 /* LoginViewController.m in Sources */,
 				06301B4820A6E07E003580CA /* DTieEditFooterView.m in Sources */,
 				06E209DE20B03E5900EA541B /* DDSystemAlertController.m in Sources */,
@@ -1676,10 +1752,10 @@
 				061EDD6C20C562CE00066E73 /* SetPassWordViewController.m in Sources */,
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
+				06E5556920C8D71F00C0CE9D /* DTiePOIRequest.m in Sources */,
 				0641710C20B3EB9C0075ECB6 /* AddSeriesViewController.m in Sources */,
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
 				0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */,
-				06286AB020BFE6D500434068 /* ShareImageItem.m in Sources */,
 				066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */,
@@ -1696,6 +1772,7 @@
 				060F004C20ABFAC800C810A1 /* DTieEditReadViewController.m in Sources */,
 				0641711520B419800075ECB6 /* CreateOrUpdateSeriesRequest.m in Sources */,
 				06E209E420B03F1800EA541B /* SystemAlertTableViewCell.m in Sources */,
+				062EFCC820CE78E50019FF68 /* BloggerLinkViewController.m in Sources */,
 				06301B4320A6D309003580CA /* XFCameraController.m in Sources */,
 				066033EF20B2BE6000A54D81 /* SCSafariZoomedInLayouter.m in Sources */,
 				06FCD62C20A54C8500E6EAA4 /* DTieEditModel.m in Sources */,
@@ -1720,6 +1797,7 @@
 				061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */,
 				0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */,
 				066033BE20B29BB200A54D81 /* DTieMapViewController.m in Sources */,
+				062EFCCB20CE7E1B0019FF68 /* BloggerTextView.m in Sources */,
 				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
 				064B34B320A9580800B7D0E4 /* DDFriendViewController.m in Sources */,
 				06733F9B20A2E82D007875A7 /* WeChatManager.m in Sources */,
@@ -1732,9 +1810,11 @@
 				066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
 				061994AD20B5106500AD64AB /* EditSecurityController.m in Sources */,
+				06E5557820C954CF00C0CE9D /* DDChooseFriendCell.m in Sources */,
 				06E209DB20B035BB00EA541B /* MainInfoTableViewCell.m in Sources */,
 				061994A720B5091700AD64AB /* SecurityGroupModel.m in Sources */,
 				06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */,
+				06E0A13020CED14700B9C4B0 /* GetDtieSecurityRequest.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
 				062048D020B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m in Sources */,
 				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
@@ -1745,8 +1825,10 @@
 				064B34B020A941A600B7D0E4 /* DDSystemTableViewCell.m in Sources */,
 				06102AD820B470F700FF3278 /* UIView+LayerCurve.m in Sources */,
 				0647F30D20B6780F009B7C27 /* UserInfoViewController.m in Sources */,
+				0671DE4B20CA24A8007D9F4E /* ShareImageModel.m in Sources */,
 				060F005F20AC2F8F00C810A1 /* DDCollectionTableViewCell.m in Sources */,
 				062048DC20B7F960008DDF25 /* DeleteSecurityRequest.m in Sources */,
+				0671DE5120CA282C007D9F4E /* SelectAttentionMeReuqest.m in Sources */,
 				06102ACE20B46A8500FF3278 /* DTieCancleWYYRequest.m in Sources */,
 				0641710520B3D8F30075ECB6 /* SeriesTableHeaderView.m in Sources */,
 				06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */,
@@ -1765,6 +1847,7 @@
 				0641497020AA7F8500460CB3 /* QNDDUploadManager.m in Sources */,
 				061994B920B5301D00AD64AB /* SeriesDetailViewController.m in Sources */,
 				06733F8420A2C17D007875A7 /* DDNetworkConfiguration.m in Sources */,
+				06E5556F20C930B300C0CE9D /* JubaoRequest.m in Sources */,
 				064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */,
 				066033D620B2BDC800A54D81 /* SCPageLayouter.m in Sources */,
 				061994BC20B53F1900AD64AB /* DTieSearchViewController.m in Sources */,
@@ -1775,11 +1858,13 @@
 				063E7D1E20BEC3D8004AFF63 /* DatePickerView.m in Sources */,
 				06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */,
 				066033F120B2BE6000A54D81 /* SCSafariPageWrapperViewController.m in Sources */,
+				06E5556C20C8E07700C0CE9D /* CollectionLineTitleView.m in Sources */,
 				06C6022820C432870009E536 /* RDAlertAction.m in Sources */,
 				061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */,
 				0623470D20BBDC6600B1894E /* XWDragCellCollectionView.m in Sources */,
 				0641710220B3B9580075ECB6 /* SeriesModel.m in Sources */,
 				06DCC8F620C3BE55000194CA /* DTieDeleteRequest.m in Sources */,
+				062EFCC320CE24D80019FF68 /* DDTabCollectionViewCell.m in Sources */,
 				066033F020B2BE6000A54D81 /* SCSafariPageController.m in Sources */,
 				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
 				06E209E820B03FAC00EA541B /* SettingModel.m in Sources */,
@@ -1788,8 +1873,10 @@
 				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
 				0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */,
 				0685A52D20C660A20050424D /* DDDazhaohuView.m in Sources */,
+				06E5557520C93E8A00C0CE9D /* AgreementViewController.m in Sources */,
 				060F004920ABE94600C810A1 /* DTieListRequest.m in Sources */,
 				066033F220B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m in Sources */,
+				06E5556620C8CBA000C0CE9D /* DTiePOIViewController.m in Sources */,
 				0641497320AAC54800460CB3 /* DDLocationManager.m in Sources */,
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
 				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
@@ -1819,6 +1906,7 @@
 				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
 				0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */,
 				06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */,
+				06E5557220C9335E00C0CE9D /* HelpAndAdviceController.m in Sources */,
 				066033C120B2AD7C00A54D81 /* UserLogoutRequest.m in Sources */,
 				060F005620AC11A800C810A1 /* TYCyclePagerTransformLayout.m in Sources */,
 				0641497720AAEACE00460CB3 /* CreateDTieRequest.m in Sources */,
@@ -1855,17 +1943,6 @@
 			targetProxy = 06733F5320A28BDB007875A7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		06733F3D20A28BDA007875A7 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				06733F3E20A28BDA007875A7 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		06733F5920A28BDB007875A7 /* Debug */ = {
@@ -1983,6 +2060,7 @@
 			baseConfigurationReference = BD1D15A13B00DC07B1DE46A2 /* Pods-DeeDao.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 9U9L62FB58;
 				ENABLE_BITCODE = NO;
@@ -2002,7 +2080,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "040426cc-5ff9-4cd9-b3b1-032f6366eb59";
 				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDev;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -2011,6 +2089,7 @@
 			baseConfigurationReference = F5C498393C9A7DEB14D7B28F /* Pods-DeeDao.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = 9U9L62FB58;
@@ -2029,9 +2108,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "a40516ea-ec78-4b03-97c1-2215a75dbf1f";
+				PROVISIONING_PROFILE = "90f3aa29-ad3a-42bd-8e07-6161fd35d76d";
 				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreADHoc;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

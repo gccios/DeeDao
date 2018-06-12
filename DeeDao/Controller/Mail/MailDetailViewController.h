@@ -9,7 +9,15 @@
 #import "DDViewController.h"
 #import "MailModel.h"
 
+@protocol DTieMailDelegate <NSObject>
+
+- (void)userDidAgreementFriend:(MailModel *)model;
+
+@end
+
 @interface MailDetailViewController : DDViewController
+
+@property (nonatomic, weak) id<DTieMailDelegate> delegate;
 
 - (instancetype)initMailModel:(MailModel *)model;
 

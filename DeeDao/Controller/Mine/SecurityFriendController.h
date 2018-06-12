@@ -13,6 +13,8 @@
 
 - (void)securityFriendDidSelectWith:(UserModel *)model;
 
+- (void)friendDidMulSelectComplete;
+
 @end
 
 @interface SecurityFriendController : DDViewController
@@ -20,5 +22,7 @@
 @property (nonatomic, weak) id<SecurityFriendDelegate> delegate;
 
 - (instancetype)initWithDataDict:(NSDictionary *)dataDict nameKeys:(NSArray *)nameKeys;
+
+- (instancetype)initMulSelectWithDataDict:(NSDictionary *)dataDict nameKeys:(NSArray *)nameKeys selectModels:(NSMutableArray *)selectFriend;
 
 @end

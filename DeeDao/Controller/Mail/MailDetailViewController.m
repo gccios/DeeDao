@@ -9,8 +9,11 @@
 #import "MailDetailViewController.h"
 #import "MainInfoTableViewCell.h"
 #import "DDTool.h"
+#import "UserInfoViewController.h"
 #import <UIImageView+WebCache.h>
 #import "SaveFriendOrConcernRequest.h"
+#import "DTieNewDetailViewController.h"
+#import "DTieDetailRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface MailDetailViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -18,6 +21,7 @@
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) MailModel * model;
+@property (nonatomic, assign) BOOL isDtie;
 
 @end
 
@@ -27,6 +31,11 @@
 {
     if (self = [super init]) {
         self.model = model;
+        NSInteger cid = model.mailTypeId;
+        self.isDtie = NO;
+        if (cid == 1 || cid == 3 || cid == 4 || cid == 5 || cid == 7 || cid == 10 || cid == 11) {
+            self.isDtie = YES;
+        }
     }
     return self;
 }
@@ -36,6 +45,44 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+}
+
+- (void)showDTieDetail
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:self.model.postId type:4 start:0 length:10];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                if (dtieModel.ifCanSee == 0) {
+                    [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
+                    return;
+                }
+                
+                if (dtieModel.deleteFlg == 1) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    return;
+                }
+                DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                [self.navigationController pushViewController:detail animated:YES];
+            }
+        }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
+}
+
+- (void)userInfoShouldLook
+{
+    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.mailSendId];
+    [self.navigationController pushViewController:info animated:YES];
 }
 
 - (void)createViews
@@ -87,7 +134,12 @@
         [button removeTarget:self action:@selector(addFriendOK:) forControlEvents:UIControlEventTouchUpInside];
         [button setTitle:@"返回列表" forState:UIControlStateNormal];
         [button addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        [MBProgressHUD showTextHUDWithText:@"添加成功" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"添加成功" inView:self.navigationController.view];
+        
+        if (self.delegate && [self.delegate respondsToSelector:@selector(userDidAgreementFriend:)]) {
+            [self.delegate userDidAgreementFriend:self.model];
+        }
+        [self.navigationController popViewControllerAnimated:YES];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -104,27 +156,55 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 695 * scale)];
+    UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 340 * scale)];
     
-    UIImageView * bgImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
-    bgImageView.clipsToBounds = YES;
-    [headerView addSubview:bgImageView];
-    [bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(356 * scale);
-    }];
-    
-    UIView * coverView = [[UIView alloc] initWithFrame:CGRectZero];
-    coverView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    [headerView addSubview:coverView];
-    [coverView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(bgImageView.mas_bottom);
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(30 * scale);
-    }];
-    coverView.layer.shadowColor = UIColorFromRGB(0x333333).CGColor;
-    coverView.layer.shadowOpacity = .2f;
-    coverView.layer.shadowOffset = CGSizeMake(0, -12 * scale);
+    if (self.isDtie) {
+        
+        headerView.frame = CGRectMake(0, 0, kMainBoundsWidth, 695 * scale);
+        
+        UIImageView * bgImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
+        [bgImageView sd_setImageWithURL:[NSURL URLWithString:self.model.postFirstPicture] placeholderImage:[UIImage imageNamed:@"list_bg"]];
+        bgImageView.clipsToBounds = YES;
+        bgImageView.clipsToBounds = YES;
+        [headerView addSubview:bgImageView];
+        [bgImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(80 * scale);
+            make.width.mas_equalTo(kMainBoundsWidth / 2);
+            make.centerX.mas_equalTo(0);
+            make.height.mas_equalTo(300 * scale);
+        }];
+        
+        bgImageView.layer.cornerRadius = 24 * scale;
+        bgImageView.layer.shadowColor = [UIColor blackColor].CGColor;
+        bgImageView.layer.shadowOpacity = .3f;
+        bgImageView.layer.shadowRadius = 12 * scale;
+        bgImageView.layer.shadowOffset = CGSizeMake(0, -6 * scale);
+        
+        bgImageView.userInteractionEnabled = YES;
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showDTieDetail)];
+        [bgImageView addGestureRecognizer:tap];
+        
+        UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+        titleLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.6f];
+        titleLabel.text = self.model.mailPostSummary;
+        [bgImageView addSubview:titleLabel];
+        [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.bottom.right.mas_equalTo(0);
+            make.height.mas_equalTo(90 * scale);
+        }];
+        
+        UIView * coverView = [[UIView alloc] initWithFrame:CGRectZero];
+        coverView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+        [headerView addSubview:coverView];
+        [coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(356 * scale);
+            make.left.right.mas_equalTo(0);
+            make.height.mas_equalTo(30 * scale);
+        }];
+        coverView.layer.shadowColor = UIColorFromRGB(0x333333).CGColor;
+        coverView.layer.shadowOpacity = .2f;
+        coverView.layer.shadowOffset = CGSizeMake(0, -12 * scale);
+    }
     
     UIImageView * headerBGView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"headerBG"]];
     [headerView addSubview:headerBGView];
@@ -143,6 +223,9 @@
         make.width.height.mas_equalTo(150 * scale);
     }];
     [DDViewFactoryTool cornerRadius:150 * scale / 2 withView:logoImageView];
+    UITapGestureRecognizer * tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userInfoShouldLook)];
+    logoImageView.userInteractionEnabled = YES;
+    [logoImageView addGestureRecognizer:tap1];
     
     UILabel * nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     nameLabel.text = self.model.nickName;
@@ -152,6 +235,9 @@
         make.left.mas_equalTo(logoImageView.mas_right).offset(45 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userInfoShouldLook)];
+    nameLabel.userInteractionEnabled = YES;
+    [nameLabel addGestureRecognizer:tap2];
     
     UILabel * infoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     infoLabel.text = [MailModel getTitleWithMailTypeId:self.model.mailTypeId];
@@ -213,7 +299,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"消息详情";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

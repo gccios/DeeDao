@@ -20,6 +20,8 @@
 #import "DTieNewEditViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
+#import "WeChatManager.h"
+#import "UserManager.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
@@ -226,7 +228,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    if (!self.model.selfFlg) {
+    if ([UserManager shareManager].user.cid != self.userId) {
         self.bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
         self.bottomHandleView.backgroundColor = [UIColorFromRGB(0xEEEEF4) colorWithAlphaComponent:.7f];
         [self.view addSubview:self.bottomHandleView];
@@ -392,7 +394,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"详细资料";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -401,23 +403,41 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"举报"];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:jubaoButton];
-    jubaoButton.layer.borderWidth = .5f;
-    jubaoButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
-    [jubaoButton addTarget:self action:@selector(jubaoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:jubaoButton];
-    [jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(144 * scale);
-        make.height.mas_equalTo(72 * scale);
-        make.centerY.mas_equalTo(titleLabel);
-        make.right.mas_equalTo(-60 * scale);
+    CGFloat rightMargin = 60 * scale;
+    
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+    [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:shareButton];
+    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
     }];
+    rightMargin = 160 * scale;
+    
+//    UIButton * jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"举报"];
+//    [DDViewFactoryTool cornerRadius:12 * scale withView:jubaoButton];
+//    jubaoButton.layer.borderWidth = .5f;
+//    jubaoButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+//    [jubaoButton addTarget:self action:@selector(jubaoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.topView addSubview:jubaoButton];
+//    [jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.width.mas_equalTo(144 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//        make.centerY.mas_equalTo(titleLabel);
+//        make.right.mas_equalTo(-rightMargin);
+//    }];
 }
 
 - (void)jubaoButtonDidClicked
 {
     NSLog(@"举报");
+}
+
+- (void)shareButtonDidClicked
+{
+    [[WeChatManager shareManager] shareMiniProgramWithUser:self.model];
 }
 
 - (void)backButtonDidClicked

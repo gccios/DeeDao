@@ -15,6 +15,8 @@
 #import "DDSystemViewController.h"
 #import "DDFriendViewController.h"
 #import "DDPrivateViewController.h"
+#import "BloggerLinkViewController.h"
+#import "UserManager.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -39,9 +41,15 @@
 - (void)createDataSource
 {
     self.dataSource = [NSMutableArray new];
-    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Address],
+    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Private]];
+    
+    if ([UserManager shareManager].user.bloggerFlg == 1) {
+        typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_Blogger]];
+    }
+    
     NSArray * sysArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_System]];
     [self.dataSource addObject:typeArray];
     [self.dataSource addObject:sysArray];
@@ -99,7 +107,7 @@
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"个人中心";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -154,6 +162,13 @@
         {
             DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
             [self.navigationController pushViewController:private animated:YES];
+        }
+            break;
+            
+        case MineMenuType_Blogger:
+        {
+            BloggerLinkViewController * blogger = [[BloggerLinkViewController alloc] init];
+            [self.navigationController pushViewController:blogger animated:YES];
         }
             break;
             

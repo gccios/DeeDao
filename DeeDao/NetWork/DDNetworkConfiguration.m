@@ -64,6 +64,14 @@
 }
 
 - (BOOL)shouldBusinessSuccessWithResponseData:(NSDictionary *)responseData task:(NSURLSessionDataTask *)task request:(BGNetworkRequest *)request {
+    
+    if (KIsDictionary(responseData)) {
+        NSInteger status = [[responseData objectForKey:@"status"] integerValue];
+        if (status == 1001) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"UserShouldBackToRelogin" object:nil];
+        }
+    }
+    
     return YES;
 }
 

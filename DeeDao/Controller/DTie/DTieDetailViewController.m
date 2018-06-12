@@ -104,7 +104,7 @@
     self.handleView.yaoyueButton.enabled = NO;
     if (self.model.wyyFlg) {
         
-        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.postId];
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             self.model.wyyFlg = 0;
@@ -119,7 +119,7 @@
         }];
         
     }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:1 subType:0 remark:@""];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:1 subType:0 remark:@""];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -187,7 +187,7 @@
     
     self.handleView.dazhaohuButton.enabled = NO;
     
-    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.postId type:0 subType:1 remark:@""];
+    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:0 subType:1 remark:@""];
     
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -435,7 +435,20 @@
 {
     UIImageView * imageView = (UIImageView *)longPress.view;
     if ([imageView isKindOfClass:[UIImageView class]]) {
-        [[DDShareManager shareManager] showHandleViewWithImage:imageView.image];
+        ShareImageModel * model = [[ShareImageModel alloc] init];
+        NSInteger postId = self.model.cid;
+        if (postId == 0) {
+            postId = self.model.postId;
+        }
+        model.postId = postId;
+        model.image = imageView.image;
+        model.title = self.model.postSummary;
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
+        NSArray * tempArray = [self.model.details filteredArrayUsingPredicate:predicate];
+        if (tempArray && tempArray.count > 0) {
+            model.pflg = 1;
+        }
+        [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }
 
@@ -471,7 +484,7 @@
         make.width.mas_equalTo(kMainBoundsWidth - 120 * scale);
     }];
     
-    UIButton * addSeriButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"将当前D贴加入已有系列或新建系列中"];
+    UIButton * addSeriButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"将当前D帖加入已有系列或新建系列中"];
     [footerView addSubview:addSeriButton];
     [addSeriButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(line1.mas_bottom);
@@ -610,7 +623,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = self.model.postSummary;
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

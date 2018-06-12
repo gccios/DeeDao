@@ -26,7 +26,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) NSString * imageURL;
 @property (nonatomic, strong) UIImage * videoImage;
 @property (nonatomic, strong) NSURL * videoURL;
-@property (nonatomic, assign) BOOL shareEnable;
+@property (nonatomic, assign) NSInteger shareEnable;
 
 @property (nonatomic, copy) NSString * detailsContent;
 @property (nonatomic, assign) NSInteger detailNumber;
@@ -37,6 +37,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) NSString * cid;
 @property (nonatomic, assign) NSInteger pFlag;
 @property (nonatomic, assign) NSInteger postId;
+@property (nonatomic, assign) NSInteger wxCanSee;
 
 //@property (nonatomic, assign) CGFloat height;
 

@@ -104,7 +104,7 @@
         make.height.mas_equalTo(120 * scale);
     }];
     
-    UIButton * button = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"D贴草稿已生成，点击深度编辑"];
+    UIButton * button = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"D帖草稿已生成，点击深度编辑"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:button];
     button.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     button.layer.borderWidth = 3 * scale;

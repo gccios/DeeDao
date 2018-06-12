@@ -658,7 +658,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         make.height.mas_equalTo(120 * scale);
     }];
     self.QXLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-    NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"默认当前D贴权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"默认当前D帖权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
     [string appendAttributedString:[[NSAttributedString alloc] initWithString:@"公开" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}]];
     [string appendAttributedString:[[NSAttributedString alloc] initWithString:@"，点击更改" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}]];
     self.QXLabel.attributedText = string;
@@ -834,7 +834,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 {
     self.groupModel = model;
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"当前D贴权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    NSMutableAttributedString * string = [[NSMutableAttributedString alloc] initWithString:@"当前D帖权限为" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
     NSString * name = model.securitygroupName;
     [string appendAttributedString:[[NSAttributedString alloc] initWithString:name attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}]];
     [string appendAttributedString:[[NSAttributedString alloc] initWithString:@"，点击更改" attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}]];
@@ -906,8 +906,8 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"编辑D贴";
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
+    titleLabel.text = @"编辑D帖";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -1152,7 +1152,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
 - (void)uploadDtieWithList:(NSMutableArray *)array withTitle:(NSString *)title
 {
     if (array.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"不能发布空贴哟~" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"不能发布空帖哟~" inView:self.view];
         return;
     }
     
@@ -1249,7 +1249,7 @@ NSString * const DTieDidCreateNotification = @"DTieDidCreateNotification";
         if (self.shareImages && self.shareImages.count > 0) {
             image = [self.shareImages firstObject];
         }
-        [[WeChatManager shareManager] shareMiniProgramWithPostID:self.editModel.cid image:image];
+        [[WeChatManager shareManager] shareMiniProgramWithPostID:self.editModel.cid image:image isShare:YES];
     }
 }
 

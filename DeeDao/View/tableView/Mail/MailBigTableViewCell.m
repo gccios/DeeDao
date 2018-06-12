@@ -80,7 +80,7 @@
     }];
     
     self.InfoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-//    self.InfoLabel.text = @"在你的D贴的位置向你打招呼";
+//    self.InfoLabel.text = @"在你的D帖的位置向你打招呼";
     [self.baseView addSubview:self.InfoLabel];
     [self.InfoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.topImageView.mas_bottom).offset(20 * scale);

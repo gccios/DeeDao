@@ -15,7 +15,7 @@
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPPost;
         self.methodName = @"scyGroup/delScyGroup";
-        [self setIntegerValue:groupId forParamKey:@"ScyGroupId"];
+        [self setIntegerValue:groupId forParamKey:@"scyGroupId"];
     }
     return self;
 }

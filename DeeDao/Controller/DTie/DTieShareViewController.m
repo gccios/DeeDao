@@ -13,6 +13,7 @@
 #import "WeChatManager.h"
 #import "DDShareManager.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "ShareImageModel.h"
 
 @interface DTieShareViewController ()<XWDragCellCollectionViewDataSource, XWDragCellCollectionViewDelegate, XRWaterfallLayoutDelegate>
 
@@ -28,6 +29,23 @@
 
 @implementation DTieShareViewController
 
+- (instancetype)initWithShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
+{
+    if (self = [super init]) {
+        [self.shareList removeAllObjects];
+        
+        for (UIImage * image in shareList) {
+            ShareImageModel * model = [[ShareImageModel alloc] init];
+            model.postId = postId;
+            model.image = image;
+            model.title = title;
+            model.pflg = pflg;
+            [self.shareList addObject:model];
+        }
+    }
+    return self;
+}
+
 - (instancetype)initWithShareList:(NSMutableArray *)shareList
 {
     if (self = [super init]) {
@@ -41,14 +59,13 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
-    
-    [MBProgressHUD showTextHUDWithText:@"长按调整图片" inView:self.view];
 }
 
 //根据item的宽度与indexPath计算每一个item的高度
 - (CGFloat)waterfallLayout:(XRWaterfallLayout *)waterfallLayout itemHeightForWidth:(CGFloat)itemWidth atIndexPath:(NSIndexPath *)indexPath {
     //根据图片的原始尺寸，及显示宽度，等比例缩放来计算显示高度
-    UIImage *image = self.shareList[indexPath.item];
+    ShareImageModel * model = [self.shareList objectAtIndex:indexPath.item];
+    UIImage *image = model.image;
     return itemWidth * image.size.height / image.size.width;
 }
 
@@ -64,7 +81,8 @@
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     DDShareImageCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DDShareImageCollectionViewCell" forIndexPath:indexPath];
     
-    UIImage * image = [self.shareList objectAtIndex:indexPath.row];
+    ShareImageModel * model = [self.shareList objectAtIndex:indexPath.item];
+    UIImage * image = model.image;
     [cell configImageWith:image isEdit:self.isEdit];
     
     __weak typeof(self) weakSelf = self;
@@ -169,7 +187,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     self.titleLabel.text = @"地到分享";
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -212,6 +230,20 @@
 - (void)backButtonDidClicked
 {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (NSMutableArray *)shareList
+{
+    if (!_shareList) {
+        _shareList = [[NSMutableArray alloc] init];
+    }
+    return _shareList;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [MBProgressHUD showTextHUDWithText:@"长按调整图片" inView:self.view];
 }
 
 - (void)didReceiveMemoryWarning {

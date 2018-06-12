@@ -7,6 +7,7 @@
 //
 
 #import "MailModel.h"
+#import "DDTool.h"
 
 @implementation MailModel
 
@@ -52,7 +53,7 @@
     
     switch (typeId) {
         case 1:
-            result = @"转发了您的帖子";
+            result = @"发表了一个帖子";
             break;
             
         case 2:
@@ -60,19 +61,19 @@
             break;
             
         case 3:
-            result = @"收藏了您的D贴";
+            result = @"收藏了您的D帖";
             break;
             
         case 4:
-            result = @"表示我要约";
+            result = @"对您的帖子表示我要约";
             break;
             
         case 5:
-            result = @"在D贴的位置向您打招呼";
+            result = @"在D帖的位置向您打招呼";
             break;
             
         case 6:
-            result = @"被感谢";
+            result = @"向您表示了感谢";
             break;
             
         case 7:
@@ -88,17 +89,25 @@
             break;
             
         case 10:
-            result = @"新留言";
+            result = @"您的D帖收到一条新留言";
             break;
             
         case 11:
-            result = @"转发了您的帖子";
+            result = @"转发了帖子给您";
             break;
             
         default:
             break;
     }
     return result;
+}
+
+- (void)setPostFirstPicture:(NSString *)postFirstPicture
+{
+    if ([postFirstPicture hasPrefix:@"<p></p><img"]) {
+        postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
+    }
+    _postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
 }
 
 @end

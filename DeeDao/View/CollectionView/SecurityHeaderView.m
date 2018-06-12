@@ -57,7 +57,7 @@
     self.nameTextField.leftViewMode = UITextFieldViewModeAlways;
     
     UILabel * DTieTip = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.87f] alignment:NSTextAlignmentLeft];
-    DTieTip.text = @"圈内D贴";
+    DTieTip.text = @"圈内D帖";
     [self addSubview:DTieTip];
     [DTieTip mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(whiteView1.mas_bottom).offset(48 * scale);
@@ -75,7 +75,7 @@
     }];
     
     UILabel * DTieLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:[UIColorFromRGB(0x333333) colorWithAlphaComponent:.87f] backgroundColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentLeft];
-    DTieLabel.text = @"选择圈内包含D贴";
+    DTieLabel.text = @"选择圈内包含D帖";
     [self.whiteView2 addSubview:DTieLabel];
     [DTieLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);

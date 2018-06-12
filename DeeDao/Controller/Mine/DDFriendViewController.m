@@ -11,9 +11,12 @@
 #import "DDFriendTableHeaderView.h"
 #import "SelectFriendRequest.h"
 #import "SelectAttentionRequest.h"
+#import "SelectAttentionMeReuqest.h"
 #import "UserInfoViewController.h"
+#import "UserManager.h"
+#import <MJRefresh.h>
 
-@interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource, UserFriendInfoDelegate>
+@interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UITableView * tableView;
@@ -40,6 +43,7 @@
     self.dataDict = [[NSMutableDictionary alloc] init];
     self.friendDataDict = [[NSMutableDictionary alloc] init];
     self.attentionDataDict = [[NSMutableDictionary alloc] init];
+    self.attentionMyDataDict = [[NSMutableDictionary alloc] init];
     
     [self createViews];
 }
@@ -61,11 +65,24 @@
         make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshData)];
     
     [self creatTopView];
     
     [self requestFriendList];
     [self requestAttentionList];
+    [self requestAttentionMeList];
+}
+
+- (void)refreshData
+{
+    if (self.selectButton == self.myFriendButton) {
+        [self requestFriendList];
+    }else if (self.selectButton == self.myAttentionButton) {
+        [self requestAttentionList];
+    }else if (self.selectButton == self.attentionMyButton) {
+        [self requestAttentionMeList];
+    }
 }
 
 - (void)requestFriendList
@@ -73,6 +90,7 @@
     SelectFriendRequest * request = [[SelectFriendRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        [self.tableView.mj_header endRefreshing];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
@@ -87,9 +105,9 @@
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
+        [self.tableView.mj_header endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
+        [self.tableView.mj_header endRefreshing];
     }];
 }
 
@@ -97,7 +115,7 @@
 {
     SelectAttentionRequest * request = [[SelectAttentionRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
+        [self.tableView.mj_header endRefreshing];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
@@ -110,16 +128,48 @@
                 [self sortFriends:source dataDict:self.attentionDataDict];
             }
         }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.tableView.mj_header endRefreshing];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [self.tableView.mj_header endRefreshing];
+    }];
+}
+
+- (void)requestAttentionMeList
+{
+    SelectAttentionMeReuqest * request = [[SelectAttentionMeReuqest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.tableView.mj_header endRefreshing];
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                NSMutableArray * source = [[NSMutableArray alloc] init];
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                    [source addObject:model];
+                }
+                [self sortFriends:source dataDict:self.attentionMyDataDict];
+            }
+        }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
+        [self.tableView.mj_header endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
+        [self.tableView.mj_header endRefreshing];
     }];
 }
 
 - (void)sortFriends:(NSMutableArray *)source dataDict:(NSMutableDictionary *)dataDict
 {
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", [UserManager shareManager].user.cid];
+    NSArray * tempArray = [source filteredArrayUsingPredicate:predicate];
+    if (tempArray && tempArray.count > 0) {
+        
+    }else{
+        [source addObject:[UserManager shareManager].user];
+    }
+    
     [dataDict removeAllObjects];
     
     // 将耗时操作放到子线程
@@ -129,6 +179,10 @@
         for (UserModel * model in source) {
             // 获取并返回首字母
             NSString * firstLetterString =model.firstLetter;
+            
+            if (isEmptyString(firstLetterString)) {
+                continue;
+            }
             
             //如果该字母对应的联系人模型不为空,则将此联系人模型添加到此数组中
             if (dataDict[firstLetterString])
@@ -146,10 +200,6 @@
                 [dataDict setObject:arrGroupNames forKey:firstLetterString];
             }
         }
-        
-        // 将addressBookDict字典中的所有Key值进行排序: A~Z
-        NSArray *nameKeys = [[dataDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
-        self.nameKeys = [[NSArray alloc] initWithArray:nameKeys];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [self tabButtonDidClicked:self.selectButton];
@@ -191,17 +241,7 @@
     UserModel * model = [data objectAtIndex:indexPath.row];
     
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.cid];
-    info.delegate = self;
     [self.navigationController pushViewController:info animated:YES];
-}
-
-- (void)userFriendInfoDidUpdate
-{
-    if (self.selectButton == self.myFriendButton) {
-        [self requestFriendList];
-    }else if (self.selectButton == self.myAttentionButton) {
-        [self requestAttentionList];
-    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -281,7 +321,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentCenter];
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
     titleLabel.text = @"关系列表";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {

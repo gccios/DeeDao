@@ -71,6 +71,7 @@
     self.textField.indexPath = indexPath;
     
     self.textField.hidden = NO;
+    self.textField.enabled = NO;
     self.headImageView.hidden = YES;
     
     switch (type) {
@@ -90,7 +91,7 @@
             
         {
             self.nameLabel.text = @"昵称";
-            self.textField.placeholder = @"请输入您的姓名";
+            self.textField.placeholder = @"";
             self.textField.text = [UserManager shareManager].user.nickname;
         }
             
@@ -100,7 +101,7 @@
             
         {
             self.nameLabel.text = @"性别";
-            self.textField.placeholder = @"请输入您的性别";
+            self.textField.placeholder = @"";
             NSInteger sex = [[UserManager shareManager].user.sex integerValue];
             if (sex) {
                 self.textField.text = @"男";
@@ -115,7 +116,7 @@
             
         {
             self.nameLabel.text = @"地区";
-            self.textField.placeholder = @"请输入您所在地区";
+            self.textField.placeholder = @"";
             self.textField.text = [UserManager shareManager].user.country;
         }
             
@@ -125,7 +126,7 @@
             
         {
             self.nameLabel.text = @"手机";
-            self.textField.placeholder = @"请输入您的手机号";
+            self.textField.placeholder = @"";
             self.textField.text = [UserManager shareManager].user.phone;
         }
             
@@ -135,7 +136,7 @@
             
         {
             self.nameLabel.text = @"签名";
-            self.textField.placeholder = @"请输入您的个性签名";
+            self.textField.placeholder = @"";
             self.textField.text = [UserManager shareManager].user.signature;
         }
             
@@ -145,7 +146,7 @@
             
         {
             self.nameLabel.text = @"生日";
-            self.textField.placeholder = @"请输入您的公历生日";
+            self.textField.placeholder = @"";
         }
             
             break;

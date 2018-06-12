@@ -134,7 +134,7 @@
         make.width.height.mas_equalTo(96 * scale);
     }];
     
-    self.showButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"查看D贴"];
+    self.showButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"查看D帖"];
     [self.showButton addTarget:self action:@selector(showButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.showButton];
     [self.contentView addSubview:self.showButton];

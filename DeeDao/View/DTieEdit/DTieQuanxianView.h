@@ -12,7 +12,7 @@
 
 @interface DTieQuanxianView : UIView
 
-@property (nonatomic, strong) NSMutableArray * allowToSeeList;
+@property (nonatomic, strong) NSMutableArray * selectSource;
 @property (nonatomic, assign) NSInteger shareType;
 @property (nonatomic, assign) NSInteger landAccountFlg;
 

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ShareImageModel.h"
 
 @interface DDShareManager : NSObject
 
@@ -18,7 +19,7 @@
 
 - (void)showShareList;
 
-- (void)showHandleViewWithImage:(UIImage *)image;
+- (void)showHandleViewWithImage:(ShareImageModel *)image;
 
 - (void)updateNumber;
 
