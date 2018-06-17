@@ -279,15 +279,17 @@
                 [self.pointArray removeAllObjects];
                 
                 NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
+                NSMutableArray * tempMapArray = [[NSMutableArray alloc] init];
                 
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    [self.mapSource addObject:model];
+                    [tempMapArray addObject:model];
                     
                     BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
                     annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
                     [tempPointArray addObject:annotation];
                 }
+                [self.mapSource addObjectsFromArray:[[tempMapArray reverseObjectEnumerator] allObjects]];
                 [self.pointArray addObjectsFromArray:[[tempPointArray reverseObjectEnumerator] allObjects]];
                 [self.mapView addAnnotations:self.pointArray];
 //                [self meterDistance];
