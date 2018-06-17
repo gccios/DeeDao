@@ -34,6 +34,7 @@
 		061994B920B5301D00AD64AB /* SeriesDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994B820B5301D00AD64AB /* SeriesDetailViewController.m */; };
 		061994BC20B53F1900AD64AB /* DTieSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994BB20B53F1900AD64AB /* DTieSearchViewController.m */; };
 		061994BF20B578F300AD64AB /* MailMessageRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994BE20B578F300AD64AB /* MailMessageRequest.m */; };
+		0619BAF220D6417300D49A7A /* gongzhongCode.png in Resources */ = {isa = PBXBuildFile; fileRef = 0619BAF120D6417300D49A7A /* gongzhongCode.png */; };
 		061EDD6920C4E60800066E73 /* DDTelLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061EDD6820C4E60800066E73 /* DDTelLoginViewController.m */; };
 		061EDD6C20C562CE00066E73 /* SetPassWordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061EDD6B20C562CE00066E73 /* SetPassWordViewController.m */; };
 		061EDD6F20C56E1600066E73 /* PassWordSetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061EDD6E20C56E1600066E73 /* PassWordSetViewController.m */; };
@@ -176,7 +177,6 @@
 		06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */; };
 		06C6022820C432870009E536 /* RDAlertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022420C432870009E536 /* RDAlertAction.m */; };
 		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
-		06CF7BBC20CF6881008BBC05 /* gongzhongCode.png in Resources */ = {isa = PBXBuildFile; fileRef = 06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */; };
 		06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1488C20C6DDDB00DB010A /* DTieShareView.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
@@ -283,6 +283,7 @@
 		061994BB20B53F1900AD64AB /* DTieSearchViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSearchViewController.m; sourceTree = "<group>"; };
 		061994BD20B578F300AD64AB /* MailMessageRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MailMessageRequest.h; sourceTree = "<group>"; };
 		061994BE20B578F300AD64AB /* MailMessageRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MailMessageRequest.m; sourceTree = "<group>"; };
+		0619BAF120D6417300D49A7A /* gongzhongCode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gongzhongCode.png; sourceTree = "<group>"; };
 		061EDD6720C4E60800066E73 /* DDTelLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDTelLoginViewController.h; sourceTree = "<group>"; };
 		061EDD6820C4E60800066E73 /* DDTelLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTelLoginViewController.m; sourceTree = "<group>"; };
 		061EDD6A20C562CE00066E73 /* SetPassWordViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SetPassWordViewController.h; sourceTree = "<group>"; };
@@ -564,7 +565,6 @@
 		06C6022520C432870009E536 /* RDAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertView.h; sourceTree = "<group>"; };
 		06C6022620C432870009E536 /* RDAlertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertAction.h; sourceTree = "<group>"; };
 		06C6022720C432870009E536 /* RDAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertView.m; sourceTree = "<group>"; };
-		06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gongzhongCode.png; sourceTree = "<group>"; };
 		06D1488B20C6DDDB00DB010A /* DTieShareView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieShareView.h; sourceTree = "<group>"; };
 		06D1488C20C6DDDB00DB010A /* DTieShareView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieShareView.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
@@ -1145,7 +1145,7 @@
 		06733F6C20A29343007875A7 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
-				06CF7BBB20CF6880008BBC05 /* gongzhongCode.png */,
+				0619BAF120D6417300D49A7A /* gongzhongCode.png */,
 				06286AA820BFC8E500434068 /* mapChooseBG.jpeg */,
 				063E7D1920BE601E004AFF63 /* custom_config_0323 */,
 				06733F6D20A2934B007875A7 /* Image */,
@@ -1644,7 +1644,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				06CF7BBC20CF6881008BBC05 /* gongzhongCode.png in Resources */,
+				0619BAF220D6417300D49A7A /* gongzhongCode.png in Resources */,
 				063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */,
 				06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
@@ -2108,8 +2108,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "90f3aa29-ad3a-42bd-8e07-6161fd35d76d";
-				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreADHoc;
+				PROVISIONING_PROFILE = "824375db-9d7b-4a68-b78d-792970ca28c8";
+				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDistribution;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

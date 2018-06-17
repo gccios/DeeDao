@@ -11,6 +11,7 @@
 #import <Masonry.h>
 #import "DDLocationManager.h"
 #import "UserManager.h"
+#import <WXApi.h>
 
 @interface DTieDetailTextTableViewCell ()
 
@@ -20,6 +21,8 @@
 @property (nonatomic, strong) UIVisualEffectView * effectView;
 @property (nonatomic, strong) UIView * coverView;
 
+@property (nonatomic, assign) BOOL isInstallWX;
+
 @end
 
 @implementation DTieDetailTextTableViewCell
@@ -27,6 +30,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.isInstallWX = [WXApi isWXAppInstalled];
         [self createDetailTextCell];
     }
     return self;
@@ -156,6 +160,11 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (dtieModel.authorId == [UserManager shareManager].user.cid) {
+        
+        if (!self.isInstallWX) {
+            self.quanxianImageView.hidden = YES;
+            return;
+        }
         
         NSString * imageName = @"";
         if (model.wxCanSee == 1 || model.shareEnable == 1) {

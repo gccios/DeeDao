@@ -14,6 +14,7 @@
 #import "LookImageViewController.h"
 #import "DDLocationManager.h"
 #import "UserManager.h"
+#import <WXApi.h>
 
 @interface DTieDetailImageTableViewCell ()
 
@@ -26,6 +27,8 @@
 @property (nonatomic, strong) UIVisualEffectView * effectView;
 @property (nonatomic, strong) UIView * converView;
 
+@property (nonatomic, assign) BOOL isInstallWX;
+
 @end
 
 @implementation DTieDetailImageTableViewCell
@@ -33,6 +36,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.isInstallWX = [WXApi isWXAppInstalled];
         [self createDetailImageCell];
     }
     return self;
@@ -191,6 +195,11 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (dtieModel.authorId == [UserManager shareManager].user.cid) {
+        
+        if (!self.isInstallWX) {
+            self.quanxianImageView.hidden = YES;
+            return;
+        }
         
         NSString * imageName = @"";
         if (model.wxCanSee == 1 || model.shareEnable == 1) {

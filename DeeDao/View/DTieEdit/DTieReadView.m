@@ -33,6 +33,7 @@
 
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
+#import <WXApi.h>
 
 @interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete>
 
@@ -58,6 +59,8 @@
 @property (nonatomic, strong) UIButton * liuyanButton;
 @property (nonatomic, strong) UILabel * liuyanLabel;
 
+@property (nonatomic, assign) BOOL isInsatllWX;
+
 @end
 
 @implementation DTieReadView
@@ -67,6 +70,7 @@
     if (self = [super initWithFrame:frame]) {
         
         self.model = model;
+        self.isInsatllWX = [WXApi isWXAppInstalled];
         if (model.details) {
             [self sortWithDetails:model.details];
         }else{
@@ -412,7 +416,7 @@
         height = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 60 * scale;
     }
     
-    if (self.isSelfFlg) {
+    if (self.isSelfFlg && self.isInsatllWX) {
         if (model.wxCanSee == 1 || model.pFlag == 1 || model.shareEnable == 1) {
             height += 72 * scale;
         }

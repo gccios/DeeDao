@@ -314,7 +314,7 @@
         [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
         [self.topView addSubview:editButton];
         [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(shareButton.mas_left).offset(0 * scale);
+            make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
             make.bottom.mas_equalTo(-20 * scale);
             make.width.height.mas_equalTo(100 * scale);
         }];

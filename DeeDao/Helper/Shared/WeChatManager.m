@@ -99,7 +99,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
     program.path = [NSString stringWithFormat:@"pages/index/index?postId=%ld", postID];
-    program.miniProgramType = WXMiniProgramTypeTest;
+    program.miniProgramType = WXMiniProgramTypeRelease;
     
     NSData*  data = [NSData data];
     data = UIImageJPEGRepresentation(image, 1);
@@ -133,7 +133,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
     program.path = [NSString stringWithFormat:@"pages/index/index?authorId=%ld", model.cid];
-    program.miniProgramType = WXMiniProgramTypeTest;
+    program.miniProgramType = WXMiniProgramTypeRelease;
     
     UIImage * image = [self imageWithModel:model];
     

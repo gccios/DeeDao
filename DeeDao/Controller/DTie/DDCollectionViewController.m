@@ -330,6 +330,10 @@
 
 - (void)reloadPageWithIndex:(NSInteger)index
 {
+    if (self.dataSource.count == 0) {
+        return;
+    }
+    
     DTieModel * model = [self.dataSource objectAtIndex:index];
     
     if (model) {
@@ -346,6 +350,9 @@
             if ([vc isKindOfClass:[DDDTieViewController class]]) {
                 DDDTieViewController * tie = (DDDTieViewController *)vc;
                 [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+            }
+            if (self.dataSource.count == 0) {
+                [self.navigationController popViewControllerAnimated:YES];
             }
             
             return;
