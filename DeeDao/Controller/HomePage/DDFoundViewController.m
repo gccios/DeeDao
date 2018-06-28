@@ -81,7 +81,7 @@
     self.isFirst = YES;
     // Do any additional setup after loading the view.
     
-    self.sourceType = 1;
+    self.sourceType = 7;
     
     [self creatViews];
     [self creatTopView];
@@ -427,7 +427,11 @@
     if ([self.pointArray containsObject:view.annotation]) {
         NSInteger index = [self.pointArray indexOfObject:view.annotation];
         
-        DDCollectionViewController * vc = [[DDCollectionViewController alloc] initWithDataSource:self.mapSource index:index];
+        DTieModel * model = [self.mapSource objectAtIndex:index];
+        NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
+        index = [tempArray indexOfObject:model];
+        
+        DDCollectionViewController * vc = [[DDCollectionViewController alloc] initWithDataSource:tempArray index:index];
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
@@ -499,14 +503,14 @@
 
 - (void)sourceButtonDidClicked
 {
-    if (self.sourceType == 1) {
+    if (self.sourceType == 7) {
         self.sourceType = 8;
         [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
     }else if (self.sourceType == 8) {
         self.sourceType = 6;
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
     }else{
-        self.sourceType = 1;
+        self.sourceType = 7;
         [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
     }
     

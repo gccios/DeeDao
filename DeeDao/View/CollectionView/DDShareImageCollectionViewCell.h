@@ -14,8 +14,12 @@
 
 @property (nonatomic, copy) void (^cancleButtonClicked)(void);
 
+- (void)configWithImage:(UIImage *)image;
+
 - (void)configImageWith:(UIImage *)image isEdit:(BOOL)isEdit;
 
 - (void)configEdit:(NSNumber *)isEdit;
+
+- (void)configIndex:(NSInteger)index hidden:(BOOL)hidden;
 
 @end

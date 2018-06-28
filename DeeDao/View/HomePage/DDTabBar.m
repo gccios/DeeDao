@@ -7,7 +7,6 @@
 //
 
 #import "DDTabBar.h"
-#import "DTieEditViewController.h"
 #import "DTieNewEditViewController.h"
 
 @interface DDTabBar ()

@@ -52,16 +52,16 @@
     self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.mapView.delegate = self;
     
-    //设置定位图层自定义样式
-    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
-    //精度圈是否显示
-    userlocationStyle.isRotateAngleValid = YES;
-    //跟随态旋转角度是否生效
-    userlocationStyle.isAccuracyCircleShow = YES;
-    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
-    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
-    [self.mapView updateLocationViewWithParam:userlocationStyle];
-    self.mapView.showsUserLocation = YES;
+//    //设置定位图层自定义样式
+//    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
+//    //精度圈是否显示
+//    userlocationStyle.isRotateAngleValid = YES;
+//    //跟随态旋转角度是否生效
+//    userlocationStyle.isAccuracyCircleShow = YES;
+//    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
+//    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+//    [self.mapView updateLocationViewWithParam:userlocationStyle];
+    self.mapView.showsUserLocation = NO;
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
     
     [self.view addSubview:self.mapView];
@@ -100,7 +100,7 @@
 //    self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
 //    self.geocodesearch.delegate = self;
     
-    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"currentLocation"]];
+    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
     [self.mapView addSubview:imageView];
     [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(0);

@@ -15,8 +15,6 @@
 
 @property (nonatomic, weak) UIButton * tempNumberLabel;
 
-@property (nonatomic, assign) NSInteger editShareCount;
-
 - (void)showShareList;
 
 - (void)showHandleViewWithImage:(ShareImageModel *)image;

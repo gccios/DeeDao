@@ -12,7 +12,9 @@
 @interface DDShareImageCollectionViewCell ()
 
 @property (nonatomic, strong) UIImageView * shareImageView;
-@property (nonatomic, strong) UIButton * cancleButton;
+//@property (nonatomic, strong) UIButton * cancleButton;
+
+@property (nonatomic, strong) UILabel * numberLabel;
 
 @end
 
@@ -51,24 +53,45 @@
     self.shareImageView.layer.cornerRadius = 24 * scale;
     self.shareImageView.clipsToBounds = YES;
     
-    self.cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.contentView addSubview:self.cancleButton];
-    [self.cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(0);
-        make.right.mas_equalTo(0);
-        make.width.height.mas_equalTo(82 * scale);
-    }];
-    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cancleButtonDidClicked)];
-    [self.cancleButton addGestureRecognizer:self.tap];
+//    self.cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [self.contentView addSubview:self.cancleButton];
+//    [self.cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(0);
+//        make.right.mas_equalTo(0);
+//        make.width.height.mas_equalTo(82 * scale);
+//    }];
+//    self.tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cancleButtonDidClicked)];
+//    [self.cancleButton addGestureRecognizer:self.tap];
+//
+//    UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+//    imageView.contentMode = UIViewContentModeScaleAspectFill;
+//    [imageView setImage:[UIImage imageNamed:@"jianqu"]];
+//    [self.cancleButton addSubview:imageView];
+//    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.right.mas_equalTo(0);
+//        make.width.height.mas_equalTo(72 * scale);
+//    }];
     
-    UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    [imageView setImage:[UIImage imageNamed:@"jianqu"]];
-    [self.cancleButton addSubview:imageView];
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.right.mas_equalTo(0);
-        make.width.height.mas_equalTo(72 * scale);
+    self.numberLabel = [[UILabel alloc] init];
+    self.numberLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
+    self.numberLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    self.numberLabel.font = kPingFangMedium(120 * scale);
+    self.numberLabel.textAlignment = NSTextAlignmentCenter;
+    [self.shareImageView addSubview:self.numberLabel];
+    [self.numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
     }];
+    self.numberLabel.hidden = YES;
+}
+
+- (void)configIndex:(NSInteger)index hidden:(BOOL)hidden
+{
+    if (hidden) {
+        self.numberLabel.hidden = YES;
+    }else{
+        self.numberLabel.text = [NSString stringWithFormat:@"%ld", index];
+        self.numberLabel.hidden = NO;
+    }
 }
 
 - (void)cancleButtonDidClicked
@@ -81,19 +104,17 @@
 - (void)configImageWith:(UIImage *)image isEdit:(BOOL)isEdit
 {
     [self.shareImageView setImage:image];
-    self.cancleButton.hidden = !isEdit;
+//    self.cancleButton.hidden = !isEdit;
+}
+
+- (void)configWithImage:(UIImage *)image
+{
+    [self.shareImageView setImage:image];
 }
 
 - (void)configEdit:(NSNumber *)isEdit
 {
-    self.cancleButton.hidden = ![isEdit boolValue];
-}
-
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-    UIView * view = [super hitTest:point withEvent:event];
-    NSLog(@"%@", view);
-    return view;
+//    self.cancleButton.hidden = ![isEdit boolValue];
 }
 
 @end

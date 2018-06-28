@@ -11,6 +11,8 @@
 
 @interface DTieReadView : UIView
 
+@property (nonatomic, assign) BOOL isPreRead; //是否是预览
+
 @property (nonatomic, weak) UINavigationController * parentDDViewController;
 
 @property (nonatomic, strong) DTieModel * model;

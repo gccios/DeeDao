@@ -11,10 +11,10 @@
 
 @interface DTieDetailTextTableViewCell : UITableViewCell
 
-- (void)configWithModel:(DTieEditModel *)model;
+//- (void)configWithModel:(DTieEditModel *)model;
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel;
 
-- (void)configWithCanSee:(BOOL)cansee;
+//- (void)configWithCanSee:(BOOL)cansee;
 
 @end

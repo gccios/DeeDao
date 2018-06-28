@@ -28,6 +28,8 @@
 @property (nonatomic, strong) UILabel * deedaoLabel;
 @property (nonatomic, strong) UIImageView * deedaoImageView;
 
+@property (nonatomic, strong) UILabel * preLabel;
+
 @end
 
 @implementation DTieNewEditImageCell
@@ -71,6 +73,8 @@
         self.deedaoEnbale = NO;
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
     }
+    
+    self.preLabel.hidden = !model.isFirstImage;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -144,12 +148,26 @@
         make.height.mas_equalTo(120 * scale);
     }];
     
+    self.preLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentRight];
+    self.preLabel.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.preLabel.userInteractionEnabled = YES;
+    UITapGestureRecognizer * ges = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(preLabelDidClicked)];
+    [self.preLabel addGestureRecognizer:ges];
+    self.preLabel.text = @"封面";
+    [baseView addSubview:self.preLabel];
+    [self.preLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-70 * scale);
+        make.bottom.mas_equalTo(0);
+        make.left.mas_equalTo(self.logoImageView.mas_right).offset(10 * scale);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    
     if (![WXApi isWXAppInstalled]) {
         self.shareButton.hidden = YES;
     }
     
     self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    self.shareLabel.text = @"微信分享";
+    self.shareLabel.text = @"微信可见";
     [self.shareButton addSubview:self.shareLabel];
     [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
@@ -187,6 +205,11 @@
     [self.shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)preLabelDidClicked
+{
+    
+}
+
 - (void)deedaoButtonDidClicked
 {
     if (self.model.pFlag == 0) {
@@ -201,13 +224,6 @@
 - (void)shareButtonDidClicked
 {
     if (self.model.shareEnable == 0) {
-        if ([DDShareManager shareManager].editShareCount >= 9) {
-            [MBProgressHUD showTextHUDWithText:@"最多只能分享九张图片" inView:[UIApplication sharedApplication].keyWindow];
-            return;
-        }
-    }
-    
-    if (self.model.shareEnable == 0) {
         self.model.shareEnable = 1;
     }else{
         self.model.shareEnable = 0;
@@ -215,10 +231,8 @@
     
     if (self.model.shareEnable == 1) {
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
-        [DDShareManager shareManager].editShareCount += 1;
     }else{
         [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
-        [DDShareManager shareManager].editShareCount -= 1;
     }
 }
 

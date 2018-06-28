@@ -12,7 +12,7 @@
 #import "SeriesDetailTableViewCell.h"
 #import "SeriesChoosDTieController.h"
 #import "DTieDetailRequest.h"
-#import "DTieDetailViewController.h"
+#import "DTieNewEditViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "UserManager.h"
 #import "CreateOrUpdateSeriesRequest.h"
@@ -105,7 +105,7 @@
 - (void)showDtieWithModel:(DTieModel *)model
 {
     if (model.details) {
-        DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:model];
+        DTieNewEditViewController * detail = [[DTieNewEditViewController alloc] initWithDtieModel:model];
         [self.navigationController pushViewController:detail animated:YES];
         return;
     }
@@ -120,7 +120,7 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 DTieModel * tempModel = [DTieModel mj_objectWithKeyValues:data];
-                DTieDetailViewController * detail = [[DTieDetailViewController alloc] initWithDTie:tempModel];
+                DTieNewEditViewController * detail = [[DTieNewEditViewController alloc] initWithDtieModel:tempModel];
                 [self.navigationController pushViewController:detail animated:YES];
             }
         }

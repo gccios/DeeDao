@@ -11,10 +11,12 @@
 #import <Masonry.h>
 #import "UIView+LayerCurve.h"
 #import "DDTool.h"
+#import "UserInfoViewController.h"
 #import <UIImageView+WebCache.h>
 
 @interface LiuYanTableViewCell ()
 
+@property (nonatomic, strong) CommentModel * model;
 @property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * nameLabel;
 @property (nonatomic, strong) UILabel * timeLabel;
@@ -34,10 +36,20 @@
 
 - (void)configWithModel:(CommentModel *)model
 {
+    self.model = model;
     [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.commentatorPic]];
     self.nameLabel.text = model.commentatorName;
     self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.commentTime];
     self.detailLabel.text = model.commentContent;
+}
+
+- (void)logoImageViewDidClicked
+{
+    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    
+    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.commentatorId];
+    [na pushViewController:info animated:YES];
 }
 
 - (void)createLiuYanCell
@@ -60,6 +72,9 @@
         make.width.height.mas_equalTo(96 * scale);
     }];
     [DDViewFactoryTool cornerRadius:48 * scale withView:self.logoImageView];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(logoImageViewDidClicked)];
+    self.logoImageView.userInteractionEnabled = YES;
+    [self.logoImageView addGestureRecognizer:tap];
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x00000) alignment:NSTextAlignmentLeft];
     [self.contentView addSubview:self.nameLabel];

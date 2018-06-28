@@ -75,7 +75,7 @@
     
     UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     detailLabel.numberOfLines = 0;
-    detailLabel.text = @"DeeDao深深懂得，您在常用社交平台上所展现的只是人生的一小部分。水下的冰山才是您真正的精彩。DeeDao让您独立地或者跟最重要的亲人好友一起，回忆和记录生命中过去的，现在的和未来的最精彩瞬间，编织自己人生的故事。并让您的分享跨越时间，地点和方式";
+    detailLabel.text = @"Deedao 跟朋友一样靠谱，通过Deedao，您可以分享您的美食奇景体验，收集朋友的分享， 计划你下一次的聚餐和出游，而且，您还可以通过踩到共同的地点，而跟好友互动和拉近关系。地到，比朋友更资源丰富。";
     [headerView addSubview:detailLabel];
     [detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(aboutLabel.mas_bottom).offset(5 * scale);

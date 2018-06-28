@@ -115,7 +115,7 @@
     NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
     
     if (tempArray && tempArray.count > 0) {
-        [self.chooseSource removeObject:model];
+        [self.chooseSource removeObjectsInArray:tempArray];
     }else{
         [self.chooseSource addObject:model];
     }

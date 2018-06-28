@@ -142,8 +142,14 @@
             }
         }
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(liuyanDidComplete)]) {
-            [self.delegate liuyanDidComplete];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(liuyanDidComplete:)]) {
+            
+            NSMutableArray * source = [[NSMutableArray alloc] initWithArray:self.dataSource];
+            if (source.count > 10) {
+                [source removeObjectsInRange:NSMakeRange(10, source.count - 10)];
+            }
+            
+            [self.delegate liuyanDidComplete:source];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

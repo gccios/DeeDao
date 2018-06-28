@@ -12,7 +12,7 @@
 
 @implementation CreateDTieRequest
 
-- (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic postID:(NSInteger)postId landAccountFlg:(NSInteger)landAccountFlg allowToSeeList:(NSArray *)allowToSeeList sceneTime:(NSInteger)sceneTime;
+- (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address building:(NSString *)building addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic postID:(NSInteger)postId landAccountFlg:(NSInteger)landAccountFlg allowToSeeList:(NSArray *)allowToSeeList sceneTime:(NSInteger)sceneTime
 {
     if (self = [super init]) {
         
@@ -32,7 +32,7 @@
         
         if (!isEmptyString(address)) {
             [self setValue:address forParamKey:@"sceneAddress"];
-            [self setValue:address forParamKey:@"sceneBuilding"];
+            [self setValue:building forParamKey:@"sceneBuilding"];
         }
         [self setDoubleValue:addressLng forParamKey:@"sceneAddressLng"];
         [self setDoubleValue:addressLat forParamKey:@"sceneAddressLat"];

@@ -10,8 +10,20 @@
 
 @interface DTieShareViewController : DDViewController
 
+@property (nonatomic, strong) NSMutableArray * shareList;
+
++ (instancetype)sharedViewController;
+
 - (instancetype)initWithShareList:(NSMutableArray *)shareList;
 
 - (instancetype)initWithShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId;
+
+- (instancetype)addShareList:(NSMutableArray *)shareList;
+
+- (instancetype)insertShareList:(NSMutableArray *)shareList;
+
+- (instancetype)addShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId;
+
+- (instancetype)insertShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId;
 
 @end

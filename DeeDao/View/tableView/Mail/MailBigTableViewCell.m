@@ -125,6 +125,10 @@
     self.nameLabel.text = model.nickName;
     self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.createTime];
 //    [self.topImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
+    
+    if (!isEmptyString(model.portraitUri)) {
+        [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
+    }
 }
 
 - (void)awakeFromNib {

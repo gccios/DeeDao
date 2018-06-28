@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.1</string>
+	<string>1.0.3</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.1</string>
+	<string>1.0</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>wechat</string>
@@ -51,7 +51,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>允许访问摄像头以录制视频</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>允许开启定位以获得您附近的地点信息</string>
+	<string>允许开启定位，以获取您的发帖位置和附近的帖子信息</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>允许访问麦克风以录制声音</string>
 	<key>NSPhotoLibraryUsageDescription</key>

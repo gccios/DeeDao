@@ -45,7 +45,7 @@
     // Do any additional setup after loading the view.
     
     self.pageType = 1;
-    self.sourceType = 3;
+    self.sourceType = 1;
     self.start = 0;
     self.length = 1000;
     self.dataSource = [[NSMutableArray alloc] init];
@@ -64,17 +64,28 @@
     NSInteger dataSourceType = 3;
     if (self.pageType == 2) {
         dataSourceType = self.sourceType;
+    }else if (self.pageType == 1) {
+        dataSourceType = 3;
     }
     
     [DTieSearchRequest cancelRequest];
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:dataSourceType type:4 pageStart:self.start pageSize:self.length];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:dataSourceType type:2 pageStart:self.start pageSize:self.length];
+    
+    if (self.pageType == 2) {
+        if (dataSourceType == -1) {
+            request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:0 pageStart:self.start pageSize:self.length];
+        }else if (dataSourceType == 1){
+            request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:1 pageStart:self.start pageSize:self.length];
+        }
+    }
+    
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
                 [self.dataSource removeAllObjects];
-                for (NSInteger i = 1; i < data.count; i++) {
+                for (NSInteger i = 0; i < data.count; i++) {
                     NSDictionary * dict = [data objectAtIndex:i];
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
@@ -202,17 +213,24 @@
             [self.bottomTip.superview layoutIfNeeded];
         }];
     }else{
-        self.sourceType++;
-        if (self.sourceType > 3) {
+        if (self.sourceType == 1) {
+            self.sourceType = 2;
+        }else if (self.sourceType == 2) {
+            self.sourceType = 9;
+        }else if (self.sourceType == 9) {
+            self.sourceType = -1;
+        }else if (self.sourceType == -1) {
             self.sourceType = 1;
         }
         
         if (self.sourceType == 1) {
-            [MBProgressHUD showTextHUDWithText:@"切换至自己的帖子" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"切换至我的帖子" inView:self.view];
         }else if (self.sourceType == 2){
-            [MBProgressHUD showTextHUDWithText:@"切换至收藏的帖子" inView:self.view];
-        }else{
-            [MBProgressHUD showTextHUDWithText:@"切换至自己+收藏的帖子" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"切换至收藏" inView:self.view];
+        }else if (self.sourceType == 9){
+            [MBProgressHUD showTextHUDWithText:@"切换至要约" inView:self.view];
+        }else if (self.sourceType == -1){
+            [MBProgressHUD showTextHUDWithText:@"切换至草稿" inView:self.view];
         }
     }
     [self searchRequest];

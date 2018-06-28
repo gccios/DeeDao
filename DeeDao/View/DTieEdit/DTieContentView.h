@@ -24,6 +24,10 @@
 
 @property (nonatomic, strong) BMKPoiInfo * choosePOI;
 
+@property (nonatomic, strong) NSMutableArray * selectSource;
+@property (nonatomic, assign) NSInteger shareType;
+@property (nonatomic, assign) NSInteger landAccountFlg;
+
 - (instancetype)initWithFrame:(CGRect)frame editModel:(DTieModel *)editModel;
 - (void)showChoosePhotoPicker;
 

@@ -49,7 +49,7 @@
     self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.7f];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    self.showView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 900 * scale)];
+    self.showView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 700 * scale)];
     self.showView.backgroundColor = UIColorFromRGB(0xffffff);
     [self addSubview:self.showView];
     self.showView.layer.cornerRadius = 8.f;
@@ -60,10 +60,10 @@
     gradientLayer.startPoint = CGPointMake(0, 1);
     gradientLayer.endPoint = CGPointMake(1, 0);
     gradientLayer.locations = @[@0, @1.0];
-    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 900 * scale);
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 700 * scale);
     [self.showView.layer addSublayer:gradientLayer];
     
-    UIView * coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 900 * scale)];
+    UIView * coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 700 * scale)];
     coverView.backgroundColor = UIColorFromRGB(0xffffff);
     [self.showView addSubview:coverView];
     [coverView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -103,7 +103,7 @@
     }];
     
     UILabel * firstLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    firstLabel.text = @"Hi~我也来这里了哦!";
+    firstLabel.text = @"hi~好巧，我也刚好路过这里。";
     [self.firstButton addSubview:firstLabel];
     [firstLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.firstImageView.mas_right).offset(40 * scale);
@@ -117,7 +117,7 @@
         make.top.mas_equalTo(self.firstButton.mas_bottom).offset(30 * scale);
         make.left.mas_equalTo(0);
         make.right.mas_equalTo(0);
-        make.height.mas_equalTo(300 * scale);
+        make.height.mas_equalTo(100 * scale);
     }];
     
     self.secondImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
@@ -130,7 +130,7 @@
     
     UILabel * secondLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     secondLabel.numberOfLines = 0;
-    secondLabel.text = @"好巧，刚好我也经过这里，看到了你的D帖，感觉你的分享很棒，请继续用你的脚步去丈量这个世界，并分享更多的精彩内容，创造你的DeeDao星球!";
+    secondLabel.text = @"hi~被你写的D帖吸引到了这里，果然和你描述的一样，太棒了！";
     [self.secondButton addSubview:secondLabel];
     [secondLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.firstImageView.mas_right).offset(40 * scale);
@@ -144,7 +144,7 @@
         make.top.mas_equalTo(self.secondButton.mas_bottom).offset(40 * scale);
         make.left.mas_equalTo(0);
         make.right.mas_equalTo(0);
-        make.height.mas_equalTo(70 * scale);
+        make.height.mas_equalTo(100 * scale);
     }];
     
     self.thirdImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
@@ -156,11 +156,12 @@
     }];
     
     UILabel * thirdLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    thirdLabel.text = @"不留言，纯打招呼~~";
+    thirdLabel.numberOfLines = 0;
+    thirdLabel.text = @"hi~谢谢你的推荐，这里真的很不错。";
     [self.thirdButton addSubview:thirdLabel];
     [thirdLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.thirdImageView.mas_right).offset(40 * scale);
-        make.centerY.mas_equalTo(0);
+        make.top.mas_equalTo(10 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
     
@@ -186,18 +187,18 @@
         [self.firstImageView setImage:[UIImage imageNamed:@"chooseyes"]];
         [self.secondImageView setImage:[UIImage imageNamed:@"chooseno"]];
         [self.thirdImageView setImage:[UIImage imageNamed:@"chooseno"]];
-        self.text = @"Hi~我也来这里了哦!";
+        self.text = @"hi~好巧，我也刚好路过这里。";
         
     }else if (button == self.secondButton) {
         [self.firstImageView setImage:[UIImage imageNamed:@"chooseno"]];
         [self.secondImageView setImage:[UIImage imageNamed:@"chooseyes"]];
         [self.thirdImageView setImage:[UIImage imageNamed:@"chooseno"]];
-        self.text = @"好巧，刚好我也经过这里，看到了你的D帖，感觉你的分享很棒，请继续用你的脚步去丈量这个世界，并分享更多的精彩内容，创造你的DeeDao星球!";
+        self.text = @"hi~被你写的D帖吸引到了这里，果然和你描述的一样，太棒了！";
     }else{
         [self.firstImageView setImage:[UIImage imageNamed:@"chooseno"]];
         [self.secondImageView setImage:[UIImage imageNamed:@"chooseno"]];
         [self.thirdImageView setImage:[UIImage imageNamed:@"chooseyes"]];
-        self.text = @"";
+        self.text = @"hi~谢谢你的推荐，这里真的很不错。";
     }
 }
 
@@ -210,7 +211,7 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     [self.showView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(kMainBoundsWidth - 240 * scale, 900 * scale));
+        make.size.mas_equalTo(CGSizeMake(kMainBoundsWidth - 240 * scale, 700 * scale));
         if ([IQKeyboardManager sharedManager].isKeyboardShowing) {
             make.centerX.mas_equalTo(0);
             make.centerY.mas_equalTo(-self.frame.size.width / 4);

@@ -18,6 +18,7 @@
 #import "WeChatManager.h"
 #import "DDLocationManager.h"
 #import "ApplicationConfigRequest.h"
+#import "BaiduMobStat.h"
 
 @implementation DDTool
 
@@ -26,6 +27,8 @@
     [[BGNetworkManager sharedManager] setNetworkConfiguration:[DDNetworkConfiguration configuration]];
     
     [WXApi registerApp:WeChatAPPKey];
+    
+    [[BaiduMobStat defaultStat] startWithAppId:BaiDuAppKey];
     
     //配置用户信息
     if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {

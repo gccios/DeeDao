@@ -27,6 +27,8 @@
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, strong) UIView * topView;
 
+@property (nonatomic, assign) BOOL isPreRead;
+
 @end
 
 @implementation DTieNewDetailViewController
@@ -35,6 +37,16 @@
 {
     if (self = [super init]) {
         self.model = model;
+        self.isPreRead = NO;
+    }
+    return self;
+}
+
+- (instancetype)initPreReadWithDTie:(DTieModel *)model
+{
+    if (self = [super init]) {
+        self.model = model;
+        self.isPreRead = YES;
     }
     return self;
 }
@@ -49,6 +61,13 @@
 - (void)shareButtonDidClicked
 {
     DTieShareView * share = [[DTieShareView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    share.delegate = self;
+    [share show];
+}
+
+- (void)showShareWithCreatePost
+{
+    DTieShareView * share = [[DTieShareView alloc] initCreatePostWithFrame:[UIScreen mainScreen].bounds];
     share.delegate = self;
     [share show];
 }
@@ -92,7 +111,7 @@
                             postId = self.model.postId;
                         }
                         
-                        DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
+                        DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
                         [self presentViewController:share animated:YES completion:nil];
                     }
                 }];
@@ -103,7 +122,7 @@
                 postId = self.model.postId;
             }
             
-            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
+            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
             [self presentViewController:share animated:YES completion:nil];
         }
     }else if (index == 1) {
@@ -115,7 +134,7 @@
                     postId = self.model.cid;
                 }
                 if (model.image) {
-                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:model.image isShare:NO];
+                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:model.image isShare:NO title:self.model.postSummary];
                 }else{
                     NSString * urlPath = self.model.postFirstPicture;
                     if (isEmptyString(urlPath)) {
@@ -128,7 +147,7 @@
                         [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
                         
                         if (image) {
-                            [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:image isShare:NO];
+                            [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:image isShare:NO title:self.model.postSummary];
                         }else{
                             [MBProgressHUD showTextHUDWithText:@"分享失败" inView:self.view];
                         }
@@ -164,7 +183,11 @@
 //                preText = [preText stringByAppendingString:@"\n"];
 //            }
         
-        NSString * text = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n\n", self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.sceneAddress, urlLink];
+        NSString * scene = self.model.sceneBuilding;
+        if (isEmptyString(scene)) {
+            scene = self.model.sceneAddress;
+        }
+        NSString * text = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n\n", self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], scene, urlLink];
         
         NSError * error = nil;
         NSFileManager * manager = [NSFileManager defaultManager];
@@ -222,7 +245,7 @@
     }
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:self.model.postSummary address:self.model.sceneAddress addressLng:self.model.sceneAddressLng addressLat:self.model.sceneAddressLat status:0 remindFlg:1 firstPic:self.model.postFirstPicture postID:self.model.cid landAccountFlg:self.model.landAccountFlg allowToSeeList:self.model.allowToSeeList sceneTime:self.model.sceneTime];
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:self.model.postSummary address:self.model.sceneAddress building:self.model.sceneBuilding addressLng:self.model.sceneAddressLng addressLat:self.model.sceneAddressLat status:0 remindFlg:1 firstPic:self.model.postFirstPicture postID:self.model.cid landAccountFlg:self.model.landAccountFlg allowToSeeList:self.model.allowToSeeList sceneTime:self.model.sceneTime];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -241,13 +264,12 @@
 
 - (void)createViews
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    
     self.readView = [[DTieReadView alloc] initWithFrame:[UIScreen mainScreen].bounds model:self.model];
+    self.readView.isPreRead = self.isPreRead;
     self.readView.parentDDViewController = self.navigationController;
     [self.view addSubview:self.readView];
     [self.readView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.top.mas_equalTo(-kStatusBarHeight);
         make.left.bottom.right.mas_equalTo(0);
     }];
     
@@ -263,20 +285,8 @@
     [self.view addSubview:self.topView];
     [self.topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
-        make.height.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.height.mas_equalTo((170 + kStatusBarHeight) * scale);
     }];
-    
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-    gradientLayer.startPoint = CGPointMake(0, 1);
-    gradientLayer.endPoint = CGPointMake(1, 0);
-    gradientLayer.locations = @[@0, @1.0];
-    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
-    [self.topView.layer addSublayer:gradientLayer];
-    
-    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
-    self.topView.layer.shadowOpacity = .24;
-    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
     [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
@@ -288,36 +298,28 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = self.model.postSummary;
-    [self.topView addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
-        make.height.mas_equalTo(64 * scale);
-        make.bottom.mas_equalTo(-37 * scale);
-        make.right.mas_equalTo(-270 * scale);
-    }];
-    
-    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
-    [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:shareButton];
-    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-40 * scale);
-        make.bottom.mas_equalTo(-20 * scale);
-        make.width.height.mas_equalTo(100 * scale);
-    }];
-    
-    if (self.model.authorId == [UserManager shareManager].user.cid) {
-        UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-        [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
-        [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        [self.topView addSubview:editButton];
-        [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+    if (!self.isPreRead) {
+        UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+        [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+        [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.topView addSubview:shareButton];
+        [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-40 * scale);
             make.bottom.mas_equalTo(-20 * scale);
             make.width.height.mas_equalTo(100 * scale);
         }];
+        
+        if (self.model.authorId == [UserManager shareManager].user.cid) {
+            UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+            [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
+            [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+            [self.topView addSubview:editButton];
+            [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+                make.bottom.mas_equalTo(-20 * scale);
+                make.width.height.mas_equalTo(100 * scale);
+            }];
+        }
     }
 }
 

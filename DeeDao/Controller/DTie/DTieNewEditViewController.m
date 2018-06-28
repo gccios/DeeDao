@@ -8,40 +8,32 @@
 
 #import "DTieNewEditViewController.h"
 #import "DTieContentView.h"
-#import "DTieQuanxianView.h"
-#import "DTieReadView.h"
 #import "UserManager.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "QNDDUploadManager.h"
 #import "CreateDTieRequest.h"
-#import "DTieShareViewController.h"
+#import "SecurityGroupModel.h"
+#import "DTieDetailRequest.h"
+#import "DTieNewDetailViewController.h"
 #import "WeChatManager.h"
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpdateNotification";
 
-@interface DTieNewEditViewController ()<UITableViewDelegate, UITableViewDataSource>
+@interface DTieNewEditViewController ()
 
 @property (nonatomic, strong) UIView * topView;
 
-@property (nonatomic, strong) UIButton * contentButton;
-@property (nonatomic, strong) UIButton * quxianButton;
-@property (nonatomic, strong) UIButton * yulanButton;
 
 @property (nonatomic, strong) DTieContentView * contenView;
-@property (nonatomic, strong) UITableView * quanxianTableView;
-@property (nonatomic, strong) DTieQuanxianView * quanxianView;
-@property (nonatomic, strong) DTieReadView * readView;
-@property (nonatomic, strong) NSMutableArray * shareImages;
 
 @property (nonatomic, strong) DTieModel * editModel;
 
-@property (nonatomic, assign) NSInteger step;
 @property (nonatomic, strong) UIButton * leftHandleButton;
 @property (nonatomic, strong) UIButton * rightHandleButton;
 
 @property (nonatomic, copy) NSString * firstImageURL;
-@property (nonatomic, assign) NSInteger sharePostId;
+//@property (nonatomic, assign) NSInteger sharePostId;
 
 @property (nonatomic, assign) BOOL isPflg;
 
@@ -60,7 +52,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.step = 1;
+    
     [self createViews];
 }
 
@@ -71,7 +63,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传帖子内容" inView:self.view];
     NSMutableArray * details = [[NSMutableArray alloc] init];
     
-    [self.shareImages removeAllObjects];
     __block NSInteger tempCount = 0;
     
     if (self.contenView.modleSources.count == 0) {
@@ -90,12 +81,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         
         if (model.type == DTieEditType_Image) {
             
-            if (model.image && model.shareEnable == 1) {
-                if (self.shareImages.count < 9) {
-                    [self.shareImages addObject:model.image];
-                }
-            }
-            
             if (model.detailContent) {
                 
                 if (isEmptyString(self.firstImageURL)) {
@@ -106,7 +91,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                         @"datadictionaryType":@"CONTENT_IMG",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":@"",
-                                        @"pFlg":@(model.pFlag),
+                                        @"pFlag":@(model.pFlag),
                                         @"wxCansee":@(model.shareEnable)};
                 [details addObject:dict];
                 tempCount++;
@@ -130,7 +115,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                                 @"datadictionaryType":@"CONTENT_IMG",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":@"",
-                                                @"pFlg":@(model.pFlag),
+                                                @"pFlag":@(model.pFlag),
                                                 @"wxCansee":@(model.shareEnable)};
                         [details addObject:dict];
                         tempCount++;
@@ -159,7 +144,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                     @"datadictionaryType":@"CONTENT_TEXT",
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":@"",
-                                    @"pFlg":@(model.pFlag),
+                                    @"pFlag":@(model.pFlag),
                                     @"wxCansee":@(model.shareEnable)};
             [details addObject:dict];
             tempCount++;
@@ -173,7 +158,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                         @"datadictionaryType":@"CONTENT_VIDEO",
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":model.textInformation,
-                                        @"pFlg":@(model.pFlag),
+                                        @"pFlag":@(model.pFlag),
                                         @"wxCansee":@(model.shareEnable)};
                 tempCount++;
                 [details addObject:dict];
@@ -197,7 +182,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                                 @"datadictionaryType":@"CONTENT_VIDEO",
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
-                                                @"pFlg":@(model.pFlag),
+                                                @"pFlag":@(model.pFlag),
                                                 @"wxCansee":@(model.shareEnable)};
                         [details addObject:dict];
                         
@@ -282,7 +267,18 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在创建帖子" inView:self.view];
     
     //获取参数配置
-    NSString * address = self.contenView.locationLabel.text;
+    NSString * address = @"";
+    if (self.contenView.choosePOI) {
+        address = self.contenView.choosePOI.address;
+    }else{
+        address = self.contenView.locationLabel.text;
+    }
+    
+    NSString * building = self.contenView.choosePOI.name;
+    if (isEmptyString(building)) {
+        building = address;
+    }
+    
     double lon;
     double lat;
     if (self.contenView.choosePOI) {
@@ -300,13 +296,17 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     NSInteger postId = 0;
     if (self.editModel) {
         postId = self.editModel.postId;
+        if (postId == 0) {
+            postId = self.editModel.cid;
+        }
     }
     
-    NSInteger landAccountFlg = self.quanxianView.landAccountFlg;
+    NSInteger landAccountFlg = self.contenView.landAccountFlg;
     
     NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
     if (landAccountFlg == 4) {
-        for (SecurityGroupModel * groupModel in self.quanxianView.selectSource) {
+        
+        for (SecurityGroupModel * groupModel in self.contenView.selectSource) {
             if (groupModel.cid == -1) {
                 if (landAccountFlg == 5) {
                     landAccountFlg = 6;
@@ -339,10 +339,14 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                 landAccountFlg = 6;
             }
         }
-        
     }
     
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:self.contenView.titleTextField.text address:address addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
+    NSString * title = self.contenView.titleTextField.text;
+    if (isEmptyString(title)) {
+        title = building;
+    }
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:title address:address building:building addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -351,12 +355,11 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
             if (KIsDictionary(data)) {
                 [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
                 DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
-                self.sharePostId = DTie.postId;
                 
                 [[NSNotificationCenter defaultCenter] postNotificationName:DTieDidCreateNewNotification object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:DTieCollectionNeedUpdateNotification object:nil];
                 
                 if (self.needPopTwoVC) {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:DTieCollectionNeedUpdateNotification object:nil];
                     
                     NSArray * vcArray = self.navigationController.viewControllers;
                     UIViewController * vc = [vcArray objectAtIndex:vcArray.count - 3];
@@ -366,7 +369,15 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                 }
                 
                 if (status == 1) {
-                    [self checkShare];
+                    BOOL shareEnable = YES;
+                    if (![WXApi isWXAppInstalled] && [UserManager shareManager].user.bloggerFlg == 0) {
+                        shareEnable = NO;
+                    }
+                    if (landAccountFlg == 2) {
+                        shareEnable = NO;
+                    }
+                    
+                    [self checkShareWithPostId:DTie.postId share:shareEnable];
                 }
             }
         }
@@ -380,100 +391,70 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }];
 }
 
-- (void)checkShare
+- (void)checkShareWithPostId:(NSInteger)postId share:(BOOL)sharenable;
 {
-    if (self.shareImages.count == 0) {
-        return;
-    }
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
     
-    if (![WXApi isWXAppInstalled]) {
-        return;
-    }
-    
-    if (self.quanxianView.shareType == 1) {
-        if (self.shareImages && self.shareImages.count > 0) {
-            DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareImages title:self.contenView.titleTextField.text pflg:self.isPflg postId:self.sharePostId];
-            [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:share animated:YES completion:nil];
-        }
-    }else{
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postId type:4 start:0 length:10];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
         
-        NSInteger postID = self.sharePostId;
-        if (self.sharePostId == 0) {
-            postID = self.editModel.cid;
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                if (dtieModel.ifCanSee == 0) {
+                    [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
+                    return;
+                }
+                
+                if (dtieModel.deleteFlg == 1) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    return;
+                }
+                DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                
+                [na pushViewController:detail animated:YES];
+                
+                if (sharenable) {
+                    [detail showShareWithCreatePost];
+                }
+            }
         }
-        
-        [WeChatManager shareManager].isShare = YES;
-        UIImage * image = [UIImage imageNamed:@"DeeDao-logo"];
-        if (self.shareImages && self.shareImages.count > 0) {
-            image = [self.shareImages firstObject];
-        }
-        [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:YES];
-    }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
 }
 
 - (void)leftHandleButtonDidClicked
 {
-    if (self.step == 1) {
-        [self saveDtie];
-    }else if (self.step == 2) {
-        [self hiddenQuanxianView];
-        [self showContenView];
-        self.step = 1;
-        [self.leftHandleButton setTitle:@"保存并退出" forState:UIControlStateNormal];
-        self.quxianButton.alpha = .5f;
-        self.contentButton.alpha = 1;
-    }else if (self.step == 3) {
-        self.step = 2;
-        self.quxianButton.alpha = 1;
-        self.yulanButton.alpha = .5f;
-        [self.rightHandleButton setTitle:@"下一步" forState:UIControlStateNormal];
-        
-        [self hiddenReadView];
-        [self showQuanxianView];
-    }
+    [self saveDtie];
 }
 
 - (void)rightHandleButtonDidClicked
 {
-    if (self.step == 1) {
-        
-        if (isEmptyString(self.contenView.titleTextField.text)) {
-            [MBProgressHUD showTextHUDWithText:@"请先输入标题" inView:self.view];
-            return;
-        }
-        
-        BOOL hasImage = NO;
-        for (DTieEditModel * model in self.contenView.modleSources) {
-            if (model.type == DTieEditType_Image) {
-                hasImage = YES;
-                break;
-            }
-        }
-        if (!hasImage) {
-            [MBProgressHUD showTextHUDWithText:@"至少需要一张图片" inView:self.view];
-            return;
-        }
-        
-        self.step = 2;
-        self.contentButton.alpha = .5f;
-        self.quxianButton.alpha = 1;
-        [self.leftHandleButton setTitle:@"上一步" forState:UIControlStateNormal];
-        
-        [self hiddenContenView];
-        [self showQuanxianView];
-        
-    }else if (self.step == 2) {
-        
-        self.step = 3;
-        self.quxianButton.alpha = .5f;
-        self.yulanButton.alpha = 1;
-        [self.rightHandleButton setTitle:@"发布并分享" forState:UIControlStateNormal];
-        
-        [self hiddenQuanxianView];
-        [self showReadView];
-    }else if (self.step == 3) {
-        [self putDtie];
+    if (nil == self.contenView.choosePOI) {
+        [MBProgressHUD showTextHUDWithText:@"请先选择一个位置" inView:self.view];
+        return;
     }
+    
+    BOOL hasImage = NO;
+    for (DTieEditModel * model in self.contenView.modleSources) {
+        if (model.type == DTieEditType_Image) {
+            hasImage = YES;
+            break;
+        }
+    }
+    if (!hasImage) {
+        [MBProgressHUD showTextHUDWithText:@"至少需要一张图片" inView:self.view];
+        return;
+    }
+    
+    [self putDtie];
 }
 
 #pragma mark - 第一步
@@ -482,7 +463,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     CGFloat scale = kMainBoundsWidth / 1080.f;
     [self.view insertSubview:self.contenView atIndex:0];
     [self.contenView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
+        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
 }
@@ -492,64 +473,72 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [self.contenView removeFromSuperview];
 }
 
-#pragma mark - 第二步
-- (void)showQuanxianView
-{
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    [self.view insertSubview:self.quanxianTableView atIndex:0];
-    [self.quanxianTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-}
+//#pragma mark - 第二步
+//- (void)showQuanxianView
+//{
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
+//    [self.view insertSubview:self.quanxianTableView atIndex:0];
+//    [self.quanxianTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
+//        make.left.bottom.right.mas_equalTo(0);
+//    }];
+//}
 
-- (void)hiddenQuanxianView
-{
-    [self.quanxianTableView removeFromSuperview];
-}
-
-#pragma mark - 第三步
-- (void)showReadView
-{
-    DTieModel * model = [[DTieModel alloc] init];
-    model.postSummary = self.contenView.titleTextField.text;
-    model.sceneTime = self.contenView.createTime;
-    model.details = [NSArray arrayWithArray:self.contenView.modleSources];
-    model.nickname = [UserManager shareManager].user.nickname;
-    model.authorId = [UserManager shareManager].user.cid;
-    model.portraituri = [UserManager shareManager].user.portraituri;
-    model.sceneAddress = self.contenView.locationLabel.text;
-    model.updateTime = [[NSDate date] timeIntervalSince1970];
-    
-    double lon;
-    double lat;
-    if (self.contenView.choosePOI) {
-        lon = self.contenView.choosePOI.pt.longitude;
-        lat = self.contenView.choosePOI.pt.latitude;
-    }else if (self.editModel){
-        lon = self.editModel.sceneAddressLng;
-        lat = self.editModel.sceneAddressLat;
-    }else{
-        lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
-        lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;
-    }
-    model.sceneAddressLat = lat;
-    model.sceneAddressLng = lon;
-    
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    
-    self.readView = [[DTieReadView alloc] initWithFrame:self.view.bounds model:model];
-    [self.view insertSubview:self.readView atIndex:0];
-    [self.readView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-}
-
-- (void)hiddenReadView
-{
-    [self.readView removeFromSuperview];
-}
+//- (void)hiddenQuanxianView
+//{
+//    [self.quanxianTableView removeFromSuperview];
+//}
+//
+//#pragma mark - 第三步
+//- (void)showReadView
+//{
+//    DTieModel * model = [[DTieModel alloc] init];
+//    model.postSummary = self.contenView.titleTextField.text;
+//    model.sceneTime = self.contenView.createTime;
+//    model.details = [NSArray arrayWithArray:self.contenView.modleSources];
+//    model.nickname = [UserManager shareManager].user.nickname;
+//    model.authorId = [UserManager shareManager].user.cid;
+//    model.portraituri = [UserManager shareManager].user.portraituri;
+//    model.sceneAddress = self.contenView.locationLabel.text;
+//    model.updateTime = [[NSDate date] timeIntervalSince1970];
+//
+//    NSString * scene = self.contenView.choosePOI.name;
+//    if (isEmptyString(scene)) {
+//        scene = model.sceneAddress;
+//    }
+//    model.sceneBuilding = scene;
+//
+//    double lon;
+//    double lat;
+//    if (self.contenView.choosePOI) {
+//        lon = self.contenView.choosePOI.pt.longitude;
+//        lat = self.contenView.choosePOI.pt.latitude;
+//    }else if (self.editModel){
+//        lon = self.editModel.sceneAddressLng;
+//        lat = self.editModel.sceneAddressLat;
+//    }else{
+//        lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
+//        lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;
+//    }
+//    model.sceneAddressLat = lat;
+//    model.sceneAddressLng = lon;
+//
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
+//
+//    self.readView = [[DTieReadView alloc] initWithFrame:self.view.bounds model:model];
+//    self.readView.parentDDViewController = self.navigationController;
+//    self.readView.isPreRead = YES;
+//    [self.view insertSubview:self.readView atIndex:0];
+//    [self.readView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
+//        make.left.bottom.right.mas_equalTo(0);
+//    }];
+//}
+//
+//- (void)hiddenReadView
+//{
+//    [self.readView removeFromSuperview];
+//}
 
 - (void)createViews
 {
@@ -577,7 +566,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.centerY.mas_equalTo(0);
     }];
     
-    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"下一步"];
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
     self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     self.rightHandleButton.layer.borderWidth = 3 * scale;
@@ -597,27 +586,27 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         [self.contenView showChoosePhotoPicker];
     }
     
-    self.quanxianTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    self.quanxianTableView.backgroundColor = self.view.backgroundColor;
-    self.quanxianTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.quanxianTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
-    self.quanxianTableView.rowHeight = .1 * scale;
-    self.quanxianTableView.delegate = self;
-    self.quanxianTableView.dataSource = self;
-    self.quanxianTableView.tableHeaderView = self.quanxianView;
+//    self.quanxianTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+//    self.quanxianTableView.backgroundColor = self.view.backgroundColor;
+//    self.quanxianTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    [self.quanxianTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
+//    self.quanxianTableView.rowHeight = .1 * scale;
+//    self.quanxianTableView.delegate = self;
+//    self.quanxianTableView.dataSource = self;
+//    self.quanxianTableView.tableHeaderView = self.quanxianView;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
-    
-    return cell;
-}
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+//{
+//    return 1;
+//}
+//
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
+//
+//    return cell;
+//}
 
 - (void)createTopView
 {
@@ -628,7 +617,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [self.view addSubview:self.topView];
     [self.topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
-        make.height.mas_equalTo((364 + kStatusBarHeight) * scale);
+        make.height.mas_equalTo((220 + kStatusBarHeight) * scale);
     }];
     
     CAGradientLayer *gradientLayer = [CAGradientLayer layer];
@@ -636,7 +625,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     gradientLayer.startPoint = CGPointMake(0, 1);
     gradientLayer.endPoint = CGPointMake(1, 0);
     gradientLayer.locations = @[@0, @1.0];
-    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (220 + kStatusBarHeight) * scale);
     [self.topView.layer addSublayer:gradientLayer];
     
     self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
@@ -649,7 +638,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(-159 * scale);
+        make.bottom.mas_equalTo(-15 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];
     
@@ -659,38 +648,88 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
         make.height.mas_equalTo(64 * scale);
-        make.bottom.mas_equalTo(-181 * scale);
+        make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    CGFloat buttonWidth = kMainBoundsWidth / 3.f;
-    self.yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"3.预览发布"];
-    self.yulanButton.alpha = .5f;
-    [self.topView addSubview:self.yulanButton];
-    [self.yulanButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(buttonWidth);
-        make.height.mas_equalTo(144 * scale);
+    UIButton * yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"预览D帖"];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:yulanButton];
+    yulanButton.layer.borderWidth = .5f;
+    yulanButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+    [yulanButton addTarget:self action:@selector(yulanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:yulanButton];
+    [yulanButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(192 * scale);
+        make.height.mas_equalTo(72 * scale);
+        make.centerY.mas_equalTo(titleLabel);
+        make.right.mas_equalTo(-60 * scale);
     }];
+//    
+//    CGFloat buttonWidth = kMainBoundsWidth / 3.f;
+//    self.yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"3.预览发布"];
+//    self.yulanButton.alpha = .5f;
+//    [self.topView addSubview:self.yulanButton];
+//    [self.yulanButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(0);
+//        make.bottom.mas_equalTo(0);
+//        make.width.mas_equalTo(buttonWidth);
+//        make.height.mas_equalTo(144 * scale);
+//    }];
+//    
+//    self.quxianButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"2.权限设置"];
+//    self.quxianButton.alpha = .5f;
+//    [self.topView addSubview:self.quxianButton];
+//    [self.quxianButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerX.mas_equalTo(0);
+//        make.bottom.mas_equalTo(0);
+//        make.width.mas_equalTo(buttonWidth);
+//        make.height.mas_equalTo(144 * scale);
+//    }];
+//    
+//    self.contentButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"1.添加内容"];
+//    [self.topView addSubview:self.contentButton];
+//    [self.contentButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(0);
+//        make.bottom.mas_equalTo(0);
+//        make.width.mas_equalTo(buttonWidth);
+//        make.height.mas_equalTo(144 * scale);
+//    }];
+}
+
+- (void)yulanButtonDidClicked
+{
+    if (nil == self.contenView.choosePOI) {
+        [MBProgressHUD showTextHUDWithText:@"请先选择一个位置" inView:self.view];
+        return;
+    }
     
-    self.quxianButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"2.权限设置"];
-    self.quxianButton.alpha = .5f;
-    [self.topView addSubview:self.quxianButton];
-    [self.quxianButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(0);
-        make.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(buttonWidth);
-        make.height.mas_equalTo(144 * scale);
-    }];
+    BOOL hasImage = NO;
+    for (DTieEditModel * model in self.contenView.modleSources) {
+        if (model.type == DTieEditType_Image) {
+            hasImage = YES;
+            break;
+        }
+    }
+    if (!hasImage) {
+        [MBProgressHUD showTextHUDWithText:@"至少需要一张图片" inView:self.view];
+        return;
+    }
+
+    DTieModel * model = [[DTieModel alloc] init];
+    model.postSummary = self.contenView.titleTextField.text;
+    if (isEmptyString(self.contenView.titleTextField.text)) {
+        model.postSummary = self.contenView.choosePOI.name;
+    }
+    model.sceneTime = self.contenView.createTime;
+    model.details = [NSArray arrayWithArray:self.contenView.modleSources];
+    model.nickname = [UserManager shareManager].user.nickname;
+    model.authorId = [UserManager shareManager].user.cid;
+    model.portraituri = [UserManager shareManager].user.portraituri;
+    model.sceneAddress = self.contenView.locationLabel.text;
+    model.sceneBuilding = self.contenView.choosePOI.name;
+    model.updateTime = [[NSDate date] timeIntervalSince1970];
     
-    self.contentButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"1.添加内容"];
-    [self.topView addSubview:self.contentButton];
-    [self.contentButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(buttonWidth);
-        make.height.mas_equalTo(144 * scale);
-    }];
+    DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initPreReadWithDTie:model];
+    [self.navigationController pushViewController:detail animated:YES];
 }
 
 - (void)backButtonDidClicked
@@ -731,21 +770,21 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     return _contenView;
 }
 
-- (DTieQuanxianView *)quanxianView
-{
-    if (!_quanxianView) {
-        _quanxianView = [[DTieQuanxianView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    }
-    return _quanxianView;
-}
-
-- (NSMutableArray *)shareImages
-{
-    if (!_shareImages) {
-        _shareImages = [[NSMutableArray alloc] init];
-    }
-    return _shareImages;
-}
+//- (DTieQuanxianView *)quanxianView
+//{
+//    if (!_quanxianView) {
+//        _quanxianView = [[DTieQuanxianView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//    }
+//    return _quanxianView;
+//}
+//
+//- (NSMutableArray *)shareImages
+//{
+//    if (!_shareImages) {
+//        _shareImages = [[NSMutableArray alloc] init];
+//    }
+//    return _shareImages;
+//}
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {

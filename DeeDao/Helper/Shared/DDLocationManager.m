@@ -10,6 +10,7 @@
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
 #import <MapKit/MapKit.h>
 #import "JZLocationConverter.h"
+#import "UserManager.h"
 
 NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdateNotification";
 
@@ -101,6 +102,10 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 - (BOOL)contentIsCanSeeWith:(DTieModel *)model detailModle:(DTieEditModel *)detailModel
 {
     if (detailModel.pFlag == 0) {
+        return YES;
+    }
+    
+    if (model.authorId == [UserManager shareManager].user.cid) {
         return YES;
     }
     

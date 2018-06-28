@@ -11,12 +11,12 @@
 
 @interface DTieDetailImageTableViewCell : UITableViewCell
 
-- (void)configWithModel:(DTieEditModel *)model;
+//- (void)configWithModel:(DTieEditModel *)model;
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel;
 
-- (void)configWithCanSee:(BOOL)cansee;
+//- (void)configWithCanSee:(BOOL)cansee;
 
-- (void)yulanWithModel:(DTieEditModel *)model;
+//- (void)yulanWithModel:(DTieEditModel *)model;
 
 @end

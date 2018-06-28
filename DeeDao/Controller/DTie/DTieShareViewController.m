@@ -20,14 +20,27 @@
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UILabel * titleLabel;
 
-@property (nonatomic, strong) NSMutableArray * shareList;
+@property (nonatomic, strong) NSMutableArray * selectSource;
 
 @property (nonatomic, strong) XWDragCellCollectionView *mainView;
-@property (nonatomic, assign) BOOL isEdit;
+
+@property (nonatomic, strong) UIButton * saveButton;
+@property (nonatomic, strong) UIButton * clearButton;
+//@property (nonatomic, assign) BOOL isEdit;
 
 @end
 
 @implementation DTieShareViewController
+
++ (instancetype)sharedViewController
+{
+    static dispatch_once_t once;
+    static DTieShareViewController * instance;
+    dispatch_once(&once, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
+}
 
 - (instancetype)initWithShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
 {
@@ -46,11 +59,57 @@
     return self;
 }
 
+- (instancetype)insertShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
+{
+    NSMutableArray * share = [[NSMutableArray alloc] initWithArray:[[shareList reverseObjectEnumerator] allObjects]];
+    for (UIImage * image in share) {
+        ShareImageModel * model = [[ShareImageModel alloc] init];
+        model.postId = postId;
+        model.image = image;
+        model.title = title;
+        model.pflg = pflg;
+        [self.shareList insertObject:model atIndex:0];
+    }
+    [[DDShareManager shareManager] updateNumber];
+    [self.selectSource removeAllObjects];
+    [self.mainView reloadData];
+    return self;
+}
+
+- (instancetype)addShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
+{
+    for (UIImage * image in shareList) {
+        ShareImageModel * model = [[ShareImageModel alloc] init];
+        model.postId = postId;
+        model.image = image;
+        model.title = title;
+        model.pflg = pflg;
+        [self.shareList addObject:model];
+    }
+    return self;
+}
+
 - (instancetype)initWithShareList:(NSMutableArray *)shareList
 {
     if (self = [super init]) {
         self.shareList = shareList;
     }
+    return self;
+}
+
+- (instancetype)addShareList:(NSMutableArray *)shareList
+{
+    [self.shareList addObjectsFromArray:shareList];
+    return self;
+}
+
+- (instancetype)insertShareList:(NSMutableArray *)shareList
+{
+    NSMutableArray * share = [[NSMutableArray alloc] initWithArray:[[shareList reverseObjectEnumerator] allObjects]];
+    for (ShareImageModel * model in share) {
+        [self.shareList insertObject:model atIndex:0];
+    }
+    [[DDShareManager shareManager] updateNumber];
     return self;
 }
 
@@ -83,18 +142,26 @@
     
     ShareImageModel * model = [self.shareList objectAtIndex:indexPath.item];
     UIImage * image = model.image;
-    [cell configImageWith:image isEdit:self.isEdit];
+//    [cell configImageWith:image isEdit:self.isEdit];
+    [cell configWithImage:image];
     
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(cell) weakCell = cell;
-    cell.cancleButtonClicked = ^{
-        NSIndexPath * tempIndexPath = [self.mainView indexPathForCell:weakCell];
-        [weakSelf.shareList removeObjectAtIndex:tempIndexPath.item];
-        [weakSelf.mainView deleteItemsAtIndexPaths:@[tempIndexPath]];
-        [[DDShareManager shareManager] updateNumber];
-    };
+    if ([self.selectSource containsObject:model]) {
+        NSInteger i = [self.selectSource indexOfObject:model] + 1;
+        [cell configIndex:i hidden:NO];
+    }else{
+        [cell configIndex:0 hidden:YES];
+    }
     
-    [self.mainView.longPressGesture requireGestureRecognizerToFail:cell.tap];
+//    __weak typeof(self) weakSelf = self;
+//    __weak typeof(cell) weakCell = cell;
+//    cell.cancleButtonClicked = ^{
+//        NSIndexPath * tempIndexPath = [self.mainView indexPathForCell:weakCell];
+//        [weakSelf.shareList removeObjectAtIndex:tempIndexPath.item];
+//        [weakSelf.mainView deleteItemsAtIndexPaths:@[tempIndexPath]];
+//        [[DDShareManager shareManager] updateNumber];
+//    };
+    
+//    [self.mainView.longPressGesture requireGestureRecognizerToFail:cell.tap];
     
     return cell;
 }
@@ -106,7 +173,27 @@
 #pragma mark - <XWDragCellCollectionViewDelegate>
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    NSLog(@"点击了%ld",indexPath.row);
+    
+    if (!self.mainView.editing) {
+        ShareImageModel * model = [self.shareList objectAtIndex:indexPath.row];
+        if ([self.selectSource containsObject:model]) {
+            [self.selectSource removeObject:model];
+            
+            [self.mainView reloadData];
+            
+        }else{
+            if (self.selectSource.count >= 9) {
+                [MBProgressHUD showTextHUDWithText:@"最多支持分享9张" inView:self.view];
+            }else{
+                [self.selectSource addObject:model];
+                
+                [self.mainView reloadData];
+            }
+        }
+    }else{
+        [self.mainView xw_stopEditingModel];
+        self.clearButton.hidden = NO;
+    }
 }
 
 - (void)dragCellCollectionView:(XWDragCellCollectionView *)collectionView newDataArrayAfterMove:(NSArray *)newDataArray{
@@ -116,14 +203,19 @@
 
 - (void)dragCellCollectionView:(XWDragCellCollectionView *)collectionView cellWillBeginMoveAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.isEdit) {
-        return;
-    }
+//    if (self.isEdit) {
+//        return;
+//    }
     
-    self.isEdit = YES;
+//    self.isEdit = YES;
 //    [self.mainView reloadData];
-    [collectionView.visibleCells makeObjectsPerformSelector:@selector(configEdit:) withObject:@(self.isEdit)];
-    [self.mainView xw_enterEditingModel];
+//    [collectionView.visibleCells makeObjectsPerformSelector:@selector(configEdit:) withObject:@(self.isEdit)];
+    if (!self.mainView.editing) {
+        [self.mainView xw_enterEditingModel];
+        
+        [self.saveButton setTitle:@"确定" forState:UIControlStateNormal];
+        self.clearButton.hidden = YES;
+    }
 }
 
 - (void)createViews
@@ -196,33 +288,56 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"确定"];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
-    saveButton.layer.borderWidth = .5f;
-    saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
-    [saveButton addTarget:self action:@selector(saveButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.topView addSubview:saveButton];
-    [saveButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"分享"];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:self.saveButton];
+    self.saveButton.layer.borderWidth = .5f;
+    self.saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+    [self.saveButton addTarget:self action:@selector(saveButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:self.saveButton];
+    [self.saveButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(144 * scale);
         make.height.mas_equalTo(72 * scale);
         make.centerY.mas_equalTo(self.titleLabel);
         make.right.mas_equalTo(-60 * scale);
     }];
+    
+    self.clearButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"清空"];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:self.clearButton];
+    self.clearButton.layer.borderWidth = .5f;
+    self.clearButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+    [self.clearButton addTarget:self action:@selector(clearButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:self.clearButton];
+    [self.clearButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(144 * scale);
+        make.height.mas_equalTo(72 * scale);
+        make.centerY.mas_equalTo(self.titleLabel);
+        make.right.mas_equalTo(self.saveButton.mas_left).offset(-40 * scale);
+    }];
+}
+
+- (void)clearButtonDidClicked
+{
+    if (self.mainView.editing) {
+        [self.mainView xw_stopEditingModel];
+    }
+    [self.shareList removeAllObjects];
+    [self.selectSource removeAllObjects];
+    [self.mainView reloadData];
 }
 
 - (void)saveButtonDidClicked
 {
-    if (self.isEdit) {
-        self.isEdit = NO;
-        [self.mainView reloadData];
+    if (self.mainView.editing) {
         [self.mainView xw_stopEditingModel];
+        [self.saveButton setTitle:@"分享" forState:UIControlStateNormal];
+        self.clearButton.hidden = NO;
     }else{
-        if (self.shareList.count == 0) {
-            
-        }else if (self.shareList.count > 9){
+        if (self.selectSource.count == 0) {
+            [MBProgressHUD showTextHUDWithText:@"请选择要分享的图片" inView:self.view];
+        }else if (self.selectSource.count > 9){
             [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:self.view];
         }else {
-            [[WeChatManager shareManager] shareTimeLineWithImages:self.shareList title:@"分享" viewController:self];
+            [[WeChatManager shareManager] shareTimeLineWithImages:self.selectSource title:@"分享" viewController:self];
         }
     }
 }
@@ -240,6 +355,20 @@
     return _shareList;
 }
 
+- (NSMutableArray *)selectSource
+{
+    if (!_selectSource) {
+        _selectSource = [[NSMutableArray alloc] init];
+    }
+    return _selectSource;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.mainView reloadData];
+}
+
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
@@ -249,6 +378,8 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+    
+    [self clearButtonDidClicked];
 }
 
 /*

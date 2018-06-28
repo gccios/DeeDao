@@ -10,7 +10,7 @@
 
 @protocol LiuyanDidComplete <NSObject>
 
-- (void)liuyanDidComplete;
+- (void)liuyanDidComplete:(NSMutableArray *)commentSource;
 
 @end
 

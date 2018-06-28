@@ -136,10 +136,10 @@
         [button addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
         [MBProgressHUD showTextHUDWithText:@"添加成功" inView:self.navigationController.view];
         
-        if (self.delegate && [self.delegate respondsToSelector:@selector(userDidAgreementFriend:)]) {
-            [self.delegate userDidAgreementFriend:self.model];
-        }
-        [self.navigationController popViewControllerAnimated:YES];
+//        if (self.delegate && [self.delegate respondsToSelector:@selector(userDidAgreementFriend:)]) {
+//            [self.delegate userDidAgreementFriend:self.model];
+//        }
+//        [self.navigationController popViewControllerAnimated:YES];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         

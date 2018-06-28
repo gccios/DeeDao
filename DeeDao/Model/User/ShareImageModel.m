@@ -17,8 +17,14 @@
         
         NSString * title = @"长按看更多 收藏免错过";
         if ([WeChatManager shareManager].titleList.count > 0) {
-            NSInteger index = arc4random() % [WeChatManager shareManager].titleList.count;
-            title = [[WeChatManager shareManager].titleList objectAtIndex:index];
+            if ([WeChatManager shareManager].titleList.count == 1) {
+                title = [[WeChatManager shareManager].titleList firstObject];
+            }else{
+                NSInteger index = arc4random() % [WeChatManager shareManager].titleList.count;
+                title = [[WeChatManager shareManager].titleList objectAtIndex:index];
+            }
+        }else{
+            title = @"";
         }
         
         self.detail = title;

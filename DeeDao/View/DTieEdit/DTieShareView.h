@@ -18,6 +18,8 @@
 
 @property (nonatomic, weak) id<DTieShareDelegate> delegate;
 
+- (instancetype)initCreatePostWithFrame:(CGRect)frame;
+
 - (void)show;
 
 @end

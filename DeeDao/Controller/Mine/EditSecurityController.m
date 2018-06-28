@@ -363,10 +363,6 @@
         [MBProgressHUD showTextHUDWithText:@"请输入标题" inView:self.view];
         return;
     }
-    if (self.selectFriend.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"至少选择一个用户" inView:self.view];
-        return;
-    }
     
     NSInteger groupId = 0;
     NSString * groupPropName = @"";

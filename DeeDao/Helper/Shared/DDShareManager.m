@@ -21,7 +21,6 @@
 @property (nonatomic, strong) UIButton * savePhotoButton;
 @property (nonatomic, strong) UIButton * addShareListButton;
 @property (nonatomic, strong) UILabel * numberLabel;
-@property (nonatomic, strong) NSMutableArray * shareList;
 
 @end
 
@@ -39,7 +38,10 @@
 
 - (void)updateNumber
 {
-    NSString * number = [NSString stringWithFormat:@"%lu/9", (unsigned long)self.shareList.count];
+    NSString * number = [NSString stringWithFormat:@"%lu/9", (unsigned long)[DTieShareViewController sharedViewController].shareList.count];
+    if ([DTieShareViewController sharedViewController].shareList.count > 99) {
+        number = @"99+/9";
+    }
     self.numberLabel.text = number;
     if (self.tempNumberLabel) {
         [self.tempNumberLabel setTitle:number forState:UIControlStateNormal];
@@ -50,17 +52,9 @@
 {
     if (self.handleImage) {
         
-        if (self.shareList.count >= 9) {
-            [self showShareList];
-            [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:[UIApplication sharedApplication].keyWindow];
-        }else{
-            [self.shareList addObject:self.handleImage];
-            [self hiddenHandleView];
-            [self updateNumber];
-            if (self.shareList.count >= 9) {
-                [self showShareList];
-            }
-        }
+        [[DTieShareViewController sharedViewController] insertShareList:[NSMutableArray arrayWithObject:self.handleImage]];
+        [self hiddenHandleView];
+        [self updateNumber];
     }
 }
 
@@ -69,7 +63,7 @@
     UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
     if ([tabbar isKindOfClass:[UITabBarController class]]) {
         
-        DTieShareViewController * share = [[DTieShareViewController alloc] initWithShareList:self.shareList];
+        DTieShareViewController * share = [DTieShareViewController sharedViewController];
         [tabbar.selectedViewController presentViewController:share animated:YES completion:nil];
     }
 }
@@ -93,7 +87,10 @@
         return;
     }
     
-    self.numberLabel.text = [NSString stringWithFormat:@"%lu/9", (unsigned long)self.shareList.count];
+    self.numberLabel.text = [NSString stringWithFormat:@"%lu/9", (unsigned long)[DTieShareViewController sharedViewController].shareList.count];
+    if ([DTieShareViewController sharedViewController].shareList.count > 99) {
+        self.numberLabel.text = @"99+/9";
+    }
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     self.handleImage = image;
@@ -131,7 +128,6 @@
 {
     if (self = [super init]) {
         [self createShareUI];
-        self.shareList = [[NSMutableArray alloc] init];
     }
     return self;
 }

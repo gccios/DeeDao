@@ -21,6 +21,8 @@
 @property (nonatomic, strong) UIVisualEffectView * effectView;
 @property (nonatomic, strong) UIView * coverView;
 
+@property (nonatomic, strong) UIView * baseView;
+
 @property (nonatomic, assign) BOOL isInstallWX;
 
 @end
@@ -42,18 +44,45 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    UIView * baseCornerView = [[UIView alloc] initWithFrame:CGRectZero];
+    baseCornerView.backgroundColor = [UIColor whiteColor];
+    [self.contentView addSubview:baseCornerView];
+    [baseCornerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-45 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    baseCornerView.layer.cornerRadius = 24 * scale;
+    baseCornerView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    baseCornerView.layer.shadowOpacity = .3f;
+    baseCornerView.layer.shadowRadius = 24 * scale;
+    baseCornerView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+    
+    self.baseView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.baseView.backgroundColor = [UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f];
+    [self.contentView addSubview:self.baseView];
+    [self.baseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-45 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    self.baseView.layer.cornerRadius = 24 * scale;
+    self.baseView.layer.masksToBounds = YES;
+    
     self.detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.detailLabel.numberOfLines = 0;
-    [self.contentView addSubview:self.detailLabel];
+    [self.baseView addSubview:self.detailLabel];
     [self.detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
+        make.top.mas_equalTo(60 * scale);
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-24 * scale);
+        make.bottom.mas_equalTo(-60 * scale);
     }];
     
     self.coverView = [[UIView alloc] initWithFrame:CGRectZero];
-    [self.detailLabel addSubview:self.coverView];
+    [self.baseView addSubview:self.coverView];
     [self.coverView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
@@ -91,42 +120,43 @@
     }];
     
     self.quanxianImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.quanxianImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.quanxianImageView setImage:[UIImage imageNamed:@"zuozhewx"]];
-    [self.contentView addSubview:self.quanxianImageView];
+    [self.baseView addSubview:self.quanxianImageView];
     [self.quanxianImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.detailLabel.mas_bottom);
+        make.bottom.mas_equalTo(0);
         make.left.right.mas_equalTo(0);
         make.height.mas_equalTo(72 * scale);
     }];
     self.quanxianImageView.hidden = YES;
 }
 
-- (void)configWithCanSee:(BOOL)cansee
-{
-    
-}
-
-- (void)configWithModel:(DTieEditModel *)model
-{
-    NSString * text = model.detailContent;
-    
-    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
-    paraStyle.lineBreakMode = NSLineBreakByCharWrapping;
-    paraStyle.alignment = NSTextAlignmentLeft;
-    paraStyle.lineSpacing = 6; //设置行间距
-    paraStyle.hyphenationFactor = 1.0;
-    paraStyle.firstLineHeadIndent = 0.0;
-    paraStyle.paragraphSpacingBefore = 0.0;
-    paraStyle.headIndent = 0;
-    paraStyle.tailIndent = 0;
-    //设置字间距 NSKernAttributeName:@1.5f
-    NSDictionary *dic = @{NSFontAttributeName:self.detailLabel.font, NSParagraphStyleAttributeName:paraStyle, NSKernAttributeName:@1.5f
-                          };
-    
-    NSAttributedString *attributeStr = [[NSAttributedString alloc] initWithString:text attributes:dic];
-    
-    self.detailLabel.attributedText = attributeStr;
-}
+//- (void)configWithCanSee:(BOOL)cansee
+//{
+//    
+//}
+//
+//- (void)configWithModel:(DTieEditModel *)model
+//{
+//    NSString * text = model.detailContent;
+//    
+//    NSMutableParagraphStyle *paraStyle = [[NSMutableParagraphStyle alloc] init];
+//    paraStyle.lineBreakMode = NSLineBreakByCharWrapping;
+//    paraStyle.alignment = NSTextAlignmentLeft;
+//    paraStyle.lineSpacing = 6; //设置行间距
+//    paraStyle.hyphenationFactor = 1.0;
+//    paraStyle.firstLineHeadIndent = 0.0;
+//    paraStyle.paragraphSpacingBefore = 0.0;
+//    paraStyle.headIndent = 0;
+//    paraStyle.tailIndent = 0;
+//    //设置字间距 NSKernAttributeName:@1.5f
+//    NSDictionary *dic = @{NSFontAttributeName:self.detailLabel.font, NSParagraphStyleAttributeName:paraStyle, NSKernAttributeName:@1.5f
+//                          };
+//    
+//    NSAttributedString *attributeStr = [[NSAttributedString alloc] initWithString:text attributes:dic];
+//    
+//    self.detailLabel.attributedText = attributeStr;
+//}
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
@@ -173,7 +203,7 @@
                 imageName = @"zuozhewxdd";
             }
         }else if (model.pFlag == 1) {
-            imageName = @"zuozhedd";
+            imageName = @"zuozhetextdd";
         }
         
         if (isEmptyString(imageName)) {
@@ -184,12 +214,12 @@
         }
         if (isEmptyString(imageName)) {
             [self.detailLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-24 * scale);
+                make.bottom.mas_equalTo(-60 * scale);
             }];
             self.quanxianImageView.hidden = YES;
         }else{
             [self.detailLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-96 * scale);
+                make.bottom.mas_equalTo((-72-60) * scale);
             }];
             [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
             self.quanxianImageView.hidden = NO;

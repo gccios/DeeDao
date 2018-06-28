@@ -65,6 +65,7 @@
         make.centerY.mas_equalTo(-12 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];
+    [DDViewFactoryTool cornerRadius:50 * scale withView:self.logoImageView];
     
     self.InfoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
     self.InfoLabel.text = @"在你的D帖的位置向你打招呼";
@@ -121,6 +122,10 @@
         UIImage * bgImage = [UIImage imageNamed:@"smallkuang"];
         [self.coverImageView setImage:[bgImage resizableImageWithCapInsets:UIEdgeInsetsMake(bgImage.size.height*0.9, bgImage.size.width*0.9, bgImage.size.height*0.9, bgImage.size.width*0.9) resizingMode:UIImageResizingModeStretch]];
         [self.logoImageView setImage:[UIImage imageNamed:@"yt-dazhaohu"]];
+    }
+    
+    if (!isEmptyString(model.portraitUri)) {
+        [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraitUri]];
     }
 }
 

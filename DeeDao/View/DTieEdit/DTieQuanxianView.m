@@ -97,7 +97,7 @@
                 [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
                 [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
                 [self configMiquanLabelText:@"小密圈(默认密圈)"];
-                self.landAccountFlg = 2;
+                self.landAccountFlg = 4;
                 self.currentQuanxianButton = self.miquanButton;
                 
                 [self.tableView reloadData];
@@ -499,7 +499,7 @@
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
     [self configMiquanLabelText:@"小密圈(默认密圈)"];
-    self.landAccountFlg = 2;
+    self.landAccountFlg = 4;
     self.currentQuanxianButton = self.miquanButton;
     
     [self.tableView reloadData];

@@ -13,4 +13,8 @@
 
 - (instancetype)initWithDTie:(DTieModel *)model;
 
+- (instancetype)initPreReadWithDTie:(DTieModel *)model;
+
+- (void)showShareWithCreatePost;
+
 @end

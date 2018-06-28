@@ -22,11 +22,13 @@
 #import "DTieChooseLocationController.h"
 #import "DatePickerView.h"
 #import "LookImageViewController.h"
+#import "DTieQuanXianViewController.h"
+#import "SecurityGroupModel.h"
 #import <AVKit/AVKit.h>
 #import "DDShareManager.h"
 #import <WXApi.h>
 
-@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate>
+@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate, DTieQuanXianViewControllerDelegate>
 
 @property (nonatomic, strong) RTDragCellTableView * tableView;
 
@@ -45,6 +47,9 @@
 
 @property (nonatomic, strong) DTieModel * editDTModel;
 
+@property (nonatomic, strong) DTieQuanXianViewController * quanxian;
+@property (nonatomic, strong) UILabel * quanxianLabel;
+
 //@property (nonatomic, strong) TZImagePickerController * picker;
 //@property (nonatomic, strong) NSMutableArray * selectPHAsset;
 
@@ -58,6 +63,7 @@
         self.editDTModel = editModel;
         [self.modleSources addObjectsFromArray:editModel.details];
         [self createContenView];
+        [self reloadContentView];
     }
     return self;
 }
@@ -66,8 +72,30 @@
 {
     if (self = [super initWithFrame:frame]) {
         [self createContenView];
+        
+        if ([DDLocationManager shareManager].result.poiList && [DDLocationManager shareManager].result.poiList.count > 0) {
+            [self chooseLocationDidChoose:[DDLocationManager shareManager].result.poiList.firstObject];
+        }
+        [self reloadContentView];
     }
     return self;
+}
+
+- (void)reloadContentView
+{
+    BOOL hasFirstImage = NO;
+    for (NSInteger i = 0; i < self.modleSources.count; i++) {
+        DTieEditModel * model = [self.modleSources objectAtIndex:i];
+        if (model.type == DTieEditType_Image) {
+            if (!hasFirstImage) {
+                model.isFirstImage = YES;
+            }else{
+                model.isFirstImage = NO;
+            }
+            hasFirstImage = YES;
+        }
+    }
+    [self.tableView reloadData];
 }
 
 #pragma mark - 时间和地点的选择
@@ -99,7 +127,7 @@
 - (void)chooseLocationDidChoose:(BMKPoiInfo *)poi
 {
     self.choosePOI = poi;
-    self.locationLabel.text = [NSString stringWithFormat:@"%@%@", poi.address, poi.name];
+    self.locationLabel.text = [NSString stringWithFormat:@"%@", poi.name];
 }
 
 #pragma mark - 选取照片
@@ -134,17 +162,11 @@
         }
         model.image = [UIImage imageWithData:data];
         
-        if ([DDShareManager shareManager].editShareCount >= 9) {
-            model.shareEnable = 0;
-        }else{
-            [DDShareManager shareManager].editShareCount += 1;
-        }
-        
         [models addObject:model];
     }
     
     [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
-    [self.tableView reloadData];
+    [self reloadContentView];
 //    [hud hideAnimated:YES];
 }
 
@@ -288,8 +310,6 @@
 
 - (void)createContenView
 {
-    [DDShareManager shareManager].editShareCount = 0;
-    
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 684 * scale)];
@@ -300,6 +320,7 @@
     self.titleTextField.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.titleTextField.leftView = titleLeftView;
     self.titleTextField.leftViewMode = UITextFieldViewModeAlways;
+    self.titleTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
     [headerView addSubview:self.titleTextField];
     [self.titleTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(60 * scale);
@@ -393,6 +414,38 @@
     }];
     [addButton addTarget:self action:@selector(addButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
+    UIView * footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 180 * scale)];
+    UIButton * quanxianButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [quanxianButton setTitle:@"" forState:UIControlStateNormal];
+    [quanxianButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+    [footerView addSubview:quanxianButton];
+    [quanxianButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(0);
+        make.width.mas_equalTo(kMainBoundsWidth);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
+    UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    label.text = @"浏览权限";
+    [quanxianButton addSubview:label];
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.centerY.mas_equalTo(0);
+    }];
+    
+    self.quanxianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentRight];
+    self.quanxianLabel.text = @"所有朋友,关注我的人";
+    [quanxianButton addSubview:self.quanxianLabel];
+    [self.quanxianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(label.mas_right).offset(60 * scale);
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
+    [quanxianButton addTarget:self action:@selector(quanxianButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
     self.tableView = [[RTDragCellTableView alloc] initWithFrame:self.bounds style:UITableViewStylePlain];
     self.tableView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     self.tableView.rowHeight = 408 * scale;
@@ -417,8 +470,41 @@
     [self.tableView addGestureRecognizer:swipe];
     
     self.tableView.tableHeaderView = headerView;
+    self.tableView.tableFooterView = footerView;
     
     [self createChooseView];
+    [self quanxian];
+}
+
+- (void)quanxianButtonDidClicked
+{
+    [self.parentDDViewController presentViewController:self.quanxian animated:YES completion:nil];
+}
+
+#pragma mark - DTieQuanXianViewControllerDelegate
+- (void)DTieQuanxianDidCompleteWith:(NSArray *)source landAccountFlg:(NSInteger)landAccountFlg
+{
+    self.selectSource = [[NSMutableArray alloc] initWithArray:source];
+    self.landAccountFlg = landAccountFlg;
+    
+    NSString * title = @"";
+    if (landAccountFlg == 1) {
+        title = @"公开";
+    }else if (landAccountFlg == 2) {
+        title = @"私密";
+    }else{
+        if (source.count == 0) {
+            title = @"私密";
+        }else{
+            for (SecurityGroupModel * model in source) {
+                title = [NSString stringWithFormat:@"%@,%@", title, model.securitygroupName];
+            }
+            if (title.length > 2) {
+                title = [title substringFromIndex:1];
+            }
+        }
+    }
+    self.quanxianLabel.text = title;
 }
 
 - (void)createChooseView
@@ -464,6 +550,21 @@
     if (self.editDTModel) {
         [self reloadWithEditModel];
     }
+    
+    SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+    model1.cid = -1;
+    model1.securitygroupName = @"所有朋友";
+    model1.isChoose = YES;
+    model1.isNotification = YES;
+    [self.selectSource addObject:model1];
+    
+    SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+    model2.cid = -2;
+    model2.securitygroupName = @"关注我的人";
+    model2.isChoose = YES;
+    model2.isNotification = YES;
+    [self.selectSource addObject:model2];
+    self.landAccountFlg = 4;
 }
 
 #pragma mark - 左滑删除
@@ -475,14 +576,13 @@
     if (indexPath && indexPath.row < self.modleSources.count) {
         
         DTieEditModel * model = [self.modleSources objectAtIndex:indexPath.row];
-        if (model.shareEnable) {
-            [DDShareManager shareManager].editShareCount--;
-        }
         
         [self.modleSources removeObject:model];
         [self.tableView beginUpdates];
         [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
+        [self reloadContentView];
         [self.tableView endUpdates];
+//        [self reloadContentView];
     }
 }
 
@@ -494,9 +594,11 @@
         self.createTime = self.editDTModel.sceneTime;
         self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.editDTModel.sceneTime];
     }
-    self.locationLabel.text = self.editDTModel.sceneAddress;
+    self.locationLabel.text = self.editDTModel.sceneBuilding;
     BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
     poi.pt = CLLocationCoordinate2DMake(self.editDTModel.sceneAddressLat, self.editDTModel.sceneAddressLng);
+    poi.address = self.editDTModel.sceneAddress;
+    poi.name = self.editDTModel.sceneBuilding;
     self.choosePOI = poi;
 }
 
@@ -646,6 +748,17 @@
 {
     [self.modleSources removeAllObjects];
     [self.modleSources addObjectsFromArray:newArray];
+    [self reloadContentView];
+}
+
+- (DTieQuanXianViewController *)quanxian
+{
+    if (!_quanxian) {
+        _quanxian = [[DTieQuanXianViewController alloc] init];
+        _quanxian.delegate = self;
+        [_quanxian delegateShouldBlock];
+    }
+    return _quanxian;
 }
 
 - (DatePickerView *)datePicker

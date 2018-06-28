@@ -27,6 +27,8 @@
 @property (nonatomic, strong) UIVisualEffectView * effectView;
 @property (nonatomic, strong) UIView * converView;
 
+@property (nonatomic, strong) UIView * baseView;
+
 @property (nonatomic, assign) BOOL isInstallWX;
 
 @end
@@ -48,16 +50,36 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    self.baseView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.contentView addSubview:self.baseView];
+    [self.baseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-45 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    self.baseView.layer.cornerRadius = 24 * scale;
+    self.baseView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    self.baseView.layer.shadowOpacity = .3f;
+    self.baseView.layer.shadowRadius = 24 * scale;
+    self.baseView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+    
+    UIView * baseCornerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.baseView addSubview:baseCornerView];
+    baseCornerView.layer.cornerRadius = 24 * scale;
+    baseCornerView.layer.masksToBounds = YES;
+    [baseCornerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
     self.detailImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     self.detailImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.detailImageView.clipsToBounds = YES;
-    [self.contentView addSubview:self.detailImageView];
+    [baseCornerView addSubview:self.detailImageView];
     [self.detailImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(24 * scale);
-        make.left.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(-24 * scale);
+        make.top.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(0);
     }];
-    self.detailImageView.clipsToBounds = YES;
     
     UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidHandle:)];
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDidTap:)];
@@ -104,8 +126,9 @@
     }];
     
     self.quanxianImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.quanxianImageView.contentMode = UIViewContentModeScaleAspectFill;
     [self.quanxianImageView setImage:[UIImage imageNamed:@"zuozhewx"]];
-    [self.contentView addSubview:self.quanxianImageView];
+    [baseCornerView addSubview:self.quanxianImageView];
     [self.quanxianImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.detailImageView.mas_bottom);
         make.left.right.mas_equalTo(0);
@@ -127,10 +150,10 @@
     }
 }
 
-- (void)configWithCanSee:(BOOL)cansee
-{
-    
-}
+//- (void)configWithCanSee:(BOOL)cansee
+//{
+//
+//}
 
 - (void)longPressDidHandle:(UILongPressGestureRecognizer *)longPress
 {
@@ -151,22 +174,22 @@
     [[DDShareManager shareManager] showHandleViewWithImage:model];
 }
 
-- (void)configWithModel:(DTieEditModel *)model
-{
-    self.model = model;
-    
-    if (model.image) {
-        [self.detailImageView setImage:model.image];
-    }else{
-        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
-        
-        if (image) {
-            [self.detailImageView setImage:image];
-        }else{
-            [self.detailImageView setImage:[UIImage new]];
-        }
-    }
-}
+//- (void)configWithModel:(DTieEditModel *)model
+//{
+//    self.model = model;
+//    
+//    if (model.image) {
+//        [self.detailImageView setImage:model.image];
+//    }else{
+//        UIImage *image = [[SDImageCache sharedImageCache] imageFromDiskCacheForKey:model.detailContent];
+//        
+//        if (image) {
+//            [self.detailImageView setImage:image];
+//        }else{
+//            [self.detailImageView setImage:[UIImage new]];
+//        }
+//    }
+//}
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
@@ -213,12 +236,12 @@
         
         if (isEmptyString(imageName)) {
             [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-24 * scale);
+                make.bottom.mas_equalTo(0 * scale);
             }];
             self.quanxianImageView.hidden = YES;
         }else{
             [self.detailImageView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.bottom.mas_equalTo(-96 * scale);
+                make.bottom.mas_equalTo(-72 * scale);
             }];
             [self.quanxianImageView setImage:[UIImage imageNamed:imageName]];
             self.quanxianImageView.hidden = NO;
@@ -226,14 +249,14 @@
     }
 }
 
-- (void)yulanWithModel:(DTieEditModel *)model
-{
-    if (model.image) {
-        [self.detailImageView setImage:model.image];
-    }else{
-        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
-    }
-}
+//- (void)yulanWithModel:(DTieEditModel *)model
+//{
+//    if (model.image) {
+//        [self.detailImageView setImage:model.image];
+//    }else{
+//        [self.detailImageView setImage:[UIImage imageNamed:@"hengBG"]];
+//    }
+//}
 
 - (void)awakeFromNib {
     [super awakeFromNib];

@@ -16,8 +16,9 @@
 #import "DTieDetailRequest.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 
-@interface DTiePOIViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface DTiePOIViewController () <UICollectionViewDelegate, UICollectionViewDataSource, BMKMapViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) DTieModel * model;
@@ -38,7 +39,7 @@
         self.dataSource = [[NSMutableArray alloc] init];
         self.model = model;
         [self.dataSource addObject:[NSArray arrayWithObject:model]];
-        self.titleSource = @[@"", @"我和好友的D帖", @"博主的D帖", @"我所关注人的D帖", @"部分公开的D帖"];
+        self.titleSource = @[@"", @"我和好友", @"博主", @"我所关注人", @"部分公开"];
     }
     return self;
 }
@@ -126,7 +127,7 @@
     
     self.mapView.showsUserLocation = NO;
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
-    self.mapView.gesturesEnabled = NO;
+    self.mapView.delegate = self;
     
     [locationView addSubview:self.mapView];
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -146,15 +147,12 @@
     }
     
     BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(.01, .01));
-    BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
+    BMKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
     [self.mapView setRegion:adjustedRegion animated:YES];
     
-    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
-    [self.mapView addSubview:imageView];
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.center.mas_equalTo(0);
-        make.width.height.mas_equalTo(90 * scale);
-    }];
+    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    [self.mapView addAnnotation:annotation];
     
     UIView * navView = [[UIView alloc] initWithFrame:CGRectZero];
     navView.backgroundColor = UIColorFromRGB(0xEFEFF4);
@@ -206,6 +204,33 @@
         make.top.mas_equalTo(locationView.mas_bottom);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    
+    UIButton * backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
+    [backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.mapView addSubview:backLocationButton];
+    [backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(40 * scale);
+        make.bottom.mas_equalTo(-30 * scale);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+}
+
+- (void)backLocationButtonDidClicked
+{
+    BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), self.mapView.region.span);
+    BMKCoordinateRegion adjustedRegion = [self.mapView regionThatFits:viewRegion];
+    [self.mapView setRegion:adjustedRegion animated:YES];
+}
+
+- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+{
+    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+    view.annotation = annotation;
+    view.image = [UIImage imageNamed:@"location"];
+    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+    
+    return view;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
@@ -331,7 +356,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = self.model.sceneAddress;
+    titleLabel.text = self.model.sceneBuilding;
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -344,6 +369,11 @@
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)dealloc
+{
+    self.mapView.delegate = nil;
 }
 
 - (void)didReceiveMemoryWarning {

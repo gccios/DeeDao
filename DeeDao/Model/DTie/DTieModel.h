@@ -38,6 +38,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, copy) NSString * postSummary;
 @property (nonatomic, copy) NSString * postTypeName;
 @property (nonatomic, copy) NSString * sceneAddress;
+@property (nonatomic, copy) NSString * sceneBuilding;
 @property (nonatomic, assign) double sceneAddressLat;
 @property (nonatomic, assign) double sceneAddressLng;
 @property (nonatomic, assign) NSInteger sceneTime;

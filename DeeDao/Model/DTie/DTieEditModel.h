@@ -39,6 +39,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger postId;
 @property (nonatomic, assign) NSInteger wxCanSee;
 
+@property (nonatomic, assign) BOOL isFirstImage;
+
 //@property (nonatomic, assign) CGFloat height;
 
 @end

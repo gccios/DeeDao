@@ -81,16 +81,16 @@
     self.nameButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@""];
     [self.contentView addSubview:self.nameButton];
     [self.nameButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(90 * scale);
+        make.left.mas_equalTo(180 * scale);
         make.top.bottom.mas_equalTo(0);
-        make.width.mas_lessThanOrEqualTo(330 * scale);
+        make.width.mas_lessThanOrEqualTo(320 * scale);
     }];
     [self.nameButton addTarget:self action:@selector(nameButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"主动推送"];
+    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"推送给Ta们"];
     [self.contentView addSubview:self.notificationButton];
     [self.notificationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(470 * scale);
+        make.left.mas_equalTo(520 * scale);
         make.top.bottom.mas_equalTo(0);
         make.width.mas_lessThanOrEqualTo(330 * scale);
     }];
