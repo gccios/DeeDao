@@ -9,6 +9,6 @@ pod 'Qiniu', '~> 7.1'
 pod 'TZImagePickerController', '~> 2.1.4'
 pod 'SDWebImage'
 pod 'MJRefresh'
-pod 'BaiduMapKit', '~> 4.0.0'
+pod 'BaiduMapKit', '~> 4.1.1'
 pod 'WechatOpenSDK'
 end

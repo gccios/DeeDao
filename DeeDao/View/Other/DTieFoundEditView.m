@@ -40,16 +40,15 @@
 #pragma mark ----反向地理编码
 - (void)reverseGeoCodeWith:(CLLocationCoordinate2D)coordinate
 {
-    BMKReverseGeoCodeOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeOption alloc] init];
-    reverseGeocodeSearchOption.reverseGeoPoint = coordinate;
+    BMKReverseGeoCodeSearchOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeSearchOption alloc] init];
+    reverseGeocodeSearchOption.location = coordinate;
     [self.geocodesearch reverseGeoCode:reverseGeocodeSearchOption];;
 }
 
-- (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error
+- (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeSearchResult *)result errorCode:(BMKSearchErrorCode)error
 {
     self.locationLabel.text = [NSString stringWithFormat:@"%@\n%@,%@", [DDTool getCurrentTimeWithFormat:@"yyyy年MM月dd日 HH:mm"], result.address, result.sematicDescription];
 }
-
 
 - (void)createSelfView
 {

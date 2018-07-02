@@ -120,11 +120,7 @@
     model.postId = postId;
     model.image = self.detailImageView.image;
     model.title = self.dtieModel.postSummary;
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
-    NSArray * tempArray = [self.dtieModel.details filteredArrayUsingPredicate:predicate];
-    if (tempArray && tempArray.count > 0) {
-        model.pflg = 1;
-    }
+    model.PFlag = self.model.pFlag;
     
     [[DDShareManager shareManager] showHandleViewWithImage:model];
 }
@@ -179,12 +175,13 @@
         self.detailImageView.userInteractionEnabled = NO;
         self.converView.hidden = NO;
     }else{
+        self.detailImageView.userInteractionEnabled = YES;
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-            self.detailImageView.userInteractionEnabled = YES;
+//            self.detailImageView.userInteractionEnabled = YES;
             self.converView.hidden = YES;
         }else{
             self.deedaoLabel.text = @"到地体验";
-            self.detailImageView.userInteractionEnabled = NO;
+//            self.detailImageView.userInteractionEnabled = NO;
             self.converView.hidden = NO;
         }
     }

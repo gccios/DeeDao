@@ -52,7 +52,7 @@
             model.postId = postId;
             model.image = image;
             model.title = title;
-            model.pflg = pflg;
+            model.PFlag = pflg;
             [self.shareList addObject:model];
         }
     }
@@ -67,7 +67,7 @@
         model.postId = postId;
         model.image = image;
         model.title = title;
-        model.pflg = pflg;
+        model.PFlag = pflg;
         [self.shareList insertObject:model atIndex:0];
     }
     [[DDShareManager shareManager] updateNumber];
@@ -83,7 +83,7 @@
         model.postId = postId;
         model.image = image;
         model.title = title;
-        model.pflg = pflg;
+        model.PFlag = pflg;
         [self.shareList addObject:model];
     }
     return self;

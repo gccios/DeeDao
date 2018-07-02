@@ -71,7 +71,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                     [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
                         model.codeImage = image;
                         
-                        UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.pflg];
+                        UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
                         [shareItems addObject:result];
                         
                         if (shareItems.count == images.count) {

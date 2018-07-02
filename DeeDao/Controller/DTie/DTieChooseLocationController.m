@@ -13,12 +13,12 @@
 #import "ChooseLocationCell.h"
 #import "MBProgressHUD+DDHUD.h"
 
-@interface DTieChooseLocationController () <BMKMapViewDelegate, UITableViewDelegate, UITableViewDataSource, BMKPoiSearchDelegate, UICollectionViewDelegate, UICollectionViewDataSource>
+@interface DTieChooseLocationController () <BMKMapViewDelegate, UITableViewDelegate, UITableViewDataSource, BMKPoiSearchDelegate, UICollectionViewDelegate, UICollectionViewDataSource, BMKGeoCodeSearchDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) BMKMapView * mapView;
 @property (nonatomic, strong) BMKPoiSearch * poiSearch;
-//@property (nonatomic, strong) BMKGeoCodeSearch *geocodesearch;
+@property (nonatomic, strong) BMKGeoCodeSearch *geocodesearch;
 @property (nonatomic, assign) BOOL isFirst;
 
 @property (nonatomic, strong) UITableView * tableView;
@@ -38,11 +38,17 @@
     [super viewDidLoad];
     
     self.isFirst = YES;
+    self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
+    self.geocodesearch.delegate = self;
+    
+    self.poiSearch = [[BMKPoiSearch alloc] init];
+    self.poiSearch.delegate = self;
+    
+    self.tagTitle = @"全部";
+    self.tagSource = @[@"全部", @"美食", @"景点", @"酒店", @"生活", @"购物", @"运动", @"娱乐", @"自然地物"];
     // Do any additional setup after loading the view.
     [self creatViews];
     [self createTopView];
-    self.tagTitle = @"美食";
-    self.tagSource = @[@"美食", @"景点", @"酒店", @"生活", @"购物", @"运动", @"娱乐", @"自然地物"];
 }
 
 - (void)creatViews
@@ -158,9 +164,11 @@
     }];
     
     //发起检索
-    self.poiSearch = [[BMKPoiSearch alloc] init];
-    self.poiSearch.delegate = self;
-    [self poiSearchWithCoordinate:[DDLocationManager shareManager].userLocation.location.coordinate];
+    if (self.startPoi && self.startPoi.pt.latitude != 0) {
+        [self reverseGeoCodeWith:self.startPoi.pt];
+    }else{
+        [self reverseGeoCodeWith:[DDLocationManager shareManager].userLocation.location.coordinate];
+    }
 }
 
 - (void)backLocationButtonDidClicked
@@ -206,10 +214,13 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString * tagTitle = [self.tagSource objectAtIndex:indexPath.row];
-    if (![self.tagTitle isEqualToString:tagTitle]) {
-        self.tagTitle = tagTitle;
-        [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
+    
+    if ([self.tagTitle isEqualToString:tagTitle]) {
+        return;
     }
+    
+    self.tagTitle = tagTitle;
+    [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
 }
 
 #pragma mark -- 地图代理
@@ -219,11 +230,19 @@
     [self poiSearchWithCoordinate:mapView.centerCoordinate];
 }
 
+#pragma mark ----反向地理编码
 - (void)reverseGeoCodeWith:(CLLocationCoordinate2D)coordinate
 {
-//    BMKReverseGeoCodeOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeOption alloc] init];
-//    reverseGeocodeSearchOption.reverseGeoPoint = coordinate;
-//    [self.geocodesearch reverseGeoCode:reverseGeocodeSearchOption];
+    BMKReverseGeoCodeSearchOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeSearchOption alloc] init];
+    reverseGeocodeSearchOption.location = coordinate;
+    [self.geocodesearch reverseGeoCode:reverseGeocodeSearchOption];;
+}
+
+- (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeSearchResult *)result errorCode:(BMKSearchErrorCode)error
+{
+    [self.dataSource removeAllObjects];
+    [self.dataSource addObjectsFromArray:result.poiList];
+    [self.tableView reloadData];
 }
 
 - (void)poiSearchWithCoordinate:(CLLocationCoordinate2D)coordinate
@@ -231,26 +250,45 @@
     [self.dataSource removeAllObjects];
     [self.tableView reloadData];
     
-    BMKNearbySearchOption *option = [[BMKNearbySearchOption alloc]init];
+    NSMutableArray * keyWords = [NSMutableArray new];
+    NSString * keyWord = self.textField.text;
+    if (!isEmptyString(keyWord)) {
+        [keyWords addObject:keyWord];
+    }else if ([self.tagTitle isEqualToString:@"全部"]) {
+        [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+        return;
+    }else if (!isEmptyString(self.tagTitle)) {
+        [keyWords addObject:self.tagTitle];
+    }
+    
+    BMKPOINearbySearchOption *option = [[BMKPOINearbySearchOption alloc]init];
     option.pageIndex = 0;
-    option.pageCapacity = 20;
+    option.pageSize = 20;
     option.location = coordinate;
-    option.keyword = self.tagTitle;
+    option.radius = 50 * 1000;
+    option.keywords = [NSArray arrayWithArray:keyWords];
     [self.poiSearch poiSearchNearBy:option];
+    
+//    BMKPOICitySearchOption * cityOption = [[BMKPOICitySearchOption alloc] init];
+//    cityOption.city = @"北京市";
+//    cityOption.pageIndex = 0;
+//    cityOption.pageSize = 50;
+//    cityOption.keyword = self.tagTitle;
+//    [self.poiSearch poiSearchInCity:cityOption];
 }
 
 //实现PoiSearchDeleage处理回调结果
-- (void)onGetPoiResult:(BMKPoiSearch*)searcher result:(BMKPoiResult*)poiResultList errorCode:(BMKSearchErrorCode)error
+- (void)onGetPoiResult:(BMKPoiSearch *)searcher result:(BMKPOISearchResult *)poiResult errorCode:(BMKSearchErrorCode)errorCode
 {
-    if (error == BMK_SEARCH_NO_ERROR) {
+    if (errorCode == BMK_SEARCH_NO_ERROR) {
         //在此处理正常结果
         
         [self.dataSource removeAllObjects];
-        [self.dataSource addObjectsFromArray:poiResultList.poiInfoList];
+        [self.dataSource addObjectsFromArray:poiResult.poiInfoList];
         [self.tableView reloadData];
         
     }
-    else if (error == BMK_SEARCH_AMBIGUOUS_KEYWORD){
+    else if (errorCode == BMK_SEARCH_AMBIGUOUS_KEYWORD){
         //当在设置城市未找到结果，但在其他城市找到结果时，回调建议检索城市列表
         // result.cityList;
         NSLog(@"起始点有歧义");
@@ -258,13 +296,6 @@
         [MBProgressHUD showTextHUDWithText:@"暂无搜索结果" inView:self.view];
     }
 }
-
-//- (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error
-//{
-//    [self.dataSource removeAllObjects];
-//    [self.dataSource addObjectsFromArray:result.poiList];
-//    [self.tableView reloadData];
-//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -364,15 +395,7 @@
         [self.textField resignFirstResponder];
     }
     
-    NSString * tagTitle = self.textField.text;
-    if (isEmptyString(tagTitle)) {
-        return;
-    }
-    
-    if (![self.tagTitle isEqualToString:tagTitle]) {
-        self.tagTitle = tagTitle;
-        [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
-    }
+    [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
 }
 
 - (NSMutableArray *)dataSource
@@ -388,11 +411,7 @@
     [super viewDidDisappear:animated];
     self.mapView.delegate = nil;
     self.poiSearch.delegate = nil;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
+    self.geocodesearch.delegate = nil;
 }
 
 - (void)didReceiveMemoryWarning {

@@ -46,6 +46,35 @@
     _codeImage = [self clipMiniProgromCode:codeImage];
 }
 
+- (void)setImage:(UIImage *)image
+{
+    if (image) {
+        _image = [self coreBlurImage:image withBlurNumber:50];
+    }
+}
+
+/**
+ 使用CoreImage进行高斯模糊
+ 
+ @param image 需要模糊的图片
+ @param blur 模糊的范围 可以1~99
+ @return 返回已经模糊过的图片
+ */
+-(UIImage *)coreBlurImage:(UIImage *)image withBlurNumber:(CGFloat)blur
+{
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CIImage *inputImage= [CIImage imageWithCGImage:image.CGImage];
+    //设置filter
+    CIFilter *filter = [CIFilter filterWithName:@"CIGaussianBlur"];
+    [filter setValue:inputImage forKey:kCIInputImageKey]; [filter setValue:@(blur) forKey: kCIInputRadiusKey];
+    //模糊图片
+    CIImage *result=[filter valueForKey:kCIOutputImageKey];
+    CGImageRef outImage=[context createCGImage:result fromRect:[inputImage extent]];
+    UIImage *blurImage=[UIImage imageWithCGImage:outImage];
+    CGImageRelease(outImage);
+    return blurImage;
+}
+
 - (UIImage *)clipMiniProgromCode:(UIImage *)codeImage
 {
     //1.创建图片上下文

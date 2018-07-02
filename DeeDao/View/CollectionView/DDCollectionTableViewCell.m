@@ -34,6 +34,7 @@
 @property (nonatomic, strong) UIView * coverView;
 
 @property (nonatomic, strong) DTieModel * dtieModel;
+@property (nonatomic, strong) DTieEditModel * model;
 
 @end
 
@@ -188,17 +189,14 @@
         model.postId = postId;
         model.image = self.baseImageView.image;
         model.title = self.dtieModel.postSummary;
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
-        NSArray * tempArray = [self.dtieModel.details filteredArrayUsingPredicate:predicate];
-        if (tempArray && tempArray.count > 0) {
-            model.pflg = 1;
-        }
-         [[DDShareManager shareManager] showHandleViewWithImage:model];
+        model.PFlag = self.model.pFlag;
+        [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }
 
 - (void)configWithModel:(DTieEditModel *)model
 {
+    self.model = model;
     self.playImageView.hidden = YES;
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {
         [self.baseImageView setImage:[UIImage new]];
@@ -226,6 +224,7 @@
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
 {
+    self.model = model;
     self.dtieModel = dtieModel;
     self.playImageView.hidden = YES;
     if (model.type == DTieEditType_Image || model.type == DTieEditType_Video) {

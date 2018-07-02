@@ -176,11 +176,7 @@
     model.postId = postId;
     model.image = self.detailImageView.image;
     model.title = self.dtieModel.postSummary;
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
-    NSArray * tempArray = [self.dtieModel.details filteredArrayUsingPredicate:predicate];
-    if (tempArray && tempArray.count > 0) {
-        model.pflg = 1;
-    }
+    model.PFlag = self.model.pFlag;
     
     [[DDShareManager shareManager] showHandleViewWithImage:model];
 }

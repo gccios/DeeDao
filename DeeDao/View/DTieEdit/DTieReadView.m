@@ -181,7 +181,6 @@
     
     [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.jubaoButton addTarget:self action:@selector(jubaoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.locationButton addTarget:self action:@selector(locationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)imageDidTap:(UITapGestureRecognizer *)tap
@@ -208,7 +207,7 @@
         NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
         NSArray * tempArray = [self.model.details filteredArrayUsingPredicate:predicate];
         if (tempArray && tempArray.count > 0) {
-            model.pflg = 1;
+            model.PFlag = 1;
         }
         [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
@@ -610,46 +609,53 @@
         make.height.mas_equalTo(.1f);
     }];
     
-    UIView * timeView = [[UIView alloc] initWithFrame:CGRectZero];
-    [self.headerView addSubview:timeView];
-    [timeView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(60 * scale);
-        make.height.mas_equalTo(40 * scale);
+//    UIView * timeView = [[UIView alloc] initWithFrame:CGRectZero];
+//    [self.headerView addSubview:timeView];
+//    [timeView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.mas_equalTo(0);
+//        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(60 * scale);
+//        make.height.mas_equalTo(40 * scale);
+//    }];
+    
+    UIImageView * locationButton = [[UIImageView alloc] init];
+    locationButton.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonDidClicked)];
+    [locationButton addGestureRecognizer:tap];
+    
+    UIImage * locationBG = [UIImage imageNamed:@"buttonBG"];
+    locationBG = [locationBG resizableImageWithCapInsets:UIEdgeInsetsMake(locationBG.size.height / 3, locationBG.size.width / 3, locationBG.size.height / 3, locationBG.size.width / 3) resizingMode:UIImageResizingModeStretch];
+    [locationButton setImage:locationBG];
+    [self.headerView addSubview:locationButton];
+    [locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20 * scale);
+        make.right.mas_equalTo(-20 * scale);
+        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(20 * scale);
+        make.height.mas_equalTo(160 * scale);
     }];
     
     self.senceTimelabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    [timeView addSubview:self.senceTimelabel];
-    [self.senceTimelabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.top.bottom.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
+    [locationButton addSubview:self.senceTimelabel];
+    [self.senceTimelabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(35 * scale);
+        make.left.mas_equalTo(40 * scale);
+        make.right.mas_equalTo(-80 * scale);
+        make.height.mas_equalTo(44 * scale);
     }];
     
     self.locationButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.headerView addSubview:self.locationButton];
+    [locationButton addSubview:self.locationButton];
     [self.locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(80 * scale);
-        make.top.mas_equalTo(timeView.mas_bottom).offset(0 * scale);
+        make.left.mas_equalTo(40 * scale);
+        make.height.mas_equalTo(50 * scale);
+        make.top.mas_equalTo(self.senceTimelabel.mas_bottom).offset(0 * scale);
     }];
     
     UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"locationEdit"]];
-    [self.locationButton addSubview:locationImageView];
+    [locationButton addSubview:locationImageView];
     [locationImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
+        make.right.mas_equalTo(-40 * scale);
         make.width.height.mas_equalTo(48 * scale);
-    }];
-    
-    UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
-    lineView.backgroundColor = UIColorFromRGB(0xFBEFF2);
-    [self.headerView addSubview:lineView];
-    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.locationButton.mas_bottom).offset(15 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(3 * scale);
     }];
     
     UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
@@ -664,15 +670,25 @@
     self.titleLabel.numberOfLines = 0;
     [self.headerView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(lineView.mas_bottom).offset(20 * scale);
+        make.top.mas_equalTo(locationButton.mas_bottom).offset(20 * scale);
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
         make.bottom.mas_equalTo(userView.mas_top).offset(-10 * scale);
     }];
     
+    UIView * userBGView = [[UIView alloc] initWithFrame:CGRectZero];
+    [userView addSubview:userBGView];
+    userBGView.layer.cornerRadius = 24 * scale;
+    userBGView.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    userBGView.layer.borderWidth = 3 * scale;
+    userBGView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    userBGView.layer.shadowOpacity = .3f;
+    userBGView.layer.shadowRadius = 24 * scale;
+    userBGView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+    
     self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [userView addSubview:self.logoImageView];
-    [self.logoImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+    [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
         make.centerY.mas_equalTo(0);
         make.width.height.mas_equalTo(96 * scale);
@@ -681,11 +697,18 @@
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
     [userView addSubview:self.nameLabel];
-    [self.nameLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(self.logoImageView.mas_right).offset(20 * scale);
-        make.right.mas_equalTo(-300 * scale);
+        make.right.mas_lessThanOrEqualTo(-350 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(50 * scale);
+    }];
+    
+    [userBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(90 * scale);
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(self.nameLabel).offset(20 * scale);
+        make.height.mas_equalTo(86 * scale);
     }];
     
     self.dazhaohuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"打招呼 0"];
@@ -716,7 +739,7 @@
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
     [self.locationButton addSubview:self.locationLabel];
     [self.locationLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.right.mas_equalTo(-160 * scale);
         make.height.mas_equalTo(45 * scale);
         make.centerY.mas_equalTo(0);

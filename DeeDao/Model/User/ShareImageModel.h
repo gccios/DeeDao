@@ -15,6 +15,6 @@
 @property (nonatomic, strong) UIImage * codeImage;
 @property (nonatomic, copy) NSString * title;
 @property (nonatomic, copy) NSString * detail;
-@property (nonatomic, assign) BOOL pflg;
+@property (nonatomic, assign) NSInteger PFlag;
 
 @end

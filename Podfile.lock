@@ -14,7 +14,7 @@ PODS:
   - AFNetworking/Serialization (3.0.4)
   - AFNetworking/UIKit (3.0.4):
     - AFNetworking/NSURLSession
-  - BaiduMapKit (4.0.0)
+  - BaiduMapKit (4.1.1)
   - BGNetwork (0.2.6):
     - AFNetworking (~> 3.0.2)
   - HappyDNS (0.3.13)
@@ -32,7 +32,7 @@ PODS:
   - WechatOpenSDK (1.8.2)
 
 DEPENDENCIES:
-  - BaiduMapKit (~> 4.0.0)
+  - BaiduMapKit (~> 4.1.1)
   - BGNetwork
   - IQKeyboardManager (~> 5.0.8)
   - Masonry (~> 1.1.0)
@@ -62,7 +62,7 @@ SPEC REPOS:
 
 SPEC CHECKSUMS:
   AFNetworking: a0075feb321559dc78d9d85b55d11caa19eabb93
-  BaiduMapKit: 8fa2eb2ca81b92b740b19d9ff3b59d751d3e92e1
+  BaiduMapKit: 51bba432a28316680676b4d453a70e5031f3a7eb
   BGNetwork: 66986f143548bb5308bffd85dfb2bfd544de1450
   HappyDNS: 17732b07a75bb9756bd6fe04452609e8da8c663e
   IQKeyboardManager: 266cb7b1d11f94a3e71229d77f960f9a1b538e5b
@@ -75,6 +75,6 @@ SPEC CHECKSUMS:
   TZImagePickerController: 2a8f41ba058e215bc9b699ade241fdbcc910c2bd
   WechatOpenSDK: 676feec516a11173eafd1fe64b10d27babf28701
 
-PODFILE CHECKSUM: ce9ce360f2113d2e50673f9c76bd687af62cd993
+PODFILE CHECKSUM: 8478e1aa647d1e7e880659042fa6133bb80b214f
 
 COCOAPODS: 1.5.0

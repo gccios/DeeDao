@@ -16,7 +16,7 @@ extern NSString * const DDUserLocationDidUpdateNotification;
 @interface DDLocationManager : NSObject
 
 @property (nonatomic, strong) BMKUserLocation * userLocation;
-@property (nonatomic, strong) BMKReverseGeoCodeResult * result;
+@property (nonatomic, strong) BMKReverseGeoCodeSearchResult * result;
 @property (nonatomic, assign) NSInteger distance;
 
 + (instancetype)shareManager;
