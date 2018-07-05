@@ -145,17 +145,36 @@
 {
     UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
     UINavigationController * na = (UINavigationController *)tab.selectedViewController;
-    NSURL * url;
-    if (self.model.videoURL) {
-        url = self.model.videoURL;
+    
+    if (self.model.asset) {
+        
+        //配置导出参数
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES;
+        options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+        
+        //通过PHAsset获取AVAsset对象
+        [[PHImageManager defaultManager] requestAVAssetForVideo:self.model.asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+            AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+            player.player = [[AVPlayer alloc] initWithPlayerItem:[AVPlayerItem playerItemWithAsset:asset]];
+            player.videoGravity = AVLayerVideoGravityResizeAspect;
+            [na presentViewController:player animated:YES completion:nil];
+        }];
+        
     }else{
-        url = [NSURL URLWithString:self.model.textInformation];
+        
+        NSURL * url;
+        if (self.model.videoURL) {
+            url = self.model.videoURL;
+        }else{
+            url = [NSURL URLWithString:self.model.textInformation];
+        }
+        
+        AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+        player.player = [[AVPlayer alloc] initWithURL:url];
+        player.videoGravity = AVLayerVideoGravityResizeAspect;
+        [na presentViewController:player animated:YES completion:nil];
     }
-    AVPlayerViewController * playView = [[AVPlayerViewController alloc] init];
-    playView = [[AVPlayerViewController alloc] init];
-    playView.player = [[AVPlayer alloc] initWithURL:url];
-    playView.videoGravity = AVLayerVideoGravityResizeAspect;
-    [na presentViewController:playView animated:YES completion:nil];
 }
 
 //- (void)configWithCanSee:(BOOL)cansee

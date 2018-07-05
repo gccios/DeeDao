@@ -291,7 +291,7 @@
     }];
     
     if (!self.isSingle) {
-        UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
+        UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"确定"];
         [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
         saveButton.layer.borderWidth = .5f;
         saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -308,8 +308,8 @@
 
 - (void)saveButtonDidClicked
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(friendDidMulSelectComplete)]) {
-        [self.delegate friendDidMulSelectComplete];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(friendDidMulSelectComplete:)]) {
+        [self.delegate friendDidMulSelectComplete:self.selectFriend];
     }
 }
 

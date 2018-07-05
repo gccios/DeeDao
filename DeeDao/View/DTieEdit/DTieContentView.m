@@ -15,7 +15,7 @@
 #import "DTieNewEditVideoCell.h"
 #import <TZImagePickerController.h>
 #import "MBProgressHUD+DDHUD.h"
-#import "XFCameraController.h"
+//#import "XFCameraController.h"
 #import "DTieEditTextViewController.h"
 #import "DTieChooseLocationController.h"
 #import "RTDragCellTableView.h"
@@ -137,36 +137,56 @@
     
     BOOL isWXInstall = [WXApi isWXAppInstalled];
     
-    NSMutableArray * models = [[NSMutableArray alloc] init];
-    for (NSInteger i = 0; i < photos.count; i++) {
-        
-        UIImage * tmpImg = [photos objectAtIndex:i];
-        
-        NSData*  data = [NSData data];
-        data = UIImageJPEGRepresentation(tmpImg, 1);
-        float tempX = 0.9;
-        NSInteger length = data.length;
-        while (data.length > 500*1024) {
-            data = UIImageJPEGRepresentation(tmpImg, tempX);
-            tempX -= 0.1;
-            if (data.length == length) {
-                break;
+    if (picker.allowPickingImage) {
+        NSMutableArray * models = [[NSMutableArray alloc] init];
+        for (NSInteger i = 0; i < photos.count; i++) {
+            
+            UIImage * tmpImg = [photos objectAtIndex:i];
+            
+            NSData*  data = [NSData data];
+            data = UIImageJPEGRepresentation(tmpImg, 1);
+            float tempX = 0.9;
+            NSInteger length = data.length;
+            while (data.length > 500*1024) {
+                data = UIImageJPEGRepresentation(tmpImg, tempX);
+                tempX -= 0.1;
+                if (data.length == length) {
+                    break;
+                }
+                length = data.length;
             }
-            length = data.length;
+            
+            DTieEditModel * model = [[DTieEditModel alloc] init];
+            model.type = DTieEditType_Image;
+            if (isWXInstall) {
+                model.shareEnable = 1;
+            }
+            model.image = [UIImage imageWithData:data];
+            
+            [models addObject:model];
         }
         
-        DTieEditModel * model = [[DTieEditModel alloc] init];
-        model.type = DTieEditType_Image;
-        if (isWXInstall) {
-            model.shareEnable = 1;
-        }
-        model.image = [UIImage imageWithData:data];
+        [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
+        [self reloadContentView];
+    }else{
         
-        [models addObject:model];
+        NSMutableArray * models = [[NSMutableArray alloc] init];
+        for (NSInteger i = 0; i < assets.count; i++) {
+            DTieEditModel * model = [[DTieEditModel alloc] init];
+            model.type = DTieEditType_Video;
+            model.shareEnable = 0;
+            model.image = [photos objectAtIndex:i];
+            
+            PHAsset * urlAsset = [assets objectAtIndex:i];
+            model.asset = urlAsset;
+            [models addObject:model];
+        }
+        
+        [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
+        [self reloadContentView];
     }
     
-    [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
-    [self reloadContentView];
+    
 //    [hud hideAnimated:YES];
 }
 
@@ -185,26 +205,40 @@
 #pragma mark - 录制小视频
 - (void)takeVideo
 {
-    XFCameraController * camera = [XFCameraController defaultCameraController];
+    TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:100 delegate:self];
+    picker.allowPickingOriginalPhoto = NO;
+    picker.videoMaximumDuration = 30.f;
+    picker.allowPickingMultipleVideo = YES;
+//    picker.photo
+    picker.allowPickingVideo = YES;
+    picker.allowPickingImage = NO;
+    picker.allowTakeVideo = YES;
+    picker.showSelectedIndex = YES;
+    picker.allowPreview = YES;
+//    picker.allowCrop = NO;
     
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(camera) weakCamera = camera;
-    camera.shootCompletionBlock = ^(NSURL *videoUrl, CGFloat videoTimeLength, UIImage *thumbnailImage, NSError *error) {
-        
-        [weakCamera dismissViewControllerAnimated:YES completion:nil];
-        DTieEditModel * model = [[DTieEditModel alloc] init];
-        model.type = DTieEditType_Video;
-        model.shareEnable = 0;
-        model.image = thumbnailImage;
-        model.videoURL = videoUrl;
-        
-        [weakSelf.modleSources insertObject:model atIndex:weakSelf.insertIndex];
-        [weakSelf.tableView beginUpdates];
-        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.insertIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-        [weakSelf.tableView endUpdates];
-    };
+    [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
     
-    [self.parentDDViewController presentViewController:camera animated:YES completion:nil];
+//    XFCameraController * camera = [XFCameraController defaultCameraController];
+//
+//    __weak typeof(self) weakSelf = self;
+//    __weak typeof(camera) weakCamera = camera;
+//    camera.shootCompletionBlock = ^(NSURL *videoUrl, CGFloat videoTimeLength, UIImage *thumbnailImage, NSError *error) {
+//
+//        [weakCamera dismissViewControllerAnimated:YES completion:nil];
+//        DTieEditModel * model = [[DTieEditModel alloc] init];
+//        model.type = DTieEditType_Video;
+//        model.shareEnable = 0;
+//        model.image = thumbnailImage;
+//        model.videoURL = videoUrl;
+//
+//        [weakSelf.modleSources insertObject:model atIndex:weakSelf.insertIndex];
+//        [weakSelf.tableView beginUpdates];
+//        [weakSelf.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.insertIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+//        [weakSelf.tableView endUpdates];
+//    };
+//
+//    [self.parentDDViewController presentViewController:camera animated:YES completion:nil];
 }
 
 #pragma mark - 编辑文字
@@ -700,17 +734,29 @@
         
         cell.preViewHandle = ^{
             
-            NSURL * url = nil;
-            if (weakCell.model.videoURL) {
-                url = weakCell.model.videoURL;
+            if (weakCell.model.asset) {
+                
+                //配置导出参数
+                PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+                options.networkAccessAllowed = YES;
+                options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+                
+                //通过PHAsset获取AVAsset对象
+                [[PHImageManager defaultManager] requestAVAssetForVideo:model.asset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+                    AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+                    player.player = [[AVPlayer alloc] initWithPlayerItem:[AVPlayerItem playerItemWithAsset:asset]];
+                    player.videoGravity = AVLayerVideoGravityResizeAspect;
+                    [weakSelf.parentDDViewController presentViewController:player animated:YES completion:nil];
+                }];
+                
             }else{
-                url = [NSURL URLWithString:weakCell.model.detailContent];
+                NSURL * url = [NSURL URLWithString:weakCell.model.detailContent];
+                
+                AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
+                player.player = [[AVPlayer alloc] initWithURL:url];
+                player.videoGravity = AVLayerVideoGravityResizeAspect;
+                [weakSelf.parentDDViewController presentViewController:player animated:YES completion:nil];
             }
-            
-            AVPlayerViewController * player = [[AVPlayerViewController alloc] init];
-            player.videoGravity = AVLayerVideoGravityResizeAspect;
-            player.player = [[AVPlayer alloc] initWithURL:url];
-            [weakSelf.parentDDViewController presentViewController:player animated:YES completion:nil];
         };
         
         return cell;

@@ -12,4 +12,6 @@
 
 - (void)configWithTagTitle:(NSString *)title;
 
+- (void)configWithSelectStatus:(BOOL)select;
+
 @end

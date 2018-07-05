@@ -45,4 +45,16 @@
     self.tagLabel.text = title;
 }
 
+- (void)configWithSelectStatus:(BOOL)select
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if (select) {
+        self.tagLabel.font = kPingFangRegular(46 * scale);
+        self.tagLabel.textColor = UIColorFromRGB(0xDB6283);
+    }else{
+        self.tagLabel.font = kPingFangRegular(42 * scale);
+        self.tagLabel.textColor = [UIColor blackColor];
+    }
+}
+
 @end

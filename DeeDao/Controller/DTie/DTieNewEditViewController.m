@@ -173,7 +173,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                     
                 } success:^(NSString *url) {
                     model.detailsContent = url;
-                    [manager uploadVideoWith:model.image filePath:model.videoURL progress:^(NSString *key, float percent) {
+                    
+                    [manager uploadPHAsset:model.asset progress:^(NSString *key, float percent) {
                         
                     } success:^(NSString *url) {
                         
@@ -195,7 +196,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                         }
                         
                     } failed:^(NSError *error) {
-                        
                         tempCount++;
                         if (tempCount == self.contenView.modleSources.count) {
                             [hud hideAnimated:YES];
@@ -203,6 +203,37 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                         }
                         
                     }];
+                    
+//                    [manager uploadVideoWith:model.image filePath:model.videoURL progress:^(NSString *key, float percent) {
+//                        
+//                    } success:^(NSString *url) {
+//                        
+//                        model.textInformation = url;
+//                        NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+//                                                @"datadictionaryType":@"CONTENT_VIDEO",
+//                                                @"detailsContent":model.detailsContent,
+//                                                @"textInformation":model.textInformation,
+//                                                @"pFlag":@(model.pFlag),
+//                                                @"wxCansee":@(model.shareEnable)};
+//                        [details addObject:dict];
+//                        
+//                        [[NSFileManager defaultManager] removeItemAtURL:model.videoURL error:nil];
+//                        
+//                        tempCount++;
+//                        if (tempCount == self.contenView.modleSources.count) {
+//                            [hud hideAnimated:YES];
+//                            success(details);
+//                        }
+//                        
+//                    } failed:^(NSError *error) {
+//                        
+//                        tempCount++;
+//                        if (tempCount == self.contenView.modleSources.count) {
+//                            [hud hideAnimated:YES];
+//                            success(details);
+//                        }
+//                        
+//                    }];
                     
                 } failed:^(NSError *error) {
                     

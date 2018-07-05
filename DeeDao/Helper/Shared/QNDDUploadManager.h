@@ -18,4 +18,6 @@ typedef void(^QNUpFailed)(NSError * error);
 
 - (void)uploadVideoWith:(UIImage *)image filePath:(NSURL *)path progress:(QNUpProgressHandler)progressHandle success:(QNUpSuccess)success failed:(QNUpFailed)failed;
 
+- (void)uploadPHAsset:(PHAsset *)asset progress:(QNUpProgressHandler)progressHandle success:(QNUpSuccess)success failed:(QNUpFailed)failed;
+
 @end

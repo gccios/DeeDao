@@ -159,7 +159,7 @@
             }
         }
     }else if (index == 2) {
-        SecurityFriendController * friend = [[SecurityFriendController alloc] init];
+        SecurityFriendController * friend = [[SecurityFriendController alloc] initMulSelectWithDataDict:[NSDictionary new] nameKeys:[NSArray new] selectModels:[NSMutableArray new]];
         friend.delegate = self;
         [self.navigationController pushViewController:friend animated:YES];
     }else if (index == 3) {
@@ -225,6 +225,25 @@
 - (void)securityFriendDidSelectWith:(UserModel *)model
 {
     TransPostRequest * request = [[TransPostRequest alloc] initWithPostID:self.model.cid userList:@[@(model.cid)]];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发成功" inView:self.view];
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [self.navigationController popViewControllerAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+    }];
+}
+
+- (void)friendDidMulSelectComplete:(NSArray *)selectArray
+{
+    NSMutableArray * array = [[NSMutableArray alloc] init];
+    for (UserModel * model in selectArray) {
+        [array addObject:@(model.cid)];
+    }
+    TransPostRequest * request = [[TransPostRequest alloc] initWithPostID:self.model.cid userList:array];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         [self.navigationController popViewControllerAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"转发成功" inView:self.view];

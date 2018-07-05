@@ -12,8 +12,11 @@
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
 #import "ChooseLocationCell.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DTieCreateLocationView.h"
+#import "CreateLocationRequest.h"
+#import "GetUserCreateLocationRequest.h"
 
-@interface DTieChooseLocationController () <BMKMapViewDelegate, UITableViewDelegate, UITableViewDataSource, BMKPoiSearchDelegate, UICollectionViewDelegate, UICollectionViewDataSource, BMKGeoCodeSearchDelegate>
+@interface DTieChooseLocationController () <BMKMapViewDelegate, UITableViewDelegate, UITableViewDataSource, BMKPoiSearchDelegate, UICollectionViewDelegate, UICollectionViewDataSource, BMKGeoCodeSearchDelegate, DTieCreateLocationViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) BMKMapView * mapView;
@@ -30,6 +33,17 @@
 @property (nonatomic, strong) UIButton * backLocationButton;
 @property (nonatomic, strong) UITextField * textField;
 
+@property (nonatomic, assign) NSInteger searchType;
+@property (nonatomic, assign) NSInteger selectIndex;
+
+@property (nonatomic, strong) UIButton * defaultButton;
+@property (nonatomic, strong) UIButton * deedaoButton;
+
+@property (nonatomic, weak) DTieCreateLocationView * createLocationView;
+@property (nonatomic, assign) BOOL isAddLocation;
+@property (nonatomic, assign) CLLocationDegrees lat;
+@property (nonatomic, assign) CLLocationDegrees lng;
+
 @end
 
 @implementation DTieChooseLocationController
@@ -44,7 +58,9 @@
     self.poiSearch = [[BMKPoiSearch alloc] init];
     self.poiSearch.delegate = self;
     
-    self.tagTitle = @"全部";
+    self.selectIndex = 1;
+    self.searchType = 3;
+    self.tagTitle = @"美食";
     self.tagSource = @[@"全部", @"美食", @"景点", @"酒店", @"生活", @"购物", @"运动", @"娱乐", @"自然地物"];
     // Do any additional setup after loading the view.
     [self creatViews];
@@ -113,20 +129,41 @@
         make.width.height.mas_equalTo(90 * scale);
     }];
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.tableView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.tableView.rowHeight = 150 * scale;
-    [self.tableView registerClass:[ChooseLocationCell class] forCellReuseIdentifier:@"ChooseLocationCell"];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    [self.view addSubview:self.tableView];
-    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.mapView.mas_bottom).offset(120 * scale);
-        make.left.bottom.right.mas_equalTo(0);
+    UIView * tabView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:tabView];
+    tabView.backgroundColor = [UIColor whiteColor];
+    [tabView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(self.mapView.mas_bottom);
+        make.height.mas_equalTo(120 * scale);
     }];
     
+    UIView * tabLineView = [[UIView alloc] initWithFrame:CGRectZero];
+    tabLineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [tabView addSubview:tabLineView];
+    [tabLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(0);
+        make.height.mas_equalTo(72 * scale);
+        make.width.mas_equalTo(3 * scale);
+    }];
+    self.defaultButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"默认列表"];
+    [tabView addSubview:self.defaultButton];
+    [self.defaultButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.bottom.mas_equalTo(0);
+        make.right.mas_equalTo(tabLineView.mas_left);
+    }];
+    
+    self.deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"地到标记"];
+    [tabView addSubview:self.deedaoButton];
+    [self.deedaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.right.bottom.mas_equalTo(0);
+        make.left.mas_equalTo(tabLineView.mas_right);
+    }];
+    [self.defaultButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.deedaoButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    
     UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(kMainBoundsWidth / 6, 120 * scale);
+    layout.itemSize = CGSizeMake(kMainBoundsWidth / 5.5, 120 * scale);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     layout.minimumLineSpacing = 0;
     layout.minimumInteritemSpacing = 0;
@@ -141,9 +178,22 @@
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(self.tableView.mas_top);
+        make.top.mas_equalTo(tabView.mas_bottom);
         make.height.mas_equalTo(120 * scale);
     }];
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.tableView.rowHeight = 150 * scale;
+    [self.tableView registerClass:[ChooseLocationCell class] forCellReuseIdentifier:@"ChooseLocationCell"];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.mapView.mas_bottom).offset(240 * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 40 * scale, 0);
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
     lineView.backgroundColor = UIColorFromRGB(0x333333);
@@ -163,11 +213,120 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
+    [self updateWithTabButtonStatus];
+    
     //发起检索
-    if (self.startPoi && self.startPoi.pt.latitude != 0) {
-        [self reverseGeoCodeWith:self.startPoi.pt];
+//    if (self.startPoi && self.startPoi.pt.latitude != 0) {
+//        [self reverseGeoCodeWith:self.startPoi.pt];
+//    }else{
+//        [self reverseGeoCodeWith:[DDLocationManager shareManager].userLocation.location.coordinate];
+//    }
+    
+    UIView * tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 140 * scale)];
+    UILabel * footerLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
+    footerLabel.text = @"没有合适的地址？";
+    [tableFooterView addSubview:footerLabel];
+    [footerLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.top.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(kMainBoundsWidth / 2);
+    }];
+    
+    UIButton * footerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"自己标记一个吧！"];
+    [tableFooterView addSubview:footerButton];
+    [footerButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(footerLabel.mas_right);
+        make.top.bottom.mas_equalTo(0);
+    }];
+    [footerButton addTarget:self action:@selector(addLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.tableView.tableFooterView = tableFooterView;
+}
+
+- (void)addLocationButtonDidClicked
+{
+    DTieCreateLocationView * location = [[DTieCreateLocationView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:location];
+    [location mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.top.mas_equalTo(self.mapView.mas_bottom);
+    }];
+    location.delegate = self;
+    self.createLocationView = location;
+    
+    self.isAddLocation = YES;
+    self.lat = self.mapView.centerCoordinate.latitude;
+    self.lng = self.mapView.centerCoordinate.longitude;
+    [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+}
+
+#pragma mark - DTieCreateLocationViewDelegate
+- (void)DTieCreateLocationDidCancle
+{
+    self.isAddLocation = NO;
+    [self.createLocationView removeFromSuperview];
+}
+
+- (void)DTieCreateLocationDidCompleteAddress:(NSString *)address name:(NSString *)name introduce:(NSString *)introduce
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在创建地点" inView:self.view];
+    
+    CreateLocationRequest * request = [[CreateLocationRequest alloc] initWithAddress:address name:name lat:self.mapView.centerCoordinate.latitude lng:self.mapView.centerCoordinate.longitude remark:introduce];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.searchType = 2;
+        [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
+        [self updateWithTabButtonStatus];
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"创建成功" inView:self.view];
+        
+        self.isAddLocation = NO;
+        [self.createLocationView removeFromSuperview];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"创建失败" inView:self.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"创建失败" inView:self.view];
+        
+    }];
+}
+
+- (void)tabButtonDidClicked:(UIButton *)button
+{
+    if (button == self.defaultButton) {
+        [GetUserCreateLocationRequest cancelRequest];
+        if (self.selectIndex == 0) {
+            self.searchType = 1;
+        }else{
+            self.searchType = 3;
+        }
     }else{
-        [self reverseGeoCodeWith:[DDLocationManager shareManager].userLocation.location.coordinate];
+        self.searchType = 2;
+    }
+    
+    [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
+    [self updateWithTabButtonStatus];
+}
+
+- (void)updateWithTabButtonStatus
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if (self.searchType == 2) {
+        self.deedaoButton.alpha = 1.f;
+        self.defaultButton.alpha = .5f;
+        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.mapView.mas_bottom).offset(120 * scale);
+        }];
+    }else{
+        self.deedaoButton.alpha = .5f;
+        self.defaultButton.alpha = 1.f;
+        [self.tableView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.mapView.mas_bottom).offset(240 * scale);
+        }];
     }
 }
 
@@ -208,6 +367,9 @@
     
     [cell configWithTagTitle:self.tagSource[indexPath.row]];
     
+    BOOL select = self.selectIndex == indexPath.row;
+    [cell configWithSelectStatus:select];
+    
     return cell;
 }
 
@@ -220,14 +382,47 @@
     }
     
     self.tagTitle = tagTitle;
+    self.selectIndex = indexPath.row;
+    if (self.selectIndex == 0) {
+        self.searchType = 1;
+    }else{
+        self.searchType = 3;
+    }
+    
+    [collectionView reloadData];
     [self poiSearchWithCoordinate:self.mapView.centerCoordinate];
 }
 
 #pragma mark -- 地图代理
 - (void)mapView:(BMKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-//    [self reverseGeoCodeWith:mapView.centerCoordinate];
+    if (self.isAddLocation) {
+        if (self.lat == self.mapView.centerCoordinate.latitude && self.lng == self.mapView.centerCoordinate.longitude) {
+            
+        }else{
+            self.lat = self.mapView.centerCoordinate.latitude;
+            self.lng = self.mapView.centerCoordinate.longitude;
+            [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+        }
+        return;
+    }
+    
     [self poiSearchWithCoordinate:mapView.centerCoordinate];
+}
+
+- (void)mapView:(BMKMapView *)mapView onClickedMapPoi:(BMKMapPoi *)mapPoi
+{
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+}
+
+- (void)mapView:(BMKMapView *)mapView onClickedMapBlank:(CLLocationCoordinate2D)coordinate
+{
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
+}
+
+- (void)mapView:(BMKMapView *)mapView onClickedBMKOverlayView:(BMKOverlayView *)overlayView
+{
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
 }
 
 #pragma mark ----反向地理编码
@@ -240,6 +435,19 @@
 
 - (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeSearchResult *)result errorCode:(BMKSearchErrorCode)error
 {
+    if (self.isAddLocation) {
+        
+        if (self.createLocationView) {
+            NSString * address = result.address;
+            if (isEmptyString(address)) {
+                address = result.sematicDescription;
+            }
+            [self.createLocationView configAddress:address];
+        }
+        
+        return;
+    }
+    
     [self.dataSource removeAllObjects];
     [self.dataSource addObjectsFromArray:result.poiList];
     [self.tableView reloadData];
@@ -252,22 +460,58 @@
     
     NSMutableArray * keyWords = [NSMutableArray new];
     NSString * keyWord = self.textField.text;
-    if (!isEmptyString(keyWord)) {
-        [keyWords addObject:keyWord];
-    }else if ([self.tagTitle isEqualToString:@"全部"]) {
-        [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+    
+    if (self.searchType == 2) {
+        [self requestDeedaoUserLocation];
         return;
-    }else if (!isEmptyString(self.tagTitle)) {
-        [keyWords addObject:self.tagTitle];
     }
     
+    if (isEmptyString(keyWord)) {
+        
+        if (self.searchType == 1) {
+            [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+            return;
+        }else{
+            if (!isEmptyString(self.tagTitle)) {
+                [keyWords addObject:self.tagTitle];
+            }
+        }
+        
+    }else{
+        
+        [keyWords addObject:keyWord];
+        if (self.searchType == 3) {
+            if (!isEmptyString(self.tagTitle)) {
+                [keyWords addObject:self.tagTitle];
+            }
+        }
+        
+    }
+//    else if (self.searchType == 1) {
+//        [self reverseGeoCodeWith:self.mapView.centerCoordinate];
+//        return;
+//    }else if (!isEmptyString(self.tagTitle)) {
+//        [keyWords addObject:self.tagTitle];
+//    }
+
     BMKPOINearbySearchOption *option = [[BMKPOINearbySearchOption alloc]init];
     option.pageIndex = 0;
     option.pageSize = 20;
     option.location = coordinate;
-    option.radius = 50 * 1000;
+//    option.scope = BMK_POI_SCOPE_DETAIL_INFORMATION;
+//    option.filter.sortRule = BMK_POI_SORT_RULE_ASCENDING;
+    option.radius = 100 * 1000;
     option.keywords = [NSArray arrayWithArray:keyWords];
+    
     [self.poiSearch poiSearchNearBy:option];
+    
+//    BMKPOICitySearchOption *citySearchOption = [[BMKPOICitySearchOption alloc]init];
+//    citySearchOption.pageIndex = 0;
+//    citySearchOption.pageSize = 10;
+//    citySearchOption.city= @"北京";
+//    citySearchOption.keyword = keyWord;
+    
+//    [self.poiSearch poiSearchInCity:citySearchOption];
     
 //    BMKPOICitySearchOption * cityOption = [[BMKPOICitySearchOption alloc] init];
 //    cityOption.city = @"北京市";
@@ -275,6 +519,38 @@
 //    cityOption.pageSize = 50;
 //    cityOption.keyword = self.tagTitle;
 //    [self.poiSearch poiSearchInCity:cityOption];
+}
+
+- (void)requestDeedaoUserLocation
+{
+    GetUserCreateLocationRequest * request  = [[GetUserCreateLocationRequest alloc] initWithKeyWord:self.textField.text lat:self.mapView.centerCoordinate.latitude lng:self.mapView.centerCoordinate.longitude];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.dataSource removeAllObjects];
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                NSArray * poiList = [data objectForKey:@"deedaoPointList"];
+                for (NSDictionary * info in poiList) {
+                    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+                    double lat = [[info objectForKey:@"createAddressLat"] doubleValue];
+                    double lng = [[info objectForKey:@"createAddressLng"] doubleValue];
+                    poi.pt = CLLocationCoordinate2DMake(lat, lng);
+                    poi.name = [info objectForKey:@"createBuilding"];
+                    poi.address = [info objectForKey:@"createAddress"];
+                    poi.detailInfo = [info objectForKey:@"remark"];
+                    [self.dataSource addObject:poi];
+                }
+            }
+        }
+        [self.tableView reloadData];
+        
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 //实现PoiSearchDeleage处理回调结果
@@ -293,7 +569,7 @@
         // result.cityList;
         NSLog(@"起始点有歧义");
     } else {
-        [MBProgressHUD showTextHUDWithText:@"暂无搜索结果" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
     }
 }
 
@@ -391,6 +667,12 @@
 
 - (void)searchButtonDidClicked
 {
+    if (self.isAddLocation) {
+        if (self.createLocationView) {
+            [self DTieCreateLocationDidCancle];
+        }
+    }
+    
     if (self.textField.isFirstResponder) {
         [self.textField resignFirstResponder];
     }

@@ -676,15 +676,26 @@
         make.bottom.mas_equalTo(userView.mas_top).offset(-10 * scale);
     }];
     
-    UIView * userBGView = [[UIView alloc] initWithFrame:CGRectZero];
-    [userView addSubview:userBGView];
-    userBGView.layer.cornerRadius = 24 * scale;
-    userBGView.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    userBGView.layer.borderWidth = 3 * scale;
-    userBGView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
-    userBGView.layer.shadowOpacity = .3f;
-    userBGView.layer.shadowRadius = 24 * scale;
-    userBGView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+//    UIImageView * userBGView = [[UIImageView alloc] initWithFrame:CGRectZero];
+//    userBGView.contentMode = UIViewContentModeScaleAspectFill;
+//    [userView addSubview:userBGView];
+//    UIImage * userBG = [UIImage imageNamed:@"buttonBG"];
+//    userBG = [locationBG resizableImageWithCapInsets:UIEdgeInsetsMake(locationBG.size.height / 3, locationBG.size.width / 3, locationBG.size.height / 3, locationBG.size.width / 3) resizingMode:UIImageResizingModeStretch];
+//    [userBGView setImage:userBG];
+    
+    UIView * logoBGView = [[UIView alloc] initWithFrame:CGRectZero];
+    logoBGView.backgroundColor = [UIColor whiteColor];
+    [userView addSubview:logoBGView];
+    [logoBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.centerY.mas_equalTo(0);
+        make.width.height.mas_equalTo(96 * scale);
+    }];
+    logoBGView.layer.cornerRadius = 48 * scale;
+    logoBGView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    logoBGView.layer.shadowOpacity = .5f;
+    logoBGView.layer.shadowRadius = 8 * scale;
+    logoBGView.layer.shadowOffset = CGSizeMake(0, 4 * scale);
     
     self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
     [userView addSubview:self.logoImageView];
@@ -704,12 +715,13 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    [userBGView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(90 * scale);
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(self.nameLabel).offset(20 * scale);
-        make.height.mas_equalTo(86 * scale);
-    }];
+//    CGSize size = [self.model.nickname boundingRectWithSize:CGSizeMake(kMainBoundsWidth - 500 * scale, 50 * scale) options:NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading attributes:@{NSFontAttributeName:kPingFangRegular(42 * scale)} context:nil].size;
+//    [userBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(80 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.width.mas_equalTo(size.width + 140 * scale);
+//        make.height.mas_equalTo(120 * scale);
+//    }];
     
     self.dazhaohuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"打招呼 0"];
     if (self.isSelfFlg) {

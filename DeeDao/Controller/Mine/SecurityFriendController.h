@@ -13,7 +13,7 @@
 
 - (void)securityFriendDidSelectWith:(UserModel *)model;
 
-- (void)friendDidMulSelectComplete;
+- (void)friendDidMulSelectComplete:(NSArray *)selectArray;
 
 @end
 

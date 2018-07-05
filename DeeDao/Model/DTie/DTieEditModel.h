@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MJExtension.h>
+#import <Photos/Photos.h>
 
 typedef enum : NSUInteger {
     DTieEditType_Title,
@@ -27,6 +28,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) UIImage * videoImage;
 @property (nonatomic, strong) NSURL * videoURL;
 @property (nonatomic, assign) NSInteger shareEnable;
+@property (nonatomic, strong) PHAsset * asset;
 
 @property (nonatomic, copy) NSString * detailsContent;
 @property (nonatomic, assign) NSInteger detailNumber;

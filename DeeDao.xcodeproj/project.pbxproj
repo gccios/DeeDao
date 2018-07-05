@@ -59,6 +59,9 @@
 		06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB620BFFF3500434068 /* DTieQuanxianView.m */; };
 		06286ABA20C014D800434068 /* DTieNewEditImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286AB920C014D800434068 /* DTieNewEditImageCell.m */; };
 		06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */; };
+		062BA31720EDEC8F00F4EF58 /* DTieCreateLocationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 062BA31620EDEC8F00F4EF58 /* DTieCreateLocationView.m */; };
+		062BA31A20EE02F900F4EF58 /* CreateLocationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062BA31920EE02F900F4EF58 /* CreateLocationRequest.m */; };
+		062BA31D20EE05E600F4EF58 /* GetUserCreateLocationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 062BA31C20EE05E600F4EF58 /* GetUserCreateLocationRequest.m */; };
 		062EFCC320CE24D80019FF68 /* DDTabCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */; };
 		062EFCC520CE5B5E0019FF68 /* miniProgramBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 062EFCC420CE5B5E0019FF68 /* miniProgramBG.png */; };
 		062EFCC820CE78E50019FF68 /* BloggerLinkViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 062EFCC720CE78E50019FF68 /* BloggerLinkViewController.m */; };
@@ -338,6 +341,12 @@
 		06286AB920C014D800434068 /* DTieNewEditImageCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditImageCell.m; sourceTree = "<group>"; };
 		06286ABB20C0152C00434068 /* DTieNewEditTextCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditTextCell.h; sourceTree = "<group>"; };
 		06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditTextCell.m; sourceTree = "<group>"; };
+		062BA31520EDEC8F00F4EF58 /* DTieCreateLocationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieCreateLocationView.h; sourceTree = "<group>"; };
+		062BA31620EDEC8F00F4EF58 /* DTieCreateLocationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCreateLocationView.m; sourceTree = "<group>"; };
+		062BA31820EE02F900F4EF58 /* CreateLocationRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateLocationRequest.h; sourceTree = "<group>"; };
+		062BA31920EE02F900F4EF58 /* CreateLocationRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateLocationRequest.m; sourceTree = "<group>"; };
+		062BA31B20EE05E500F4EF58 /* GetUserCreateLocationRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GetUserCreateLocationRequest.h; sourceTree = "<group>"; };
+		062BA31C20EE05E600F4EF58 /* GetUserCreateLocationRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GetUserCreateLocationRequest.m; sourceTree = "<group>"; };
 		062EFCC120CE24D80019FF68 /* DDTabCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDTabCollectionViewCell.h; sourceTree = "<group>"; };
 		062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDTabCollectionViewCell.m; sourceTree = "<group>"; };
 		062EFCC420CE5B5E0019FF68 /* miniProgramBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = miniProgramBG.png; sourceTree = "<group>"; };
@@ -790,6 +799,8 @@
 				06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */,
 				06EB1C4820C11E4300684A71 /* DTieNewSecurityCell.h */,
 				06EB1C4920C11E4300684A71 /* DTieNewSecurityCell.m */,
+				062BA31520EDEC8F00F4EF58 /* DTieCreateLocationView.h */,
+				062BA31620EDEC8F00F4EF58 /* DTieCreateLocationView.m */,
 			);
 			path = DTieEdit;
 			sourceTree = "<group>";
@@ -898,6 +909,10 @@
 				0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */,
 				06E0A12E20CED14700B9C4B0 /* GetDtieSecurityRequest.h */,
 				06E0A12F20CED14700B9C4B0 /* GetDtieSecurityRequest.m */,
+				062BA31820EE02F900F4EF58 /* CreateLocationRequest.h */,
+				062BA31920EE02F900F4EF58 /* CreateLocationRequest.m */,
+				062BA31B20EE05E500F4EF58 /* GetUserCreateLocationRequest.h */,
+				062BA31C20EE05E600F4EF58 /* GetUserCreateLocationRequest.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1797,6 +1812,7 @@
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				06E5556920C8D71F00C0CE9D /* DTiePOIRequest.m in Sources */,
+				062BA31D20EE05E600F4EF58 /* GetUserCreateLocationRequest.m in Sources */,
 				0641710C20B3EB9C0075ECB6 /* AddSeriesViewController.m in Sources */,
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
 				0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */,
@@ -1840,6 +1856,7 @@
 				062048D320B7B912008DDF25 /* SecurityDTieViewController.m in Sources */,
 				061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */,
 				0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */,
+				062BA31A20EE02F900F4EF58 /* CreateLocationRequest.m in Sources */,
 				066033BE20B29BB200A54D81 /* DTieMapViewController.m in Sources */,
 				062EFCCB20CE7E1B0019FF68 /* BloggerTextView.m in Sources */,
 				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
@@ -1954,6 +1971,7 @@
 				06102ADB20B4790400FF3278 /* CommentModel.m in Sources */,
 				06BDF54E20E0AF7E005AB920 /* DTieQuanXianViewController.m in Sources */,
 				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
+				062BA31720EDEC8F00F4EF58 /* DTieCreateLocationView.m in Sources */,
 				0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */,
 				06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */,
 				06E5557220C9335E00C0CE9D /* HelpAndAdviceController.m in Sources */,

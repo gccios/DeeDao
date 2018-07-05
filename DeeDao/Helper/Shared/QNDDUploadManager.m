@@ -95,6 +95,31 @@
     } option:option];
 }
 
+- (void)uploadPHAsset:(PHAsset *)asset progress:(QNUpProgressHandler)progressHandle success:(QNUpSuccess)success failed:(QNUpFailed)failed
+{
+    NSString * token = [self createUploadToken];
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.zone = [QNFixedZone zone0];
+    }];
+    
+    QNUploadOption * option = [[QNUploadOption alloc] initWithProgressHandler:progressHandle];
+    
+    self.uploadManager = [[QNUploadManager alloc] initWithConfiguration:config];
+    [self.uploadManager putPHAsset:asset key:nil token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        
+        if (info.statusCode == 200) {
+            NSString * name = [resp objectForKey:@"key"];
+            if (!isEmptyString(name)) {
+                success([NSString stringWithFormat:@"%@/%@", QNEndPoint, name]);
+            }
+        }else{
+            failed(info.error);
+        }
+        
+    } option:option];
+}
+
 //生成上传token
 - (NSString *)createUploadToken
 {

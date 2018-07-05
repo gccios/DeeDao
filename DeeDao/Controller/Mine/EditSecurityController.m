@@ -189,7 +189,7 @@
     }
 }
 
-- (void)friendDidMulSelectComplete
+- (void)friendDidMulSelectComplete:(NSArray *)selectArray
 {
     [self.collectionView reloadData];
     [self.navigationController popViewControllerAnimated:YES];
