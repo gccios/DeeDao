@@ -177,11 +177,11 @@
     }else{
         self.detailImageView.userInteractionEnabled = YES;
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-//            self.detailImageView.userInteractionEnabled = YES;
+            self.detailImageView.userInteractionEnabled = YES;
             self.converView.hidden = YES;
         }else{
             self.deedaoLabel.text = @"到地体验";
-//            self.detailImageView.userInteractionEnabled = NO;
+            self.detailImageView.userInteractionEnabled = NO;
             self.converView.hidden = NO;
         }
     }

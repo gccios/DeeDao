@@ -46,12 +46,12 @@
     _codeImage = [self clipMiniProgromCode:codeImage];
 }
 
-- (void)setImage:(UIImage *)image
-{
-    if (image) {
-        _image = [self coreBlurImage:image withBlurNumber:50];
-    }
-}
+//- (void)setImage:(UIImage *)image
+//{
+//    if (image) {
+//        _image = [self coreBlurImage:image withBlurNumber:50];
+//    }
+//}
 
 /**
  使用CoreImage进行高斯模糊

@@ -67,10 +67,10 @@
         return;
     }
     
-    if (telNumber.length != 11) {
-        [MBProgressHUD showTextHUDWithText:@"请输入11位手机号码" inView:self.view];
-        return;
-    }
+//    if (telNumber.length < 11) {
+//        [MBProgressHUD showTextHUDWithText:@"请输入11位手机号码" inView:self.view];
+//        return;
+//    }
     
     [GetTelCodeRequest cancelRequest];
     GetTelCodeRequest * request = [[GetTelCodeRequest alloc] initWithTelNumber:telNumber];
@@ -96,10 +96,10 @@
         return;
     }
     
-    if (telNumber.length != 11) {
-        [MBProgressHUD showTextHUDWithText:@"请输入11位手机号码" inView:self.view];
-        return;
-    }
+//    if (telNumber.length < 11) {
+//        [MBProgressHUD showTextHUDWithText:@"请输入11位手机号码" inView:self.view];
+//        return;
+//    }
     
     if (code.length < 4) {
         [MBProgressHUD showTextHUDWithText:@"请输入有效验证码" inView:self.view];
@@ -358,6 +358,8 @@
     self.tableView.dataSource = self;
     self.tableView.tableHeaderView = self.baseView;
     [self.view addSubview:self.tableView];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(userEndEdit)];
+    [self.tableView addGestureRecognizer:tap];
     
     [self.forgetButton addTarget:self action:@selector(forgetButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 //    [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -388,15 +390,15 @@
         telNumber = [telNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
         password = [password stringByReplacingOccurrencesOfString:@" " withString:@""];
         
-        if (telNumber.length > 11) {
-            telNumber = [telNumber substringToIndex:11];
+        if (telNumber.length > 20) {
+            telNumber = [telNumber substringToIndex:20];
         }
         if (password.length > 16) {
             password = [password substringToIndex:16];
         }
         self.telNumberField.text = telNumber;
         self.passwordField.text = password;
-        if (self.telNumberField.text.length == 11 && self.passwordField.text.length >= 6) {
+        if (self.telNumberField.text.length >= 11 && self.passwordField.text.length >= 6) {
             self.loginButton.alpha = 1;
             self.loginButton.enabled = YES;
         }else{
@@ -412,8 +414,8 @@
         telNumber = [telNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
         code = [code stringByReplacingOccurrencesOfString:@" " withString:@""];
         
-        if (telNumber.length > 11) {
-            telNumber = [telNumber substringToIndex:11];
+        if (telNumber.length > 20) {
+            telNumber = [telNumber substringToIndex:20];
         }
         if (code.length > 8) {
             code = [code substringToIndex:8];
@@ -422,7 +424,7 @@
         self.telNumberField.text = telNumber;
         self.codeField.text = code;
         
-        if (self.telNumberField.text.length == 11 && self.codeField.text.length >= 4) {
+        if (self.telNumberField.text.length >= 11 && self.codeField.text.length >= 4) {
             self.loginButton.alpha = 1;
             self.loginButton.enabled = YES;
         }else{
@@ -530,6 +532,11 @@
     cell.backgroundColor = [UIColor clearColor];
     
     return cell;
+}
+
+- (void)userEndEdit
+{
+    [[UIApplication sharedApplication].keyWindow endEditing:YES];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
