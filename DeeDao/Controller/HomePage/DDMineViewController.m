@@ -17,6 +17,9 @@
 #import "DDPrivateViewController.h"
 #import "BloggerLinkViewController.h"
 #import "UserManager.h"
+#import "WeChatManager.h"
+#import "DTieSingleImageShareView.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -25,6 +28,8 @@
 @property (nonatomic, strong) UITableView * tableView;
 
 @property (nonatomic, strong) NSMutableArray * dataSource;
+
+@property (nonatomic, strong) UIView * shareView;
 
 @end
 
@@ -80,7 +85,38 @@
     tap.numberOfTapsRequired = 1;
     [headerView addGestureRecognizer:tap];
     
+    BOOL isInstallWX = [WXApi isWXAppInstalled];
+    BOOL isBozhu = NO;
+    if ([UserManager shareManager].user.bloggerFlg == 1) {
+        isBozhu = YES;
+    }
+    
+    if (isInstallWX || isBozhu) {
+        
+        UIButton * BGButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [headerView addSubview:BGButton];
+        [BGButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(0);
+            make.right.mas_equalTo(-50 * scale);
+            make.width.height.mas_equalTo(110 * scale);
+        }];
+        [BGButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        UIImageView * shareImage = [[UIImageView alloc] initWithFrame:CGRectZero];
+        [shareImage setImage:[UIImage imageNamed:@"shareColor"]];
+        [BGButton addSubview:shareImage];
+        [shareImage mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.mas_equalTo(0);
+            make.width.height.mas_equalTo(55 * scale);
+        }];
+    }
+    
     [self createTopViews];
+}
+
+- (void)shareButtonDidClicked
+{
+    [[UIApplication sharedApplication].keyWindow addSubview:self.shareView];
 }
 
 - (void)createTopViews
@@ -214,6 +250,124 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     return .1;
+}
+
+- (UIView *)shareView
+{
+    if (!_shareView) {
+        _shareView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        _shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:_shareView action:@selector(removeFromSuperview)];
+        [_shareView addGestureRecognizer:tap];
+        
+        NSArray * imageNames;
+        NSArray * titles;
+        NSInteger startTag = 10;
+        
+        BOOL isInstallWX = [WXApi isWXAppInstalled];
+        BOOL isBozhu = NO;;
+        if ([UserManager shareManager].user.bloggerFlg == 1) {
+            isBozhu = YES;
+        }
+        
+        if (isBozhu && isInstallWX) {
+            imageNames = @[@"sharepengyouquan", @"shareweixin", @"sharebozhu"];
+            titles = @[@"微信朋友圈", @"微信好友或群", @"地到博主码"];
+            startTag = 10;
+        }else if (isBozhu && !isInstallWX) {
+            imageNames = @[@"sharebozhu"];
+            titles = @[@"地到博主码"];
+            startTag = 12;
+        }else if (!isBozhu && isInstallWX) {
+            imageNames = @[@"sharepengyouquan", @"shareweixin"];
+            titles = @[@"微信朋友圈", @"微信好友或群"];
+            startTag = 10;
+        }
+        
+        CGFloat width = kMainBoundsWidth / imageNames.count;
+        CGFloat height = kMainBoundsWidth / 4.f;
+        if (KIsiPhoneX) {
+            height += 38.f;
+        }
+        CGFloat scale = kMainBoundsWidth / 1080.f;
+        for (NSInteger i = 0; i < imageNames.count; i++) {
+            UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+            button.backgroundColor = [UIColor whiteColor];
+            button.tag = startTag + i;
+            [button addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+            [_shareView addSubview:button];
+            [button mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(i * width);
+                make.height.mas_equalTo(height);
+                make.bottom.mas_equalTo(0);
+                make.width.mas_equalTo(width);
+            }];
+            
+            UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
+            [button addSubview:imageView];
+            [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.mas_equalTo(0);
+                make.top.mas_equalTo(50 * scale);
+                make.width.height.mas_equalTo(96 * scale);
+            }];
+            
+            UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
+            label.text = [titles objectAtIndex:i];
+            [button addSubview:label];
+            [label mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.right.mas_equalTo(0);
+                make.height.mas_equalTo(45 * scale);
+                make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
+            }];
+        }
+    }
+    return _shareView;
+}
+
+- (void)buttonDidClicked:(UIButton *)button
+{
+    [self.shareView removeFromSuperview];
+    if (button.tag == 10) {
+        
+        DTieSingleImageShareView * shareView = [[DTieSingleImageShareView alloc] initWithModel:[UserManager shareManager].user];
+        [self.view insertSubview:shareView atIndex:0];
+        [shareView startShare];
+        
+    }else if (button.tag == 11){
+        
+        [[WeChatManager shareManager] shareMiniProgramWithUser:[UserManager shareManager].user];
+        
+    }else{
+        
+        NSString * urlLink = [NSString stringWithFormat:@"pages/user/user?authorId=%ld", [UserManager shareManager].user.cid];
+        
+        NSString * text = [NSString stringWithFormat:@"博主名片链接\n%@\n", urlLink];
+        
+        NSError * error = nil;
+        NSFileManager * manager = [NSFileManager defaultManager];
+        if ([manager fileExistsAtPath:DDBloggerLinkPath]) {
+            NSFileHandle * writeHandle = [NSFileHandle fileHandleForWritingAtPath:DDBloggerLinkPath];
+            if (writeHandle) {
+                [writeHandle seekToEndOfFile];
+                NSData * linkData = [text dataUsingEncoding:NSUTF8StringEncoding];
+                [writeHandle writeData:linkData];
+                [writeHandle closeFile];
+            }else{
+                error = [NSError new];
+            }
+        }else{
+            [text writeToFile:DDBloggerLinkPath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        }
+        
+        if (error) {
+            [MBProgressHUD showTextHUDWithText:@"获取失败" inView:self.view];
+        }else{
+            UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+            pasteboard.string = urlLink;
+            [MBProgressHUD showTextHUDWithText:@"已复制到粘贴板和博主链接" inView:self.view];
+        }
+        
+    }
 }
 
 - (void)didReceiveMemoryWarning {

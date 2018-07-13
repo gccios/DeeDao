@@ -158,6 +158,7 @@
             
             DTieEditModel * model = [[DTieEditModel alloc] init];
             model.type = DTieEditType_Image;
+            model.dataLength = length;
             if (isWXInstall) {
                 model.shareEnable = 1;
             }
@@ -174,7 +175,7 @@
         for (NSInteger i = 0; i < assets.count; i++) {
             DTieEditModel * model = [[DTieEditModel alloc] init];
             model.type = DTieEditType_Video;
-            model.shareEnable = 0;
+            model.shareEnable = 1;
             model.image = [photos objectAtIndex:i];
             
             PHAsset * urlAsset = [assets objectAtIndex:i];
@@ -271,7 +272,7 @@
         }else{
             DTieEditModel * model = [[DTieEditModel alloc] init];
             model.type = DTieEditType_Text;
-            model.shareEnable = 0;
+            model.shareEnable = 1;
             model.detailContent = text;
             
             [self.modleSources insertObject:model atIndex:self.insertIndex];

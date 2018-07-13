@@ -51,6 +51,16 @@
         make.width.mas_equalTo(51);
         make.height.mas_equalTo(31);
     }];
+    
+    UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView.backgroundColor = UIColorFromRGB(0xE0E0E0);
+    [self.contentView addSubview:lineView];
+    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(0);
+        make.height.mas_equalTo(3 * scale);
+    }];
 }
 
 - (void)switcDidChange:(UISwitch *)settingSwitch

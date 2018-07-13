@@ -11,19 +11,19 @@
 
 @implementation DTieEditModel
 
++ (NSDictionary *)mj_replacedKeyFromPropertyName
+{
+    return @{
+             @"cid" : @"id"//前边的是你想用的key，后边的是返回的key
+             };
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {
         self.detailsContent = @"";
     }
     return self;
-}
-
-+ (NSDictionary *)mj_replacedKeyFromPropertyName
-{
-    return @{
-             @"cid" : @"id"//前边的是你想用的key，后边的是返回的key
-             };
 }
 
 - (void)setDatadictionaryType:(NSString *)datadictionaryType

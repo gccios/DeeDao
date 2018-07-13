@@ -10,6 +10,12 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 
+@interface DTieReadCommentHeaderView ()
+
+@property (nonatomic, strong) UILabel * titleLabel;
+
+@end
+
 @implementation DTieReadCommentHeaderView
 
 - (instancetype)initWithReuseIdentifier:(NSString *)reuseIdentifier
@@ -34,15 +40,26 @@
         make.height.mas_equalTo(2 * scale);
     }];
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentCenter];
-    titleLabel.text = @"评论和留言";
-    titleLabel.backgroundColor = UIColorFromRGB(0XFFFFFF);
-    [self addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentCenter];
+    self.titleLabel.text = @"评论和留言";
+    self.titleLabel.backgroundColor = UIColorFromRGB(0XFFFFFF);
+    [self addSubview:self.titleLabel];
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(0);
         make.width.mas_equalTo(300 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
+}
+
+- (void)configWithTitle:(NSString *)title
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(450 * scale);
+    }];
+    
+    self.titleLabel.text = title;
 }
 
 @end

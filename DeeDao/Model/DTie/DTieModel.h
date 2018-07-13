@@ -53,6 +53,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger deleteFlg;
 @property (nonatomic, assign) NSInteger landAccountFlg;
 @property (nonatomic, strong) NSArray * allowToSeeList;
+@property (nonatomic, assign) NSInteger readTimes;
 
 @property (nonatomic, strong) NSArray * postPictureList;
 @property (nonatomic, strong) NSArray * wyyList;

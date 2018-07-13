@@ -10,4 +10,6 @@
 
 @interface DTieReadCommentHeaderView : UITableViewHeaderFooterView
 
+- (void)configWithTitle:(NSString *)title;
+
 @end

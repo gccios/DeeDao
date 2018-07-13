@@ -13,6 +13,7 @@
 #import <AFHTTPSessionManager.h>
 #import <UIImageView+WebCache.h>
 #import <Social/Social.h>
+#import "DtieShareItem.h"
 
 #define KCompressibilityFactor 560.00
 
@@ -22,8 +23,6 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 @interface WeChatManager ()
 
 @property (nonatomic, strong) SLComposeViewController * slCompose;
-
-@property (nonatomic, copy) NSString * miniProgramToken;
 
 @end
 
@@ -63,8 +62,18 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                 self.miniProgramToken = [dict objectForKey:@"access_token"];
                 
                 NSMutableArray * shareItems = [[NSMutableArray alloc] init];
+                
+                NSFileManager * fileManager = [NSFileManager defaultManager];
+                NSString * documentPath = [NSString stringWithFormat:@"%@/shareImageTemp", DDDocumentPath];
+                [fileManager removeItemAtPath:documentPath error:nil];
+                if (![fileManager fileExistsAtPath:documentPath]) {
+                    [fileManager createDirectoryAtPath:documentPath withIntermediateDirectories:YES attributes:nil error:nil];
+                }
+                
+                __block NSInteger count = 0;
                 for (NSInteger i = 0; i < images.count; i++) {
                     
+                    [shareItems addObject:[DtieShareItem new]];
                     ShareImageModel * model = [images objectAtIndex:i];
                     UIImage * bgImage = [self getJPEGImagerImg:model.image];
                     
@@ -72,9 +81,16 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                         model.codeImage = image;
                         
                         UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
-                        [shareItems addObject:result];
+//                        [shareItems addObject:result];
                         
-                        if (shareItems.count == images.count) {
+                        NSString * path = [NSString stringWithFormat:@"%@/share%ld.jpg", documentPath, i];
+                        [UIImagePNGRepresentation(result) writeToFile:path atomically:YES];
+                        DtieShareItem * item = [[DtieShareItem alloc] initWithImage:result path:path];
+                        
+                        count++;
+                        [shareItems replaceObjectAtIndex:i withObject:item];
+                        
+                        if (count == images.count) {
                             [hud hideAnimated:YES];
                             UIActivityViewController * activityView = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
                             activityView.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
@@ -122,7 +138,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     WXMiniProgramObject * program = [WXMiniProgramObject object];
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
-    program.path = [NSString stringWithFormat:@"pages/index/index?postId=%ld", postID];
+    program.path = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", postID];
     program.miniProgramType = WXMiniProgramTypeRelease;
     
     NSData*  data = [NSData data];
@@ -158,7 +174,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     WXMiniProgramObject * program = [WXMiniProgramObject object];
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
-    program.path = [NSString stringWithFormat:@"pages/index/index?authorId=%ld", model.cid];
+    program.path = [NSString stringWithFormat:@"pages/user/user?authorId=%ld", model.cid];
     program.miniProgramType = WXMiniProgramTypeRelease;
     
     UIImage * image = [self imageWithModel:model];
@@ -186,6 +202,40 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     
     SendMessageToWXReq * req = [[SendMessageToWXReq alloc] init];
     req.message = mediaMessage;
+    req.scene = WXSceneSession;
+    [WXApi sendReq:req];
+}
+
+- (void)shareImage:(UIImage *)image
+{
+    WXMediaMessage * message = [WXMediaMessage message];
+    message.title = @"123456789";
+    message.description = @"987654321";
+    
+    WXImageObject * object = [WXImageObject object];
+    object.imageData = UIImageJPEGRepresentation(image, 1);
+    message.mediaObject = object;
+    
+    SendMessageToWXReq * req = [[SendMessageToWXReq alloc] init];
+    req.bText = NO;
+    req.message = message;
+    req.scene = WXSceneTimeline;
+    [WXApi sendReq:req];
+}
+
+- (void)shareFriendImage:(UIImage *)image
+{
+    WXMediaMessage * message = [WXMediaMessage message];
+    message.title = @"123456789";
+    message.description = @"987654321";
+    
+    WXImageObject * object = [WXImageObject object];
+    object.imageData = UIImageJPEGRepresentation(image, 1);
+    message.mediaObject = object;
+    
+    SendMessageToWXReq * req = [[SendMessageToWXReq alloc] init];
+    req.bText = NO;
+    req.message = message;
     req.scene = WXSceneSession;
     [WXApi sendReq:req];
 }
@@ -262,20 +312,20 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     CGFloat width = image.size.width;
     CGFloat height = image.size.height;
     
-    CGFloat logoWidth = width * .1f;
-    CGFloat codeWidth = width * .1f;
+    CGFloat logoWidth = width * .2f;
+    CGFloat codeWidth = width * .12f;
     
     if (height > width) {
-        codeWidth = height * .07f;
-        logoWidth = height * .07f;
+        logoWidth = height * .18f;
+        codeWidth = height * .1f;
     }
     
     CGFloat leftMargin = codeWidth * .1f;
     
     [image drawInRect:CGRectMake(0, 0, width, height)];
     
-    UIImage * logoImage = [UIImage imageNamed:@"letterLogo"];
-    [logoImage drawInRect:CGRectMake(width - leftMargin - logoWidth, leftMargin, logoWidth, 36.f / 50.f * logoWidth)];
+    UIImage * logoImage = [UIImage imageNamed:@"letterLogoShare"];
+    [logoImage drawInRect:CGRectMake(width - leftMargin * 1.5 - logoWidth, leftMargin * 2, logoWidth, 36.f / 86.f * logoWidth)];
 //
 //    UIImage * coverImage = [UIImage imageNamed:@"wxCover"];
 //    [coverImage drawInRect:CGRectMake(0, originY, width, contentHeight)];
@@ -291,10 +341,17 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     [codeDefaultImage drawInRect:CGRectMake(leftMargin, height - leftMargin - codeWidth, codeWidth, codeWidth)];
     
     if (!isEmptyString(text)) {
-        CGFloat labelHeight = codeWidth * .4f;
-        CGFloat fontSize = codeWidth * .25f;
+        CGFloat labelHeight = codeWidth * .5f;
+        CGFloat fontSize = codeWidth * .27f;
         
         [text drawInRect:CGRectMake(leftMargin + codeWidth + leftMargin, height - labelHeight, width - codeWidth - leftMargin * 3, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
+    }
+    
+    if (!isEmptyString(text)) {
+        CGFloat labelHeight = codeWidth * .4f;
+        CGFloat fontSize = codeWidth * .27f;
+        
+        [title drawInRect:CGRectMake(leftMargin + codeWidth + leftMargin, height - labelHeight - codeWidth * .5f, width - codeWidth - leftMargin * 3, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
     }
     
 //    if (pflag) {
@@ -329,29 +386,6 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
         [self performSelector:@selector(getMiniProgramAccessToken) withObject:nil afterDelay:15.f];
         
     }];
-    
-//    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
-//    manager.requestSerializer = [AFJSONRequestSerializer serializer];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//    manager.requestSerializer.timeoutInterval = 15.f;
-//    [manager GET:@"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx5765078c1f5bb0f6&secret=3dceca0d57bee7e9a25bc60ea8a3d0d4" parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-//
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//
-//        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseObject options:kNilOptions error:nil];
-//        if (KIsDictionary(dict)) {
-//            self.miniProgramToken = [dict objectForKey:@"access_token"];
-//            NSInteger expires = [[dict objectForKey:@"expires_in"] integerValue];
-//            if (expires > 60) {
-//                [self performSelector:@selector(getMiniProgramAccessToken) withObject:nil afterDelay:expires - 30];
-//            }else{
-//                [self performSelector:@selector(getMiniProgramAccessToken) withObject:nil afterDelay:expires];
-//            }
-//        }
-//
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        [self performSelector:@selector(getMiniProgramAccessToken) withObject:nil afterDelay:15.f];
-//    }];
 }
 
 - (void)getMiniProgromCodeWithPostID:(NSInteger)postID handle:(void (^)(UIImage *))handle
@@ -368,7 +402,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     manager.requestSerializer.timeoutInterval = 15.f;
     
     [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"postId/%ld", postID],
-                                      @"page" :@"pages/index/index",
+                                      @"page" :@"pages/detail/detail",
                                       @"width":@(430)
                                       } progress:^(NSProgress * _Nonnull uploadProgress) {
                                           
@@ -388,6 +422,51 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                                           }
                                           
                                       } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                                          if (handle) {
+                                              handle(nil);
+                                          }
+                                      }];
+}
+
+- (void)getMiniProgromCodeWithUserID:(NSInteger)userID handle:(void (^)(UIImage *))handle
+{
+    if (isEmptyString(self.miniProgramToken)) {
+        return;
+    }
+    
+    NSString * urlStr = [NSString stringWithFormat:@"https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=%@", self.miniProgramToken];
+    
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    manager.requestSerializer.timeoutInterval = 15.f;
+    
+    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"authorId/%ld", userID],
+                                      @"page" :@"pages/user/user",
+                                      @"width":@(430)
+                                      } progress:^(NSProgress * _Nonnull uploadProgress) {
+                                          
+                                      } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                                          
+                                          UIImage * image = [UIImage imageWithData:responseObject];
+                                          if (image) {
+                                              
+                                              if (handle) {
+                                                  handle(image);
+                                              }
+                                              
+                                          }else{
+                                              
+                                              NSDictionary * dict = [NSJSONSerialization JSONObjectWithData:responseObject options:kNilOptions error:nil];
+                                              NSLog(@"%@", dict);
+                                              
+                                              if (handle) {
+                                                  handle(nil);
+                                              }
+                                          }
+                                          
+                                      } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                                          NSLog(@"请求失败");
                                           if (handle) {
                                               handle(nil);
                                           }

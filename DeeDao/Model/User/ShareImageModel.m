@@ -34,8 +34,8 @@
 
 - (void)setTitle:(NSString *)title
 {
-    if (title.length > 12) {
-        title = [title substringToIndex:12];
+    if (title.length > 18) {
+        title = [title substringToIndex:18];
         title = [title stringByAppendingString:@"..."];
     }
     _title = title;

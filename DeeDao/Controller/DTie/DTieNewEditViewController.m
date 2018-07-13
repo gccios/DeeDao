@@ -65,6 +65,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     
     __block NSInteger tempCount = 0;
     
+    __block NSInteger totalDataLength = 0;
+    
     if (self.contenView.modleSources.count == 0) {
         [hud hideAnimated:YES];
         success(details);
@@ -99,9 +101,14 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                     [hud hideAnimated:YES];
                     success(details);
                 }
+                totalDataLength += 8 * 1024;
+                hud.label.text = [NSString stringWithFormat:@"正在上传 %@ 的内容", [self getSizeWith:totalDataLength]];
             }else{
                 if (model.image) {
                     QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                    
+                    totalDataLength += model.dataLength;
+                    hud.label.text = [NSString stringWithFormat:@"正在上传 %@ 的内容", [self getSizeWith:totalDataLength]];
                     
                     [manager uploadImage:model.image progress:^(NSString *key, float percent) {
                         
@@ -140,6 +147,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                 }
             }
         }else if (model.type == DTieEditType_Text) {
+            totalDataLength += 7 * 1024;
+            hud.label.text = [NSString stringWithFormat:@"正在上传 %@ 的内容", [self getSizeWith:totalDataLength]];
             NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
                                     @"datadictionaryType":@"CONTENT_TEXT",
                                     @"detailsContent":model.detailsContent,
@@ -154,6 +163,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
             }
         }else if (model.type == DTieEditType_Video) {
             if (model.detailContent && model.textInformation) {
+                totalDataLength += 7 * 1024;
+                hud.label.text = [NSString stringWithFormat:@"正在上传 %@ 的内容", [self getSizeWith:totalDataLength]];
                 NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
                                         @"datadictionaryType":@"CONTENT_VIDEO",
                                         @"detailsContent":model.detailsContent,
@@ -168,6 +179,20 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                 }
             }else{
                 QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                
+                PHVideoRequestOptions * option = [[PHVideoRequestOptions alloc] init];
+                option.deliveryMode = PHVideoRequestOptionsDeliveryModeFastFormat;
+                [[PHImageManager defaultManager] requestAVAssetForVideo:model.asset options:option resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+                    if ([asset isKindOfClass:[AVURLAsset class]]) {
+                        AVURLAsset* urlAsset = (AVURLAsset*)asset;
+                        NSNumber *size;
+                        [urlAsset.URL getResourceValue:&size forKey:NSURLFileSizeKey error:nil];
+                        totalDataLength += [size integerValue];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            hud.label.text = [NSString stringWithFormat:@"正在上传 %@ 的内容", [self getSizeWith:totalDataLength]];
+                        });
+                    }
+                }];
                 
                 [manager uploadImage:model.image progress:^(NSString *key, float percent) {
                     
@@ -254,6 +279,18 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         }
         
     }
+}
+
+- (NSString *)getSizeWith:(NSInteger)folderSize
+{
+    if (folderSize > 1024 * 100) {
+        return [NSString stringWithFormat:@"%.2lf M", folderSize/(1024.f*1024.f)];
+    }else if(folderSize > 1024){
+        return [NSString stringWithFormat:@"%.2lf KB", folderSize/1024.f];
+    }else if (folderSize < 10){
+        return [NSString stringWithFormat:@"%ld B", folderSize];
+    }
+    return [NSString stringWithFormat:@"%ld B", folderSize];
 }
 
 #pragma mark - 保存草稿
@@ -597,10 +634,10 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.centerY.mas_equalTo(0);
     }];
     
-    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
-    self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.rightHandleButton.layer.borderWidth = 3 * scale;
+//    self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//    self.rightHandleButton.layer.borderWidth = 3 * scale;
     [bottomHandleView addSubview:self.rightHandleButton];
     [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);
@@ -608,6 +645,18 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.height.mas_equalTo(144 * scale);
         make.centerY.mas_equalTo(0);
     }];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, 444 * scale, 144 * scale);
+    [self.rightHandleButton.layer insertSublayer:gradientLayer atIndex:0];
+    
+    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.topView.layer.shadowOpacity = .24;
+    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

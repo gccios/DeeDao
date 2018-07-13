@@ -10,4 +10,8 @@
 
 @interface MailMessageRequest : BGNetworkRequest
 
+- (instancetype)initWithNotificationStart:(NSInteger)start end:(NSInteger)end;
+
+- (instancetype)initWithExchangeStart:(NSInteger)start end:(NSInteger)end;
+
 @end

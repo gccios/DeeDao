@@ -77,4 +77,11 @@
     return self;
 }
 
+- (void)configTimeSort:(NSInteger)type
+{
+    if (type == 1) {
+        [self setIntegerValue:1 forParamKey:@"sortFlag"];
+    }
+}
+
 @end

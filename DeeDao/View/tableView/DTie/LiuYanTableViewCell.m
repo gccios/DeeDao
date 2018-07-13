@@ -82,7 +82,7 @@
         make.top.mas_equalTo(50 * scale);
         make.left.mas_equalTo(self.logoImageView.mas_right).offset(48 * scale);
         make.height.mas_equalTo(55 * scale);
-        make.right.mas_equalTo(350 * scale);
+        make.right.mas_equalTo(-350 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:[UIColorFromRGB(0x000000) colorWithAlphaComponent:.54f] alignment:NSTextAlignmentLeft];

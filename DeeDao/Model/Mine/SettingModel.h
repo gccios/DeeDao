@@ -14,6 +14,7 @@ typedef enum : NSUInteger {
     SettingType_ArriveFollow,
     SettingType_SayHello,
     SettingType_Thank,
+    SettingType_AlertTip,
     SettingType_Message
 } SettingType;
 

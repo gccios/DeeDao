@@ -18,7 +18,6 @@
 #import "DDCollectionViewController.h"
 #import "DTieDetailRequest.h"
 #import "DTieNewEditViewController.h"
-#import "DTieSearchRequest.h"
 #import "DDTool.h"
 #import "WeChatManager.h"
 #import "UserManager.h"
@@ -95,6 +94,9 @@
         }else{
             [MBProgressHUD showTextHUDWithText:@"取消关注" inView:self.view];
         }
+        if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate:)]) {
+            [self.delegate userFriendInfoDidUpdate:self.model];
+        }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -166,8 +168,8 @@
         
         [MBProgressHUD showTextHUDWithText:@"删除好友成功" inView:self.view];
 //        [self getData];
-        if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate)]) {
-            [self.delegate userFriendInfoDidUpdate];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate:)]) {
+            [self.delegate userFriendInfoDidUpdate:self.model];
         }
         self.model.friendFlg = 0;
         [self reloadBottomViewStatus];

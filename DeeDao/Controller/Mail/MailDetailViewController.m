@@ -56,6 +56,13 @@
         [hud hideAnimated:YES];
         
         if (KIsDictionary(response)) {
+            
+            NSInteger code = [[response objectForKey:@"status"] integerValue];
+            if (code == 4002) {
+                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                return;
+            }
+            
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];

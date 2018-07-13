@@ -412,7 +412,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (section == 0) {
-        return 280 * scale;
+        return 380 * scale;
     }
     return .1f;
 }
@@ -438,9 +438,12 @@
                     } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                         [[SDImageCache sharedImageCache] storeImage:image forKey:model.detailContent toDisk:YES completion:nil];
                         model.image = image;
-                        [self.tableView beginUpdates];
-                        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-                        [self.tableView endUpdates];
+                        
+                        if ([tableView.indexPathsForVisibleRows containsObject:indexPath]) {
+                            [self.tableView beginUpdates];
+                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                            [self.tableView endUpdates];
+                        }
                     }];
                 }else{
                     height = [DDTool getHeightWithImage:image] + 90 * scale;
@@ -622,9 +625,9 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonDidClicked)];
     [locationButton addGestureRecognizer:tap];
     
-    UIImage * locationBG = [UIImage imageNamed:@"buttonBG"];
-    locationBG = [locationBG resizableImageWithCapInsets:UIEdgeInsetsMake(locationBG.size.height / 3, locationBG.size.width / 3, locationBG.size.height / 3, locationBG.size.width / 3) resizingMode:UIImageResizingModeStretch];
-    [locationButton setImage:locationBG];
+//    UIImage * locationBG = [UIImage imageNamed:@"buttonBG"];
+//    locationBG = [locationBG resizableImageWithCapInsets:UIEdgeInsetsMake(locationBG.size.height / 3, locationBG.size.width / 3, locationBG.size.height / 3, locationBG.size.width / 3) resizingMode:UIImageResizingModeStretch];
+//    [locationButton setImage:locationBG];
     [self.headerView addSubview:locationButton];
     [locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(20 * scale);
@@ -650,12 +653,12 @@
         make.top.mas_equalTo(self.senceTimelabel.mas_bottom).offset(0 * scale);
     }];
     
-    UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"locationEdit"]];
+    UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"POI_icon"]];
     [locationButton addSubview:locationImageView];
     [locationImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
         make.right.mas_equalTo(-40 * scale);
-        make.width.height.mas_equalTo(48 * scale);
+        make.width.height.mas_equalTo(72 * scale);
     }];
     
     UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
@@ -729,11 +732,11 @@
         if (self.model.dzfCount > 100) {
             [self.dazhaohuButton setTitle:@" 打招呼 99+" forState:UIControlStateNormal];
         }
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuyuanyes"] forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
         self.dazhaohuButton.userInteractionEnabled = NO;
     }else{
         [self.dazhaohuButton setTitle:@"" forState:UIControlStateNormal];
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"sayhi"] forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzhankai"] forState:UIControlStateNormal];
         
         BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model];
         if (!canHandle) {
@@ -743,8 +746,8 @@
     [userView addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_updateConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);
-        make.width.mas_equalTo(288 * scale);
-        make.height.mas_equalTo(108 * scale);
+        make.width.mas_equalTo(300 * scale);
+        make.height.mas_equalTo(128 * scale);
         make.centerY.mas_equalTo(0);
     }];
     

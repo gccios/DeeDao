@@ -24,12 +24,15 @@
 #import "DTieCollectionRequest.h"
 #import "DDDazhaohuView.h"
 #import "UserInfoViewController.h"
+#import "DDYaoYueViewController.h"
 #import "DDTool.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
 
 @property (nonatomic, strong) UIButton * shoucangButton;
 @property (nonatomic, strong) UIButton * yaoyueButton;
+@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
+@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
 @property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * nameLabel;
 @property (nonatomic, strong) UIButton * dazhaohuButton;
@@ -42,6 +45,7 @@
 
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, strong) DTieDetailRequest * request;
+@property (nonatomic, strong) UILabel * shoucangNumberLabel;
 
 @end
 
@@ -145,11 +149,6 @@
 {
     DTieModel * model = self.model;
     
-    if (model.authorId == [UserManager shareManager].user.cid) {
-//        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:[UIApplication sharedApplication].keyWindow];
-        return;
-    }
-    
     self.yaoyueButton.enabled = NO;
     if (model.wyyFlg) {
         
@@ -174,6 +173,7 @@
             
             model.wyyFlg = 1;
             model.wyyCount++;
+            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，点击要约数字，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
             [self reloadStatus];
             
             self.yaoyueButton.enabled = YES;
@@ -202,7 +202,8 @@
     }];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.baseView];
     
-    self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@" 收藏"];
+    self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
+    [self.shoucangButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 10 * scale, 0)];
     [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
     [self.baseView addSubview:self.shoucangButton];
     [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -212,15 +213,45 @@
     }];
     [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
+    self.shoucangNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+    [self addSubview:self.shoucangNumberLabel];
+    [self.shoucangNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.height.mas_equalTo(120 * scale);
+        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(0 * scale);
+    }];
+    
     self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@" 要约"];
     [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
     [self.baseView addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(50 * scale);
-        make.right.mas_equalTo(-30 * scale);
+        make.right.mas_equalTo(-90 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
     [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+    [self.baseView addSubview:self.yaoyueNumberLabel];
+    [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(45 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.height.mas_equalTo(120 * scale);
+        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
+    }];
+    
+    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+    [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
+    [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(10 * scale);
+        make.width.mas_equalTo(42 * scale);
+        make.height.mas_equalTo(42 * scale);
+    }];
+    [DDViewFactoryTool cornerRadius:21 * scale withView:self.yaoyueNumberShowLabel];
+    self.yaoyueNumberShowLabel.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.yaoyueNumberShowLabel.layer.borderWidth = 2 * scale;
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.backgroundColor = self.baseView.backgroundColor;
@@ -281,11 +312,15 @@
     [self.contentView addSubview:self.dazhaohuButton];
     [self.dazhaohuButton mas_updateConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-30 * scale);
-        make.width.mas_equalTo(288 * scale);
+        make.width.mas_equalTo(268 * scale);
         make.centerY.mas_lessThanOrEqualTo(self.logoImageView);
-        make.height.mas_equalTo(108 * scale);
+        make.height.mas_equalTo(148 * scale);
     }];
     [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
+    self.yaoyueNumberLabel.userInteractionEnabled = YES;
+    [self.yaoyueNumberLabel addGestureRecognizer:tap];
     
 //    self.collectImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
 //    [self addSubview:self.collectImageView];
@@ -295,6 +330,15 @@
 //        make.width.mas_equalTo(60 * scale);
 //        make.height.mas_equalTo(400 * scale);
 //    }];
+}
+
+- (void)tapDidClicked
+{
+    DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.model];
+    
+    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    [na pushViewController:yaoyue animated:YES];
 }
 
 - (void)lookUserInfo
@@ -400,46 +444,68 @@
 
 - (void)reloadStatus
 {
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (self.model.wyyFlg) {
+        [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
+        [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueyes"] forState:UIControlStateNormal];
+        self.yaoyueButton.alpha = .5f;
+    }else{
+        [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
+        [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
+        self.yaoyueButton.alpha = 1.f;
+    }
+    
+    if (self.model.wyyCount <= 0) {
+        self.yaoyueNumberShowLabel.text = @"0";
+        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(42 * scale);
+        }];
+    }else if(self.model.wyyCount < 100){
+        self.yaoyueNumberShowLabel.text = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
+        
+        if (self.model.wyyCount < 10) {
+            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.width.mas_equalTo(42 * scale);
+            }];
+        }else {
+            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.width.mas_equalTo(80 * scale);
+            }];
+        }
+        
+    }else{
+        self.yaoyueNumberShowLabel.text = @"99+";
+        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.width.mas_equalTo(80 * scale);
+        }];
+    }
+    
     if (self.model.authorId == [UserManager shareManager].user.cid) {
         
         self.dazhaohuButton.alpha = 1.f;
-        self.yaoyueButton.alpha = 1.f;
         self.shoucangButton.alpha = 1.f;
         
         [self.dazhaohuButton setTitle:[NSString stringWithFormat:@"打招呼 %ld", self.model.dzfCount] forState:UIControlStateNormal];
         if (self.model.dzfCount > 100) {
             [self.dazhaohuButton setTitle:@" 打招呼 99+" forState:UIControlStateNormal];
         }
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuyuanyes"] forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
         
-        [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
-        [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
-        if (self.model.wyyCount <= 0) {
-            [self.yaoyueButton setTitle:@"0" forState:UIControlStateNormal];
-        }else if(self.model.wyyCount < 100){
-            [self.yaoyueButton setTitle:[NSString stringWithFormat:@"%ld", self.model.wyyCount] forState:UIControlStateNormal];
-        }else{
-            [self.yaoyueButton setTitle:@"99+" forState:UIControlStateNormal];
-        }
+        [self.shoucangButton setImage:[UIImage imageNamed:@"zuozheshoucang"] forState:UIControlStateNormal];
         
         if (self.model.collectCount <= 0) {
-            [self.shoucangButton setTitle:@"0" forState:UIControlStateNormal];
+            self.shoucangNumberLabel.text = @" 0";
         }else if(self.model.collectCount < 100){
-            [self.shoucangButton setTitle:[NSString stringWithFormat:@"%ld", self.model.collectCount] forState:UIControlStateNormal];
+            self.shoucangNumberLabel.text = [NSString stringWithFormat:@" %ld", self.model.collectCount];
         }else{
-            [self.shoucangButton setTitle:@"99+" forState:UIControlStateNormal];
+            self.shoucangNumberLabel.text = @" 99+";
         }
+        self.shoucangNumberLabel.hidden = NO;
         
     }else{
-        if (self.model.wyyFlg) {
-            [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
-            [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueyes"] forState:UIControlStateNormal];
-            self.yaoyueButton.alpha = .5f;
-        }else{
-            [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
-            [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
-            self.yaoyueButton.alpha = 1.f;
-        }
+        
+        self.shoucangNumberLabel.hidden = YES;
         
         if (self.model.collectFlg) {
             [self.shoucangButton setTitle:@"" forState:UIControlStateNormal];
@@ -452,7 +518,7 @@
         }
         
         [self.dazhaohuButton setTitle:@"" forState:UIControlStateNormal];
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"sayhi"] forState:UIControlStateNormal];
+        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuoyou"] forState:UIControlStateNormal];
         
         if ([[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model]) {
             self.dazhaohuButton.alpha = 1.f;

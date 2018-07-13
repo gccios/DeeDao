@@ -7,10 +7,11 @@
 //
 
 #import "DDViewController.h"
+#import "UserModel.h"
 
 @protocol UserFriendInfoDelegate <NSObject>
 
-- (void)userFriendInfoDidUpdate;
+- (void)userFriendInfoDidUpdate:(UserModel *)model;
 
 @end
 

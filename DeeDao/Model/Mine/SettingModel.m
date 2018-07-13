@@ -14,6 +14,7 @@
 #define SettingSayHello @"SettingSayHello"
 #define SettingThank @"SettingThank"
 #define SettingMessage @"SettingMessage"
+#define SettingAlertTip @"SettingAlertTip"
 
 @implementation SettingModel
 
@@ -74,6 +75,14 @@
                 self.systemKey = SettingMessage;
             }
                 
+                break;
+                
+            case SettingType_AlertTip:
+            {
+                self.title = @"新手引导";
+                self.status = [DDUserDefaultsGet(SettingAlertTip) boolValue];
+                self.systemKey = SettingAlertTip;
+            }
                 break;
                 
             default:

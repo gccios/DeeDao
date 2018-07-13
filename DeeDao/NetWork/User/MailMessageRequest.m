@@ -10,11 +10,20 @@
 
 @implementation MailMessageRequest
 
-- (instancetype)init
+- (instancetype)initWithNotificationStart:(NSInteger)start end:(NSInteger)end
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPGet;
-        self.methodName = @"mailbox/mailMsg/0/1000";
+        self.methodName = [NSString stringWithFormat:@"mailbox/mailMsg/0/%ld/%ld", start, end];
+    }
+    return self;
+}
+
+- (instancetype)initWithExchangeStart:(NSInteger)start end:(NSInteger)end
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPGet;
+        self.methodName = [NSString stringWithFormat:@"mailbox/mailMsg/1/%ld/%ld", start, end];
     }
     return self;
 }

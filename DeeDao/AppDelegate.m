@@ -18,6 +18,8 @@
 #import "DTieNewEditViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DDTelLoginViewController.h"
+#import "GuidePageView.h"
+#import "SettingModel.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <WXApi.h>
 
@@ -82,6 +84,7 @@
 
 - (void)createRootViewController
 {
+    SettingModel * model = [[SettingModel alloc] initWithType:SettingType_AlertTip];
     if ([WXApi isWXAppInstalled]) {
         LoginViewController * login = [[LoginViewController alloc] init];
         self.window.rootViewController = login;
@@ -89,7 +92,10 @@
             
             DDTabBarController * tab = [[DDTabBarController alloc] init];
             self.window.rootViewController = tab;
-            
+            if (model.status) {
+                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                [[UIApplication sharedApplication].keyWindow addSubview:guide];
+            }
         };
     }else{
         DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
@@ -98,7 +104,10 @@
             
             DDTabBarController * tab = [[DDTabBarController alloc] init];
             self.window.rootViewController = tab;
-            
+            if (model.status) {
+                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+                [[UIApplication sharedApplication].keyWindow addSubview:guide];
+            }
         };
     }
 }

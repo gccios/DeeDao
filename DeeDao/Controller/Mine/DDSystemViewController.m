@@ -13,6 +13,8 @@
 #import "UserLogoutRequest.h"
 #import "PassWordSetViewController.h"
 #import "HelpAndAdviceController.h"
+//#import "SystemAlertTableViewCell.h"
+#import "GuidePageView.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface DDSystemViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -29,7 +31,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"帮助与反馈", @"切换账号/退出登录"]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"操作引导", @"帮助与反馈", @"切换账号/退出登录"]];
     [self createViews];
 }
 
@@ -42,6 +44,7 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 150 * scale;
     [self.tableView registerClass:[DDSystemTableViewCell class] forCellReuseIdentifier:@"DDSystemTableViewCell"];
+//    [self.tableView registerClass:[SystemAlertTableViewCell class] forCellReuseIdentifier:@"SystemAlertTableViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -108,6 +111,14 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+//    if (indexPath.row == 1) {
+//        SystemAlertTableViewCell * tipCell = [tableView dequeueReusableCellWithIdentifier:@"SystemAlertTableViewCell"];
+//
+//        [tipCell configWithModel:[[SettingModel alloc] initWithType:SettingType_AlertTip]];
+//
+//        return tipCell;
+//    }
+    
     DDSystemTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDSystemTableViewCell" forIndexPath:indexPath];
     
     cell.nameLabel.text = [self.dataSource objectAtIndex:indexPath.row];
@@ -118,14 +129,33 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
+    
     if (indexPath.row == 0) {
-//        DDSystemAlertController * alert = [[DDSystemAlertController alloc] init];
-//        [self.navigationController pushViewController:alert animated:YES];
+        
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        
+        UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            [tabbar setSelectedIndex:0];
+            GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            [[UIApplication sharedApplication].keyWindow addSubview:guide];
+        }];
+        
+        [alert addAction:action1];
+        [alert addAction:action2];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+    }else  if (indexPath.row == 1) {
         
         HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
         [self.navigationController pushViewController:help animated:YES];
         
-    }else if (indexPath.row == 1){
+    }else if (indexPath.row == 2){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {

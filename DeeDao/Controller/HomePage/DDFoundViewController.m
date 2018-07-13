@@ -31,7 +31,10 @@
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
+
+@property (nonatomic, strong) UIView * topAlertView;
 @property (nonatomic, strong) UILabel * timeLabel;
+@property (nonatomic, strong) UILabel * topAlertLabel;
 
 @property (nonatomic, strong) UIButton * sourceButton;
 @property (nonatomic, strong) UIButton * timeButton;
@@ -59,12 +62,18 @@
 
 @property (nonatomic, assign) BOOL isMotion;
 
+@property (nonatomic, copy) NSString * logoBGName;
+@property (nonatomic, strong) UIColor * logoBGColor;
+
 @end
 
 @implementation DDFoundViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.logoBGName = @"touxiangkuang";
+    self.logoBGColor = UIColorFromRGB(0xDB6283);
     
     NSCalendar *gregorian = [[NSCalendar alloc]
                              initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
@@ -188,21 +197,39 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNewNotification object:nil];
     
-    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
-    self.timeLabel.backgroundColor = UIColorFromRGB(0xdb6283);
-    [self.view addSubview:self.timeLabel];
-    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.topAlertView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:self.topAlertView];
+    self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.4f];
+    [self.topAlertView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((220 + 60 + kStatusBarHeight) * scale);
         make.left.mas_equalTo(60 * scale);
-        make.top.mas_equalTo((220 + kStatusBarHeight) * scale + 60 * scale);
-        make.width.mas_equalTo(250 * scale);
-        make.height.mas_equalTo(90 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(120 * scale);
     }];
-    self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
-    self.timeLabel.layer.cornerRadius = 12 * scale;
-    self.timeLabel.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.timeLabel.layer.shadowOpacity = .5f;
-    self.timeLabel.layer.shadowOffset = CGSizeMake(0, 10 * scale);
-    self.timeLabel.layer.shadowRadius = 10 * scale;
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.topAlertView];
+    
+    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:self.logoBGColor alignment:NSTextAlignmentCenter];
+    self.timeLabel.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self.topAlertView addSubview:self.timeLabel];
+    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(24 * scale);
+        make.centerY.mas_equalTo(0);
+        make.width.mas_equalTo(240 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    self.timeLabel.text = [NSString stringWithFormat:@"%ld", self.year];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.timeLabel];
+    
+    self.topAlertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:self.logoBGColor alignment:NSTextAlignmentLeft];
+    [self.topAlertView addSubview:self.topAlertLabel];
+    self.topAlertLabel.text = @"当前为我和朋友的及收藏和要约";
+    [self.topAlertView addSubview:self.topAlertLabel];
+    [self.topAlertLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(self.timeLabel.mas_right).offset(48 * scale);
+        make.height.mas_equalTo(55 * scale);
+        make.right.mas_equalTo(0);
+    }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showTipWithText:@"摇一摇以刷新附近D帖"];
@@ -383,8 +410,8 @@
     if ([overlay isKindOfClass:[BMKCircle class]])
     {
         BMKCircleView* circleView = [[BMKCircleView alloc] initWithOverlay:overlay];
-        circleView.fillColor = [[UIColor blueColor] colorWithAlphaComponent:0.1];
-        circleView.strokeColor = [[UIColor blueColor] colorWithAlphaComponent:0.3];
+        circleView.fillColor = [self.logoBGColor colorWithAlphaComponent:0.15];
+        circleView.strokeColor = [self.logoBGColor colorWithAlphaComponent:0.4];
         circleView.lineWidth = .5f;
         return circleView;
     }
@@ -395,7 +422,7 @@
 {
     BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
     view.annotation = annotation;
-    view.image = [UIImage imageNamed:@"touxiangkuang"];
+    view.image = [UIImage imageNamed:self.logoBGName];
     view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
     
     NSInteger index = [self.pointArray indexOfObject:annotation];
@@ -506,16 +533,41 @@
     if (self.sourceType == 7) {
         self.sourceType = 8;
         [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
+        self.logoBGName = @"touxiangkuang";
+        self.logoBGColor = UIColorFromRGB(0xB721FF);
+        
+        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
+        self.timeLabel.textColor = self.logoBGColor;
+        self.topAlertLabel.textColor = UIColorFromRGB(0x9013FE);
+        
+        self.topAlertLabel.text = @"当前展示为地到博主D帖";
     }else if (self.sourceType == 8) {
         self.sourceType = 6;
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
+        self.logoBGName = @"touxiangkuanghui";
+        self.logoBGColor = UIColorFromRGB(0x999999);
+        
+        self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.2f];
+        self.timeLabel.textColor = UIColorFromRGB(0x666666);
+        self.topAlertLabel.textColor = UIColorFromRGB(0x333333);
+        
+        self.topAlertLabel.text = @"当前展示为陌生人的公开D帖";
     }else{
         self.sourceType = 7;
         [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
+        self.logoBGName = @"touxiangkuang";
+        self.logoBGColor = UIColorFromRGB(0xDB6283);
+        
+        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
+        self.timeLabel.textColor = self.logoBGColor;
+        self.topAlertLabel.textColor = self.logoBGColor;
+        
+        self.topAlertLabel.text = @"当前为我和朋友的及收藏和要约";
     }
     
     [self.mapView removeAnnotations:self.pointArray];
     [self requestMapViewLocations];
+    [self updateUserLocation];
 }
 
 - (NSUInteger)numberOfPagesInPageController:(SCSafariPageController *)pageController

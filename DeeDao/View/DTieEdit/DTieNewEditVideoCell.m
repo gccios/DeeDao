@@ -10,6 +10,7 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import <UIImageView+WebCache.h>
+#import <WXApi.h>
 
 @interface DTieNewEditVideoCell()
 
@@ -61,13 +62,13 @@
         [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseno"]];
     }
     
-//    if (self.model.shareEnable) {
-//        self.shareEnbale = YES;
-//        [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
-//    }else{
-//        self.deedaoEnbale = NO;
-//        [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
-//    }
+    if (self.model.shareEnable) {
+        self.shareEnbale = YES;
+        [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
+    }else{
+        self.deedaoEnbale = NO;
+        [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
+    }
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
@@ -140,31 +141,35 @@
         make.width.height.mas_equalTo(60 * scale);
     }];
     
-//    self.shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
-//    [baseView addSubview:self.shareButton];
-//    [self.shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.right.mas_equalTo(self.deedaoButton.mas_left).offset(-54 * scale);
-//        make.bottom.mas_equalTo(0);
-//        make.width.mas_equalTo(240 * scale);
-//        make.height.mas_equalTo(120 * scale);
-//    }];
-//    
-//    self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-//    self.shareLabel.text = @"微信分享";
-//    [self.shareButton addSubview:self.shareLabel];
-//    [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(24 * scale);
-//        make.left.mas_equalTo(0);
-//        make.height.mas_equalTo(45 * scale);
-//    }];
-//    
-//    self.shareImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
-//    [self.shareButton addSubview:self.shareImageView];
-//    [self.shareImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(24 * scale);
-//        make.right.mas_equalTo(0);
-//        make.width.height.mas_equalTo(48 * scale);
-//    }];
+    self.shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
+    [baseView addSubview:self.shareButton];
+    [self.shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(self.deedaoButton.mas_left).offset(-54 * scale);
+        make.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(240 * scale);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    
+    if (![WXApi isWXAppInstalled]) {
+        self.shareButton.hidden = YES;
+    }
+    
+    self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+    self.shareLabel.text = @"微信可见";
+    [self.shareButton addSubview:self.shareLabel];
+    [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    self.shareImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
+    [self.shareButton addSubview:self.shareImageView];
+    [self.shareImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(self.shareLabel.mas_right).offset(5 * scale);
+        make.width.height.mas_equalTo(60 * scale);
+    }];
     
 //    UIButton * alertButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [alertButton setImage:[UIImage imageNamed:@"alertEdit"] forState:UIControlStateNormal];

@@ -24,9 +24,8 @@
 
 @property (nonatomic, strong) UIButton * timeButton;
 @property (nonatomic, strong) UIButton * sourceButton;
-@property (nonatomic, strong) UIView * bottomTip;
 
-@property (nonatomic, assign) NSInteger pageType;
+@property (nonatomic, assign) NSInteger sortType;
 @property (nonatomic, assign) NSInteger sourceType;
 
 @property (nonatomic, strong) UICollectionView * collectionView;
@@ -44,7 +43,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.pageType = 1;
+    self.sortType = 0;
     self.sourceType = 1;
     self.start = 0;
     self.length = 1000;
@@ -61,23 +60,17 @@
         keyWord = self.textField.text;
     }
     
-    NSInteger dataSourceType = 3;
-    if (self.pageType == 2) {
-        dataSourceType = self.sourceType;
-    }else if (self.pageType == 1) {
-        dataSourceType = 3;
-    }
+    NSInteger dataSourceType = self.sourceType;
     
     [DTieSearchRequest cancelRequest];
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:dataSourceType type:2 pageStart:self.start pageSize:self.length];
     
-    if (self.pageType == 2) {
-        if (dataSourceType == -1) {
-            request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:0 pageStart:self.start pageSize:self.length];
-        }else if (dataSourceType == 1){
-            request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:1 pageStart:self.start pageSize:self.length];
-        }
+    if (dataSourceType == -1) {
+        request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:0 pageStart:self.start pageSize:self.length];
+    }else if (dataSourceType == 1){
+        request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:1 type:2 status:1 pageStart:self.start pageSize:self.length];
     }
+    [request configTimeSort:self.sortType];
     
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -184,54 +177,35 @@
 - (void)timeButtonDidClicked
 {
     [self endEditing];
-    if (self.pageType == 1) {
-        return;
+    if (self.sortType == 0) {
+        self.sortType = 1;
+    }else{
+        self.sortType = 0;
     }
-    self.pageType = 1;
-    self.sourceButton.alpha = .4f;
-    self.timeButton.alpha = 1;
-    [UIView animateWithDuration:.5f animations:^{
-        [self.bottomTip mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(0);
-        }];
-        [self.bottomTip.superview layoutIfNeeded];
-    }];
     [self searchRequest];
 }
 
 - (void)sourceButtonDidClicked
 {
     [self endEditing];
-    if (self.pageType == 1) {
-        self.pageType = 2;
-        self.sourceButton.alpha = 1;
-        self.timeButton.alpha = 0.4f;
-        [UIView animateWithDuration:.5f animations:^{
-            [self.bottomTip mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.left.mas_equalTo(kMainBoundsWidth / 2);
-            }];
-            [self.bottomTip.superview layoutIfNeeded];
-        }];
-    }else{
-        if (self.sourceType == 1) {
-            self.sourceType = 2;
-        }else if (self.sourceType == 2) {
-            self.sourceType = 9;
-        }else if (self.sourceType == 9) {
-            self.sourceType = -1;
-        }else if (self.sourceType == -1) {
-            self.sourceType = 1;
-        }
-        
-        if (self.sourceType == 1) {
-            [MBProgressHUD showTextHUDWithText:@"切换至我的帖子" inView:self.view];
-        }else if (self.sourceType == 2){
-            [MBProgressHUD showTextHUDWithText:@"切换至收藏" inView:self.view];
-        }else if (self.sourceType == 9){
-            [MBProgressHUD showTextHUDWithText:@"切换至要约" inView:self.view];
-        }else if (self.sourceType == -1){
-            [MBProgressHUD showTextHUDWithText:@"切换至草稿" inView:self.view];
-        }
+    if (self.sourceType == 1) {
+        self.sourceType = 2;
+    }else if (self.sourceType == 2) {
+        self.sourceType = 9;
+    }else if (self.sourceType == 9) {
+        self.sourceType = -1;
+    }else if (self.sourceType == -1) {
+        self.sourceType = 1;
+    }
+    
+    if (self.sourceType == 1) {
+        [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
+    }else if (self.sourceType == 2){
+        [self.sourceButton setTitle:@"收藏" forState:UIControlStateNormal];
+    }else if (self.sourceType == 9){
+        [self.sourceButton setTitle:@"要约" forState:UIControlStateNormal];
+    }else if (self.sourceType == -1){
+        [self.sourceButton setTitle:@"草稿" forState:UIControlStateNormal];
     }
     [self searchRequest];
 }
@@ -301,31 +275,20 @@
     [self.topView addSubview:self.timeButton];
     [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
-        make.left.mas_equalTo(10 * scale);
+        make.right.mas_equalTo(-10 * scale);
         make.bottom.mas_equalTo(-10 * scale);
         make.width.mas_equalTo((kMainBoundsWidth - 40 * scale) / 2);
     }];
     
-    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"来源"];
+    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
     [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.sourceButton setImage:[UIImage imageNamed:@"source_tab"] forState:UIControlStateNormal];
     [self.topView addSubview:self.sourceButton];
     [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
-        make.right.mas_equalTo(-10 * scale);
+        make.left.mas_equalTo(10 * scale);
         make.bottom.mas_equalTo(-10 * scale);
         make.width.mas_equalTo((kMainBoundsWidth - 40 * scale) / 2);
-    }];
-    self.sourceButton.alpha = .4f;
-    
-    self.bottomTip = [[UIView alloc] initWithFrame:CGRectZero];
-    self.bottomTip.backgroundColor = [UIColor colorWithRed:232.f/255.f green:144.f/255.f blue:215.f/255.f alpha:1];
-    [self.topView addSubview:self.bottomTip];
-    [self.bottomTip mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.width.mas_equalTo(kMainBoundsWidth / 2);
-        make.height.mas_equalTo(6 * scale);
-        make.bottom.mas_equalTo(0);
     }];
 }
 

@@ -192,6 +192,8 @@
     self.model = model;
     self.dtieModel = dtieModel;
     
+    [self.detailImageView sd_cancelCurrentAnimationImagesLoad];
+    
     if (model.image) {
         [self.detailImageView setImage:model.image];
     }else{

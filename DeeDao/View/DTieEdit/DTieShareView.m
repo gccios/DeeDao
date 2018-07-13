@@ -41,22 +41,22 @@
     NSInteger startTag;
     
     BOOL isInstallWX = [WXApi isWXAppInstalled];
-    BOOL isBozhu = NO;;
+    BOOL isBozhu = NO;
     if ([UserManager shareManager].user.bloggerFlg == 1) {
         isBozhu = YES;
     }
     
     if (isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"shareweixin", @"sharebozhu"];
-        titles = @[@"九宫图", @"小程序", @"地到博主"];
+        imageNames = @[@"sharepengyouquan", @"singleShare", @"sharebozhu"];
+        titles = @[@"多图分享", @"单图海报", @"地到博主"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
         imageNames = @[@"sharebozhu"];
         titles = @[@"地到博主"];
         startTag = 13;
     }else if (!isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"shareweixin"];
-        titles = @[@"九宫图", @"小程序"];
+        imageNames = @[@"sharepengyouquan", @"singleShare"];
+        titles = @[@"多图分享", @"单图海报"];
         startTag = 10;
     }else{
         imageNames = @[@"shareFriend"];
@@ -124,16 +124,16 @@
     }
     
     if (isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareFriend", @"sharebozhu"];
-        titles = @[@"九宫图", @"小程序", @"地到好友", @"地到博主"];
+        imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend", @"sharebozhu"];
+        titles = @[@"多图分享", @"单图海报", @"地到好友", @"地到博主"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
         imageNames = @[@"shareFriend", @"sharebozhu"];
         titles = @[@"地到好友", @"地到博主"];
         startTag = 12;
     }else if (!isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareFriend"];
-        titles = @[@"九宫图", @"小程序", @"地到好友"];
+        imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend"];
+        titles = @[@"多图分享", @"单图海报", @"地到好友"];
         startTag = 10;
     }else{
         imageNames = @[@"shareFriend"];
