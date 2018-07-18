@@ -470,7 +470,7 @@
     }];
     
     self.quanxianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentRight];
-    self.quanxianLabel.text = @"所有朋友,关注我的人";
+    self.quanxianLabel.text = @"公开";
     [quanxianButton addSubview:self.quanxianLabel];
     [self.quanxianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(label.mas_right).offset(60 * scale);
@@ -586,20 +586,20 @@
         [self reloadWithEditModel];
     }
     
-    SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
-    model1.cid = -1;
-    model1.securitygroupName = @"所有朋友";
-    model1.isChoose = YES;
-    model1.isNotification = YES;
-    [self.selectSource addObject:model1];
-    
-    SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
-    model2.cid = -2;
-    model2.securitygroupName = @"关注我的人";
-    model2.isChoose = YES;
-    model2.isNotification = YES;
-    [self.selectSource addObject:model2];
-    self.landAccountFlg = 4;
+//    SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+//    model1.cid = -1;
+//    model1.securitygroupName = @"所有朋友";
+//    model1.isChoose = YES;
+//    model1.isNotification = YES;
+//    [self.selectSource addObject:model1];
+//
+//    SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+//    model2.cid = -2;
+//    model2.securitygroupName = @"关注我的人";
+//    model2.isChoose = YES;
+//    model2.isNotification = YES;
+//    [self.selectSource addObject:model2];
+    self.landAccountFlg = 1;
 }
 
 #pragma mark - 左滑删除

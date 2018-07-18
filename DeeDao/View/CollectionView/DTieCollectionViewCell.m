@@ -128,9 +128,9 @@
     [self.deleteButton setImage:[UIImage imageNamed:@"jianqubig"] forState:UIControlStateNormal];
     [self.contentView addSubview:self.deleteButton];
     [self.deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(45 * scale);
-        make.right.mas_equalTo(self.contenImageView).offset(30 * scale);
-        make.width.height.mas_equalTo(60 * scale);
+        make.top.mas_equalTo(40 * scale);
+        make.right.mas_equalTo(self.contenImageView).offset(25 * scale);
+        make.width.height.mas_equalTo(70 * scale);
     }];
     [self.deleteButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.deleteButton.hidden = YES;

@@ -221,7 +221,7 @@
     }];
     [self.miquanButton addTarget:self action:@selector(miquanButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 170 * scale)];
+    UIView * tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 220 * kMainBoundsWidth / 1080.f)];
     UIImageView * alertImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"alertEdit"]];
     [tableFooterView addSubview:alertImageView];
     [alertImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -232,7 +232,7 @@
     
     self.alertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     self.alertLabel.numberOfLines = 0;
-    self.alertLabel.text = @"选择小密圈，意味着只有您指定的好友可看见您当前发布的D帖，并会收到相应提示。";
+    self.alertLabel.text = @"选择公开，意味着您的所有好友以及关注您的人（包括陌生人）均可看见您当前发布的D帖，并会收到相应提示。精华公开帖有机会被地到官方选中推广。";
     [tableFooterView addSubview:self.alertLabel];
     [self.alertLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(48 * scale);
@@ -263,18 +263,18 @@
     model1.isChoose = YES;
     model1.isNotification = YES;
     [self.dataSource addObject:model1];
-    
+
     SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
     model2.cid = -2;
     model2.securitygroupName = @"关注我的人";
     model2.isChoose = YES;
     model2.isNotification = YES;
     [self.dataSource addObject:model2];
-    [self.selectSource addObject:model1];
-    [self.selectSource addObject:model2];
-    [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    self.landAccountFlg = 4;
-    self.currentQuanxianButton = self.miquanButton;
+//    [self.selectSource addObject:model1];
+//    [self.selectSource addObject:model2];
+    [self.gongkaiButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
+    self.landAccountFlg = 1;
+    self.currentQuanxianButton = self.gongkaiButton;
     
     [self.tableView reloadData];
     

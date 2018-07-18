@@ -412,7 +412,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (section == 0) {
-        return 380 * scale;
+        return 400 * scale;
     }
     return .1f;
 }

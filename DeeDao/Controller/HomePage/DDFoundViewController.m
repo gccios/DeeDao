@@ -115,6 +115,7 @@
     self.mapView.showsUserLocation = YES;
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
     self.mapView.buildingsEnabled = NO;
+    self.mapView.showMapPoi = NO;
     
     [self.view addSubview:self.mapView];
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -199,7 +200,7 @@
     
     self.topAlertView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.topAlertView];
-    self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.4f];
+    self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.1f];
     [self.topAlertView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + 60 + kStatusBarHeight) * scale);
         make.left.mas_equalTo(60 * scale);
@@ -208,8 +209,8 @@
     }];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.topAlertView];
     
-    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:self.logoBGColor alignment:NSTextAlignmentCenter];
-    self.timeLabel.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    self.timeLabel.backgroundColor = UIColorFromRGB(0xDB6283);
     [self.topAlertView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(24 * scale);
@@ -220,7 +221,7 @@
     self.timeLabel.text = [NSString stringWithFormat:@"%ld", self.year];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.timeLabel];
     
-    self.topAlertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:self.logoBGColor alignment:NSTextAlignmentLeft];
+    self.topAlertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     [self.topAlertView addSubview:self.topAlertLabel];
     self.topAlertLabel.text = @"当前为我和朋友的及收藏和要约";
     [self.topAlertView addSubview:self.topAlertLabel];
@@ -533,36 +534,36 @@
     if (self.sourceType == 7) {
         self.sourceType = 8;
         [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
-        self.logoBGName = @"touxiangkuang";
+        self.logoBGName = @"touxiangkuangbozhu";
         self.logoBGColor = UIColorFromRGB(0xB721FF);
         
-        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
-        self.timeLabel.textColor = self.logoBGColor;
-        self.topAlertLabel.textColor = UIColorFromRGB(0x9013FE);
+//        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
+//        self.timeLabel.textColor = self.logoBGColor;
+//        self.topAlertLabel.textColor = UIColorFromRGB(0x9013FE);
         
-        self.topAlertLabel.text = @"当前展示为地到博主D帖";
+        self.topAlertLabel.text = @"地到博主D帖";
     }else if (self.sourceType == 8) {
         self.sourceType = 6;
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuanghui";
         self.logoBGColor = UIColorFromRGB(0x999999);
         
-        self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.2f];
-        self.timeLabel.textColor = UIColorFromRGB(0x666666);
-        self.topAlertLabel.textColor = UIColorFromRGB(0x333333);
+//        self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.2f];
+//        self.timeLabel.textColor = UIColorFromRGB(0x666666);
+//        self.topAlertLabel.textColor = UIColorFromRGB(0x333333);
         
-        self.topAlertLabel.text = @"当前展示为陌生人的公开D帖";
+        self.topAlertLabel.text = @"陌生人的公开D帖";
     }else{
         self.sourceType = 7;
         [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuang";
         self.logoBGColor = UIColorFromRGB(0xDB6283);
         
-        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
-        self.timeLabel.textColor = self.logoBGColor;
-        self.topAlertLabel.textColor = self.logoBGColor;
+//        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
+//        self.timeLabel.textColor = self.logoBGColor;
+//        self.topAlertLabel.textColor = self.logoBGColor;
         
-        self.topAlertLabel.text = @"当前为我和朋友的及收藏和要约";
+        self.topAlertLabel.text = @"我和朋友的及收藏和要约";
     }
     
     [self.mapView removeAnnotations:self.pointArray];

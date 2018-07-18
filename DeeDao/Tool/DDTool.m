@@ -298,6 +298,28 @@
     });
 }
 
++ (void)saveImageInSystemPhotoWithNoHUD:(UIImage *)image
+{
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        __block NSString *createdAssetId = nil;
+        NSError * error;
+        // 添加图片到【相机胶卷】
+        // 同步方法,直接创建图片,代码执行完,图片没创建完,所以使用占位ID (createdAssetId)
+        [[PHPhotoLibrary sharedPhotoLibrary] performChangesAndWait:^{
+            createdAssetId = [PHAssetChangeRequest creationRequestForAssetFromImage:image].placeholderForCreatedAsset.localIdentifier;
+        } error:&error];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                
+            }else{
+                
+            }
+        });
+    });
+}
+
 + (NSString *)replaceUnicode:(NSString *)unicodeStr
 {
     NSString *tempStr1 = [unicodeStr stringByReplacingOccurrencesOfString:@"\\u" withString:@"\\U"];

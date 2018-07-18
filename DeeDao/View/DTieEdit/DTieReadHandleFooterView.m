@@ -107,7 +107,7 @@
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     [self addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(150 * scale);
+        make.top.mas_equalTo(170 * scale);
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(50 * scale);
     }];
@@ -140,7 +140,7 @@
 //    self.shoucangButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     [self addSubview:self.shoucangButton];
     [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(45 * scale);
         make.centerX.mas_equalTo(-kMainBoundsWidth / 4);
         make.height.mas_equalTo(120 * scale);
 //        make.width.mas_equalTo(200 * scale);
@@ -150,7 +150,7 @@
     self.shoucangNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
     [self addSubview:self.shoucangNumberLabel];
     [self.shoucangNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(35 * scale);
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
         make.left.mas_equalTo(self.shoucangButton.mas_right).offset(0 * scale);
         make.width.mas_equalTo(100 * scale);
         make.height.mas_equalTo(120 * scale);
@@ -160,7 +160,7 @@
     [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
     [self addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(45 * scale);
         make.centerX.mas_equalTo(kMainBoundsWidth / 4);
         make.height.mas_equalTo(120 * scale);
     }];
@@ -169,7 +169,7 @@
     self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
     [self addSubview:self.yaoyueNumberLabel];
     [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(35 * scale);
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
         make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
         make.width.mas_equalTo(100 * scale);
         make.height.mas_equalTo(120 * scale);
@@ -198,10 +198,12 @@
     if (postID == 0) {
         postID = self.model.postId;
     }
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
     
     SelectPostSeeRequest * request = [[SelectPostSeeRequest alloc] initWithPostID:postID];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        [hud hideAnimated:YES];
         if (KIsDictionary(response)) {
             NSArray * data = [response objectForKey:@"data"];
             if (KIsArray(data)) {
@@ -219,7 +221,13 @@
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取阅读信息失败" inView:[UIApplication sharedApplication].keyWindow];
+        
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取阅读信息失败" inView:[UIApplication sharedApplication].keyWindow];
         
     }];
 }

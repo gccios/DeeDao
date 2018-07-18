@@ -14,6 +14,7 @@
 #import "DDShareManager.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "ShareImageModel.h"
+#import "DDTool.h"
 
 @interface DTieShareViewController ()<XWDragCellCollectionViewDataSource, XWDragCellCollectionViewDelegate, XRWaterfallLayoutDelegate>
 
@@ -26,6 +27,7 @@
 
 @property (nonatomic, strong) UIButton * saveButton;
 @property (nonatomic, strong) UIButton * clearButton;
+@property (nonatomic, strong) UIView * bottomHandleView;
 //@property (nonatomic, assign) BOOL isEdit;
 
 @end
@@ -193,6 +195,7 @@
     }else{
         [self.mainView xw_stopEditingModel];
         self.clearButton.hidden = NO;
+        self.bottomHandleView.hidden = NO;
     }
 }
 
@@ -215,6 +218,7 @@
         
         [self.saveButton setTitle:@"确定" forState:UIControlStateNormal];
         self.clearButton.hidden = YES;
+        self.bottomHandleView.hidden = YES;
     }
 }
 
@@ -240,9 +244,48 @@
 //    self.mainView.shakeWhenMoveing = NO;
     self.mainView.backgroundColor = self.view.backgroundColor;
     [self.mainView registerClass:[DDShareImageCollectionViewCell class] forCellWithReuseIdentifier:@"DDShareImageCollectionViewCell"];
+    self.mainView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
     [self.view addSubview:self.mainView];
     
+    self.bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
+    [self.view addSubview:self.bottomHandleView];
+    [self.bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.height.mas_equalTo(324 * scale);
+    }];
+    
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"加码并保存至手机相册"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
+    handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    handleButton.layer.borderWidth = 3 * scale;
+    [self.bottomHandleView addSubview:handleButton];
+    [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(0);
+    }];
+    [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
     [self createTopView];
+}
+
+- (void)handleButtonDidClicked
+{
+    if (self.selectSource.count == 0) {
+        [MBProgressHUD showTextHUDWithText:@"请选择要分享的图片" inView:self.view];
+    }else if (self.selectSource.count > 9){
+        [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:self.view];
+    }else {
+        [DDTool userLibraryAuthorizationStatusWithSuccess:^{
+            
+            [[WeChatManager shareManager] savePhotoWithImages:self.selectSource title:@"分享" viewController:self];
+            
+        } failure:^{
+            [MBProgressHUD showTextHUDWithText:@"没有相册访问权限" inView:self.view];
+        }];
+    }
 }
 
 - (void)createTopView
@@ -331,6 +374,7 @@
         [self.mainView xw_stopEditingModel];
         [self.saveButton setTitle:@"分享" forState:UIControlStateNormal];
         self.clearButton.hidden = NO;
+        self.bottomHandleView.hidden = NO;
     }else{
         if (self.selectSource.count == 0) {
             [MBProgressHUD showTextHUDWithText:@"请选择要分享的图片" inView:self.view];

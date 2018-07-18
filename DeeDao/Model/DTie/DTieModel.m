@@ -31,6 +31,11 @@
         _dTieType = DTieType_Edit;
     }else if (_dTieType == 0) {
         _dTieType = DTieType_MyDtie;
+        if (_dTieType == DTieType_BeFondOf) {
+            _dTieType = DTieType_BeFondOf;
+        }else if (_dTieType == DTieType_Collection) {
+            _dTieType = DTieType_Collection;
+        }
     }
 }
 
@@ -38,7 +43,7 @@
 {
     _collectFlg = collectFlg;
     if (_wyyFlg == 0 && _collectFlg == 1) {
-        self.dTieType = DTieType_Collection;
+        _dTieType = DTieType_Collection;
     }
 }
 
@@ -46,7 +51,7 @@
 {
     _wyyFlg = wyyFlg;
     if (_wyyFlg == 1) {
-        self.dTieType = DTieType_BeFondOf;
+        _dTieType = DTieType_BeFondOf;
     }
 }
 

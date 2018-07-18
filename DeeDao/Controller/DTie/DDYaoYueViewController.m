@@ -53,6 +53,7 @@
         self.friendDataSource = [[NSMutableArray alloc] init];
         self.DTieDataSource = [[NSMutableArray alloc] init];
         self.selectSource = [[NSMutableArray alloc] init];
+        [self.selectSource addObject:[UserManager shareManager].user];
         self.titleSource = @[@"", @"我和好友", @"博主", @"我所关注人", @"部分公开"];
         self.model = model;
     }
@@ -91,6 +92,7 @@
         if (KIsDictionary(respones)) {
             [self.friendDataSource removeAllObjects];
             [self.selectSource removeAllObjects];
+            [self.selectSource addObject:[UserManager shareManager].user];
             NSArray * data = [respones objectForKey:@"data"];
             for (NSDictionary * dict in data) {
                 UserYaoYueModel * model = [UserYaoYueModel mj_objectWithKeyValues:dict];
@@ -484,11 +486,6 @@
 
 - (void)handleButtonDidClicked
 {
-    if (self.selectSource.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"请先选择想约的用户哟~" inView:self.view];
-        return;
-    }
-    
     DDShareYaoYueViewController * share = [[DDShareYaoYueViewController alloc] initWithDtieModel:self.model selectUser:self.selectSource];
     [self.navigationController pushViewController:share animated:YES];
 }

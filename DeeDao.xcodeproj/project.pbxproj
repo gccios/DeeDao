@@ -189,6 +189,10 @@
 		0674E69120AEE809006961E1 /* MailDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0674E69020AEE809006961E1 /* MailDetailViewController.m */; };
 		06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */; };
 		06790B3E20A4418A00929228 /* DTieModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3D20A4418A00929228 /* DTieModel.m */; };
+		067A4F8020FDF5AC00869D80 /* BMKClusterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7820FDF5AC00869D80 /* BMKClusterItem.m */; };
+		067A4F8120FDF5AC00869D80 /* BMKClusterQuadtree.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7A20FDF5AC00869D80 /* BMKClusterQuadtree.m */; };
+		067A4F8220FDF5AC00869D80 /* BMKClusterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7C20FDF5AC00869D80 /* BMKClusterManager.m */; };
+		067A4F8320FDF5AC00869D80 /* BMKClusterAlgorithm.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7E20FDF5AC00869D80 /* BMKClusterAlgorithm.m */; };
 		067EB59E20DB6B150021E71B /* DDCollectionSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB59D20DB6B150021E71B /* DDCollectionSlider.m */; };
 		067EB5A120DB83D30021E71B /* DTieReadHandleFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB5A020DB83D30021E71B /* DTieReadHandleFooterView.m */; };
 		067EB5A420DB94AA0021E71B /* DTieReadCommentHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB5A320DB94AA0021E71B /* DTieReadCommentHeaderView.m */; };
@@ -617,6 +621,14 @@
 		06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCollectionViewCell.m; sourceTree = "<group>"; };
 		06790B3C20A4418A00929228 /* DTieModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieModel.h; sourceTree = "<group>"; };
 		06790B3D20A4418A00929228 /* DTieModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieModel.m; sourceTree = "<group>"; };
+		067A4F7820FDF5AC00869D80 /* BMKClusterItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterItem.m; sourceTree = "<group>"; };
+		067A4F7920FDF5AC00869D80 /* BMKClusterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMKClusterManager.h; sourceTree = "<group>"; };
+		067A4F7A20FDF5AC00869D80 /* BMKClusterQuadtree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterQuadtree.m; sourceTree = "<group>"; };
+		067A4F7B20FDF5AC00869D80 /* BMKClusterAlgorithm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMKClusterAlgorithm.h; sourceTree = "<group>"; };
+		067A4F7C20FDF5AC00869D80 /* BMKClusterManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterManager.m; sourceTree = "<group>"; };
+		067A4F7D20FDF5AC00869D80 /* BMKClusterItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMKClusterItem.h; sourceTree = "<group>"; };
+		067A4F7E20FDF5AC00869D80 /* BMKClusterAlgorithm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterAlgorithm.m; sourceTree = "<group>"; };
+		067A4F7F20FDF5AC00869D80 /* BMKClusterQuadtree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMKClusterQuadtree.h; sourceTree = "<group>"; };
 		067EB59C20DB6B150021E71B /* DDCollectionSlider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDCollectionSlider.h; sourceTree = "<group>"; };
 		067EB59D20DB6B150021E71B /* DDCollectionSlider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDCollectionSlider.m; sourceTree = "<group>"; };
 		067EB59F20DB83D30021E71B /* DTieReadHandleFooterView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieReadHandleFooterView.h; sourceTree = "<group>"; };
@@ -1333,6 +1345,7 @@
 		06733F8620A2C40D007875A7 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				067A4F7720FDF5AC00869D80 /* Cluster */,
 				064AA5AF20F30FCE00EBF20A /* GCCScreenImage */,
 				0630F34D20DCDBBC0096FE71 /* BaiduMobStat */,
 				069FF64E20C05D7C00C15D4F /* RTDragCellTableView */,
@@ -1486,6 +1499,21 @@
 				062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */,
 			);
 			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		067A4F7720FDF5AC00869D80 /* Cluster */ = {
+			isa = PBXGroup;
+			children = (
+				067A4F7820FDF5AC00869D80 /* BMKClusterItem.m */,
+				067A4F7920FDF5AC00869D80 /* BMKClusterManager.h */,
+				067A4F7A20FDF5AC00869D80 /* BMKClusterQuadtree.m */,
+				067A4F7B20FDF5AC00869D80 /* BMKClusterAlgorithm.h */,
+				067A4F7C20FDF5AC00869D80 /* BMKClusterManager.m */,
+				067A4F7D20FDF5AC00869D80 /* BMKClusterItem.h */,
+				067A4F7E20FDF5AC00869D80 /* BMKClusterAlgorithm.m */,
+				067A4F7F20FDF5AC00869D80 /* BMKClusterQuadtree.h */,
+			);
+			path = Cluster;
 			sourceTree = "<group>";
 		};
 		069FF64E20C05D7C00C15D4F /* RTDragCellTableView */ = {
@@ -1893,6 +1921,7 @@
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
 				06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */,
+				067A4F8320FDF5AC00869D80 /* BMKClusterAlgorithm.m in Sources */,
 				066033D520B2BDC800A54D81 /* SCCardsPageLayouter.m in Sources */,
 				066033D720B2BDC800A54D81 /* SCPageViewControllerView.m in Sources */,
 				0647F31020B67B0D009B7C27 /* UserInfoRequest.m in Sources */,
@@ -1962,6 +1991,7 @@
 				064AA5AE20F30B9100EBF20A /* DTieSingleImageShareView.m in Sources */,
 				061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */,
 				063926B320F85AEC000E7818 /* DTieSeeDetailViewController.m in Sources */,
+				067A4F8120FDF5AC00869D80 /* BMKClusterQuadtree.m in Sources */,
 				0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */,
 				062BA31A20EE02F900F4EF58 /* CreateLocationRequest.m in Sources */,
 				066033BE20B29BB200A54D81 /* DTieMapViewController.m in Sources */,
@@ -1978,11 +2008,13 @@
 				062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */,
 				061EDD7220C5709000066E73 /* ForgetPasswordViewController.m in Sources */,
 				066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */,
+				067A4F8020FDF5AC00869D80 /* BMKClusterItem.m in Sources */,
 				06733F4220A28BDA007875A7 /* main.m in Sources */,
 				061994AD20B5106500AD64AB /* EditSecurityController.m in Sources */,
 				06E5557820C954CF00C0CE9D /* DDChooseFriendCell.m in Sources */,
 				06E209DB20B035BB00EA541B /* MainInfoTableViewCell.m in Sources */,
 				061994A720B5091700AD64AB /* SecurityGroupModel.m in Sources */,
+				067A4F8220FDF5AC00869D80 /* BMKClusterManager.m in Sources */,
 				06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */,
 				06E0A13020CED14700B9C4B0 /* GetDtieSecurityRequest.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,

@@ -27,6 +27,8 @@ extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录�
 
 - (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController;
 
+- (void)savePhotoWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController;
+
 - (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image isShare:(BOOL)isShare title:(NSString *)title;
 
 - (void)shareMiniProgramWithUser:(UserModel *)model;

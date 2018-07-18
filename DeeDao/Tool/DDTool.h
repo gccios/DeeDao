@@ -36,6 +36,8 @@
 
 + (void)saveImageInSystemPhoto:(UIImage *)image;
 
++ (void)saveImageInSystemPhotoWithNoHUD:(UIImage *)image;
+
 + (NSString *)replaceUnicode:(NSString *)unicodeStr;
 
 + (CGFloat)getHeightWithImage:(UIImage *)image;

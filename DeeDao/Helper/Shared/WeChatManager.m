@@ -14,6 +14,7 @@
 #import <UIImageView+WebCache.h>
 #import <Social/Social.h>
 #import "DtieShareItem.h"
+#import "DDTool.h"
 
 #define KCompressibilityFactor 560.00
 
@@ -113,19 +114,79 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                 }
                 
             }else{
+                [hud hideAnimated:YES];
                 [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
             }
         }else{
+            [hud hideAnimated:YES];
             [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
         }
         
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
+        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        
+    }];
+}
+
+- (void)savePhotoWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    
+    GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSDictionary *dict = [response objectForKey:@"data"];
+            if (KIsDictionary(dict)) {
+                self.miniProgramToken = [dict objectForKey:@"access_token"];
+                
+                __block NSInteger count = 0;
+                for (NSInteger i = 0; i < images.count; i++) {
+                    
+                    ShareImageModel * model = [images objectAtIndex:i];
+                    UIImage * bgImage = model.image;
+                    
+                    [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
+                        model.codeImage = image;
+                        
+                        UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
+                        [DDTool saveImageInSystemPhotoWithNoHUD:result];
+                        
+                        
+                        count++;
+                        
+                        if (count == images.count) {
+                            [hud hideAnimated:YES];
+                            [MBProgressHUD showTextHUDWithText:@"保存成功，您可以在相册中查看" inView:viewController.view];
+                        }
+                        
+                    }];
+                }
+                
+            }else{
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+            }
+        }else{
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        }
+        
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
         
     }];

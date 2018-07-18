@@ -61,7 +61,7 @@
         lineCount++;
     }
     
-    CGFloat height = 200 * scale;
+    CGFloat height = 230 * scale;
     
     CGFloat userHeight = lineCount * height;
     
@@ -544,15 +544,15 @@
 
 - (void)buttonDidClicked:(UIButton *)button
 {
-    if (isEmptyString(self.titleField.text)) {
-        [MBProgressHUD showTextHUDWithText:@"请输入主题" inView:self.view];
-        return;
-    }
-    
-    if (isEmptyString(self.timeField.text)) {
-        [MBProgressHUD showTextHUDWithText:@"请输入时间" inView:self.view];
-        return;
-    }
+//    if (isEmptyString(self.titleField.text)) {
+//        [MBProgressHUD showTextHUDWithText:@"请输入主题" inView:self.view];
+//        return;
+//    }
+//
+//    if (isEmptyString(self.timeField.text)) {
+//        [MBProgressHUD showTextHUDWithText:@"请输入时间" inView:self.view];
+//        return;
+//    }
     
     UIImage * shareImage = [GCCScreenImage screenView:self.resultView];
     if (button.tag == 10) {
