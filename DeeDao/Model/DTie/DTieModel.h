@@ -10,17 +10,17 @@
 #import "DTieEditModel.h"
 #import "UserModel.h"
 
-typedef enum : NSUInteger {
-    DTieType_Add,
-    DTieType_Edit,
-    DTieType_Collection,
-    DTieType_BeFondOf,
-    DTieType_MyDtie
-} DTieType;
+//typedef enum : NSUInteger {
+//    DTieType_Add,
+//    DTieType_Edit,
+//    DTieType_Collection,
+//    DTieType_BeFondOf,
+//    DTieType_MyDtie
+//} DTieType;
 
 @interface DTieModel : NSObject
 
-@property (nonatomic, assign) DTieType dTieType;
+//@property (nonatomic, assign) DTieType dTieType;
 
 @property (nonatomic, assign) NSInteger ifCanSee;
 

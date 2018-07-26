@@ -12,6 +12,7 @@
 #import "DTieModel.h"
 #import "DTieChooseCollectionViewCell.h"
 #import <MJRefresh.h>
+#import "UserManager.h"
 
 @interface SecurityDTieViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -120,7 +121,7 @@
         [self.chooseSource addObject:model];
     }
     
-    [collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    [collectionView reloadData];
 }
 
 - (void)refreshData
@@ -135,7 +136,7 @@
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     model.cid = model.postId;
-                    if (model.type == 0) {
+                    if (model.authorId == [UserManager shareManager].user.cid) {
                         [self.dataSource addObject:model];
                     }
                 }
@@ -170,7 +171,7 @@
                 
                 for (NSDictionary * dict in data) {
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    if (model.type == 0) {
+                    if (model.type == [UserManager shareManager].user.cid) {
                         [self.dataSource addObject:model];
                     }
                 }
@@ -229,7 +230,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"添加D帖系列";
+    titleLabel.text = @"添加D帖";
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

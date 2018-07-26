@@ -14,7 +14,8 @@ typedef enum : NSUInteger {
     DTieEditType_Title,
     DTieEditType_Text,
     DTieEditType_Image,
-    DTieEditType_Video
+    DTieEditType_Video,
+    DTieEditType_Post
 } DTieEditType;
 
 @interface DTieEditModel : NSObject
@@ -23,6 +24,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, assign) DTieEditType type;
 
+//文字，图片，视频
 @property (nonatomic, strong) UIImage * image;
 @property (nonatomic, copy) NSString * imageURL;
 @property (nonatomic, strong) UIImage * videoImage;
@@ -44,6 +46,17 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger dataLength;
 
 @property (nonatomic, assign) BOOL isFirstImage;
+
+//Post类型
+@property (nonatomic, copy) NSString * portraituri;
+@property (nonatomic, copy) NSString * nickname;
+@property (nonatomic, copy) NSString * postFirstPicture;
+@property (nonatomic, copy) NSString * postSummary;
+@property (nonatomic, copy) NSString * sceneAddress;
+@property (nonatomic, copy) NSString * sceneBuilding;
+@property (nonatomic, assign) NSInteger updateTime;
+@property (nonatomic, assign) NSInteger bloggerFlg;
+@property (nonatomic, assign) BOOL isPost;
 
 //@property (nonatomic, assign) CGFloat height;
 

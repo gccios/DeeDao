@@ -199,7 +199,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     WXMiniProgramObject * program = [WXMiniProgramObject object];
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
-    program.path = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", postID];
+    program.path = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ld", postID, [UserManager shareManager].user.cid];
     program.miniProgramType = WXMiniProgramTypeRelease;
     
     NSData*  data = [NSData data];
@@ -235,7 +235,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     WXMiniProgramObject * program = [WXMiniProgramObject object];
     program.webpageUrl = @"http://www.deedao.com";
     program.userName = @"gh_3714b00f2a4c";
-    program.path = [NSString stringWithFormat:@"pages/user/user?authorId=%ld", model.cid];
+    program.path = [NSString stringWithFormat:@"pages/user/user?authorId=%lduserIs%ld", model.cid, [UserManager shareManager].user.cid];
     program.miniProgramType = WXMiniProgramTypeRelease;
     
     UIImage * image = [self imageWithModel:model];
@@ -298,6 +298,15 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     req.bText = NO;
     req.message = message;
     req.scene = WXSceneSession;
+    [WXApi sendReq:req];
+}
+
+- (void)shareToBiz
+{
+    JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
+    req.username=@"gh_68797f4b389f";
+    req.extMsg = @"";
+    req.profileType =0;
     [WXApi sendReq:req];
 }
 
@@ -366,7 +375,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 }
 
 #pragma mark - 向图片中添加文字和小程序码
-- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage pflg:(BOOL)pflag
+- (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage pflg:(NSInteger)pflag
 {
     UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
     
@@ -405,10 +414,14 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
         CGFloat labelHeight = codeWidth * .5f;
         CGFloat fontSize = codeWidth * .27f;
         
+        if (pflag == 1) {
+            text = [text stringByAppendingString:@"，当前图片到地可见"];
+        }
+        
         [text drawInRect:CGRectMake(leftMargin + codeWidth + leftMargin, height - labelHeight, width - codeWidth - leftMargin * 3, labelHeight) withAttributes:@{NSFontAttributeName:kPingFangMedium(fontSize), NSForegroundColorAttributeName:UIColorFromRGB(0xffffff)}];
     }
     
-    if (!isEmptyString(text)) {
+    if (!isEmptyString(title)) {
         CGFloat labelHeight = codeWidth * .4f;
         CGFloat fontSize = codeWidth * .27f;
         
@@ -462,7 +475,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.requestSerializer.timeoutInterval = 15.f;
     
-    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"postId/%ld", postID],
+    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"postId,%ld,userIs,%ld", postID, [UserManager shareManager].user.cid],
                                       @"page" :@"pages/detail/detail",
                                       @"width":@(430)
                                       } progress:^(NSProgress * _Nonnull uploadProgress) {
@@ -502,7 +515,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     manager.requestSerializer.timeoutInterval = 15.f;
     
-    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"authorId/%ld", userID],
+    [manager POST:urlStr parameters:@{@"scene":[NSString stringWithFormat:@"authorId,%ld,userIs,%ld", userID, [UserManager shareManager].user.cid],
                                       @"page" :@"pages/user/user",
                                       @"width":@(430)
                                       } progress:^(NSProgress * _Nonnull uploadProgress) {
@@ -592,6 +605,25 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     if ([resp isKindOfClass:[SendAuthResp class]]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:DDUserDidGetWeChatCodeNotification object:resp];
     }else {
+        
+    }
+}
+
+- (void)onReq:(BaseReq *)req
+{
+    if ([req isKindOfClass:[LaunchFromWXReq class]]) {
+        
+        LaunchFromWXReq * wxReq = (LaunchFromWXReq *)req;
+        WXMediaMessage * message = wxReq.message;
+        NSString * text = message.messageExt;
+        if (!isEmptyString(text)) {
+            NSArray * params = [text componentsSeparatedByString:@"="];
+            NSString * postIDStr = [params lastObject];
+            if (!isEmptyString(postIDStr)) {
+                NSInteger postID = [postIDStr integerValue];
+                [DDTool WXMiniProgramHandleWithPostID:postID];
+            }
+        }
         
     }
 }

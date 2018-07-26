@@ -24,36 +24,42 @@
              };
 }
 
-- (void)setStatus:(NSInteger)status
-{
-    _status = status;
-    if (_status == 0) {
-        _dTieType = DTieType_Edit;
-    }else if (_dTieType == 0) {
-        _dTieType = DTieType_MyDtie;
-        if (_dTieType == DTieType_BeFondOf) {
-            _dTieType = DTieType_BeFondOf;
-        }else if (_dTieType == DTieType_Collection) {
-            _dTieType = DTieType_Collection;
-        }
-    }
-}
+//- (void)setStatus:(NSInteger)status
+//{
+//    _status = status;
+//    if (_status == 0) {
+//        _dTieType = DTieType_Edit;
+//    }else if (_dTieType == 0) {
+//        _dTieType = DTieType_MyDtie;
+//        if (_dTieType == DTieType_BeFondOf) {
+//            _dTieType = DTieType_BeFondOf;
+//        }else if (_dTieType == DTieType_Collection) {
+//            _dTieType = DTieType_Collection;
+//        }
+//    }
+//}
 
-- (void)setCollectFlg:(NSInteger)collectFlg
-{
-    _collectFlg = collectFlg;
-    if (_wyyFlg == 0 && _collectFlg == 1) {
-        _dTieType = DTieType_Collection;
-    }
-}
+//- (void)setCollectFlg:(NSInteger)collectFlg
+//{
+//    _collectFlg = collectFlg;
+//    if (_wyyFlg == 0 && _collectFlg == 1) {
+//        _dTieType = DTieType_Collection;
+////        if (_dTieType == DTieType_Edit) {
+////            _dTieType = DTieType_Edit;
+////        }
+//    }
+//}
 
-- (void)setWyyFlg:(NSInteger)wyyFlg
-{
-    _wyyFlg = wyyFlg;
-    if (_wyyFlg == 1) {
-        _dTieType = DTieType_BeFondOf;
-    }
-}
+//- (void)setWyyFlg:(NSInteger)wyyFlg
+//{
+//    _wyyFlg = wyyFlg;
+//    if (_wyyFlg == 1) {
+//        _dTieType = DTieType_BeFondOf;
+////        if (_dTieType == DTieType_Edit) {
+////            _dTieType = DTieType_Edit;
+////        }
+//    }
+//}
 
 - (void)setPostFirstPicture:(NSString *)postFirstPicture
 {

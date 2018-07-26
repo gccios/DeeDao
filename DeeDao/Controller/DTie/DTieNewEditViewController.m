@@ -270,6 +270,21 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                     
                 }];
             }
+        }else if (model.type == DTieEditType_Post) {
+            NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                    @"datadictionaryType":@"CONTENT_POST",
+                                    @"detailsContent":@"",
+                                    @"textInformation":@"",
+                                    @"pFlag":@(0),
+                                    @"wxCansee":@(1),
+                                    @"postToPostId":@(model.postId)
+                                    };
+            [details addObject:dict];
+            tempCount++;
+            if (tempCount == self.contenView.modleSources.count) {
+                [hud hideAnimated:YES];
+                success(details);
+            }
         }else{
             tempCount++;
             if (tempCount == self.contenView.modleSources.count) {
@@ -471,10 +486,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                if (dtieModel.ifCanSee == 0) {
-                    [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
-                    return;
-                }
                 
                 if (dtieModel.deleteFlg == 1) {
                     [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
@@ -807,6 +818,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     model.sceneAddress = self.contenView.locationLabel.text;
     model.sceneBuilding = self.contenView.choosePOI.name;
     model.updateTime = [[NSDate date] timeIntervalSince1970];
+    model.ifCanSee = YES;
     
     DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initPreReadWithDTie:model];
     [self.navigationController pushViewController:detail animated:YES];

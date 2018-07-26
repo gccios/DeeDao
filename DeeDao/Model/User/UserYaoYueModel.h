@@ -14,5 +14,8 @@
 @property (nonatomic, assign) NSInteger cid;
 @property (nonatomic, copy) NSString * nickname;
 @property (nonatomic, copy) NSString * portraituri;
+@property (nonatomic, assign) NSInteger createTime;
+
+@property (nonatomic, copy) NSString * portrait;
 
 @end

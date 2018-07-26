@@ -27,8 +27,13 @@
 #import "MBProgressHUD+DDHUD.h"
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudio/CoreAudioTypes.h>
+#import "SelectFriendRequest.h"
+#import "DTieMapSelectFriendView.h"
+#import "MapShowYaoyueView.h"
+#import "SelectMapYaoyueRequest.h"
+#import "DTieMapYaoyueModel.h"
 
-@interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate>
+@interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -38,6 +43,7 @@
 
 @property (nonatomic, strong) UIButton * sourceButton;
 @property (nonatomic, strong) UIButton * timeButton;
+@property (nonatomic, strong) UIButton * selectButton;
 
 @property (nonatomic, strong) BMKMapView * mapView;
 @property (nonatomic, assign) BOOL isFirst;
@@ -48,7 +54,6 @@
 @property (nonatomic, assign) NSInteger sourceType;
 
 @property (nonatomic, strong) NSMutableArray * mapSource;
-@property (nonatomic, strong) NSMutableArray * pointArray;
 
 @property (nonatomic, assign) NSInteger year;
 
@@ -64,6 +69,12 @@
 
 @property (nonatomic, copy) NSString * logoBGName;
 @property (nonatomic, strong) UIColor * logoBGColor;
+
+@property (nonatomic, strong) NSMutableArray * friendSource;
+@property (nonatomic, strong) NSMutableArray * yaoyueFriendSource;
+@property (nonatomic, strong) DTieMapSelectFriendView * yaoyueSelectView;
+
+@property (nonatomic, strong) NSMutableArray * yaoyueMapSource;
 
 @end
 
@@ -92,8 +103,47 @@
     
     self.sourceType = 7;
     
+    [self getMyFriendList];
     [self creatViews];
     [self creatTopView];
+}
+
+- (void)getMyFriendList
+{
+    SelectFriendRequest * request = [[SelectFriendRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.friendSource removeAllObjects];
+                for (NSInteger i = 0; i < data.count; i++) {
+                    NSDictionary * dict = [data objectAtIndex:i];
+                    UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                    [self.friendSource addObject:model];
+                }
+                self.yaoyueSelectView = [[DTieMapSelectFriendView alloc] initWithFrendSource:self.friendSource];
+                self.yaoyueSelectView.delegate = self;
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)mapSelectFriendView:(DTieMapSelectFriendView *)selectView didSelectFriend:(NSArray *)selectFriend
+{
+    if (selectView == self.yaoyueSelectView) {
+        
+        [self.yaoyueFriendSource removeAllObjects];
+        [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
+        [self.mapView removeAnnotations:self.mapView.annotations];
+        [self requestMapViewLocations];
+        
+    }
 }
 
 - (void)creatViews
@@ -156,28 +206,24 @@
     }
     
     CGFloat buttonWidth = 100 * scale;
-    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
-    self.sourceButton.backgroundColor = UIColorFromRGB(0xdb6283);
-    [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.sourceButton];
-    [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(-40 * scale);
-        make.width.height.mas_equalTo(buttonWidth);
-    }];
-    self.sourceButton.layer.cornerRadius = buttonWidth / 2.f;
-    self.sourceButton.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.sourceButton.layer.shadowOpacity = .5f;
-    self.sourceButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
-    self.sourceButton.layer.shadowRadius = 10 * scale;
     
-    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"年"];
+    self.backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
+    [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.backLocationButton];
+    [self.backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20 * scale);
+        make.bottom.mas_equalTo(-40 * scale);
+        make.width.height.mas_equalTo(120 * scale);
+    }];
+    
+    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"时光"];
     self.timeButton.backgroundColor = UIColorFromRGB(0xdb6283);
     [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.timeButton];
     [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(self.sourceButton.mas_top).offset(-30 * scale);
+        make.bottom.mas_equalTo(self.backLocationButton.mas_top).offset(-30 * scale);
         make.width.height.mas_equalTo(buttonWidth);
     }];
     self.timeButton.layer.cornerRadius = buttonWidth / 2.f;
@@ -186,15 +232,37 @@
     self.timeButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
     self.timeButton.layer.shadowRadius = 10 * scale;
     
-    self.backLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
-    [self.backLocationButton setImage:[UIImage imageNamed:@"backLocation"] forState:UIControlStateNormal];
-    [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.backLocationButton];
-    [self.backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(20 * scale);
+    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
+    self.sourceButton.backgroundColor = UIColorFromRGB(0xdb6283);
+    [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.sourceButton];
+    [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(30 * scale);
         make.bottom.mas_equalTo(self.timeButton.mas_top).offset(-25 * scale);
-        make.width.height.mas_equalTo(120 * scale);
+        make.width.height.mas_equalTo(buttonWidth);
     }];
+    self.sourceButton.layer.cornerRadius = buttonWidth / 2.f;
+    self.sourceButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.sourceButton.layer.shadowOpacity = .5f;
+    self.sourceButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
+    self.sourceButton.layer.shadowRadius = 10 * scale;
+    
+    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"筛选"];
+    self.selectButton.backgroundColor = UIColorFromRGB(0xdb6283);
+    [self.selectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:self.selectButton];
+    [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(30 * scale);
+        make.bottom.mas_equalTo(self.sourceButton.mas_top).offset(-25 * scale);
+        make.width.height.mas_equalTo(buttonWidth);
+    }];
+    self.selectButton.layer.cornerRadius = buttonWidth / 2.f;
+    self.selectButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.selectButton.layer.shadowOpacity = .5f;
+    self.selectButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
+    self.selectButton.layer.shadowRadius = 10 * scale;
+    self.selectButton.alpha = .5f;
+    self.selectButton.enabled = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNewNotification object:nil];
     
@@ -235,6 +303,16 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self showTipWithText:@"摇一摇以刷新附近D帖"];
     });
+}
+
+- (void)selectButtonDidClicked
+{
+    if (self.friendSource.count == 0) {
+        [MBProgressHUD showTextHUDWithText:@"未获取到朋友" inView:self.view];
+        return;
+    }
+    
+    [self.yaoyueSelectView show];
 }
 
 - (void)showTipWithText:(NSString *)text
@@ -281,63 +359,105 @@
 - (void)requestMapViewLocations
 {
     [DTieSearchRequest cancelRequest];
-    
-    CGFloat centerLongitude = self.mapView.region.center.longitude;
-    CGFloat centerLatitude = self.mapView.region.center.latitude;
-    
-    //当前屏幕显示范围的经纬度
-    CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
-    CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
-    //左上角
-    CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
-    CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
-    //右下角
-    CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
-    CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
-    [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
-    
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    if (self.sourceType == 666) {
         
-        if (KIsDictionary(response)) {
-            NSArray * data = [response objectForKey:@"data"];
-            if (KIsArray(data) && data.count > 0) {
-                [self.mapView removeAnnotations:self.pointArray];
-                [self.mapSource removeAllObjects];
-                [self.pointArray removeAllObjects];
-                
-                NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
-                NSMutableArray * tempMapArray = [[NSMutableArray alloc] init];
-                
-                for (NSDictionary * dict in data) {
-                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
-                    [tempMapArray addObject:model];
-                    
-                    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
-                    annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
-                    [tempPointArray addObject:annotation];
+        NSMutableArray * friendList = [[NSMutableArray alloc] init];
+        for (UserModel * model in self.yaoyueFriendSource) {
+            [friendList addObject:@(model.cid)];
+        }
+        
+        SelectMapYaoyueRequest * request = [[SelectMapYaoyueRequest alloc] initWithFriendList:friendList];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            if (KIsDictionary(response)) {
+                NSArray * data = [response objectForKey:@"data"];
+                if (KIsArray(data)) {
+                    [self.mapView removeAnnotations:self.mapView.annotations];
+                    [self.yaoyueMapSource removeAllObjects];
+                    NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
+                    for (NSDictionary * dict in data) {
+                        DTieMapYaoyueModel * model = [DTieMapYaoyueModel mj_objectWithKeyValues:dict];
+                        [self.yaoyueMapSource addObject:model];
+                        
+                        BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                        annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
+                        [tempPointArray addObject:annotation];
+                    }
+                    [self.mapView addAnnotations:tempPointArray];
                 }
-                [self.mapSource addObjectsFromArray:[[tempMapArray reverseObjectEnumerator] allObjects]];
-                [self.pointArray addObjectsFromArray:[[tempPointArray reverseObjectEnumerator] allObjects]];
-                [self.mapView addAnnotations:self.pointArray];
-//                [self meterDistance];
             }
-        }
-        
-        if (self.isMotion) {
-            [MBProgressHUD showTextHUDWithText:@"刷新成功" inView:self.view];
+            
+            if (self.isMotion) {
+                [MBProgressHUD showTextHUDWithText:@"刷新成功" inView:self.view];
+                self.isMotion = NO;
+            }
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
             self.isMotion = NO;
-        }
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+            self.isMotion = NO;
+            
+        }];
         
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    }else{
         
-        self.isMotion = NO;
+        CGFloat centerLongitude = self.mapView.region.center.longitude;
+        CGFloat centerLatitude = self.mapView.region.center.latitude;
         
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        //当前屏幕显示范围的经纬度
+        CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
+        CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
+        //左上角
+        CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
+        CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
+        //右下角
+        CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
+        CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
+        [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
         
-        self.isMotion = NO;
-        
-    }];
+        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            if (KIsDictionary(response)) {
+                NSArray * data = [response objectForKey:@"data"];
+                if (KIsArray(data) && data.count > 0) {
+                    [self.mapView removeAnnotations:self.mapView.annotations];
+                    [self.mapSource removeAllObjects];
+                    
+                    NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
+                    NSMutableArray * tempMapArray = [[NSMutableArray alloc] init];
+                    
+                    for (NSDictionary * dict in data) {
+                        DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                        [tempMapArray addObject:model];
+                        
+                        BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                        annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
+                        [tempPointArray addObject:annotation];
+                    }
+                    [self.mapSource addObjectsFromArray:[[tempMapArray reverseObjectEnumerator] allObjects]];
+                    [self.mapView addAnnotations:[[tempPointArray reverseObjectEnumerator] allObjects]];
+                }
+            }
+            
+            if (self.isMotion) {
+                [MBProgressHUD showTextHUDWithText:@"刷新成功" inView:self.view];
+                self.isMotion = NO;
+            }
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.isMotion = NO;
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+            self.isMotion = NO;
+            
+        }];
+    }
 }
 
 - (void)meterDistance
@@ -348,7 +468,7 @@
         CLLocationDistance mostMeters = 0;
         BMKMapPoint userPoint = BMKMapPointForCoordinate([DDLocationManager shareManager].userLocation.location.coordinate);
         
-        for (BMKPointAnnotation * annotation in self.pointArray) {
+        for (BMKPointAnnotation * annotation in self.mapView.annotations) {
             BMKMapPoint point = BMKMapPointForCoordinate(annotation.coordinate);
             
             CLLocationDistance distance = BMKMetersBetweenMapPoints(userPoint, point);
@@ -392,7 +512,7 @@
 #pragma mark - BMKMapViewDelegate
 - (void)mapView:(BMKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-    [self requestMapViewLocations];
+//    [self requestMapViewLocations];
 }
 
 //- (void)mapview:(BMKMapView *)mapView onLongClick:(CLLocationCoordinate2D)coordinate
@@ -421,12 +541,62 @@
 
 - (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
 {
+    if (self.sourceType == 666) {
+        BMKAnnotationView * yaoyueView = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationViewYue"];
+        yaoyueView.annotation = annotation;
+        
+        yaoyueView.image = [UIImage imageNamed:@"friendyue"];
+        yaoyueView.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+        
+        NSInteger index = [self.mapView.annotations indexOfObject:annotation];
+        DTieMapYaoyueModel * yaoyueModel = [self.yaoyueMapSource objectAtIndex:index];
+        
+        if ([yaoyueView viewWithTag:888]) {
+            UILabel * label = (UILabel *)[yaoyueView viewWithTag:888];
+            
+            NSString * title = @"";
+            if (yaoyueModel.count == 0) {
+                title = @"0";
+            }else if (yaoyueModel.count < 100) {
+                title = [NSString stringWithFormat:@"%ld", yaoyueModel.count];
+            }else{
+                title = @"99+";
+            }
+            
+            label.text = title;
+        }else{
+            
+            CGFloat width = yaoyueView.frame.size.width;
+            CGFloat logoWidth = width * 47.5f / 52.f;
+            CGFloat origin = (width - logoWidth) / 2;
+            
+            CGFloat scale = kMainBoundsWidth / 1080.f;
+            UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+            label.frame = CGRectMake(origin, origin, logoWidth, logoWidth);
+            [yaoyueView addSubview:label];
+            
+            NSString * title = @"";
+            if (yaoyueModel.count == 0) {
+                title = @"0";
+            }else if (yaoyueModel.count < 100) {
+                title = [NSString stringWithFormat:@"%ld", yaoyueModel.count];
+            }else{
+                title = @"99+";
+            }
+            
+            label.text = title;
+            
+        }
+        
+        return yaoyueView;
+    }
+    
     BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
     view.annotation = annotation;
     view.image = [UIImage imageNamed:self.logoBGName];
     view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
     
-    NSInteger index = [self.pointArray indexOfObject:annotation];
+    NSInteger index = [self.mapView.annotations indexOfObject:annotation];
     DTieModel * model = [self.mapSource objectAtIndex:index];
     
     if ([view viewWithTag:888]) {
@@ -452,15 +622,27 @@
 - (void)mapView:(BMKMapView *)mapView didSelectAnnotationView:(BMKAnnotationView *)view
 {
     [mapView deselectAnnotation:view.annotation animated:YES];
-    if ([self.pointArray containsObject:view.annotation]) {
-        NSInteger index = [self.pointArray indexOfObject:view.annotation];
-        
-        DTieModel * model = [self.mapSource objectAtIndex:index];
-        NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
-        index = [tempArray indexOfObject:model];
-        
-        DDCollectionViewController * vc = [[DDCollectionViewController alloc] initWithDataSource:tempArray index:index];
-        [self.navigationController pushViewController:vc animated:YES];
+    
+    if (self.sourceType == 666) {
+        if ([self.mapView.annotations containsObject:view.annotation]) {
+            NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
+            
+            DTieMapYaoyueModel * model = [self.yaoyueMapSource objectAtIndex:index];
+            
+            MapShowYaoyueView * yaoyue = [[MapShowYaoyueView alloc] initWithModel:model];
+            [yaoyue show];
+        }
+    }else{
+        if ([self.mapView.annotations containsObject:view.annotation]) {
+            NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
+            
+            DTieModel * model = [self.mapSource objectAtIndex:index];
+            NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
+            index = [tempArray indexOfObject:model];
+            
+            DDCollectionViewController * vc = [[DDCollectionViewController alloc] initWithDataSource:tempArray index:index];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
     }
 }
 
@@ -536,10 +718,8 @@
         [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuangbozhu";
         self.logoBGColor = UIColorFromRGB(0xB721FF);
-        
-//        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
-//        self.timeLabel.textColor = self.logoBGColor;
-//        self.topAlertLabel.textColor = UIColorFromRGB(0x9013FE);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
         
         self.topAlertLabel.text = @"地到博主D帖";
     }else if (self.sourceType == 8) {
@@ -547,26 +727,31 @@
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuanghui";
         self.logoBGColor = UIColorFromRGB(0x999999);
-        
-//        self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.2f];
-//        self.timeLabel.textColor = UIColorFromRGB(0x666666);
-//        self.topAlertLabel.textColor = UIColorFromRGB(0x333333);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
         
         self.topAlertLabel.text = @"陌生人的公开D帖";
+    }else if (self.sourceType == 6) {
+        
+        self.sourceType = 666;
+        [self.sourceButton setTitle:@"约" forState:UIControlStateNormal];
+        self.selectButton.alpha = 1.f;
+        self.selectButton.enabled = YES;
+        
+        self.topAlertLabel.text = @"所有发起约这的好友";
+        
     }else{
         self.sourceType = 7;
         [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuang";
         self.logoBGColor = UIColorFromRGB(0xDB6283);
-        
-//        self.topAlertView.backgroundColor = [self.logoBGColor colorWithAlphaComponent:.3f];
-//        self.timeLabel.textColor = self.logoBGColor;
-//        self.topAlertLabel.textColor = self.logoBGColor;
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
         
         self.topAlertLabel.text = @"我和朋友的及收藏和要约";
     }
     
-    [self.mapView removeAnnotations:self.pointArray];
+    [self.mapView removeAnnotations:self.mapView.annotations];
     [self requestMapViewLocations];
     [self updateUserLocation];
 }
@@ -597,7 +782,7 @@
     if (self.year != viewController.year) {
         self.year = viewController.year;
         self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
-        [self.mapView removeAnnotations:self.pointArray];
+        [self.mapView removeAnnotations:self.mapView.annotations];
         [self requestMapViewLocations];
         
     }
@@ -658,14 +843,6 @@
     return _mapSource;
 }
 
-- (NSMutableArray *)pointArray
-{
-    if (!_pointArray) {
-        _pointArray = [[NSMutableArray alloc] init];
-    }
-    return _pointArray;
-}
-
 - (UIView *)tipView
 {
     if (!_tipView) {
@@ -709,6 +886,30 @@
         _tipView.alpha = 0;
     }
     return _tipView;
+}
+
+- (NSMutableArray *)yaoyueFriendSource
+{
+    if (!_yaoyueFriendSource) {
+        _yaoyueFriendSource = [[NSMutableArray alloc] init];
+    }
+    return _yaoyueFriendSource;
+}
+
+- (NSMutableArray *)yaoyueMapSource
+{
+    if (!_yaoyueMapSource) {
+        _yaoyueMapSource = [[NSMutableArray alloc] init];
+    }
+    return _yaoyueMapSource;
+}
+
+- (NSMutableArray *)friendSource
+{
+    if (!_friendSource) {
+        _friendSource = [[NSMutableArray alloc] init];
+    }
+    return _friendSource;
 }
 
 - (void)dealloc

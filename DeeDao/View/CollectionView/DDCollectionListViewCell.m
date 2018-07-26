@@ -14,6 +14,7 @@
 #import "DTieImageCollectionViewCell.h"
 #import "DTieTextCollectionViewCell.h"
 #import "DTieVideoCollectionViewCell.h"
+#import "DTiePostCollectionViewCell.h"
 #import "DTieTitleCollectionViewCell.h"
 #import "DDLocationManager.h"
 #import "TYCyclePagerView.h"
@@ -26,6 +27,7 @@
 #import "UserInfoViewController.h"
 #import "DDYaoYueViewController.h"
 #import "DDTool.h"
+#import "DDDaZhaoHuViewController.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -64,6 +66,12 @@
     DTieModel * model = self.model;
     
     if (model.authorId == [UserManager shareManager].user.cid) {
+        
+        UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+        DDDaZhaoHuViewController * dazhaohu = [[DDDaZhaoHuViewController alloc] initWithDTieModel:self.model];
+        [na pushViewController:dazhaohu animated:YES];
+        
         return;
     }
     
@@ -263,6 +271,7 @@
     [self.tableView registerClass:[DTieImageCollectionViewCell class] forCellReuseIdentifier:@"DTieImageCollectionViewCell"];
     [self.tableView registerClass:[DTieTextCollectionViewCell class] forCellReuseIdentifier:@"DTieTextCollectionViewCell"];
     [self.tableView registerClass:[DTieTitleCollectionViewCell class] forCellReuseIdentifier:@"DTieTitleCollectionViewCell"];
+    [self.tableView registerClass:[DTiePostCollectionViewCell class] forCellReuseIdentifier:@"DTiePostCollectionViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.baseView addSubview:self.tableView];
@@ -413,9 +422,6 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 [model mj_setKeyValues:data];
-                if (model.status == 1) {
-                    model.dTieType = DTieType_MyDtie;
-                }
                 
                 if (request == self.request) {
                     NSMutableArray * tempArray = [[NSMutableArray alloc] initWithArray:model.details];
@@ -560,6 +566,10 @@
         DTieVideoCollectionViewCell * videoCell = [tableView dequeueReusableCellWithIdentifier:@"DTieVideoCollectionViewCell" forIndexPath:indexPath];
         [videoCell configWithModel:model Dtie:self.model];
         return videoCell;
+    }else if (model.type == DTieEditType_Post) {
+        DTiePostCollectionViewCell * postCell = [tableView dequeueReusableCellWithIdentifier:@"DTiePostCollectionViewCell" forIndexPath:indexPath];
+        [postCell configWithModel:model Dtie:self.model];
+        return postCell;
     }
     
     DTieImageCollectionViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieImageCollectionViewCell" forIndexPath:indexPath];

@@ -519,7 +519,15 @@
         postID = model.cid;
     }
     
-    if (model.dTieType == DTieType_Edit) {
+    if (model.status == 0) {
+        
+        if (model.authorId != [UserManager shareManager].user.cid) {
+            
+            [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
+            
+            return;
+        }
+        
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
         
         DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
@@ -544,10 +552,6 @@
     }
     
     if (model.details) {
-        if (model.ifCanSee == 0) {
-            [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
-            return;
-        }
         DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:model];
         [self.navigationController pushViewController:detail animated:NO];
     }else{

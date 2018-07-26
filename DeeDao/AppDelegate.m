@@ -96,6 +96,10 @@
                 GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
                 [[UIApplication sharedApplication].keyWindow addSubview:guide];
             }
+            
+            if ([WeChatManager shareManager].miniProgramPostID > 0) {
+                [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+            }
         };
     }else{
         DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
@@ -107,6 +111,10 @@
             if (model.status) {
                 GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
                 [[UIApplication sharedApplication].keyWindow addSubview:guide];
+            }
+            
+            if ([WeChatManager shareManager].miniProgramPostID > 0) {
+                [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
             }
         };
     }
@@ -124,6 +132,15 @@
 }
 
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    BOOL result = [WXApi handleOpenURL:url delegate:[WeChatManager shareManager]];
+    if (!result) {
+        // 其他如支付等SDK的回调
+    }
+    return result;
+}
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
     BOOL result = [WXApi handleOpenURL:url delegate:[WeChatManager shareManager]];
     if (!result) {

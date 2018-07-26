@@ -17,4 +17,6 @@
 @property (nonatomic, copy) NSString * detail;
 @property (nonatomic, assign) NSInteger PFlag;
 
+- (void)changeToDeedao;
+
 @end

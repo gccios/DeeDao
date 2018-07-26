@@ -14,6 +14,7 @@
 #import "DTieDetailTextTableViewCell.h"
 #import "DTieDetailImageTableViewCell.h"
 #import "DTieDetailVideoTableViewCell.h"
+#import "DTieDetailPostTableViewCell.h"
 #import "LiuYanTableViewCell.h"
 
 #import "DTieCollectionRequest.h"
@@ -37,6 +38,8 @@
 #import <UIImageView+WebCache.h>
 #import <Masonry.h>
 #import <WXApi.h>
+
+#import "DDDaZhaoHuViewController.h"
 
 @interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete>
 
@@ -202,13 +205,9 @@
             postId = self.model.postId;
         }
         model.postId = postId;
+        model.PFlag = 0;
         model.image = self.firstImageView.image;
         model.title = self.model.postSummary;
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"pFlag == %d", 1];
-        NSArray * tempArray = [self.model.details filteredArrayUsingPredicate:predicate];
-        if (tempArray && tempArray.count > 0) {
-            model.PFlag = 1;
-        }
         [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }
@@ -225,6 +224,12 @@
 - (void)dazhaohuButtonDidClicked
 {
     if (self.isSelfFlg) {
+        
+        if (self.parentDDViewController) {
+            DDDaZhaoHuViewController * dazhaohu = [[DDDaZhaoHuViewController alloc] initWithDTieModel:self.model];
+            [self.parentDDViewController pushViewController:dazhaohu animated:YES];
+        }
+        
         return;
     }
     
@@ -346,6 +351,13 @@
             [cell configWithModel:model Dtie:self.model];
             
             return cell;
+        }else if (model.type == DTieEditType_Post) {
+            
+            DTieDetailPostTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailPostTableViewCell" forIndexPath:indexPath];
+            
+            [cell configWithModel:model Dtie:self.model];
+            
+            return cell;
         }
         
         DTieDetailTextTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailTextTableViewCell" forIndexPath:indexPath];
@@ -458,6 +470,8 @@
         }else if (model.type == DTieEditType_Text) {
             
             height = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale - 120 * scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 100 * scale + 120 * scale;
+        }else if (model.type == DTieEditType_Post) {
+             height = 800 * scale + 90 * scale;
         }
         
         if (self.isSelfFlg && self.isInsatllWX) {
@@ -489,6 +503,7 @@
     [self.tableView registerClass:[DTieDetailTextTableViewCell class] forCellReuseIdentifier:@"DTieDetailTextTableViewCell"];
     [self.tableView registerClass:[DTieDetailImageTableViewCell class] forCellReuseIdentifier:@"DTieDetailImageTableViewCell"];
     [self.tableView registerClass:[DTieDetailVideoTableViewCell class] forCellReuseIdentifier:@"DTieDetailVideoTableViewCell"];
+    [self.tableView registerClass:[DTieDetailPostTableViewCell class] forCellReuseIdentifier:@"DTieDetailPostTableViewCell"];
     [self.tableView registerClass:[LiuYanTableViewCell class] forCellReuseIdentifier:@"LiuYanTableViewCell"];
     [self.tableView registerClass:[DTieReadHandleFooterView class] forHeaderFooterViewReuseIdentifier:@"DTieReadHandleFooterView"];
     [self.tableView registerClass:[DTieReadCommentHeaderView class] forHeaderFooterViewReuseIdentifier:@"DTieReadCommentHeaderView"];
@@ -733,7 +748,6 @@
             [self.dazhaohuButton setTitle:@" 打招呼 99+" forState:UIControlStateNormal];
         }
         [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
-        self.dazhaohuButton.userInteractionEnabled = NO;
     }else{
         [self.dazhaohuButton setTitle:@"" forState:UIControlStateNormal];
         [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzhankai"] forState:UIControlStateNormal];

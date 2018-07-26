@@ -19,7 +19,7 @@
 @property (nonatomic, strong) UserYaoYueModel * model;
 @property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * nameLabel;
-//@property (nonatomic, strong) UILabel * timeLabel;
+@property (nonatomic, strong) UILabel * timeLabel;
 
 @property (nonatomic, strong) UIButton * yaoyueButton;
 @property (nonatomic, strong) UIButton * yiyueButton;
@@ -63,20 +63,20 @@
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x00000) alignment:NSTextAlignmentLeft];
     [self.contentView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(70 * scale);
+        make.top.mas_equalTo(48 * scale);
         make.left.mas_equalTo(self.logoImageView.mas_right).offset(48 * scale);
         make.height.mas_equalTo(55 * scale);
         make.right.mas_equalTo(-200 * scale);
     }];
     
-//    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.54f] alignment:NSTextAlignmentLeft];
-//    [self.contentView addSubview:self.timeLabel];
-//    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(0 * scale);
-//        make.left.mas_equalTo(self.logoImageView.mas_right).offset(48 * scale);
-//        make.height.mas_equalTo(45 * scale);
-//        make.right.mas_equalTo(-50 * scale);
-//    }];
+    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.54f] alignment:NSTextAlignmentLeft];
+    [self.contentView addSubview:self.timeLabel];
+    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(5 * scale);
+        make.left.mas_equalTo(self.logoImageView.mas_right).offset(48 * scale);
+        make.height.mas_equalTo(45 * scale);
+        make.right.mas_equalTo(-50 * scale);
+    }];
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 840 * scale, 2 * scale)];
     [self.contentView addSubview:lineView];
@@ -149,7 +149,7 @@
     self.model = model;
     [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     self.nameLabel.text = model.nickname;
-//    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.timestamp];
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.createTime];
 }
 
 - (void)configSelectStatus:(BOOL)status

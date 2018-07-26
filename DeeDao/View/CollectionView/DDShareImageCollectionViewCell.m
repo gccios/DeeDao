@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) UILabel * numberLabel;
 
+@property (nonatomic, strong) UILabel * deedaoLabel;
+
 @end
 
 @implementation DDShareImageCollectionViewCell
@@ -72,6 +74,17 @@
 //        make.width.height.mas_equalTo(72 * scale);
 //    }];
     
+    self.deedaoLabel = [[UILabel alloc] init];
+    self.deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    self.deedaoLabel.font = kPingFangRegular(38 * scale);
+    self.deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    [self.shareImageView addSubview:self.deedaoLabel];
+    [self.deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    self.deedaoLabel.text = @"到地可见";
+    self.deedaoLabel.hidden = YES;
+    
     self.numberLabel = [[UILabel alloc] init];
     self.numberLabel.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
     self.numberLabel.textColor = UIColorFromRGB(0xFFFFFF);
@@ -115,6 +128,15 @@
 - (void)configEdit:(NSNumber *)isEdit
 {
 //    self.cancleButton.hidden = ![isEdit boolValue];
+}
+
+- (void)configDeeDaoEnable:(BOOL)isDeeDao
+{
+    if (isDeeDao) {
+        self.deedaoLabel.hidden = NO;
+    }else{
+        self.deedaoLabel.hidden = YES;
+    }
 }
 
 @end

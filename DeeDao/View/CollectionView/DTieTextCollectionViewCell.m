@@ -142,15 +142,54 @@
     
     self.detailLabel.attributedText = attributeStr;
     
-    if (dtieModel.ifCanSee == 0) {
-        self.deedaoLabel.text = @"暂无浏览权限";
-        self.coverView.hidden = NO;
-    }else{
+    if (model.pFlag == 1) {
+        
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-            self.coverView.hidden = YES;
+            if (model.wxCanSee == 1) {
+                self.coverView.hidden = YES;
+            }else{
+                if (dtieModel.ifCanSee == 0) {
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.coverView.hidden = NO;
+                }else{
+                    self.coverView.hidden = YES;
+                }
+            }
         }else{
-            self.deedaoLabel.text = @"到地体验";
-            self.coverView.hidden = NO;
+            
+            if (dtieModel.ifCanSee == 0) {
+                if (model.wxCanSee == 1) {
+                    self.deedaoLabel.text = @"到地体验";
+                    self.coverView.hidden = NO;
+                }else{
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.coverView.hidden = NO;
+                }
+            }else{
+                self.deedaoLabel.text = @"到地体验";
+                self.coverView.hidden = NO;
+            }
+            
+        }
+        
+    }else{
+        
+        if (model.wxCanSee == 1) {
+            
+            self.coverView.hidden = YES;
+            
+        }else {
+            if (dtieModel.ifCanSee == 0) {
+                self.deedaoLabel.text = @"暂无浏览权限";
+                self.coverView.hidden = NO;
+            }else{
+                if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+                    self.coverView.hidden = YES;
+                }else{
+                    self.deedaoLabel.text = @"到地体验";
+                    self.coverView.hidden = NO;
+                }
+            }
         }
     }
     

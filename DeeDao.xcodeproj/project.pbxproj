@@ -28,6 +28,16 @@
 		06102AE120B47BA100FF3278 /* CommentRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AE020B47BA100FF3278 /* CommentRequest.m */; };
 		06102AE420B47E5A00FF3278 /* AddCommentRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06102AE320B47E5A00FF3278 /* AddCommentRequest.m */; };
 		06137A5720AE881200D1183A /* DDHandleButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 06137A5620AE881200D1183A /* DDHandleButton.m */; };
+		0614E79D21084A9F002F8FC5 /* DTieChooseDTieController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0614E79C21084A9F002F8FC5 /* DTieChooseDTieController.m */; };
+		0614E7A021085A64002F8FC5 /* DTieNewEditPostCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0614E79F21085A64002F8FC5 /* DTieNewEditPostCell.m */; };
+		0614E7A321088A3E002F8FC5 /* MapShowYaoyueView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0614E7A221088A3E002F8FC5 /* MapShowYaoyueView.m */; };
+		0614E7A621088C4F002F8FC5 /* MapYaoyueHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0614E7A521088C4F002F8FC5 /* MapYaoyueHeaderView.m */; };
+		06180B352109718F007D402C /* SelectMapYaoyueRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B342109718F007D402C /* SelectMapYaoyueRequest.m */; };
+		06180B3821097656007D402C /* DTieMapYaoyueModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B3721097656007D402C /* DTieMapYaoyueModel.m */; };
+		06180B3B21098225007D402C /* LogoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B3A21098225007D402C /* LogoCollectionViewCell.m */; };
+		06180B3E21098DAA007D402C /* DTieDetailPostTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B3D21098DAA007D402C /* DTieDetailPostTableViewCell.m */; };
+		06180B412109A868007D402C /* SelectMapYaoyueDetailRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B402109A868007D402C /* SelectMapYaoyueDetailRequest.m */; };
+		06180B442109D11B007D402C /* DTiePostCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06180B432109D11B007D402C /* DTiePostCollectionViewCell.m */; };
 		061994A720B5091700AD64AB /* SecurityGroupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994A620B5091700AD64AB /* SecurityGroupModel.m */; };
 		061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994A920B509F500AD64AB /* SecurityRequest.m */; };
 		061994AD20B5106500AD64AB /* EditSecurityController.m in Sources */ = {isa = PBXBuildFile; fileRef = 061994AC20B5106500AD64AB /* EditSecurityController.m */; };
@@ -139,6 +149,12 @@
 		0652FB7820F779FB00080225 /* SelectPostSeeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7720F779FB00080225 /* SelectPostSeeRequest.m */; };
 		0652FB7B20F77B8200080225 /* DTieSeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7A20F77B8200080225 /* DTieSeeModel.m */; };
 		0652FB7E20F77DD900080225 /* DTieSeeShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */; };
+		0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */; };
+		0660203F2107215E005E3D09 /* DaZhaoHuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */; };
+		06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */; };
+		066020452107297E005E3D09 /* UserDaZhaoHuModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 066020442107297E005E3D09 /* UserDaZhaoHuModel.m */; };
+		0660204821073F4A005E3D09 /* DTieMapSelectFriendView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660204721073F4A005E3D09 /* DTieMapSelectFriendView.m */; };
+		0660204B21074337005E3D09 /* MapFriendCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660204A21074337005E3D09 /* MapFriendCollectionViewCell.m */; };
 		066033B820B26BAC00A54D81 /* DDHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033B720B26BAC00A54D81 /* DDHandleView.m */; };
 		066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033BA20B2998900A54D81 /* SeriesViewController.m */; };
 		066033BE20B29BB200A54D81 /* DTieMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033BD20B29BB200A54D81 /* DTieMapViewController.m */; };
@@ -303,6 +319,26 @@
 		06102AE320B47E5A00FF3278 /* AddCommentRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AddCommentRequest.m; sourceTree = "<group>"; };
 		06137A5520AE881200D1183A /* DDHandleButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDHandleButton.h; sourceTree = "<group>"; };
 		06137A5620AE881200D1183A /* DDHandleButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDHandleButton.m; sourceTree = "<group>"; };
+		0614E79B21084A9F002F8FC5 /* DTieChooseDTieController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieChooseDTieController.h; sourceTree = "<group>"; };
+		0614E79C21084A9F002F8FC5 /* DTieChooseDTieController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieChooseDTieController.m; sourceTree = "<group>"; };
+		0614E79E21085A64002F8FC5 /* DTieNewEditPostCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieNewEditPostCell.h; sourceTree = "<group>"; };
+		0614E79F21085A64002F8FC5 /* DTieNewEditPostCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieNewEditPostCell.m; sourceTree = "<group>"; };
+		0614E7A121088A3E002F8FC5 /* MapShowYaoyueView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapShowYaoyueView.h; sourceTree = "<group>"; };
+		0614E7A221088A3E002F8FC5 /* MapShowYaoyueView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapShowYaoyueView.m; sourceTree = "<group>"; };
+		0614E7A421088C4F002F8FC5 /* MapYaoyueHeaderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapYaoyueHeaderView.h; sourceTree = "<group>"; };
+		0614E7A521088C4F002F8FC5 /* MapYaoyueHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapYaoyueHeaderView.m; sourceTree = "<group>"; };
+		06180B332109718F007D402C /* SelectMapYaoyueRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectMapYaoyueRequest.h; sourceTree = "<group>"; };
+		06180B342109718F007D402C /* SelectMapYaoyueRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectMapYaoyueRequest.m; sourceTree = "<group>"; };
+		06180B3621097656007D402C /* DTieMapYaoyueModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieMapYaoyueModel.h; sourceTree = "<group>"; };
+		06180B3721097656007D402C /* DTieMapYaoyueModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieMapYaoyueModel.m; sourceTree = "<group>"; };
+		06180B3921098225007D402C /* LogoCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogoCollectionViewCell.h; sourceTree = "<group>"; };
+		06180B3A21098225007D402C /* LogoCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LogoCollectionViewCell.m; sourceTree = "<group>"; };
+		06180B3C21098DAA007D402C /* DTieDetailPostTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieDetailPostTableViewCell.h; sourceTree = "<group>"; };
+		06180B3D21098DAA007D402C /* DTieDetailPostTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieDetailPostTableViewCell.m; sourceTree = "<group>"; };
+		06180B3F2109A868007D402C /* SelectMapYaoyueDetailRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectMapYaoyueDetailRequest.h; sourceTree = "<group>"; };
+		06180B402109A868007D402C /* SelectMapYaoyueDetailRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectMapYaoyueDetailRequest.m; sourceTree = "<group>"; };
+		06180B422109D11B007D402C /* DTiePostCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTiePostCollectionViewCell.h; sourceTree = "<group>"; };
+		06180B432109D11B007D402C /* DTiePostCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTiePostCollectionViewCell.m; sourceTree = "<group>"; };
 		061994A520B5091700AD64AB /* SecurityGroupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityGroupModel.h; sourceTree = "<group>"; };
 		061994A620B5091700AD64AB /* SecurityGroupModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecurityGroupModel.m; sourceTree = "<group>"; };
 		061994A820B509F500AD64AB /* SecurityRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecurityRequest.h; sourceTree = "<group>"; };
@@ -517,6 +553,18 @@
 		0652FB7A20F77B8200080225 /* DTieSeeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSeeModel.m; sourceTree = "<group>"; };
 		0652FB7C20F77DD900080225 /* DTieSeeShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieSeeShareViewController.h; sourceTree = "<group>"; };
 		0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSeeShareViewController.m; sourceTree = "<group>"; };
+		0660203A21071BFF005E3D09 /* DTieHeaderLogoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieHeaderLogoCell.h; sourceTree = "<group>"; };
+		0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieHeaderLogoCell.m; sourceTree = "<group>"; };
+		0660203D2107215E005E3D09 /* DaZhaoHuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DaZhaoHuTableViewCell.h; sourceTree = "<group>"; };
+		0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DaZhaoHuTableViewCell.m; sourceTree = "<group>"; };
+		06602040210722A4005E3D09 /* DDDaZhaoHuViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDDaZhaoHuViewController.h; sourceTree = "<group>"; };
+		06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDDaZhaoHuViewController.m; sourceTree = "<group>"; };
+		066020432107297E005E3D09 /* UserDaZhaoHuModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UserDaZhaoHuModel.h; sourceTree = "<group>"; };
+		066020442107297E005E3D09 /* UserDaZhaoHuModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UserDaZhaoHuModel.m; sourceTree = "<group>"; };
+		0660204621073F4A005E3D09 /* DTieMapSelectFriendView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieMapSelectFriendView.h; sourceTree = "<group>"; };
+		0660204721073F4A005E3D09 /* DTieMapSelectFriendView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieMapSelectFriendView.m; sourceTree = "<group>"; };
+		0660204921074337005E3D09 /* MapFriendCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapFriendCollectionViewCell.h; sourceTree = "<group>"; };
+		0660204A21074337005E3D09 /* MapFriendCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapFriendCollectionViewCell.m; sourceTree = "<group>"; };
 		066033B620B26BAC00A54D81 /* DDHandleView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDHandleView.h; sourceTree = "<group>"; };
 		066033B720B26BAC00A54D81 /* DDHandleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDHandleView.m; sourceTree = "<group>"; };
 		066033B920B2998900A54D81 /* SeriesViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesViewController.h; sourceTree = "<group>"; };
@@ -863,6 +911,8 @@
 				069FF64C20C04F4E00C15D4F /* DTieNewEditVideoCell.m */,
 				06286ABB20C0152C00434068 /* DTieNewEditTextCell.h */,
 				06286ABC20C0152C00434068 /* DTieNewEditTextCell.m */,
+				0614E79E21085A64002F8FC5 /* DTieNewEditPostCell.h */,
+				0614E79F21085A64002F8FC5 /* DTieNewEditPostCell.m */,
 				06EB1C4820C11E4300684A71 /* DTieNewSecurityCell.h */,
 				06EB1C4920C11E4300684A71 /* DTieNewSecurityCell.m */,
 				062BA31520EDEC8F00F4EF58 /* DTieCreateLocationView.h */,
@@ -873,6 +923,12 @@
 				0652FB7120F76FD200080225 /* DTiePostShareView.m */,
 				0652FB6120F6F8B800080225 /* DTieMapShareView.h */,
 				0652FB6220F6F8B800080225 /* DTieMapShareView.m */,
+				0660204621073F4A005E3D09 /* DTieMapSelectFriendView.h */,
+				0660204721073F4A005E3D09 /* DTieMapSelectFriendView.m */,
+				0614E7A121088A3E002F8FC5 /* MapShowYaoyueView.h */,
+				0614E7A221088A3E002F8FC5 /* MapShowYaoyueView.m */,
+				0614E7A421088C4F002F8FC5 /* MapYaoyueHeaderView.h */,
+				0614E7A521088C4F002F8FC5 /* MapYaoyueHeaderView.m */,
 			);
 			path = DTieEdit;
 			sourceTree = "<group>";
@@ -989,6 +1045,10 @@
 				0652FB7420F774A700080225 /* AddPostSeeRequest.m */,
 				0652FB7620F779FB00080225 /* SelectPostSeeRequest.h */,
 				0652FB7720F779FB00080225 /* SelectPostSeeRequest.m */,
+				06180B332109718F007D402C /* SelectMapYaoyueRequest.h */,
+				06180B342109718F007D402C /* SelectMapYaoyueRequest.m */,
+				06180B3F2109A868007D402C /* SelectMapYaoyueDetailRequest.h */,
+				06180B402109A868007D402C /* SelectMapYaoyueDetailRequest.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1396,6 +1456,8 @@
 				0652FB6B20F7367200080225 /* UserMailModel.m */,
 				063926B420F8A48A000E7818 /* UserYaoYueModel.h */,
 				063926B520F8A48A000E7818 /* UserYaoYueModel.m */,
+				066020432107297E005E3D09 /* UserDaZhaoHuModel.h */,
+				066020442107297E005E3D09 /* UserDaZhaoHuModel.m */,
 				064F0B4420A489BB007C0A4F /* MineMenuModel.h */,
 				064F0B4520A489BB007C0A4F /* MineMenuModel.m */,
 				061994A520B5091700AD64AB /* SecurityGroupModel.h */,
@@ -1465,12 +1527,16 @@
 			children = (
 				06790B3520A3ECEE00929228 /* DTieCollectionViewCell.h */,
 				06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */,
+				0660203A21071BFF005E3D09 /* DTieHeaderLogoCell.h */,
+				0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */,
 				060B4A4520D9FB2F0023E18B /* DTieTitleCollectionViewCell.h */,
 				060B4A4620D9FB2F0023E18B /* DTieTitleCollectionViewCell.m */,
 				060B4A3C20D9FA7F0023E18B /* DTieImageCollectionViewCell.h */,
 				060B4A3D20D9FA7F0023E18B /* DTieImageCollectionViewCell.m */,
 				060B4A3F20D9FA8C0023E18B /* DTieTextCollectionViewCell.h */,
 				060B4A4020D9FA8D0023E18B /* DTieTextCollectionViewCell.m */,
+				06180B422109D11B007D402C /* DTiePostCollectionViewCell.h */,
+				06180B432109D11B007D402C /* DTiePostCollectionViewCell.m */,
 				060B4A4220D9FAAA0023E18B /* DTieVideoCollectionViewCell.h */,
 				060B4A4320D9FAAA0023E18B /* DTieVideoCollectionViewCell.m */,
 				062048CE20B7B8F4008DDF25 /* DTieChooseCollectionViewCell.h */,
@@ -1497,6 +1563,10 @@
 				06E5556B20C8E07700C0CE9D /* CollectionLineTitleView.m */,
 				062EFCC120CE24D80019FF68 /* DDTabCollectionViewCell.h */,
 				062EFCC220CE24D80019FF68 /* DDTabCollectionViewCell.m */,
+				0660204921074337005E3D09 /* MapFriendCollectionViewCell.h */,
+				0660204A21074337005E3D09 /* MapFriendCollectionViewCell.m */,
+				06180B3921098225007D402C /* LogoCollectionViewCell.h */,
+				06180B3A21098225007D402C /* LogoCollectionViewCell.m */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -1606,6 +1676,8 @@
 				0650A9FE20AD6E00005A5E76 /* DTieDetailTextTableViewCell.m */,
 				0650AA0020AD6E0F005A5E76 /* DTieDetailVideoTableViewCell.h */,
 				0650AA0120AD6E0F005A5E76 /* DTieDetailVideoTableViewCell.m */,
+				06180B3C21098DAA007D402C /* DTieDetailPostTableViewCell.h */,
+				06180B3D21098DAA007D402C /* DTieDetailPostTableViewCell.m */,
 				064170FD20B3B8FA0075ECB6 /* SeriesTableViewCell.h */,
 				064170FE20B3B8FA0075ECB6 /* SeriesTableViewCell.m */,
 				0641710320B3D8F30075ECB6 /* SeriesTableHeaderView.h */,
@@ -1614,6 +1686,8 @@
 				0641710E20B3F1590075ECB6 /* SeriesDetailTableViewCell.m */,
 				06102AD220B46D2700FF3278 /* LiuYanTableViewCell.h */,
 				06102AD320B46D2700FF3278 /* LiuYanTableViewCell.m */,
+				0660203D2107215E005E3D09 /* DaZhaoHuTableViewCell.h */,
+				0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */,
 				063926AB20F84736000E7818 /* YaoYueUserTableViewCell.h */,
 				063926AC20F84736000E7818 /* YaoYueUserTableViewCell.m */,
 			);
@@ -1657,6 +1731,8 @@
 				06FCD63920A5844200E6EAA4 /* DTieEditTextViewController.m */,
 				0650A9F420AD26D4005A5E76 /* DTieChooseLocationController.h */,
 				0650A9F520AD26D4005A5E76 /* DTieChooseLocationController.m */,
+				0614E79B21084A9F002F8FC5 /* DTieChooseDTieController.h */,
+				0614E79C21084A9F002F8FC5 /* DTieChooseDTieController.m */,
 				066033BC20B29BB200A54D81 /* DTieMapViewController.h */,
 				066033BD20B29BB200A54D81 /* DTieMapViewController.m */,
 				066033B920B2998900A54D81 /* SeriesViewController.h */,
@@ -1681,6 +1757,8 @@
 				0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */,
 				063926B120F85AEC000E7818 /* DTieSeeDetailViewController.h */,
 				063926B220F85AEC000E7818 /* DTieSeeDetailViewController.m */,
+				06602040210722A4005E3D09 /* DDDaZhaoHuViewController.h */,
+				06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1702,6 +1780,8 @@
 				064AA5B420F33F5500EBF20A /* DtieShareItem.m */,
 				0652FB7920F77B8200080225 /* DTieSeeModel.h */,
 				0652FB7A20F77B8200080225 /* DTieSeeModel.m */,
+				06180B3621097656007D402C /* DTieMapYaoyueModel.h */,
+				06180B3721097656007D402C /* DTieMapYaoyueModel.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1908,20 +1988,24 @@
 			files = (
 				06102ACB20B4685600FF3278 /* DTieCancleCollectRequest.m in Sources */,
 				0652FB7520F774A700080225 /* AddPostSeeRequest.m in Sources */,
+				0614E7A321088A3E002F8FC5 /* MapShowYaoyueView.m in Sources */,
 				06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */,
 				06733FAB20A316A8007875A7 /* DDTabHomeViewController.m in Sources */,
 				0674E68E20AEDC34006961E1 /* MailModel.m in Sources */,
 				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
 				0647F31320B67E20009B7C27 /* UserInfoCollectionHeader.m in Sources */,
+				06180B3E21098DAA007D402C /* DTieDetailPostTableViewCell.m in Sources */,
 				061994B020B5195300AD64AB /* SecurityHeaderView.m in Sources */,
 				06286AA720BFA6F100434068 /* JZLocationConverter.m in Sources */,
 				06E0A13620CEDB7700B9C4B0 /* ApplicationConfigRequest.m in Sources */,
 				069FF65120C05D7C00C15D4F /* RTDragCellTableView.m in Sources */,
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
+				06180B412109A868007D402C /* SelectMapYaoyueDetailRequest.m in Sources */,
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
 				06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */,
 				067A4F8320FDF5AC00869D80 /* BMKClusterAlgorithm.m in Sources */,
+				0614E79D21084A9F002F8FC5 /* DTieChooseDTieController.m in Sources */,
 				066033D520B2BDC800A54D81 /* SCCardsPageLayouter.m in Sources */,
 				066033D720B2BDC800A54D81 /* SCPageViewControllerView.m in Sources */,
 				0647F31020B67B0D009B7C27 /* UserInfoRequest.m in Sources */,
@@ -1930,7 +2014,9 @@
 				061994B320B5196600AD64AB /* SecurityFooterView.m in Sources */,
 				0652FB6F20F737E000080225 /* SelectUserCardRequest.m in Sources */,
 				06102AC820B465A200FF3278 /* DTieCollectionRequest.m in Sources */,
+				06180B3B21098225007D402C /* LogoCollectionViewCell.m in Sources */,
 				0674E68720AEBC1B006961E1 /* DTieSearchRequest.m in Sources */,
+				0660203F2107215E005E3D09 /* DaZhaoHuTableViewCell.m in Sources */,
 				063926B620F8A48A000E7818 /* UserYaoYueModel.m in Sources */,
 				06E0A13320CED48700B9C4B0 /* DTieSecurityViewController.m in Sources */,
 				0652FB7220F76FD200080225 /* DTiePostShareView.m in Sources */,
@@ -1942,13 +2028,16 @@
 				064170FF20B3B8FA0075ECB6 /* SeriesTableViewCell.m in Sources */,
 				061EDD6C20C562CE00066E73 /* SetPassWordViewController.m in Sources */,
 				064B34C320A99E1300B7D0E4 /* DDPrivateTableViewCell.m in Sources */,
+				0660204821073F4A005E3D09 /* DTieMapSelectFriendView.m in Sources */,
 				06733F7C20A2A73C007875A7 /* DDTabBarController.m in Sources */,
 				06E5556920C8D71F00C0CE9D /* DTiePOIRequest.m in Sources */,
 				062BA31D20EE05E600F4EF58 /* GetUserCreateLocationRequest.m in Sources */,
 				0641710C20B3EB9C0075ECB6 /* AddSeriesViewController.m in Sources */,
 				0641710F20B3F1590075ECB6 /* SeriesDetailTableViewCell.m in Sources */,
+				0660204B21074337005E3D09 /* MapFriendCollectionViewCell.m in Sources */,
 				0623471320BBDCB400B1894E /* DDShareImageCollectionViewCell.m in Sources */,
 				066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */,
+				0614E7A621088C4F002F8FC5 /* MapYaoyueHeaderView.m in Sources */,
 				06733F9F20A2EB4D007875A7 /* UserLoginWXRequest.m in Sources */,
 				067EB59E20DB6B150021E71B /* DDCollectionSlider.m in Sources */,
 				062048D620B7E399008DDF25 /* AddOrUpdateSecurityRequest.m in Sources */,
@@ -1999,6 +2088,7 @@
 				06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */,
 				064B34B320A9580800B7D0E4 /* DDFriendViewController.m in Sources */,
 				06733F9B20A2E82D007875A7 /* WeChatManager.m in Sources */,
+				06180B442109D11B007D402C /* DTiePostCollectionViewCell.m in Sources */,
 				060B4A4420D9FAAA0023E18B /* DTieVideoCollectionViewCell.m in Sources */,
 				0650A9FC20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
@@ -2019,6 +2109,7 @@
 				06E0A13020CED14700B9C4B0 /* GetDtieSecurityRequest.m in Sources */,
 				06790B3E20A4418A00929228 /* DTieModel.m in Sources */,
 				062048D020B7B8F4008DDF25 /* DTieChooseCollectionViewCell.m in Sources */,
+				066020452107297E005E3D09 /* UserDaZhaoHuModel.m in Sources */,
 				064B34A020A9374100B7D0E4 /* DDSystemViewController.m in Sources */,
 				06286ABD20C0152C00434068 /* DTieNewEditTextCell.m in Sources */,
 				066033B820B26BAC00A54D81 /* DDHandleView.m in Sources */,
@@ -2047,6 +2138,7 @@
 				0652FB6920F7130900080225 /* DDShareYaoYueViewController.m in Sources */,
 				064AA5B220F30FCE00EBF20A /* GCCScreenImage.m in Sources */,
 				061EDD6920C4E60800066E73 /* DDTelLoginViewController.m in Sources */,
+				06180B352109718F007D402C /* SelectMapYaoyueRequest.m in Sources */,
 				06301B4E20A89091003580CA /* AchievementViewController.m in Sources */,
 				0652FB6620F7027D00080225 /* DDYaoYueViewController.m in Sources */,
 				06EB1C4A20C11E4300684A71 /* DTieNewSecurityCell.m in Sources */,
@@ -2074,13 +2166,16 @@
 				06DCC8F620C3BE55000194CA /* DTieDeleteRequest.m in Sources */,
 				062EFCC320CE24D80019FF68 /* DDTabCollectionViewCell.m in Sources */,
 				066033F020B2BE6000A54D81 /* SCSafariPageController.m in Sources */,
+				06180B3821097656007D402C /* DTieMapYaoyueModel.m in Sources */,
 				064B34B920A96D5200B7D0E4 /* DDFriendTableHeaderView.m in Sources */,
 				06E209E820B03FAC00EA541B /* SettingModel.m in Sources */,
 				06BB78F720A9C9100049F28F /* MailShareTableViewCell.m in Sources */,
+				0614E7A021085A64002F8FC5 /* DTieNewEditPostCell.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
 				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
 				0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */,
 				060B4A4120D9FA8D0023E18B /* DTieTextCollectionViewCell.m in Sources */,
+				0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */,
 				0685A52D20C660A20050424D /* DDDazhaohuView.m in Sources */,
 				067EB5A720DBA3C70021E71B /* GetWXAccessTokenRequest.m in Sources */,
 				06E5557520C93E8A00C0CE9D /* AgreementViewController.m in Sources */,
@@ -2091,6 +2186,7 @@
 				0641497320AAC54800460CB3 /* DDLocationManager.m in Sources */,
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
 				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
+				06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */,
 				06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */,
 				064B34C020A99A6B00B7D0E4 /* DDPrivateViewController.m in Sources */,
 				06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */,

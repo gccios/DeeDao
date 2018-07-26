@@ -29,6 +29,8 @@
 
 @property (nonatomic, assign) BOOL isInstallWX;
 
+@property (nonatomic, strong) UILabel * deedaoLabel;
+
 @end
 
 @implementation DTieDetailVideoTableViewCell
@@ -116,13 +118,13 @@
         make.width.height.mas_equalTo(150 * scale);
     }];
     
-    UILabel * deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    deedaoLabel.textAlignment = NSTextAlignmentCenter;
-    deedaoLabel.font = kPingFangMedium(42 * scale);
-    deedaoLabel.text = @"到 地 体 验";
-    deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
-    [self.coverView addSubview:deedaoLabel];
-    [deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.deedaoLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.deedaoLabel.textAlignment = NSTextAlignmentCenter;
+    self.deedaoLabel.font = kPingFangMedium(42 * scale);
+    self.deedaoLabel.text = @"到 地 体 验";
+    self.deedaoLabel.textColor = UIColorFromRGB(0xFFFFFF);
+    [self.coverView addSubview:self.deedaoLabel];
+    [self.deedaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(0);
         make.centerY.mas_equalTo(70 * scale);
         make.left.right.mas_equalTo(0);
@@ -210,12 +212,66 @@
         }];
     }
     
-    if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
-        self.detailImageView.userInteractionEnabled = YES;
-        self.coverView.hidden = YES;
+    if (model.pFlag == 1) {
+        
+        if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+            if (model.wxCanSee == 1) {
+                self.detailImageView.userInteractionEnabled = YES;
+                self.coverView.hidden = YES;
+            }else{
+                if (dtieModel.ifCanSee == 0) {
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.detailImageView.userInteractionEnabled = NO;
+                    self.coverView.hidden = NO;
+                }else{
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.coverView.hidden = YES;
+                }
+            }
+        }else{
+            
+            if (dtieModel.ifCanSee == 0) {
+                if (model.wxCanSee == 1) {
+                    self.deedaoLabel.text = @"到地体验";
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.coverView.hidden = NO;
+                }else{
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.detailImageView.userInteractionEnabled = NO;
+                    self.coverView.hidden = NO;
+                }
+            }else{
+                self.deedaoLabel.text = @"到地体验";
+                self.detailImageView.userInteractionEnabled = YES;
+                self.coverView.hidden = NO;
+            }
+            
+        }
+        
     }else{
-        self.detailImageView.userInteractionEnabled = NO;
-        self.coverView.hidden = NO;
+        
+        if (model.wxCanSee == 1) {
+            
+            self.detailImageView.userInteractionEnabled = YES;
+            self.coverView.hidden = YES;
+            
+        }else {
+            if (dtieModel.ifCanSee == 0) {
+                self.deedaoLabel.text = @"暂无浏览权限";
+                self.detailImageView.userInteractionEnabled = NO;
+                self.coverView.hidden = NO;
+            }else{
+                self.detailImageView.userInteractionEnabled = YES;
+                if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.coverView.hidden = YES;
+                }else{
+                    self.deedaoLabel.text = @"到地体验";
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.coverView.hidden = NO;
+                }
+            }
+        }
     }
     
     CGFloat scale = kMainBoundsWidth / 1080.f;

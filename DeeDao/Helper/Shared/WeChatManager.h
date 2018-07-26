@@ -21,6 +21,8 @@ extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录�
 
 @property (nonatomic, copy) NSString * miniProgramToken;
 
+@property (nonatomic, assign) NSInteger miniProgramPostID;
+
 + (instancetype)shareManager;
 
 - (void)loginWithWeChat;
@@ -39,5 +41,7 @@ extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录�
 - (void)shareImage:(UIImage *)image;
 
 - (void)shareFriendImage:(UIImage *)image;
+
+- (void)shareToBiz;
 
 @end

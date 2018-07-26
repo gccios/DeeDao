@@ -23,6 +23,7 @@
 #import "DTieSingleImageShareView.h"
 #import "DTiePostShareView.h"
 #import "AddPostSeeRequest.h"
+#import "ShareImageModel.h"
 
 @interface DTieNewDetailViewController ()<SecurityFriendDelegate, DTieShareDelegate>
 
@@ -100,13 +101,30 @@
         BOOL pflg = NO;
         NSMutableArray * shareSource = [[NSMutableArray alloc] init];
         NSMutableArray * urlSource = [[NSMutableArray alloc] init];
+        NSMutableArray * pflgSource = [[NSMutableArray alloc] init];
         for (NSInteger i = 0; i < self.model.details.count; i++) {
             DTieEditModel * model = [self.model.details objectAtIndex:i];
             if (model.type == DTieEditType_Image) {
                 if (model.image) {
-                    [shareSource addObject:model.image];
+                    
+                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
+                    NSInteger postId = self.model.cid;
+                    if (postId == 0) {
+                        postId = self.model.postId;
+                    }
+                    shareModel.postId = postId;
+                    shareModel.image = model.image;
+                    shareModel.title = self.model.postSummary;
+                    shareModel.PFlag = model.pFlag;
+                    if (shareModel.PFlag == 1) {
+                        [shareModel changeToDeedao];
+                    }
+                    
+                    [shareSource addObject:shareModel];
+                    
                 }else if (!isEmptyString(model.detailContent)) {
                     [urlSource addObject:model.detailContent];
+                    [pflgSource addObject:@(model.pFlag)];
                 }
             }
             if (model.pFlag == 1) {
@@ -118,12 +136,31 @@
 
             MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取图片" inView:self.view];
             __block NSUInteger count = 0;
-            for (NSString * path in urlSource) {
+            for (NSInteger i = 0; i < urlSource.count; i++)  {
+                
+                NSString * path = [urlSource objectAtIndex:i];
+                NSInteger tempPflg = [[pflgSource objectAtIndex:i] integerValue];
+                
                 [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:path] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
 
                 } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
                     [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
-                    [shareSource addObject:image];
+                    
+                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
+                    NSInteger postId = self.model.cid;
+                    if (postId == 0) {
+                        postId = self.model.postId;
+                    }
+                    shareModel.postId = postId;
+                    shareModel.image = image;
+                    shareModel.title = self.model.postSummary;
+                    shareModel.PFlag = tempPflg;
+                    if (shareModel.PFlag == 1) {
+                        [shareModel changeToDeedao];
+                    }
+                    
+                    [shareSource addObject:shareModel];
+                    
                     count++;
                     if (count == urlSource.count) {
                         [hud hideAnimated:YES];
@@ -216,7 +253,7 @@
 //            return;
 //        }
         
-        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%ld", self.model.postId];
+        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ld", self.model.postId, [UserManager shareManager].user.cid];
 //        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
 //        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
 //
@@ -339,7 +376,37 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
+    if (!self.isPreRead) {
+        CGFloat scale = kMainBoundsWidth / 1080.f;
+        
+        UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+        bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
+        [self.view addSubview:bottomHandleView];
+        [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.bottom.right.mas_equalTo(0);
+            make.height.mas_equalTo(324 * scale);
+        }];
+        
+        UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"返回首页"];
+        [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
+        handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        handleButton.layer.borderWidth = 3 * scale;
+        [bottomHandleView addSubview:handleButton];
+        [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(60 * scale);
+            make.height.mas_equalTo(144 * scale);
+            make.right.mas_equalTo(-60 * scale);
+            make.centerY.mas_equalTo(0);
+        }];
+        [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
     [self createTopView];
+}
+
+- (void)handleButtonDidClicked
+{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)createTopView
@@ -355,7 +422,7 @@
     }];
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"contentClose"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -366,7 +433,7 @@
     
     if (!self.isPreRead) {
         UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-        [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+        [shareButton setImage:[UIImage imageNamed:@"contentShare"] forState:UIControlStateNormal];
         [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
         [self.topView addSubview:shareButton];
         [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -377,7 +444,7 @@
         
         if (self.model.authorId == [UserManager shareManager].user.cid) {
             UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-            [editButton setImage:[UIImage imageNamed:@"detailEdit"] forState:UIControlStateNormal];
+            [editButton setImage:[UIImage imageNamed:@"contentEdit"] forState:UIControlStateNormal];
             [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
             [self.topView addSubview:editButton];
             [editButton mas_makeConstraints:^(MASConstraintMaker *make) {

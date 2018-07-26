@@ -26,6 +26,15 @@
     }
 }
 
+- (void)setPortrait:(NSString *)portrait
+{
+    if (isEmptyString(portrait)) {
+        _portraituri = @"http://ow57gfs34.bkt.clouddn.com/DefaultLogo/defalutLogo.png";
+    }else{
+        _portraituri = portrait;
+    }
+}
+
 - (void)setNickname:(NSString *)nickName
 {
     _nickname = [self replaceUnicode:nickName];

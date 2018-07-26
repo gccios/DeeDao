@@ -121,6 +121,9 @@
     model.image = self.detailImageView.image;
     model.title = self.dtieModel.postSummary;
     model.PFlag = self.model.pFlag;
+    if (model.PFlag == 1) {
+        [model changeToDeedao];
+    }
     
     [[DDShareManager shareManager] showHandleViewWithImage:model];
 }
@@ -170,19 +173,65 @@
         make.height.mas_equalTo(height);
     }];
     
-    if (dtieModel.ifCanSee == 0) {
-        self.deedaoLabel.text = @"暂无浏览权限";
-        self.detailImageView.userInteractionEnabled = NO;
-        self.converView.hidden = NO;
-    }else{
-        self.detailImageView.userInteractionEnabled = YES;
+    if (model.pFlag == 1) {
+        
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+            if (model.wxCanSee == 1) {
+                self.detailImageView.userInteractionEnabled = YES;
+                self.converView.hidden = YES;
+            }else{
+                if (dtieModel.ifCanSee == 0) {
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.detailImageView.userInteractionEnabled = NO;
+                    self.converView.hidden = NO;
+                }else{
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.converView.hidden = YES;
+                }
+            }
+        }else{
+            
+            if (dtieModel.ifCanSee == 0) {
+                if (model.wxCanSee == 1) {
+                    self.deedaoLabel.text = @"到地体验";
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.converView.hidden = NO;
+                }else{
+                    self.deedaoLabel.text = @"暂无浏览权限";
+                    self.detailImageView.userInteractionEnabled = NO;
+                    self.converView.hidden = NO;
+                }
+            }else{
+                self.deedaoLabel.text = @"到地体验";
+                self.detailImageView.userInteractionEnabled = YES;
+                self.converView.hidden = NO;
+            }
+            
+        }
+        
+    }else{
+        
+        if (model.wxCanSee == 1) {
+            
             self.detailImageView.userInteractionEnabled = YES;
             self.converView.hidden = YES;
-        }else{
-            self.deedaoLabel.text = @"到地体验";
-            self.detailImageView.userInteractionEnabled = NO;
-            self.converView.hidden = NO;
+            
+        }else {
+            if (dtieModel.ifCanSee == 0) {
+                self.deedaoLabel.text = @"暂无浏览权限";
+                self.detailImageView.userInteractionEnabled = NO;
+                self.converView.hidden = NO;
+            }else{
+                self.detailImageView.userInteractionEnabled = YES;
+                if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.converView.hidden = YES;
+                }else{
+                    self.deedaoLabel.text = @"到地体验";
+                    self.detailImageView.userInteractionEnabled = YES;
+                    self.converView.hidden = NO;
+                }
+            }
         }
     }
 }

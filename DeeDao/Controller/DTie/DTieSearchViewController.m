@@ -139,38 +139,30 @@
 {
     [self endEditing];
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
-    switch (model.dTieType) {
+    
+    if (model.status == 0) {
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+        
+        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
             
-        case DTieType_Edit:
-        {
-            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-            
-            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
-            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                [hud hideAnimated:YES];
-                
-                if (KIsDictionary(response)) {
-                    NSDictionary * data = [response objectForKey:@"data"];
-                    if (KIsDictionary(data)) {
-                        DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                        [self.navigationController pushViewController:edit animated:YES];
-                    }
+            if (KIsDictionary(response)) {
+                NSDictionary * data = [response objectForKey:@"data"];
+                if (KIsDictionary(data)) {
+                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+                    [self.navigationController pushViewController:edit animated:YES];
                 }
-            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                [hud hideAnimated:YES];
-            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-                [hud hideAnimated:YES];
-            }];
-        }
-            break;
-            
-        default:
-        {
-            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
-            [self.navigationController pushViewController:collection animated:YES];
-        }
-            break;
+            }
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            [hud hideAnimated:YES];
+        }];
+    }else{
+        DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
+        [self.navigationController pushViewController:collection animated:YES];
     }
 }
 

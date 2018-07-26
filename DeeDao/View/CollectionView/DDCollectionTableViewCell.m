@@ -190,6 +190,9 @@
         model.image = self.baseImageView.image;
         model.title = self.dtieModel.postSummary;
         model.PFlag = self.model.pFlag;
+        if (model.PFlag == 1) {
+            [model changeToDeedao];
+        }
         [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
 }

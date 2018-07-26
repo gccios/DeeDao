@@ -42,4 +42,6 @@
 
 + (CGFloat)getHeightWithImage:(UIImage *)image;
 
++ (void)WXMiniProgramHandleWithPostID:(NSInteger)postID;
+
 @end

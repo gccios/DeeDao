@@ -53,6 +53,13 @@
 //    }
 //}
 
+- (void)changeToDeedao
+{
+    if (self.image) {
+        self.image = [self coreBlurImage:self.image withBlurNumber:50];
+    }
+}
+
 /**
  使用CoreImage进行高斯模糊
  

@@ -175,10 +175,6 @@
                 NSDictionary * data = [response objectForKey:@"data"];
                 if (KIsDictionary(data)) {
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    if (dtieModel.ifCanSee == 0) {
-                        [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:na.view];
-                        return;
-                    }
                     
                     if (dtieModel.deleteFlg == 1) {
                         [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:na.view];

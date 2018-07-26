@@ -31,6 +31,8 @@
 @property (nonatomic, strong) UICollectionView * collectionView;
 @property (nonatomic, strong) NSArray * tagSource;
 @property (nonatomic, strong) UIButton * backLocationButton;
+
+@property (nonatomic, strong) UITextField * cityField;
 @property (nonatomic, strong) UITextField * textField;
 
 @property (nonatomic, assign) NSInteger searchType;
@@ -458,67 +460,55 @@
     [self.dataSource removeAllObjects];
     [self.tableView reloadData];
     
-    NSMutableArray * keyWords = [NSMutableArray new];
     NSString * keyWord = self.textField.text;
+    NSString * cityWord = self.cityField.text;
     
     if (self.searchType == 2) {
         [self requestDeedaoUserLocation];
         return;
     }
     
-    if (isEmptyString(keyWord)) {
+    if (isEmptyString(cityWord)) {
         
-        if (self.searchType == 1) {
+        if (self.searchType == 1 && isEmptyString(keyWord)) {
             [self reverseGeoCodeWith:self.mapView.centerCoordinate];
             return;
+        }
+        
+        BMKPOINearbySearchOption *option = [[BMKPOINearbySearchOption alloc]init];
+        option.pageIndex = 0;
+        option.pageSize = 20;
+        option.location = coordinate;
+        option.radius = 100 * 1000;
+        
+        if (isEmptyString(keyWord)) {
+            option.keywords = @[self.tagTitle];
         }else{
-            if (!isEmptyString(self.tagTitle)) {
-                [keyWords addObject:self.tagTitle];
+            if (self.searchType != 1) {
+                option.tags = @[self.tagTitle];
             }
+            option.keywords = @[keyWord];
         }
         
+        [self.poiSearch poiSearchNearBy:option];
     }else{
-        
-        [keyWords addObject:keyWord];
-        if (self.searchType == 3) {
-            if (!isEmptyString(self.tagTitle)) {
-                [keyWords addObject:self.tagTitle];
+        BMKPOICitySearchOption *citySearchOption = [[BMKPOICitySearchOption alloc]init];
+        citySearchOption.pageIndex = 0;
+        citySearchOption.pageSize = 10;
+        citySearchOption.city= cityWord;
+        if (isEmptyString(keyWord)) {
+            citySearchOption.keyword = self.tagTitle;
+        }else{
+            if (self.searchType == 1) {
+                citySearchOption.tags = @[@"美食"];
+            }else{
+                citySearchOption.tags = @[self.tagTitle];
             }
+            citySearchOption.keyword = keyWord;
         }
         
+        [self.poiSearch poiSearchInCity:citySearchOption];
     }
-//    else if (self.searchType == 1) {
-//        [self reverseGeoCodeWith:self.mapView.centerCoordinate];
-//        return;
-//    }else if (!isEmptyString(self.tagTitle)) {
-//        [keyWords addObject:self.tagTitle];
-//    }
-
-    BMKPOINearbySearchOption *option = [[BMKPOINearbySearchOption alloc]init];
-    option.pageIndex = 0;
-    option.pageSize = 20;
-    option.location = coordinate;
-//    option.scope = BMK_POI_SCOPE_DETAIL_INFORMATION;
-//    option.filter.sortRule = BMK_POI_SORT_RULE_ASCENDING;
-    option.radius = 100 * 1000;
-    option.keywords = [NSArray arrayWithArray:keyWords];
-    
-    [self.poiSearch poiSearchNearBy:option];
-    
-//    BMKPOICitySearchOption *citySearchOption = [[BMKPOICitySearchOption alloc]init];
-//    citySearchOption.pageIndex = 0;
-//    citySearchOption.pageSize = 10;
-//    citySearchOption.city= @"北京";
-//    citySearchOption.keyword = keyWord;
-    
-//    [self.poiSearch poiSearchInCity:citySearchOption];
-    
-//    BMKPOICitySearchOption * cityOption = [[BMKPOICitySearchOption alloc] init];
-//    cityOption.city = @"北京市";
-//    cityOption.pageIndex = 0;
-//    cityOption.pageSize = 50;
-//    cityOption.keyword = self.tagTitle;
-//    [self.poiSearch poiSearchInCity:cityOption];
 }
 
 - (void)requestDeedaoUserLocation
@@ -634,11 +624,30 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
+    self.cityField = [[UITextField alloc] initWithFrame:CGRectZero];
+    [self.topView addSubview:self.cityField];
+    [self.cityField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(-30 * scale);
+        make.left.mas_equalTo(backButton.mas_right).offset(15 * scale);
+        make.width.mas_equalTo(180 * scale);
+        make.height.mas_equalTo((100 + kStatusBarHeight) * scale);
+    }];
+    self.cityField.backgroundColor = UIColorFromRGB(0xFAFAFA);
+    [DDViewFactoryTool cornerRadius:6 * scale withView:self.cityField];
+    self.cityField.layer.shadowColor = UIColorFromRGB(0x000000).CGColor;
+    self.cityField.layer.shadowOpacity = .24f;
+    self.cityField.layer.shadowRadius = 6 * scale;
+    self.cityField.layer.shadowOffset = CGSizeMake(0, 6 * scale);
+    self.cityField.placeholder = @"城市";
+    UIView * leftView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20 * scale, 20 * scale)];
+    self.cityField.leftView = leftView1;
+    self.cityField.leftViewMode = UITextFieldViewModeAlways;
+    
     self.textField = [[UITextField alloc] initWithFrame:CGRectZero];
     [self.topView addSubview:self.textField];
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(-30 * scale);
-        make.left.mas_equalTo(backButton.mas_right).offset(15 * scale);
+        make.left.mas_equalTo(self.cityField.mas_right).offset(15 * scale);
         make.right.mas_equalTo(-24 * scale);
         make.height.mas_equalTo((100 + kStatusBarHeight) * scale);
     }];
@@ -648,6 +657,7 @@
     self.textField.layer.shadowOpacity = .24f;
     self.textField.layer.shadowRadius = 6 * scale;
     self.textField.layer.shadowOffset = CGSizeMake(0, 6 * scale);
+    self.textField.placeholder = @"关键字";
     
     UIView * leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20 * scale, 20 * scale)];
     self.textField.leftView = leftView;
@@ -671,6 +681,10 @@
         if (self.createLocationView) {
             [self DTieCreateLocationDidCancle];
         }
+    }
+    
+    if (self.cityField.isFirstResponder) {
+        [self.cityField resignFirstResponder];
     }
     
     if (self.textField.isFirstResponder) {

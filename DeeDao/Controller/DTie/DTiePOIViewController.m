@@ -9,7 +9,7 @@
 #import "DTiePOIViewController.h"
 #import "DDLocationManager.h"
 #import "DTiePOIRequest.h"
-#import "DTieCollectionViewCell.h"
+#import "DTieHeaderLogoCell.h"
 #import "CollectionLineTitleView.h"
 #import "DTieNewDetailViewController.h"
 #import "MBProgressHUD+DDHUD.h"
@@ -192,7 +192,7 @@
     layout.minimumInteritemSpacing = 0;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
+    [self.collectionView registerClass:[DTieHeaderLogoCell class] forCellWithReuseIdentifier:@"DTieHeaderLogoCell"];
     [self.collectionView registerClass:[CollectionLineTitleView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"CollectionLineTitleView"];
     self.collectionView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.collectionView.delegate = self;
@@ -249,7 +249,7 @@
     NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
     DTieModel * model = [data objectAtIndex:indexPath.row];
     
-    DTieCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieCollectionViewCell" forIndexPath:indexPath];
+    DTieHeaderLogoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieHeaderLogoCell" forIndexPath:indexPath];
     cell.coverView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     cell.indexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:indexPath.section];
@@ -294,11 +294,6 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 [model mj_setKeyValues:data];
-                
-                if (model.ifCanSee == 0) {
-                    [MBProgressHUD showTextHUDWithText:@"您没有浏览该帖的权限~" inView:self.view];
-                    return;
-                }
                 
                 if (model.deleteFlg == 1) {
                     [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除" inView:self.view];

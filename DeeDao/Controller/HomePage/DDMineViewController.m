@@ -339,9 +339,9 @@
         
     }else{
         
-        NSString * urlLink = [NSString stringWithFormat:@"pages/user/user?authorId=%ld", [UserManager shareManager].user.cid];
+        NSString * urlLink = [NSString stringWithFormat:@"pages/user/user?authorId=%lduserIs%ld", [UserManager shareManager].user.cid, [UserManager shareManager].user.cid];
         
-        NSString * text = [NSString stringWithFormat:@"博主名片链接\n%@\n", urlLink];
+        NSString * text = [NSString stringWithFormat:@"博主名片链接\n%@\n\n", urlLink];
         
         NSError * error = nil;
         NSFileManager * manager = [NSFileManager defaultManager];

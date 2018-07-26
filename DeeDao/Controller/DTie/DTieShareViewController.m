@@ -44,64 +44,15 @@
     return instance;
 }
 
-- (instancetype)initWithShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
-{
-    if (self = [super init]) {
-        [self.shareList removeAllObjects];
-        
-        for (UIImage * image in shareList) {
-            ShareImageModel * model = [[ShareImageModel alloc] init];
-            model.postId = postId;
-            model.image = image;
-            model.title = title;
-            model.PFlag = pflg;
-            [self.shareList addObject:model];
-        }
-    }
-    return self;
-}
-
 - (instancetype)insertShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
 {
     NSMutableArray * share = [[NSMutableArray alloc] initWithArray:[[shareList reverseObjectEnumerator] allObjects]];
-    for (UIImage * image in share) {
-        ShareImageModel * model = [[ShareImageModel alloc] init];
-        model.postId = postId;
-        model.image = image;
-        model.title = title;
-        model.PFlag = pflg;
+    for (ShareImageModel * model in share) {
         [self.shareList insertObject:model atIndex:0];
     }
     [[DDShareManager shareManager] updateNumber];
     [self.selectSource removeAllObjects];
     [self.mainView reloadData];
-    return self;
-}
-
-- (instancetype)addShareList:(NSMutableArray *)shareList title:(NSString *)title pflg:(BOOL)pflg postId:(NSInteger)postId
-{
-    for (UIImage * image in shareList) {
-        ShareImageModel * model = [[ShareImageModel alloc] init];
-        model.postId = postId;
-        model.image = image;
-        model.title = title;
-        model.PFlag = pflg;
-        [self.shareList addObject:model];
-    }
-    return self;
-}
-
-- (instancetype)initWithShareList:(NSMutableArray *)shareList
-{
-    if (self = [super init]) {
-        self.shareList = shareList;
-    }
-    return self;
-}
-
-- (instancetype)addShareList:(NSMutableArray *)shareList
-{
-    [self.shareList addObjectsFromArray:shareList];
     return self;
 }
 
@@ -152,6 +103,12 @@
         [cell configIndex:i hidden:NO];
     }else{
         [cell configIndex:0 hidden:YES];
+    }
+    
+    if (model.PFlag == 1) {
+        [cell configDeeDaoEnable:YES];
+    }else{
+        [cell configDeeDaoEnable:NO];
     }
     
 //    __weak typeof(self) weakSelf = self;

@@ -22,4 +22,6 @@
 
 - (void)configIndex:(NSInteger)index hidden:(BOOL)hidden;
 
+- (void)configDeeDaoEnable:(BOOL)isDeeDao;
+
 @end

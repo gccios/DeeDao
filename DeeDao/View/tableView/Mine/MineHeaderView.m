@@ -11,6 +11,7 @@
 #import <Masonry.h>
 #import "UserManager.h"
 #import <UIImageView+WebCache.h>
+#import <BGUtilFunction.h>
 
 @interface MineHeaderView ()
 
@@ -77,7 +78,12 @@
     }];
     
     self.IDLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.IDLabel.text = [NSString stringWithFormat:@"Dee Dao ID:%ld", [UserManager shareManager].user.cid];
+    NSString * userID = [NSString stringWithFormat:@"%ld", [UserManager shareManager].user.cid];
+    NSString * md5 = BG_MD5(userID);
+    if (md5.length > 8) {
+        md5 = [md5 substringToIndex:8];
+    }
+    self.IDLabel.text = [NSString stringWithFormat:@"Dee Dao ID:%@%@", md5, userID];
     [self addSubview:self.IDLabel];
     [self.IDLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(15 * scale);

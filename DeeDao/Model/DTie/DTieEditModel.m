@@ -35,6 +35,10 @@
         _type = DTieEditType_Image;
     }else if ([_datadictionaryType isEqualToString:@"CONTENT_VIDEO"]){
         _type = DTieEditType_Video;
+    }else if ([_datadictionaryType isEqualToString:@"CONTENT_POST"]){
+        _type = DTieEditType_Post;
+        
+        [self handleDetailContenJson];
     }
 }
 
@@ -46,6 +50,10 @@
         detailContent = [DDTool getTextWithHtml:detailContent];
     }
     
+    if (_type == DTieEditType_Post) {
+        [self handleDetailContenJson];
+    }
+    
     _detailsContent = detailContent;
     _detailContent = detailContent;
 }
@@ -54,6 +62,37 @@
 {
     _wxCanSee = wxCanSee;
     _shareEnable = wxCanSee;
+}
+
+- (void)setPostId:(NSInteger)postId
+{
+    if (_isPost) {
+        
+    }else{
+        _postId = postId;
+    }
+}
+
+- (void)handleDetailContenJson
+{
+    if (!isEmptyString(self.detailContent)) {
+        NSData *jsonData = [self.detailContent dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *dic = [NSJSONSerialization JSONObjectWithData:jsonData options:kNilOptions error:nil];
+        
+        _bloggerFlg = [[dic objectForKey:@"bloggerFlg"] integerValue];
+        _nickname = [dic objectForKey:@"nickname"];
+        _portraituri = [dic objectForKey:@"portrait"];
+        NSDictionary * postBean = [dic objectForKey:@"postBean"];
+        if (KIsDictionary(postBean)) {
+            _postFirstPicture = [postBean objectForKey:@"postFirstPicture"];
+            _postSummary = [postBean objectForKey:@"postSummary"];
+            _sceneAddress = [postBean objectForKey:@"sceneAddress"];
+            _sceneBuilding = [postBean objectForKey:@"sceneBuilding"];
+            _updateTime = [[postBean objectForKey:@"updateTime"] integerValue];
+            _postId = [[postBean objectForKey:@"id"] integerValue];
+            _isPost = YES;
+        }
+    }
 }
 
 @end

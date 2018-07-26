@@ -10,6 +10,7 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import <UIImageView+WebCache.h>
+#import "UserManager.h"
 
 @interface DTieCollectionViewCell ()
 
@@ -173,63 +174,25 @@
     NSURL * imageURL = [NSURL URLWithString:model.postFirstPicture];
     [self.contenImageView sd_setImageWithURL:imageURL placeholderImage:[UIImage imageNamed:@"list_bg"]];
     
-    switch (model.dTieType) {
-        case DTieType_Add:
-            
-        {
-            self.editButton.hidden = YES;
-            self.markImageView.hidden = YES;
-            self.titleView.hidden = YES;
-            [self.contenImageView setImage:[UIImage imageNamed:@"DTieAdd"]];
-        }
-            
-            break;
-            
-        case DTieType_Edit:
-            
-        {
-            self.editButton.hidden = NO;
-            self.markImageView.hidden = YES;
-            self.titleView.hidden = YES;
-            self.editLabel.text = self.DTieTitleLabel.text;
-        }
-            
-            break;
-            
-        case DTieType_Collection:
-            
-        {
-            self.editButton.hidden = YES;
-            [self.markImageView setImage:[UIImage imageNamed:@"DTieCollection"]];
-            self.markImageView.hidden = NO;
-            self.titleView.hidden = NO;
-        }
-            
-            break;
-            
-        case DTieType_BeFondOf:
-            
-        {
-            self.editButton.hidden = YES;
-            [self.markImageView setImage:[UIImage imageNamed:@"DTieBeFoundTo"]];
-            self.markImageView.hidden = NO;
-            self.titleView.hidden = NO;
-        }
-            
-            break;
-            
-        case DTieType_MyDtie:
-            
-        {
-            self.editButton.hidden = YES;
-            self.markImageView.hidden = YES;
-            self.titleView.hidden = NO;
-        }
-            
-            break;
-            
-        default:
-            break;
+    if (model.status == 0 && [UserManager shareManager].user.cid == model.authorId ) {
+        self.editButton.hidden = NO;
+        self.markImageView.hidden = YES;
+        self.titleView.hidden = YES;
+        self.editLabel.text = self.DTieTitleLabel.text;
+    }else if (model.collectFlg == 1) {
+        self.editButton.hidden = YES;
+        [self.markImageView setImage:[UIImage imageNamed:@"DTieCollection"]];
+        self.markImageView.hidden = NO;
+        self.titleView.hidden = NO;
+    }else if (model.wyyFlg == 1) {
+        self.editButton.hidden = YES;
+        [self.markImageView setImage:[UIImage imageNamed:@"DTieBeFoundTo"]];
+        self.markImageView.hidden = NO;
+        self.titleView.hidden = NO;
+    }else{
+        self.editButton.hidden = YES;
+        self.markImageView.hidden = YES;
+        self.titleView.hidden = NO;
     }
 }
 

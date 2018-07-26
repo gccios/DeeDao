@@ -13,6 +13,7 @@
 #import "DTieNewEditImageCell.h"
 #import "DTieNewEditTextCell.h"
 #import "DTieNewEditVideoCell.h"
+#import "DTieNewEditPostCell.h"
 #import <TZImagePickerController.h>
 #import "MBProgressHUD+DDHUD.h"
 //#import "XFCameraController.h"
@@ -27,8 +28,9 @@
 #import <AVKit/AVKit.h>
 #import "DDShareManager.h"
 #import <WXApi.h>
+#import "DTieChooseDTieController.h"
 
-@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate, DTieQuanXianViewControllerDelegate>
+@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate, DTieQuanXianViewControllerDelegate, DTieChooseDTieControllerDelegate>
 
 @property (nonatomic, strong) RTDragCellTableView * tableView;
 
@@ -42,6 +44,7 @@
 @property (nonatomic, strong) UIButton * imageButton;
 @property (nonatomic, strong) UIButton * videoButton;
 @property (nonatomic, strong) UIButton * textButton;
+@property (nonatomic, strong) UIButton * dtieButton;
 
 @property (nonatomic, strong) DatePickerView * datePicker;
 
@@ -289,6 +292,34 @@
     self.currentModel = nil;
 }
 
+#pragma mark - DTieChooseDTieControllerDelegate选择D帖
+- (void)didChooseDtie:(NSArray *)array
+{
+    NSMutableArray * models = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < array.count; i++) {
+        
+        DTieModel * dtieModel = [array objectAtIndex:i];
+        
+        DTieEditModel * model = [[DTieEditModel alloc] init];
+        model.type = DTieEditType_Post;
+        model.shareEnable = 0;
+        
+        model.postFirstPicture = dtieModel.postFirstPicture;
+        model.portraituri = dtieModel.portraituri;
+        model.postSummary = dtieModel.postSummary;
+        model.nickname = dtieModel.nickname;
+        model.sceneBuilding = dtieModel.sceneBuilding;
+        model.sceneAddress = dtieModel.sceneAddress;
+        model.updateTime = dtieModel.updateTime;
+        model.postId = dtieModel.postId;
+        
+        [models addObject:model];
+    }
+    
+    [self.modleSources insertObjects:models atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, models.count)]];
+    [self reloadContentView];
+}
+
 #pragma mark - 添加新的元素
 //添加按钮被点击
 - (void)addButtonDidClicked:(UIButton *)button
@@ -318,16 +349,19 @@
     self.imageButton.center = center;
     self.videoButton.center = center;
     self.textButton.center = center;
+    self.dtieButton.center = center;
     self.tempAddButton.center = center;
     
-    CGPoint leftCenter = CGPointMake(center.x - 120 * scale, center.y - 80 * scale);
-    CGPoint centerCenter = CGPointMake(center.x, center.y - 130 * scale);
-    CGPoint rightCenter = CGPointMake(center.x + 120 * scale, center.y - 80 * scale);
+    CGPoint leftCenter = CGPointMake(center.x - 150 * scale, center.y - 20 * scale);
+    CGPoint leftCenter2 = CGPointMake(center.x - 70 * scale, center.y - 130 * scale);
+    CGPoint rightCenter = CGPointMake(center.x + 70 * scale, center.y - 130 * scale);
+    CGPoint rightCenter2 = CGPointMake(center.x + 150 * scale, center.y - 20 * scale);
     
     [UIView animateWithDuration:.5f delay:0.f usingSpringWithDamping:.5f initialSpringVelocity:15.f options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.imageButton.center = leftCenter;
-        self.videoButton.center = centerCenter;
+        self.videoButton.center = leftCenter2;
         self.textButton.center = rightCenter;
+        self.dtieButton.center = rightCenter2;
         self.addChooseView.alpha = 1;
         self.tempAddButton.transform = CGAffineTransformMakeRotation(M_PI/4.f);
     } completion:^(BOOL finished) {
@@ -488,6 +522,7 @@
     [self.tableView registerClass:[DTieNewEditImageCell class] forCellReuseIdentifier:@"DTieNewEditImageCell"];
     [self.tableView registerClass:[DTieNewEditVideoCell class] forCellReuseIdentifier:@"DTieNewEditVideoCell"];
     [self.tableView registerClass:[DTieNewEditTextCell class] forCellReuseIdentifier:@"DTieNewEditTextCell"];
+    [self.tableView registerClass:[DTieNewEditPostCell class] forCellReuseIdentifier:@"DTieNewEditPostCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self addSubview:self.tableView];
@@ -579,6 +614,13 @@
     self.tempAddButton.center = self.addChooseView.center;
     [self.tempAddButton addTarget:self action:@selector(hiddenChooseView) forControlEvents:UIControlEventTouchUpInside];
     
+    self.dtieButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.dtieButton setImage:[UIImage imageNamed:@"dtieChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.dtieButton];
+    self.dtieButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.dtieButton.center = self.addChooseView.center;
+    [self.dtieButton addTarget:self action:@selector(dtieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
     self.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
     self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.createTime];
     
@@ -652,6 +694,16 @@
 - (void)textButtonDidClicked
 {
     [self showTextEditController];
+    [self hiddenChooseView];
+}
+
+- (void)dtieButtonDidClicked
+{
+    if (self.parentDDViewController) {
+        DTieChooseDTieController * dtie = [[DTieChooseDTieController alloc] init];
+        dtie.delegate = self;
+        [self.parentDDViewController pushViewController:dtie animated:YES];
+    }
     [self hiddenChooseView];
 }
 
@@ -761,29 +813,43 @@
         };
         
         return cell;
+    }else if (model.type == DTieEditType_Text) {
+        DTieNewEditTextCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewEditTextCell" forIndexPath:indexPath];
+        
+        [cell configWithModel:model];
+        
+        __weak typeof(self) weakSelf = self;
+        __weak typeof(cell) weakCell = cell;
+        cell.addButtonHandle = ^{
+            
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+        };
+        
+        cell.preViewHandle = ^{
+            
+            DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:weakCell.model.detailsContent placeholder:@"请输入文字"];
+            weakSelf.currentModel = model;
+            text.delegate = self;
+            [weakSelf.parentDDViewController presentViewController:text animated:YES completion:nil];
+        };
+        
+        return cell;
+    }else{
+        DTieNewEditPostCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewEditPostCell" forIndexPath:indexPath];
+        
+        [cell configWithModel:model];
+        
+        __weak typeof(self) weakSelf = self;
+        __weak typeof(cell) weakCell = cell;
+        cell.addButtonHandle = ^{
+            
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+        };
+        
+        return cell;
     }
-    
-    DTieNewEditTextCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewEditTextCell" forIndexPath:indexPath];
-    
-    [cell configWithModel:model];
-    
-    __weak typeof(self) weakSelf = self;
-    __weak typeof(cell) weakCell = cell;
-    cell.addButtonHandle = ^{
-        
-        NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
-        [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
-    };
-    
-    cell.preViewHandle = ^{
-        
-        DTieEditTextViewController * text = [[DTieEditTextViewController alloc] initWithText:weakCell.model.detailsContent placeholder:@"请输入文字"];
-        weakSelf.currentModel = model;
-        text.delegate = self;
-        [weakSelf.parentDDViewController presentViewController:text animated:YES completion:nil];
-    };
-    
-    return cell;
 }
 
 - (NSArray *)originalArrayDataForTableView:(RTDragCellTableView *)tableView

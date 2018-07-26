@@ -19,6 +19,8 @@
 #import "DDLocationManager.h"
 #import "ApplicationConfigRequest.h"
 #import "BaiduMobStat.h"
+#import "DTieDetailRequest.h"
+#import "DTieNewDetailViewController.h"
 
 @implementation DDTool
 
@@ -31,16 +33,16 @@
     [[BaiduMobStat defaultStat] startWithAppId:BaiDuAppKey];
     
     //配置用户信息
-    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
-        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
-        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
-            
-            [[UserManager shareManager] loginWithDictionary:userInfo];
-            
-        }else {
-            
-        }
-    }
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
+//        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
+//        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
+//            
+//            [[UserManager shareManager] loginWithDictionary:userInfo];
+//            
+//        }else {
+//            
+//        }
+//    }
     
     [[UITableView appearance] setEstimatedRowHeight:0];
     [[UITableView appearance] setEstimatedSectionFooterHeight:0];
@@ -339,6 +341,54 @@
     CGFloat scale = image.size.height / image.size.width;
     CGFloat height = kMainBoundsWidth * scale;
     return height;
+}
+
++ (void)WXMiniProgramHandleWithPostID:(NSInteger)postID
+{
+    [WeChatManager shareManager].miniProgramPostID = postID;
+    if (postID == 0) {
+        return;
+    }
+    
+    if ([UserManager shareManager].isLogin) {
+        [WeChatManager shareManager].miniProgramPostID = 0;
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+        
+        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
+            
+            if (KIsDictionary(response)) {
+                
+                NSInteger code = [[response objectForKey:@"status"] integerValue];
+                if (code == 4002) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:[UIApplication sharedApplication].keyWindow];
+                    return;
+                }
+                
+                NSDictionary * data = [response objectForKey:@"data"];
+                if (KIsDictionary(data)) {
+                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                    
+                    if (dtieModel.deleteFlg == 1) {
+                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:[UIApplication sharedApplication].keyWindow];
+                        return;
+                    }
+                    DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                    
+                    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                    if (na && [na isKindOfClass:[UINavigationController class]]) {
+                        [na pushViewController:detail animated:YES];
+                    }
+                }
+            }
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [hud hideAnimated:YES];
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            [hud hideAnimated:YES];
+        }];
+    }
 }
 
 @end
