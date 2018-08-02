@@ -7,7 +7,7 @@
 //
 
 #import "DDDTieViewController.h"
-#import "DTieCollectionViewCell.h"
+#import "DTieHeaderLogoCell.h"
 #import "DTieNewEditViewController.h"
 #import "DTieNewEditViewController.h"
 #import "QNDDUploadManager.h"
@@ -158,7 +158,7 @@
     layout.minimumInteritemSpacing = 0;
     
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.collectionView registerClass:[DTieCollectionViewCell class] forCellWithReuseIdentifier:@"DTieCollectionViewCell"];
+    [self.collectionView registerClass:[DTieHeaderLogoCell class] forCellWithReuseIdentifier:@"DTieHeaderLogoCell"];
     self.collectionView.backgroundColor = self.view.backgroundColor;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -372,7 +372,7 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    DTieCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieCollectionViewCell" forIndexPath:indexPath];
+    DTieHeaderLogoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieHeaderLogoCell" forIndexPath:indexPath];
     
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     

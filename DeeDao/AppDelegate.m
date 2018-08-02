@@ -38,7 +38,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     [DDTool configApplication];
-    
+
     //百度地图
     self.mapManager = [[BMKMapManager alloc] init];
     BOOL temp = [self.mapManager start:BMK_KEY generalDelegate:nil];
@@ -55,15 +55,19 @@
 //    [BMKMapView customMapStyle:path];
 //    [BMKMapView enableCustomMapStyle:YES];//打开个性化地图
     
-    //开始定位
-    [[DDLocationManager shareManager] performSelector:@selector(startLocationService) withObject:nil afterDelay:.5f];
-    
     [self createRootViewController];
     
     [self.window makeKeyAndVisible];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:DDUserDidLoginOutNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userShouldRelogin) name:@"UserShouldBackToRelogin" object:nil];
+    
+    //开始定位
+    [[DDLocationManager shareManager] startLocationService];
+    
+//    if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey]) {
+//        [[DDLocationManager shareManager] registerLocaltionNotification];
+//    }
     
     return YES;
 }

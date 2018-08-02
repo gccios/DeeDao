@@ -30,6 +30,9 @@
         make.bottom.mas_equalTo(120 * scale);
     }];
     self.yearLabel.text = [NSString stringWithFormat:@"%ld", self.year];
+    if (self.year == -1) {
+        self.yearLabel.text = @"全部时间";
+    }
 }
 
 - (void)onBackgroundTap:(UITapGestureRecognizer *)tap

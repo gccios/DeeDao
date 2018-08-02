@@ -249,11 +249,12 @@
         make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
     }];
     
-    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    self.yaoyueNumberShowLabel.backgroundColor = UIColorFromRGB(0xDB6283);
     [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
     [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(10 * scale);
+        make.left.mas_equalTo(30 * scale);
         make.width.mas_equalTo(42 * scale);
         make.height.mas_equalTo(42 * scale);
     }];

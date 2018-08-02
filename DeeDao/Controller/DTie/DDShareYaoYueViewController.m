@@ -16,7 +16,11 @@
 #import "UserYaoYueModel.h"
 #import "DDTool.h"
 
-@interface DDShareYaoYueViewController ()<UITableViewDelegate, UITableViewDataSource>
+#import <BaiduMapAPI_Map/BMKMapView.h>
+#import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+
+@interface DDShareYaoYueViewController ()<UITableViewDelegate, UITableViewDataSource, BMKMapViewDelegate>
 
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, strong) UIView * topView;
@@ -29,6 +33,12 @@
 @property (nonatomic, strong) UIView * shareView;
 
 @property (nonatomic, strong) NSArray * selectUsers;
+
+@property (nonatomic, strong) UIImageView * mapImageView;
+@property (nonatomic, strong) BMKMapView * mapView;
+
+@property (nonatomic, assign) BOOL isFinishMap;
+@property (nonatomic, assign) BOOL isFinishCode;
 
 @end
 
@@ -65,15 +75,28 @@
     
     CGFloat userHeight = lineCount * height;
     
-    self.resultView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1980 * scale + userHeight)];
+    self.resultView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 2400 * scale + userHeight)];
     self.resultView.backgroundColor = [UIColor whiteColor];
+    
+    UIView * userLogoBGView = [[UIView alloc] initWithFrame:CGRectZero];
+    userLogoBGView.backgroundColor = [UIColor whiteColor];
+    [self.resultView addSubview:userLogoBGView];
+    [userLogoBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(80 * scale);
+        make.left.mas_equalTo(65 * scale);
+        make.width.height.mas_equalTo(96 * scale);
+    }];
+    userLogoBGView.layer.cornerRadius = 48 * scale;
+    userLogoBGView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    userLogoBGView.layer.shadowOpacity = .5f;
+    userLogoBGView.layer.shadowRadius = 6 * scale;
+    userLogoBGView.layer.shadowOffset = CGSizeMake(0, 3 * scale);
     
     UIImageView * logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage new]];
     
-    [self.resultView addSubview:logoImageView];
+    [userLogoBGView addSubview:logoImageView];
     [logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(80 * scale);
-        make.left.mas_equalTo(65 * scale);
+        make.center.mas_equalTo(0);
         make.width.height.mas_equalTo(96 * scale);
     }];
     [logoImageView sd_setImageWithURL:[NSURL URLWithString:[UserManager shareManager].user.portraituri]];
@@ -83,30 +106,74 @@
     nameLabel.text = [UserManager shareManager].user.nickname;
     [self.resultView addSubview:nameLabel];
     [nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(logoImageView.mas_right).offset(15 * scale);
-        make.centerY.mas_equalTo(logoImageView);
+        make.left.mas_equalTo(userLogoBGView.mas_right).offset(15 * scale);
+        make.centerY.mas_equalTo(userLogoBGView);
         make.right.mas_equalTo(-490 * scale);
         make.height.mas_equalTo(45 * scale);
     }];
     
-    UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
-    tipLabel.text = @"通过以下D帖发起要约";
-    [self.resultView addSubview:tipLabel];
-    [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(logoImageView);
+//    UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
+//    tipLabel.text = @"通过以下D帖发起要约";
+//    [self.resultView addSubview:tipLabel];
+//    [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(userLogoBGView);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.height.mas_equalTo(55 * scale);
+//    }];
+    
+    UIImageView * yaoyueImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    yaoyueImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [yaoyueImageView setImage:[UIImage imageNamed:@"yaoyueno"]];
+    [self.resultView addSubview:yaoyueImageView];
+    [yaoyueImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(userLogoBGView);
         make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(55 * scale);
+        make.height.mas_equalTo(120 * scale);
     }];
+    
+    UIView * BGView = [[UIView alloc] initWithFrame:CGRectZero];
+    BGView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self.resultView addSubview:BGView];
+    [BGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(204 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(1500 * scale);
+    }];
+    BGView.layer.cornerRadius = 24 * scale;
+    BGView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    BGView.layer.shadowOpacity = .3f;
+    BGView.layer.shadowRadius = 12 * scale;
+    BGView.layer.shadowOffset = CGSizeMake(0, 6 * scale);
     
     UIView * contenView = [[UIView alloc] initWithFrame:CGRectZero];
     contenView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     [DDViewFactoryTool cornerRadius:24 * scale withView:contenView];
-    [self.resultView addSubview:contenView];
+    [BGView addSubview:contenView];
     [contenView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(204 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(1080 * scale);
+        make.edges.mas_equalTo(0);
+    }];
+    
+    UIView * yaoyueView = [[UIView alloc] initWithFrame:CGRectZero];
+    [contenView addSubview:yaoyueView];
+    [yaoyueView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(156 * scale);
+    }];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 120 * scale, 156 * scale);
+    [yaoyueView.layer addSublayer:gradientLayer];
+    
+    UILabel * yaoyueLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    yaoyueLabel.text = @"发现你们都想约这里，那么我们一起去吧";
+    [yaoyueView addSubview:yaoyueLabel];
+    [yaoyueLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
     }];
     
     UIImageView * coverImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
@@ -114,55 +181,47 @@
     coverImageView.clipsToBounds = YES;
     [contenView addSubview:coverImageView];
     [coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(yaoyueView.mas_bottom);
+        make.left.right.mas_equalTo(0);
         make.height.mas_equalTo(480 * scale);
     }];
     
-    UIImageView * letterImageview = [[UIImageView alloc] init];
-    [letterImageview setImage:[UIImage imageNamed:@"letterLogo"]];
-    [coverImageView addSubview:letterImageview];
-    [letterImageview mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.width.mas_equalTo(168 * scale);
-        make.height.mas_equalTo(120 * scale);
-    }];
+//    UIImageView * letterImageview = [[UIImageView alloc] init];
+//    [letterImageview setImage:[UIImage imageNamed:@"letterLogo"]];
+//    [coverImageView addSubview:letterImageview];
+//    [letterImageview mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(60 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.width.mas_equalTo(168 * scale);
+//        make.height.mas_equalTo(120 * scale);
+//    }];
     
-    UIView * coverBlackView = [[UIView alloc] initWithFrame:CGRectZero];
-    coverBlackView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
-    [coverImageView addSubview:coverBlackView];
-    [coverBlackView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.mas_equalTo(0);
-        make.height.mas_equalTo(120 * scale);
-    }];
-    
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentLeft];
-    titleLabel.text = self.model.postSummary;
-    [coverBlackView addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.centerY.mas_equalTo(0);
-        make.height.mas_equalTo(55 * scale);
-        make.right.mas_equalTo(-60 * scale);
-    }];
-    
-    UILabel * locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    locationLabel.text = [NSString stringWithFormat:@"地址：%@", self.model.sceneAddress];
-    [contenView addSubview:locationLabel];
-    [locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(55 * scale);
-        make.top.mas_equalTo(coverImageView.mas_bottom).offset(48 * scale);
-        make.height.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-55 * scale);
-    }];
+//    UIView * coverBlackView = [[UIView alloc] initWithFrame:CGRectZero];
+//    coverBlackView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+//    [coverImageView addSubview:coverBlackView];
+//    [coverBlackView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.bottom.right.mas_equalTo(0);
+//        make.height.mas_equalTo(120 * scale);
+//    }];
+//
+//    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentLeft];
+//    titleLabel.text = self.model.postSummary;
+//    [coverBlackView addSubview:titleLabel];
+//    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(60 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.height.mas_equalTo(55 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//    }];
     
     UILabel * titleInputLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    titleInputLabel.text = @"主题：";
+    titleInputLabel.text = @"整啥：";
     [contenView addSubview:titleInputLabel];
     [titleInputLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(locationLabel.mas_bottom).offset(60 * scale);
+        make.top.mas_equalTo(coverImageView.mas_bottom).offset(48 * scale);
         make.left.mas_equalTo(57 * scale);
         make.height.mas_equalTo(72 * scale);
+        make.width.mas_equalTo(140 * scale);
     }];
     
     UIView * titleLineView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -194,6 +253,7 @@
         make.top.mas_equalTo(titleInputLabel.mas_bottom).offset(60 * scale);
         make.left.mas_equalTo(57 * scale);
         make.height.mas_equalTo(72 * scale);
+        make.width.mas_equalTo(140 * scale);
     }];
     
     UIView * timeLineView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -217,6 +277,54 @@
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
+    
+    UILabel * locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    locationLabel.text = [NSString stringWithFormat:@"地址：%@", self.model.sceneAddress];
+    [contenView addSubview:locationLabel];
+    [locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(titleInputLabel);
+        make.top.mas_equalTo(timeLineView.mas_bottom).offset(48 * scale);
+        make.height.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-55 * scale);
+    }];
+    
+    self.mapImageView = [[UIImageView alloc] initWithFrame:CGRectZero];
+    self.mapImageView.clipsToBounds = YES;
+    self.mapImageView.contentMode = UIViewContentModeScaleAspectFill;
+    [contenView addSubview:self.mapImageView];
+    [self.mapImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.top.mas_equalTo(locationLabel.mas_bottom).offset(40 * scale);
+    }];
+    
+    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.mapView.delegate = self;
+    self.mapView.showsUserLocation = NO;
+    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
+    self.mapView.gesturesEnabled = NO;
+    self.mapView.buildingsEnabled = NO;
+    
+    [contenView insertSubview:self.mapView atIndex:0];
+    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.top.mas_equalTo(locationLabel.mas_bottom).offset(40 * scale);
+    }];
+    
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
+    
+    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    [self.mapView addAnnotation:annotation];
+    [self.mapView setRegion:BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(2, 2))];
     
 //
 //    UILabel * numberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentCenter];
@@ -252,19 +360,19 @@
     codeImageView.clipsToBounds = YES;
     
     UILabel * bottomTipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentCenter];
-    bottomTipLabel.text = @"长按识别小程序，导航过去加入Party";
+    bottomTipLabel.text = @"识别二维码，导航过去加入聚会";
     [self.resultView addSubview:bottomTipLabel];
     [bottomTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
         make.height.mas_equalTo(60 * scale);
-        make.top.mas_equalTo(logoBGView.mas_bottom).offset(60 * scale);
+        make.top.mas_equalTo(logoBGView.mas_bottom).offset(70 * scale);
     }];
     
     UIView * contenLineView = [[UIView alloc] initWithFrame:CGRectZero];
     contenLineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     [self.resultView addSubview:contenLineView];
     [contenLineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(bottomTipLabel.mas_bottom).offset(77 * scale);
+        make.top.mas_equalTo(bottomTipLabel.mas_bottom).offset(90 * scale);
         make.left.mas_equalTo(120 * scale);
         make.right.mas_equalTo(-120 * scale);
         make.height.mas_equalTo(2 * scale);
@@ -337,7 +445,7 @@
         make.height.mas_equalTo(2 * scale);
     }];
     
-    UILabel * bottomDeeDaoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentCenter];
+    UILabel * bottomDeeDaoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
     bottomDeeDaoLabel.backgroundColor = UIColorFromRGB(0xFFFFFF);
     bottomDeeDaoLabel.text = @"发布于DeeDao地到APP";
     [self.resultView addSubview:bottomDeeDaoLabel];
@@ -371,17 +479,26 @@
             }else{
                 //                [self.logoImageView setImage:[UIImage imageNamed:@"gongzhongCode"]];
             }
-
-            [hud hideAnimated:YES];
         }];
+        
+        if (self.isFinishMap) {
+            [hud hideAnimated:YES];
+        }
+        self.isFinishCode = YES;
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        [hud hideAnimated:YES];
+        if (self.isFinishMap) {
+            [hud hideAnimated:YES];
+        }
+        self.isFinishCode = YES;
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [hud hideAnimated:YES];
+        if (self.isFinishMap) {
+            [hud hideAnimated:YES];
+        }
+        self.isFinishCode = YES;
         
     }];
     
@@ -427,6 +544,26 @@
     cell.backgroundColor = [UIColor clearColor];
     
     return cell;
+}
+
+- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+{
+    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+    view.annotation = annotation;
+    view.image = [UIImage imageNamed:@"locationBig"];
+    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+    
+    return view;
+}
+
+- (void)mapViewDidFinishRendering:(BMKMapView *)mapView
+{
+    [self.mapImageView setImage:[mapView takeSnapshot]];
+    [mapView removeFromSuperview];
+    if (self.isFinishCode) {
+        [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+    }
+    self.isFinishMap = YES;
 }
 
 - (void)createTopView
@@ -573,6 +710,11 @@
         }];
         
     }
+}
+
+- (void)dealloc
+{
+    self.mapView.delegate = nil;
 }
 
 - (void)didReceiveMemoryWarning {

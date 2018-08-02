@@ -16,4 +16,6 @@
 
 - (void)configTimeSort:(NSInteger)type;
 
+- (void)configWithAuthorID:(NSArray *)authorID;
+
 @end

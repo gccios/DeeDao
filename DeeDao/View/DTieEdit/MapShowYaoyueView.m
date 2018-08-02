@@ -18,6 +18,7 @@
 #import "UserInfoViewController.h"
 #import "DDYaoYueViewController.h"
 #import "DTiePOIViewController.h"
+#import "UserManager.h"
 
 @interface MapShowYaoyueView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -82,7 +83,7 @@
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);
         make.right.mas_equalTo(-30 * scale);
-        make.width.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(150 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     [cancleButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -107,26 +108,28 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
-    bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
-    [self addSubview:bottomHandleView];
-    [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.mas_equalTo(0);
-        make.height.mas_equalTo(324 * scale);
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"查看更多信息"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
+    leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    leftHandleButton.layer.borderWidth = 3 * scale;
+    [self addSubview:leftHandleButton];
+    [leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.bottom.mas_equalTo(-40 * scale);
     }];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"查看更多信息"];
-    [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
-    handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    handleButton.layer.borderWidth = 3 * scale;
-    [bottomHandleView addSubview:handleButton];
-    [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(144 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.centerY.mas_equalTo(0);
+    [leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cancleButtonDidClicked)];
+    UIView * backView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self addSubview:backView];
+    [backView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(contenView.mas_top);
     }];
-    [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [backView addGestureRecognizer:tap];
     
     SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -151,6 +154,11 @@
             }
             
         }
+        
+        if (self.dtieModel.wyyFlg == 1) {
+            [self.userSource insertObject:[UserManager shareManager].user atIndex:0];
+        }
+        
         self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, 430 * scale);
         [self.collectionView reloadData];
         
@@ -179,14 +187,50 @@
                 [weakSelf showUserInfo];
             };
             
-            view.yaoyueHandle = ^{
-                [weakSelf showYaoYue];
+            view.yaoyueHandle = ^() {
+                [weakSelf reloadWYYStatus];
             };
+            
+//            view.yaoyueHandle = ^{
+//                [weakSelf showYaoYue];
+//            };
         }
         
         return view;
     }
     return nil;
+}
+
+- (void)reloadWYYStatus
+{
+    if (self.dtieModel.wyyFlg == 1) {
+        
+        if (self.userSource.count == 0) {
+            [self.userSource insertObject:[UserManager shareManager].user atIndex:0];
+            [self.collectionView reloadData];
+        }else{
+            UserModel * model = [self.userSource firstObject];
+            if (model != [UserManager shareManager].user) {
+                [self.userSource insertObject:[UserManager shareManager].user atIndex:0];
+                [self.collectionView reloadData];
+            }
+        }
+        
+    }else{
+        
+        if (self.userSource.count == 0) {
+            
+        }else{
+            UserModel * model = [self.userSource firstObject];
+            if (model == [UserManager shareManager].user) {
+                [self.userSource removeObject:model];
+                [self.collectionView reloadData];
+            }
+        }
+        
+    }
+    
+    [self.collectionView reloadData];
 }
 
 - (void)showPostDetail
@@ -240,6 +284,12 @@
 - (void)showYaoYue
 {
     [self cancleButtonDidClicked];
+    
+    if (self.dtieModel == nil) {
+        [MBProgressHUD showTextHUDWithText:@"该点暂时没有帖子哟~" inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
+    
     DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.dtieModel];
     
     UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
@@ -255,13 +305,24 @@
     return _userSource;
 }
 
-- (void)handleButtonDidClicked
+- (void)rightHandleButtonDidClicked
 {
     [self removeFromSuperview];
+    
+    if (self.dtieModel == nil) {
+        [MBProgressHUD showTextHUDWithText:@"该点暂时没有帖子哟~" inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
+    
     DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:self.dtieModel];
     UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
     UINavigationController * na = (UINavigationController *)tab.selectedViewController;
     [na pushViewController:poi animated:YES];
+}
+
+- (void)leftHandleButtonDidClicked
+{
+    [self showYaoYue];
 }
 
 - (void)cancleButtonDidClicked

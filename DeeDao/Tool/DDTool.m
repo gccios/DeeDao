@@ -32,6 +32,11 @@
     
     [[BaiduMobStat defaultStat] startWithAppId:BaiDuAppKey];
     
+//    // 设置通知的类型可以为弹窗提示,声音提示,应用图标数字提示
+//    UIUserNotificationSettings *setting = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert categories:nil];
+//    // 授权通知
+//    [[UIApplication sharedApplication] registerUserNotificationSettings:setting];
+    
     //配置用户信息
 //    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
 //        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];

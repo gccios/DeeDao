@@ -71,6 +71,15 @@
                 
                 break;
                 
+            case MineMenuType_AlertList:
+                
+            {
+                self.imageName = @"achievement";
+                self.title = @"提醒记录设置";
+            }
+                
+                break;
+                
             default:
                 break;
         }

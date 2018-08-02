@@ -91,7 +91,7 @@
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);
         make.right.mas_equalTo(-30 * scale);
-        make.width.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(150 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     [cancleButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

@@ -166,6 +166,7 @@
     self.mapView.userTrackingMode = BMKUserTrackingModeNone;
     self.mapView.buildingsEnabled = NO;
     self.mapView.showMapPoi = NO;
+    self.mapView.rotateEnabled = NO;
     
     [self.view addSubview:self.mapView];
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -418,7 +419,17 @@
         CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
         [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
         
-        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleWithYear:self.year mouth:0 day:0] endDate:[DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0] sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
+        double startDate;
+        double endDate;
+        if (self.year == -1) {
+            startDate = 0.f;
+            endDate = [DDTool getTimeCurrentWithDouble];
+        }else{
+            startDate = [DDTool DDGetDoubleWithYear:self.year mouth:0 day:0];
+            endDate = [DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0];
+        }
+        
+        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             if (KIsDictionary(response)) {
@@ -589,6 +600,64 @@
         }
         
         return yaoyueView;
+        
+    }else if (self.sourceType == 8) {
+        
+        NSInteger index = [self.mapView.annotations indexOfObject:annotation];
+        DTieModel * model = [self.mapSource objectAtIndex:index];
+        
+        BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+        view.annotation = annotation;
+        if (model.source == 1) {
+            view.image = [UIImage imageNamed:@"bozhuGongzhong"];
+        }else if (model.concernFlg == 1) {
+            view.image = [UIImage imageNamed:@"bozhuGuanzhu"];
+        }else{
+            view.image = [UIImage imageNamed:@"bozhuDefault"];
+        }
+        view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+        
+        if ([view viewWithTag:888]) {
+            UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        }else{
+            
+            CGFloat width = view.frame.size.width;
+            CGFloat logoWidth;
+            CGFloat originX;
+            CGFloat originY;
+            
+            if (model.source == 1) {
+                
+                logoWidth = width * .6f;
+                originX = width * .2f;
+                originY = width * .19f;
+                
+            }else if (model.concernFlg == 1) {
+                
+                logoWidth = width * .6f;
+                originX = width * .19f;
+                originY = width * .23f;
+                
+            }else{
+                
+                logoWidth = width * .73f;
+                originX = width * .13f;
+                originY = width * .11f;
+                
+            }
+            
+            UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(originX, originY, logoWidth, logoWidth)];
+            
+            imageView.contentMode = UIViewContentModeScaleAspectFill;
+            imageView.tag = 888;
+            [view addSubview:imageView];
+            [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        }
+        
+        return view;
+        
     }
     
     BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
@@ -597,6 +666,11 @@
     view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
     
     NSInteger index = [self.mapView.annotations indexOfObject:annotation];
+    
+    if (self.mapSource.count == 0) {
+        return view;
+    }
+    
     DTieModel * model = [self.mapSource objectAtIndex:index];
     
     if ([view viewWithTag:888]) {
@@ -729,6 +803,11 @@
         self.logoBGColor = UIColorFromRGB(0x999999);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
+        if (self.year == -1) {
+            OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
+            self.year = map.year;
+            self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
+        }
         
         self.topAlertLabel.text = @"陌生人的公开D帖";
     }else if (self.sourceType == 6) {
@@ -739,6 +818,12 @@
         self.selectButton.enabled = YES;
         
         self.topAlertLabel.text = @"所有发起约这的好友";
+        
+        if (self.year == -1) {
+            OnlyMapViewController * map = [_mapSource objectAtIndex:1];
+            self.year = map.year;
+            self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
+        }
         
     }else{
         self.sourceType = 7;
@@ -779,12 +864,21 @@
         [self.safariPageController.view removeFromSuperview];
     }];
     
+    if (pageIndex == 0) {
+        if (self.sourceType == 6 || self.sourceType == 666) {
+            [MBProgressHUD showTextHUDWithText:@"该频道暂不支持查看全部时间" inView:self.view];
+            return;
+        }
+    }
+    
     if (self.year != viewController.year) {
         self.year = viewController.year;
         self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
+        if (self.year == -1) {
+            self.timeLabel.text = @"全部时间";
+        }
         [self.mapView removeAnnotations:self.mapView.annotations];
         [self requestMapViewLocations];
-        
     }
 }
 
@@ -824,6 +918,11 @@
         NSDateComponents* comp = [gregorian components: unitFlags
                                               fromDate:dt];
         NSInteger year = comp.year;
+        
+        OnlyMapViewController * allMap = [[OnlyMapViewController alloc] init];
+        allMap.year = -1;
+        allMap.delegate = self;
+        [_mapVCSource addObject:allMap];
         
         for (NSInteger i = 0; i < 50; i++) {
             OnlyMapViewController * map = [[OnlyMapViewController alloc] init];

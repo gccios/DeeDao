@@ -106,6 +106,8 @@
 		0641711220B3FE3F0075ECB6 /* SeriesChoosDTieController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711120B3FE3F0075ECB6 /* SeriesChoosDTieController.m */; };
 		0641711520B419800075ECB6 /* CreateOrUpdateSeriesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711420B419800075ECB6 /* CreateOrUpdateSeriesRequest.m */; };
 		0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0641711720B42F360075ECB6 /* DraftSeriesRequest.m */; };
+		06461B2C21115AFA004CAF88 /* ChooseUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06461B2B21115AFA004CAF88 /* ChooseUserViewController.m */; };
+		06461B2F21115D69004CAF88 /* SelectPostAuthorRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06461B2E21115D69004CAF88 /* SelectPostAuthorRequest.m */; };
 		0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30620B66132009B7C27 /* SeriesDetailModel.m */; };
 		0647F30A20B661D6009B7C27 /* SeriesDetailRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30920B661D6009B7C27 /* SeriesDetailRequest.m */; };
 		0647F30D20B6780F009B7C27 /* UserInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0647F30C20B6780F009B7C27 /* UserInfoViewController.m */; };
@@ -175,6 +177,8 @@
 		066033F220B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033EA20B2BE6000A54D81 /* SCSafariZoomedOutLayouter.m */; };
 		066033F920B2BF3D00A54D81 /* OnlyMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033F820B2BF3D00A54D81 /* OnlyMapViewController.m */; };
 		066033FC20B2D9C000A54D81 /* DTieFoundEditView.m in Sources */ = {isa = PBXBuildFile; fileRef = 066033FB20B2D9C000A54D81 /* DTieFoundEditView.m */; };
+		066192EA2112A3590051CAAC /* NotificationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 066192E92112A3590051CAAC /* NotificationListViewController.m */; };
+		066192ED2112AA8C0051CAAC /* NotificationListCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 066192EC2112AA8C0051CAAC /* NotificationListCell.m */; };
 		0671DE4B20CA24A8007D9F4E /* ShareImageModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0671DE4A20CA24A8007D9F4E /* ShareImageModel.m */; };
 		0671DE5120CA282C007D9F4E /* SelectAttentionMeReuqest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0671DE5020CA282C007D9F4E /* SelectAttentionMeReuqest.m */; };
 		06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 06733F3320A28BD9007875A7 /* AppDelegate.m */; };
@@ -466,6 +470,10 @@
 		0641711420B419800075ECB6 /* CreateOrUpdateSeriesRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CreateOrUpdateSeriesRequest.m; sourceTree = "<group>"; };
 		0641711620B42F360075ECB6 /* DraftSeriesRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DraftSeriesRequest.h; sourceTree = "<group>"; };
 		0641711720B42F360075ECB6 /* DraftSeriesRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DraftSeriesRequest.m; sourceTree = "<group>"; };
+		06461B2A21115AFA004CAF88 /* ChooseUserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChooseUserViewController.h; sourceTree = "<group>"; };
+		06461B2B21115AFA004CAF88 /* ChooseUserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ChooseUserViewController.m; sourceTree = "<group>"; };
+		06461B2D21115D69004CAF88 /* SelectPostAuthorRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectPostAuthorRequest.h; sourceTree = "<group>"; };
+		06461B2E21115D69004CAF88 /* SelectPostAuthorRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SelectPostAuthorRequest.m; sourceTree = "<group>"; };
 		0647F30520B66132009B7C27 /* SeriesDetailModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesDetailModel.h; sourceTree = "<group>"; };
 		0647F30620B66132009B7C27 /* SeriesDetailModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SeriesDetailModel.m; sourceTree = "<group>"; };
 		0647F30820B661D6009B7C27 /* SeriesDetailRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SeriesDetailRequest.h; sourceTree = "<group>"; };
@@ -607,6 +615,10 @@
 		066033F820B2BF3D00A54D81 /* OnlyMapViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OnlyMapViewController.m; sourceTree = "<group>"; };
 		066033FA20B2D9C000A54D81 /* DTieFoundEditView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieFoundEditView.h; sourceTree = "<group>"; };
 		066033FB20B2D9C000A54D81 /* DTieFoundEditView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieFoundEditView.m; sourceTree = "<group>"; };
+		066192E82112A3590051CAAC /* NotificationListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationListViewController.h; sourceTree = "<group>"; };
+		066192E92112A3590051CAAC /* NotificationListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationListViewController.m; sourceTree = "<group>"; };
+		066192EB2112AA8C0051CAAC /* NotificationListCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationListCell.h; sourceTree = "<group>"; };
+		066192EC2112AA8C0051CAAC /* NotificationListCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationListCell.m; sourceTree = "<group>"; };
 		0671DE4920CA24A8007D9F4E /* ShareImageModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareImageModel.h; sourceTree = "<group>"; };
 		0671DE4A20CA24A8007D9F4E /* ShareImageModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareImageModel.m; sourceTree = "<group>"; };
 		0671DE4F20CA282C007D9F4E /* SelectAttentionMeReuqest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SelectAttentionMeReuqest.h; sourceTree = "<group>"; };
@@ -1049,6 +1061,8 @@
 				06180B342109718F007D402C /* SelectMapYaoyueRequest.m */,
 				06180B3F2109A868007D402C /* SelectMapYaoyueDetailRequest.h */,
 				06180B402109A868007D402C /* SelectMapYaoyueDetailRequest.m */,
+				06461B2D21115D69004CAF88 /* SelectPostAuthorRequest.h */,
+				06461B2E21115D69004CAF88 /* SelectPostAuthorRequest.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1123,6 +1137,8 @@
 				06E5557420C93E8A00C0CE9D /* AgreementViewController.m */,
 				062EFCC620CE78E50019FF68 /* BloggerLinkViewController.h */,
 				062EFCC720CE78E50019FF68 /* BloggerLinkViewController.m */,
+				066192E82112A3590051CAAC /* NotificationListViewController.h */,
+				066192E92112A3590051CAAC /* NotificationListViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -1653,6 +1669,8 @@
 				06E209DA20B035BB00EA541B /* MainInfoTableViewCell.m */,
 				06E209E220B03F1800EA541B /* SystemAlertTableViewCell.h */,
 				06E209E320B03F1800EA541B /* SystemAlertTableViewCell.m */,
+				066192EB2112AA8C0051CAAC /* NotificationListCell.h */,
+				066192EC2112AA8C0051CAAC /* NotificationListCell.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -1759,6 +1777,8 @@
 				063926B220F85AEC000E7818 /* DTieSeeDetailViewController.m */,
 				06602040210722A4005E3D09 /* DDDaZhaoHuViewController.h */,
 				06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */,
+				06461B2A21115AFA004CAF88 /* ChooseUserViewController.h */,
+				06461B2B21115AFA004CAF88 /* ChooseUserViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -1873,6 +1893,11 @@
 				TargetAttributes = {
 					06733F2E20A28BD9007875A7 = {
 						CreatedOnToolsVersion = 9.3;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					06733F4620A28BDA007875A7 = {
 						CreatedOnToolsVersion = 9.3;
@@ -1990,6 +2015,7 @@
 				0652FB7520F774A700080225 /* AddPostSeeRequest.m in Sources */,
 				0614E7A321088A3E002F8FC5 /* MapShowYaoyueView.m in Sources */,
 				06BB78FA20A9C91F0049F28F /* MailSmallTableViewCell.m in Sources */,
+				066192ED2112AA8C0051CAAC /* NotificationListCell.m in Sources */,
 				06733FAB20A316A8007875A7 /* DDTabHomeViewController.m in Sources */,
 				0674E68E20AEDC34006961E1 /* MailModel.m in Sources */,
 				06733F9820A2D748007875A7 /* UserManager.m in Sources */,
@@ -2096,6 +2122,7 @@
 				064B349B20A9289800B7D0E4 /* AchievementDetailViewController.m in Sources */,
 				06286AB420BFFF2300434068 /* DTieContentView.m in Sources */,
 				062048D920B7F2EF008DDF25 /* SelectSecurityRequest.m in Sources */,
+				06461B2F21115D69004CAF88 /* SelectPostAuthorRequest.m in Sources */,
 				061EDD7220C5709000066E73 /* ForgetPasswordViewController.m in Sources */,
 				066033BB20B2998900A54D81 /* SeriesViewController.m in Sources */,
 				067A4F8020FDF5AC00869D80 /* BMKClusterItem.m in Sources */,
@@ -2130,6 +2157,7 @@
 				06FCD63420A5528500E6EAA4 /* RDTextView.m in Sources */,
 				0652FB6320F6F8B800080225 /* DTieMapShareView.m in Sources */,
 				066033D420B2BDC800A54D81 /* SCSlidingPageLayouter.m in Sources */,
+				066192EA2112A3590051CAAC /* NotificationListViewController.m in Sources */,
 				064F0B4B20A49682007C0A4F /* MineInfoViewController.m in Sources */,
 				06FCD63A20A5844200E6EAA4 /* DTieEditTextViewController.m in Sources */,
 				06301B4B20A88242003580CA /* MYWalletViewController.m in Sources */,
@@ -2187,6 +2215,7 @@
 				06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */,
 				06FCD63D20A5A9E600E6EAA4 /* DTieEditTextTableViewCell.m in Sources */,
 				06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */,
+				06461B2C21115AFA004CAF88 /* ChooseUserViewController.m in Sources */,
 				06286AB720BFFF3500434068 /* DTieQuanxianView.m in Sources */,
 				064B34C020A99A6B00B7D0E4 /* DDPrivateViewController.m in Sources */,
 				06301B4520A6D309003580CA /* XFPhotoLibraryManager.m in Sources */,

@@ -171,15 +171,16 @@
     [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
         make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
-        make.width.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(120 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
     
-    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    self.yaoyueNumberShowLabel.backgroundColor = UIColorFromRGB(0xDB6283);
     [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
     [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(10 * scale);
+        make.left.mas_equalTo(30 * scale);
         make.width.mas_equalTo(42 * scale); 
         make.height.mas_equalTo(42 * scale);
     }];
@@ -190,6 +191,26 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
     self.yaoyueNumberLabel.userInteractionEnabled = YES;
     [self.yaoyueNumberLabel addGestureRecognizer:tap];
+    
+    UIButton * backHomeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"返回首页"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:backHomeButton];
+    backHomeButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    backHomeButton.layer.borderWidth = 3 * scale;
+    [self addSubview:backHomeButton];
+    [backHomeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.bottom.mas_equalTo(-30 * scale);
+    }];
+    [backHomeButton addTarget:self action:@selector(backHomeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)backHomeButtonDidClicked
+{
+    if (self.backButtonDidClicked) {
+        self.backButtonDidClicked();
+    }
 }
 
 - (void)readButtonDidTouchUpInside

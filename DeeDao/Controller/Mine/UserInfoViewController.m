@@ -130,6 +130,7 @@
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 UserModel * model = [UserModel mj_objectWithKeyValues:data];
+                [model.postBeanList makeObjectsPerformSelector:@selector(configWithAuthor:) withObject:model];
                 self.model = model;
             }
             [self createHeaderView];

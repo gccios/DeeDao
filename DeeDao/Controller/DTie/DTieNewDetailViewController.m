@@ -253,7 +253,7 @@
 //            return;
 //        }
         
-        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ld", self.model.postId, [UserManager shareManager].user.cid];
+        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ldisBlogger", self.model.postId, [UserManager shareManager].user.cid];
 //        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
 //        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
 //
@@ -376,37 +376,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    if (!self.isPreRead) {
-        CGFloat scale = kMainBoundsWidth / 1080.f;
-        
-        UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
-        bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
-        [self.view addSubview:bottomHandleView];
-        [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.bottom.right.mas_equalTo(0);
-            make.height.mas_equalTo(324 * scale);
-        }];
-        
-        UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"返回首页"];
-        [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
-        handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-        handleButton.layer.borderWidth = 3 * scale;
-        [bottomHandleView addSubview:handleButton];
-        [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(60 * scale);
-            make.height.mas_equalTo(144 * scale);
-            make.right.mas_equalTo(-60 * scale);
-            make.centerY.mas_equalTo(0);
-        }];
-        [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    }
-    
     [self createTopView];
-}
-
-- (void)handleButtonDidClicked
-{
-    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)createTopView

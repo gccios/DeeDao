@@ -8,7 +8,6 @@
 
 #import "DTieModel.h"
 #import "DDTool.h"
-#import "UserManager.h"
 
 @implementation DTieModel
 
@@ -67,6 +66,14 @@
         postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
     }
     _postFirstPicture = [DDTool getImageURLWithHtml:postFirstPicture];
+}
+
+- (void)configWithAuthor:(UserModel *)model
+{
+    if (model && [model isKindOfClass:[UserModel class]]) {
+        _portraituri = model.portraituri;
+        _nickname = model.nickname;
+    }
 }
 
 @end

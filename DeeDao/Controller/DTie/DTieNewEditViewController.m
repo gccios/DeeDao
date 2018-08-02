@@ -817,6 +817,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     model.portraituri = [UserManager shareManager].user.portraituri;
     model.sceneAddress = self.contenView.locationLabel.text;
     model.sceneBuilding = self.contenView.choosePOI.name;
+    model.sceneAddressLat = self.contenView.choosePOI.pt.latitude;
+    model.sceneAddressLng = self.contenView.choosePOI.pt.longitude;
     model.updateTime = [[NSDate date] timeIntervalSince1970];
     model.ifCanSee = YES;
     

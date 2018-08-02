@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <MJExtension.h>
-#import "DTieModel.h"
 
 @interface UserModel : NSObject
 

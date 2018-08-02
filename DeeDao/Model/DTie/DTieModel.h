@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "DTieEditModel.h"
-#import "UserModel.h"
+#import "UserManager.h"
 
 //typedef enum : NSUInteger {
 //    DTieType_Add,
@@ -60,5 +60,10 @@
 @property (nonatomic, strong) NSArray * thankList;
 @property (nonatomic, strong) NSArray * collectList;
 @property (nonatomic, strong) NSArray * details;
+
+@property (nonatomic, assign) NSInteger source;
+@property (nonatomic, assign) NSInteger concernFlg; //关注
+
+- (void)configWithAuthor:(UserModel *)model;
 
 @end

@@ -81,8 +81,12 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                     [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
                         model.codeImage = image;
                         
-                        UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
-//                        [shareItems addObject:result];
+                        UIImage * result;
+                        if (i == images.count - 1) {
+                            result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
+                        }else{
+                            result = [self image:bgImage addMiniProgramCodeImage:model.codeImage];
+                        }
                         
                         NSString * path = [NSString stringWithFormat:@"%@/share%ld.jpg", documentPath, i];
                         [UIImagePNGRepresentation(result) writeToFile:path atomically:YES];
@@ -157,7 +161,12 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                     [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
                         model.codeImage = image;
                         
-                        UIImage * result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
+                        UIImage * result;
+                        if (i == images.count - 1) {
+                            result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
+                        }else{
+                            result = [self image:bgImage addMiniProgramCodeImage:model.codeImage];
+                        }
                         [DDTool saveImageInSystemPhotoWithNoHUD:result];
                         
                         
@@ -375,6 +384,35 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 }
 
 #pragma mark - 向图片中添加文字和小程序码
+- (UIImage *)image:(UIImage *)image addMiniProgramCodeImage:(UIImage *)codeImage
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+    
+    CGFloat codeWidth = width * .12f;
+    
+    if (height > width) {
+        codeWidth = height * .1f;
+    }
+    
+    CGFloat leftMargin = codeWidth * .1f;
+    
+    [image drawInRect:CGRectMake(0, 0, width, height)];
+    
+    UIImage * codeDefaultImage = codeImage;
+    if (nil == codeDefaultImage) {
+        codeDefaultImage = [UIImage imageNamed:@"gongzhongCode"];
+    }
+    [codeDefaultImage drawInRect:CGRectMake(leftMargin, height - leftMargin - codeWidth, codeWidth, codeWidth)];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultImage;
+}
+
+
 - (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage pflg:(NSInteger)pflag
 {
     UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);

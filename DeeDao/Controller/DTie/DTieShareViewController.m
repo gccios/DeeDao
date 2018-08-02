@@ -323,6 +323,7 @@
     [self.shareList removeAllObjects];
     [self.selectSource removeAllObjects];
     [self.mainView reloadData];
+    [[DDShareManager shareManager] updateNumber];
 }
 
 - (void)saveButtonDidClicked

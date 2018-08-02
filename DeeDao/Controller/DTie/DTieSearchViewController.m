@@ -15,8 +15,11 @@
 #import "DTieNewEditViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
+#import "ChooseUserViewController.h"
+#import "SelectPostAuthorRequest.h"
+#import "UserModel.h"
 
-@interface DTieSearchViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
+@interface DTieSearchViewController ()<UICollectionViewDelegate, UICollectionViewDataSource, ChooseUserDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -24,6 +27,7 @@
 
 @property (nonatomic, strong) UIButton * timeButton;
 @property (nonatomic, strong) UIButton * sourceButton;
+@property (nonatomic, strong) UIButton * selectButton;
 
 @property (nonatomic, assign) NSInteger sortType;
 @property (nonatomic, assign) NSInteger sourceType;
@@ -34,6 +38,9 @@
 
 @property (nonatomic, assign) NSInteger start;
 @property (nonatomic, assign) NSInteger length;
+
+@property (nonatomic, strong) ChooseUserViewController * chooseUser;
+@property (nonatomic, strong) NSArray * selectAuthor;
 
 @end
 
@@ -72,6 +79,14 @@
     }
     [request configTimeSort:self.sortType];
     
+    if (self.selectAuthor && self.selectAuthor.count > 0) {
+        NSMutableArray * authorID = [[NSMutableArray alloc] init];
+        for (UserModel * model in self.selectAuthor) {
+            [authorID addObject:@(model.cid)];
+        }
+        [request configWithAuthorID:authorID];
+    }
+    
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
@@ -85,6 +100,10 @@
                 }
                 [self.collectionView reloadData];
             }
+        }
+        
+        if (self.dataSource.count == 0) {
+            [MBProgressHUD showTextHUDWithText:@"暂无搜索结果，请修改搜索条件后重试" inView:self.view];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -208,6 +227,62 @@
     [self endEditing];
 }
 
+- (void)selectButtonDidClicked
+{
+    if (!self.chooseUser) {
+        [self requestChooseUserList];
+    }else{
+        [self.navigationController pushViewController:self.chooseUser animated:YES];
+    }
+}
+
+- (void)requestChooseUserList
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    SelectPostAuthorRequest * request = [[SelectPostAuthorRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            
+            if (KIsArray(data)) {
+                NSMutableArray * dataSource = [[NSMutableArray alloc] init];
+                for (NSDictionary * dict in data) {
+                    UserModel * model = [UserModel mj_objectWithKeyValues:dict];
+                    [dataSource addObject:model];
+                }
+                
+                if (dataSource.count == 0) {
+                    [MBProgressHUD showTextHUDWithText:@"暂无可筛选作者" inView:self.view];
+                    return;
+                }
+                
+                self.chooseUser = [[ChooseUserViewController alloc] initWithUsers:dataSource];
+                self.chooseUser.delegate = self;
+                [self.navigationController pushViewController:self.chooseUser animated:YES];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"获取作者列表失败" inView:self.view];
+        [hud hideAnimated:YES];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [MBProgressHUD showTextHUDWithText:@"获取作者列表失败" inView:self.view];
+        [hud hideAnimated:YES];
+        
+    }];
+}
+
+- (void)userDidCompleteSelectWith:(NSArray *)selectArray
+{
+    self.selectAuthor = [[NSArray alloc] initWithArray:selectArray];
+    [self searchRequest];
+}
+
 - (void)createTopView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
@@ -267,9 +342,19 @@
     [self.topView addSubview:self.timeButton];
     [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
-        make.right.mas_equalTo(-10 * scale);
+        make.left.mas_equalTo(kMainBoundsWidth / 3);
         make.bottom.mas_equalTo(-10 * scale);
-        make.width.mas_equalTo((kMainBoundsWidth - 40 * scale) / 2);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
+    }];
+    
+    UIView * lineView1 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView1.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f];
+    [self.timeButton addSubview:lineView1];
+    [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(0);
+        make.width.mas_equalTo(3 * scale);
+        make.height.mas_equalTo(72 * scale);
     }];
     
     self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
@@ -278,9 +363,30 @@
     [self.topView addSubview:self.sourceButton];
     [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
-        make.left.mas_equalTo(10 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.bottom.mas_equalTo(-10 * scale);
-        make.width.mas_equalTo((kMainBoundsWidth - 40 * scale) / 2);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
+    }];
+    
+    UIView * lineView2 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView2.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f];
+    [self.sourceButton addSubview:lineView2];
+    [lineView2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(0);
+        make.width.mas_equalTo(3 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    
+    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"筛选"];
+    [self.selectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.selectButton setImage:[UIImage imageNamed:@"zuozhe_tab"] forState:UIControlStateNormal];
+    [self.topView addSubview:self.selectButton];
+    [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.bottom.mas_equalTo(-10 * scale);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
     }];
 }
 

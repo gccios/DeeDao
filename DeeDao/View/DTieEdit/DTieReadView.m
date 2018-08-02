@@ -41,7 +41,11 @@
 
 #import "DDDaZhaoHuViewController.h"
 
-@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete>
+#import <BaiduMapAPI_Map/BMKMapView.h>
+#import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+
+@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete, BMKMapViewDelegate>
 
 @property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UIImageView * firstImageView;
@@ -65,6 +69,8 @@
 @property (nonatomic, strong) UIButton * jubaoButton;
 
 @property (nonatomic, assign) BOOL isInsatllWX;
+
+@property (nonatomic, strong) BMKMapView * mapView;
 
 @end
 
@@ -414,17 +420,30 @@
             };
         }
         
+        if (!self.isPreRead) {
+            footer.backButtonDidClicked = ^{
+                [weakSelf backHomeDidClicked];
+            };
+        }
+        
         return footer;
     }
     
     return [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"UITableViewHeaderFooterView"];
 }
 
+- (void)backHomeDidClicked
+{
+    if (self.parentDDViewController) {
+        [self.parentDDViewController popToRootViewControllerAnimated:YES];
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (section == 0) {
-        return 400 * scale;
+        return 620 * scale;
     }
     return .1f;
 }
@@ -617,7 +636,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 580 * scale)];
+    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1050 * scale)];
     self.headerView.backgroundColor = [UIColor whiteColor];
     
     self.firstImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
@@ -635,6 +654,24 @@
 //        make.height.mas_equalTo(40 * scale);
 //    }];
     
+    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(72 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    self.titleLabel.numberOfLines = 0;
+    [self.headerView addSubview:self.titleLabel];
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(20 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(165 * scale);
+    }];
+    
+    UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
+    [self.headerView addSubview:userView];
+    [userView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(self.titleLabel.mas_bottom).offset(20 * scale);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
     UIImageView * locationButton = [[UIImageView alloc] init];
     locationButton.userInteractionEnabled = YES;
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonDidClicked)];
@@ -647,7 +684,7 @@
     [locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(20 * scale);
         make.right.mas_equalTo(-20 * scale);
-        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(20 * scale);
+        make.top.mas_equalTo(userView.mas_bottom).offset(20 * scale);
         make.height.mas_equalTo(160 * scale);
     }];
     
@@ -674,24 +711,6 @@
         make.centerY.mas_equalTo(0);
         make.right.mas_equalTo(-40 * scale);
         make.width.height.mas_equalTo(72 * scale);
-    }];
-    
-    UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
-    [self.headerView addSubview:userView];
-    [userView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(-15 * scale);
-        make.height.mas_equalTo(144 * scale);
-    }];
-    
-    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(72 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    self.titleLabel.numberOfLines = 0;
-    [self.headerView addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(locationButton.mas_bottom).offset(20 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(userView.mas_top).offset(-10 * scale);
     }];
     
 //    UIImageView * userBGView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -774,13 +793,118 @@
         make.centerY.mas_equalTo(0);
     }];
     
+    UIView * baseView = [[UIView alloc] initWithFrame:CGRectZero];
+    baseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    [self.headerView addSubview:baseView];
+    [baseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(locationButton.mas_bottom).offset(20 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    baseView.layer.cornerRadius = 24 * scale;
+    baseView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    baseView.layer.shadowOpacity = .3f;
+    baseView.layer.shadowRadius = 24 * scale;
+    baseView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+    
+    UITapGestureRecognizer * mapTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonDidClicked)];
+    [baseView addGestureRecognizer:mapTap];
+    
+    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    self.mapView.delegate = self;
+    //设置定位图层自定义样式
+    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
+    //跟随态旋转角度是否生效
+    userlocationStyle.isRotateAngleValid = NO;
+    //精度圈是否显示
+    userlocationStyle.isAccuracyCircleShow = NO;
+    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
+    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+    [self.mapView updateLocationViewWithParam:userlocationStyle];
+    self.mapView.showsUserLocation = YES;
+    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
+    self.mapView.gesturesEnabled = NO;
+    self.mapView.buildingsEnabled = NO;
+    self.mapView.showMapPoi = NO;
+    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
+    
+    [baseView addSubview:self.mapView];
+    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
+    
+    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    [self.mapView addAnnotation:annotation];
+    
     [self configHeaderView];
+}
+
+- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+{
+    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+    view.annotation = annotation;
+    view.image = [UIImage imageNamed:@"location"];
+    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+    
+    return view;
+}
+
+- (void)mapViewDidFinishLoading:(BMKMapView *)mapView
+{
+    BMKCoordinateRegion viewRegion;
+    
+    if ([DDLocationManager shareManager].userLocation.location) {
+        
+        CLLocationDegrees lng = fabs([DDLocationManager shareManager].userLocation.location.coordinate.longitude - self.model.sceneAddressLng);
+        CLLocationDegrees lat = fabs([DDLocationManager shareManager].userLocation.location.coordinate.latitude - self.model.sceneAddressLat);
+        
+        CLLocationDegrees centerLat;
+        CLLocationDegrees centerLng;
+        if ([DDLocationManager shareManager].userLocation.location.coordinate.longitude > self.model.sceneAddressLng) {
+            centerLng = self.model.sceneAddressLng + lng / 2.f;
+        }else{
+            centerLng = [DDLocationManager shareManager].userLocation.location.coordinate.longitude + lng / 2.f;
+        }
+        
+        if ([DDLocationManager shareManager].userLocation.location.coordinate.latitude > self.model.sceneAddressLat) {
+            centerLat = self.model.sceneAddressLat + lat / 2.f;
+        }else{
+            centerLat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude + lat / 2.f;
+        }
+        
+        if (lng < 0.01) {
+            lng = 0.01;
+        }
+        if (lat < 0.01) {
+            lat = 0.01;
+        }
+        
+        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(centerLat, centerLng), BMKCoordinateSpanMake(lat * 1.5, lng * 1.5));
+    }else{
+        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(.01, .01));
+    }
+    
+    [self.mapView setRegion:viewRegion animated:YES];
 }
 
 - (void)configHeaderView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    CGFloat height = (580 - 165) * scale;
+    CGFloat height = (1050 - 165) * scale;
     
     if (self.firstImage) {
         CGFloat imageHeight = [DDTool getHeightWithImage:self.firstImage];
@@ -795,11 +919,22 @@
     if (!isEmptyString(title)) {
         CGFloat tempHeight = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:title font:kPingFangRegular(72 * scale)];
         if (tempHeight < 120 * scale) {
-            height += 90 * scale;
+            height += 100 * scale;
+            [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.height.mas_equalTo(100 * scale);
+            }];
         }else{
-            height += 190 * scale;
+            height += 200 * scale;
+            [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.height.mas_equalTo(230 * scale);
+            }];
         }
         self.titleLabel.text = title;
+    }else{
+        height += 100 * scale;
+        [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(100 * scale);
+        }];
     }
     CGRect frame = self.headerView.frame;
     frame.size.height = height;

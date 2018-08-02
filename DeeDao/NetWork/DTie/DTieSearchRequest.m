@@ -84,4 +84,11 @@
     }
 }
 
+- (void)configWithAuthorID:(NSArray *)authorID
+{
+    if (authorID) {
+        [self setValue:authorID forParamKey:@"authorId"];
+    }
+}
+
 @end

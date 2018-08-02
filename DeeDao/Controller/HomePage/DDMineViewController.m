@@ -16,6 +16,7 @@
 #import "DDFriendViewController.h"
 #import "DDPrivateViewController.h"
 #import "BloggerLinkViewController.h"
+#import "NotificationListViewController.h"
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "DTieSingleImageShareView.h"
@@ -207,6 +208,13 @@
             [self.navigationController pushViewController:blogger animated:YES];
         }
             break;
+            
+//        case MineMenuType_AlertList:
+//        {
+//            NotificationListViewController * notification = [[NotificationListViewController alloc] init];
+//            [self.navigationController pushViewController:notification animated:YES];
+//        }
+//            break;
             
         default:
             break;

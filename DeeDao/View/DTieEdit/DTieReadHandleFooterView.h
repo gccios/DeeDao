@@ -12,7 +12,10 @@
 @interface DTieReadHandleFooterView : UITableViewHeaderFooterView
 
 @property (nonatomic, copy) void (^handleButtonDidClicked)(void);
+@property (nonatomic, copy) void (^backButtonDidClicked)(void);
 
 - (void)configWithModel:(DTieModel *)model;
+
+- (void)needBackHomeButton;
 
 @end

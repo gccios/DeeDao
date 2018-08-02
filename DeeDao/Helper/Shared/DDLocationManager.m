@@ -46,8 +46,9 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 {
     self.locationService = [[BMKLocationService alloc] init];
     self.locationService.delegate = self;
-    self.locationService.distanceFilter = 10.f;
+    self.locationService.distanceFilter = 50.f;
     self.locationService.desiredAccuracy = kCLLocationAccuracyBest;
+//    self.locationService.allowsBackgroundLocationUpdates = YES;
     
     self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
     self.geocodesearch.delegate = self;
@@ -68,6 +69,9 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 {
     self.userLocation = userLocation;
     [self reverseGeoCodeWith:self.userLocation.location.coordinate];
+    
+//    [self registerLocaltionNotification];
+    
 //    [self stopLocationService];
     
     [[NSNotificationCenter defaultCenter] postNotificationName:DDUserLocationDidUpdateNotification object:nil];
@@ -183,6 +187,49 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     [alert addAction:cancleAction];
     
     [viewController presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)registerLocaltionNotification
+{
+    // 1.创建通知
+    
+    UILocalNotification *localNotification = [[UILocalNotification alloc] init];
+    
+    // 2.设置通知的必选参数
+    
+    // 设置通知显示的内容
+    
+    localNotification.alertBody = @"推送显示的信息";
+    
+    // 设置通知的发送时间,单位秒，在多少秒之后推送
+    
+    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:2];
+    
+    //解锁滑动时的事件
+    
+    localNotification.alertAction = @"XXOOXX";
+    
+    //收到通知时App icon的角标
+    
+    localNotification.applicationIconBadgeNumber = 0;
+    
+    //推送是带的声音提醒，设置默认的字段为UILocalNotificationDefaultSoundName
+    
+    localNotification.soundName = UILocalNotificationDefaultSoundName;
+    
+    //设置推送自定义声音格式
+    
+    //localNotification.soundName = @"文件名.扩展名";
+    
+    //循环次数
+    
+//    localNotification.repeatInterval = kCFCalendarUnitDay;
+    
+    // 3.发送通知(根据项目需要使用)
+    
+    // 方式一: 根据通知的发送时间(fireDate)发送通知
+    
+    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
 }
 
 @end

@@ -28,8 +28,8 @@
 @property (nonatomic, strong) UIView * titleView;
 
 @property (nonatomic, strong) UIButton * yaoyueButton;
-@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
-@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
+//@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
+//@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
 @property (nonatomic, strong) DTieModel * model;
 
 @end
@@ -142,43 +142,43 @@
     [self addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contenImageView);
-        make.left.mas_equalTo(self.contenImageView.mas_right).offset(120 * scale);
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(200 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
     [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    [self addSubview:self.yaoyueNumberLabel];
-    [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.contenImageView);
-        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
-        make.width.mas_equalTo(100 * scale);
-        make.height.mas_equalTo(120 * scale);
-    }];
-    
-    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-    [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
-    [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(-5 * scale);
-        make.left.mas_equalTo(10 * scale);
-        make.width.mas_equalTo(42 * scale);
-        make.height.mas_equalTo(42 * scale);
-    }];
-    [DDViewFactoryTool cornerRadius:21 * scale withView:self.yaoyueNumberShowLabel];
-    self.yaoyueNumberShowLabel.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.yaoyueNumberShowLabel.layer.borderWidth = 2 * scale;
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
-    self.yaoyueNumberLabel.userInteractionEnabled = YES;
-    [self.yaoyueNumberLabel addGestureRecognizer:tap];
+//    self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+//    [self addSubview:self.yaoyueNumberLabel];
+//    [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(self.contenImageView);
+//        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
+//        make.width.mas_equalTo(100 * scale);
+//        make.height.mas_equalTo(120 * scale);
+//    }];
+//
+//    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+//    [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
+//    [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(-5 * scale);
+//        make.left.mas_equalTo(10 * scale);
+//        make.width.mas_equalTo(42 * scale);
+//        make.height.mas_equalTo(42 * scale);
+//    }];
+//    [DDViewFactoryTool cornerRadius:21 * scale withView:self.yaoyueNumberShowLabel];
+//    self.yaoyueNumberShowLabel.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//    self.yaoyueNumberShowLabel.layer.borderWidth = 2 * scale;
+//
+//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
+//    self.yaoyueNumberLabel.userInteractionEnabled = YES;
+//    [self.yaoyueNumberLabel addGestureRecognizer:tap];
 }
 
-- (void)tapDidClicked
-{
-    if (self.yaoyueHandle) {
-        self.yaoyueHandle();
-    }
-}
+//- (void)tapDidClicked
+//{
+//    if (self.yaoyueHandle) {
+//        self.yaoyueHandle();
+//    }
+//}
 
 - (void)yaoyueButtonDidClicked
 {
@@ -192,6 +192,9 @@
             
             model.wyyFlg = 0;
             model.wyyCount--;
+            if (self.yaoyueHandle) {
+                self.yaoyueHandle();
+            }
             [self reloadStatus];
             
             self.yaoyueButton.enabled = YES;
@@ -208,7 +211,10 @@
             
             model.wyyFlg = 1;
             model.wyyCount++;
-            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，点击要约数字，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
+            if (self.yaoyueHandle) {
+                self.yaoyueHandle();
+            }
+            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，查看更多信息，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
             
             [self reloadStatus];
             
@@ -223,7 +229,7 @@
 
 - (void)reloadStatus
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
     
     if (self.model.wyyFlg) {
         [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
@@ -235,30 +241,30 @@
         self.yaoyueButton.alpha = 1.f;
     }
     
-    if (self.model.wyyCount <= 0) {
-        self.yaoyueNumberShowLabel.text = @"0";
-        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(42 * scale);
-        }];
-    }else if(self.model.wyyCount < 100){
-        self.yaoyueNumberShowLabel.text = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
-        
-        if (self.model.wyyCount < 10) {
-            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(42 * scale);
-            }];
-        }else {
-            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(80 * scale);
-            }];
-        }
-        
-    }else{
-        self.yaoyueNumberShowLabel.text = @"99+";
-        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(80 * scale);
-        }];
-    }
+//    if (self.model.wyyCount <= 0) {
+//        self.yaoyueNumberShowLabel.text = @"0";
+//        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.width.mas_equalTo(42 * scale);
+//        }];
+//    }else if(self.model.wyyCount < 100){
+//        self.yaoyueNumberShowLabel.text = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
+//
+//        if (self.model.wyyCount < 10) {
+//            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//                make.width.mas_equalTo(42 * scale);
+//            }];
+//        }else {
+//            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//                make.width.mas_equalTo(80 * scale);
+//            }];
+//        }
+//
+//    }else{
+//        self.yaoyueNumberShowLabel.text = @"99+";
+//        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.width.mas_equalTo(80 * scale);
+//        }];
+//    }
 }
 
 - (void)configWithDTieModel:(DTieModel *)model
