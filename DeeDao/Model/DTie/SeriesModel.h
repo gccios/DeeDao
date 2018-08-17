@@ -25,6 +25,7 @@
 @property (nonatomic, assign) NSInteger stickyTime;
 @property (nonatomic, assign) NSInteger updatePerson;
 @property (nonatomic, assign) NSInteger updateTime;
+@property (nonatomic, copy) NSString * firstLetter;
 
 @property (nonatomic, copy) NSString * seriesFirstPicture;
 

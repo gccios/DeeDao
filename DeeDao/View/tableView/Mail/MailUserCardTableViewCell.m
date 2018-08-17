@@ -15,6 +15,7 @@
 #import "AddFriendRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import <UIImageView+WebCache.h>
+#import "DDLGSideViewController.h"
 
 @interface MailUserCardTableViewCell ()
 
@@ -145,8 +146,8 @@
 
 - (void)leftButtonDidClicked
 {
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     if (self.model.ifFriendFlg == 1) {
         
@@ -195,8 +196,8 @@
         return;
     }
     
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     BOOL isAdd = YES;
     if (self.model.ifFollowedFlg == 1) {
@@ -255,6 +256,12 @@
 
 - (void)reloadWithModelStatus
 {
+    if (self.model.bloggerFlg == 1) {
+        self.bloggerImageView.hidden = NO;
+    }else{
+        self.bloggerImageView.hidden = YES;
+    }
+    
     if (self.model.ifFriendFlg == 1) {
         [self.leftButton setTitle:@"已加好友" forState:UIControlStateNormal];
         self.leftButton.alpha = .5f;

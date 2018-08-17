@@ -19,6 +19,7 @@
 #import "DTieSeeModel.h"
 #import "DTieSeeShareViewController.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DDLGSideViewController.h"
 
 @interface DTieReadHandleFooterView ()
 
@@ -234,8 +235,8 @@
                     [dataSource addObject:model];
                 }
                 DTieSeeShareViewController * share = [[DTieSeeShareViewController alloc] initWithSource:dataSource model:self.model];
-                UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-                UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)lg.rootViewController;
                 [na pushViewController:share animated:YES];
             }
         }
@@ -257,8 +258,8 @@
 {
     DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.model];
     
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     [na pushViewController:yaoyue animated:YES];
 }
 
@@ -411,7 +412,7 @@
             
             model.wyyFlg = 1;
             model.wyyCount++;
-            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，点击要约数字，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦。" inView:[UIApplication sharedApplication].keyWindow];
             
             [self reloadStatus];
             

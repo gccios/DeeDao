@@ -28,6 +28,7 @@
 #import "DDYaoYueViewController.h"
 #import "DDTool.h"
 #import "DDDaZhaoHuViewController.h"
+#import "DDLGSideViewController.h"
 
 @interface DDCollectionListViewCell ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -67,8 +68,8 @@
     
     if (model.authorId == [UserManager shareManager].user.cid) {
         
-        UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-        UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
         DDDaZhaoHuViewController * dazhaohu = [[DDDaZhaoHuViewController alloc] initWithDTieModel:self.model];
         [na pushViewController:dazhaohu animated:YES];
         
@@ -181,7 +182,7 @@
             
             model.wyyFlg = 1;
             model.wyyCount++;
-            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，点击要约数字，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦" inView:[UIApplication sharedApplication].keyWindow];
             [self reloadStatus];
             
             self.yaoyueButton.enabled = YES;
@@ -346,8 +347,8 @@
 {
     DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.model];
     
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     [na pushViewController:yaoyue animated:YES];
 }
 
@@ -355,14 +356,10 @@
 {
     DTieModel * model = self.model;
     if (model) {
-        UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-        if ([tab isKindOfClass:[UITabBarController class]]) {
-            UINavigationController * na = (UINavigationController *)tab.selectedViewController;
-            if ([na isKindOfClass:[UINavigationController class]]) {
-                UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.authorId];
-                [na pushViewController:info animated:YES];
-            }
-        }
+        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+        UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.authorId];
+        [na pushViewController:info animated:YES];
     }
 }
 
@@ -477,14 +474,14 @@
             }];
         }else {
             [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(80 * scale);
+                make.width.mas_equalTo(60 * scale);
             }];
         }
         
     }else{
         self.yaoyueNumberShowLabel.text = @"99+";
         [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(80 * scale);
+            make.width.mas_equalTo(60 * scale);
         }];
     }
     

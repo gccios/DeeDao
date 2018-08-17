@@ -10,6 +10,7 @@
 #import "DDTabBar.h"
 #import "DDNavigationViewController.h"
 #import "DDDTieViewController.h"
+#import "DTieNewViewController.h"
 #import "DDFoundViewController.h"
 #import "DDMailViewController.h"
 #import "DDMineViewController.h"
@@ -40,12 +41,6 @@
     
     NSMutableArray * vcArray = [NSMutableArray new];
     
-    DDDTieViewController * DTie = [[DDDTieViewController alloc] init];
-    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:DTie];
-    UITabBarItem * tabBarItem1 = [self tabBarItemWithImageName:@"Dtie" selectName:@"DtieSelect" title:@"D帖"];
-    [na setTabBarItem:tabBarItem1];
-    [vcArray addObject:na];
-    
     DDFoundViewController * found = [[DDFoundViewController alloc] init];
     DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
     UITabBarItem * tabBarItem2 = [self tabBarItemWithImageName:@"found" selectName:@"foundselect" title:@"发现"];
@@ -58,6 +53,12 @@
     tabBarItem3.imageInsets = UIEdgeInsetsMake(-4, 0, 0, 0);
     [mailNa setTabBarItem:tabBarItem3];
     [vcArray addObject:mailNa];
+    
+    DTieNewViewController * DTie = [[DTieNewViewController alloc] init];
+    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:DTie];
+    UITabBarItem * tabBarItem1 = [self tabBarItemWithImageName:@"Dtie" selectName:@"DtieSelect" title:@"D帖"];
+    [na setTabBarItem:tabBarItem1];
+    [vcArray addObject:na];
     
     DDMineViewController * mine = [[DDMineViewController alloc] init];
     DDNavigationViewController * mineNa = [[DDNavigationViewController alloc] initWithRootViewController:mine];

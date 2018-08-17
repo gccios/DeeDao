@@ -96,7 +96,7 @@
                 [self.selectSource addObject:model2];
                 [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
                 [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-                [self configMiquanLabelText:@"小密圈(默认密圈)"];
+                [self configMiquanLabelText:@"好友圈(默认密圈)"];
                 self.landAccountFlg = 4;
                 self.currentQuanxianButton = self.miquanButton;
                 
@@ -138,13 +138,13 @@
 {
     if (self.dataSource.count == 0) {
         [self requestSecuritySource];
-        [MBProgressHUD showTextHUDWithText:@"暂未获得小密圈" inView:self];
+        [MBProgressHUD showTextHUDWithText:@"暂未获得好友圈" inView:self];
     }else{
         [self showChooseMiquanView];
     }
 }
 
-//选择小密圈
+//选择好友圈
 - (void)showChooseMiquanView
 {
     [[UIApplication sharedApplication].keyWindow addSubview:self.miquanChooseView];
@@ -157,7 +157,7 @@
 {
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    [self configQuanxianLabelText:@"浏览权限（小密圈）"];
+    [self configQuanxianLabelText:@"浏览权限（好友圈）"];
     self.landAccountFlg = 4;
     self.currentQuanxianButton = self.miquanButton;
     
@@ -172,7 +172,7 @@
         return;
     }
     
-    [self configMiquanLabelText:@"小密圈(默认密圈)"];
+    [self configMiquanLabelText:@"好友圈(默认密圈)"];
     
     [self hiddenMiquanView];
 }
@@ -302,7 +302,7 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    NSString * quanxianText = @"浏览权限（小密圈）";
+    NSString * quanxianText = @"浏览权限（好友圈）";
     [self configQuanxianLabelText:quanxianText];
     
     NSString * shareText = @"微信分享（分享到朋友圈）";
@@ -356,7 +356,7 @@
         make.height.mas_equalTo(buttonHeight);
         make.right.mas_lessThanOrEqualTo(-60 * scale);
     }];
-    [self configMiquanLabelText:@"小密圈（默认密圈）"];
+    [self configMiquanLabelText:@"好友圈（默认密圈）"];
     [self.miquanButton addTarget:self action:@selector(miquanButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     self.shareView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 228 * scale)];
@@ -406,7 +406,7 @@
     [self.quanxianButton addTarget:self action:@selector(quanxianButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    //创建小密圈选择
+    //创建好友圈选择
     self.miquanChooseView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.miquanChooseView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
     
@@ -423,7 +423,7 @@
     }];
     
     UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentCenter];
-    tipLabel.text = @"小密圈选择";
+    tipLabel.text = @"好友圈选择";
     [self.miquanContenView addSubview:tipLabel];
     [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(55 * scale);
@@ -498,7 +498,7 @@
     [self.selectSource addObject:model2];
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    [self configMiquanLabelText:@"小密圈(默认密圈)"];
+    [self configMiquanLabelText:@"好友圈(默认密圈)"];
     self.landAccountFlg = 4;
     self.currentQuanxianButton = self.miquanButton;
     
@@ -513,7 +513,7 @@
             title = [title stringByAppendingString:[NSString stringWithFormat:@"%@,", model.securitygroupName]];
         }
         title = [title substringToIndex:title.length - 1];
-        text = [NSString stringWithFormat:@"小密圈(%@)", title];
+        text = [NSString stringWithFormat:@"好友圈(%@)", title];
     }
     
     NSInteger length = text.length;

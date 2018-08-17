@@ -49,6 +49,10 @@
 
 - (void)addPostSee
 {
+    if ([DDLocationManager shareManager].result.location.latitude == 0.f) {
+        return;
+    }
+    
     NSInteger postId = self.model.cid;
     if (postId == 0) {
         postId = self.model.postId;

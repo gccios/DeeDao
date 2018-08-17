@@ -13,8 +13,6 @@
 
 + (instancetype)shareManager;
 
-@property (nonatomic, weak) UIButton * tempNumberLabel;
-
 - (void)showShareList;
 
 - (void)showHandleViewWithImage:(ShareImageModel *)image;

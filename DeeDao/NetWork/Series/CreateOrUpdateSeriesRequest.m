@@ -24,6 +24,9 @@
         [dict setObject:@(createPerson) forKey:@"createPerson"];
         [dict setObject:@(deleteFlg) forKey:@"deleteFlg"];
         [dict setObject:@(seriesCollectionId) forKey:@"seriesCollectionId"];
+        if (isEmptyString(seriesDesc)) {
+            seriesDesc = @"";
+        }
         [dict setObject:seriesDesc forKey:@"seriesDesc"];
         [dict setObject:@(seriesOwnerId) forKey:@"seriesOwnerId"];
         [dict setObject:@(status) forKey:@"seriesStatus"];

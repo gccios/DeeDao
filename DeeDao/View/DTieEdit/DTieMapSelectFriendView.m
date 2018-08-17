@@ -109,30 +109,22 @@
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.showsVerticalScrollIndicator = NO;
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
-    [self addSubview:self.collectionView];
+    [contenView addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(cancleButton.mas_bottom).offset(20 * scale);
         make.left.bottom.right.mas_equalTo(0);
-    }];
-    
-    UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
-    bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
-    [self addSubview:bottomHandleView];
-    [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.mas_equalTo(0);
-        make.height.mas_equalTo(324 * scale);
     }];
     
     UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并筛选"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
-    [bottomHandleView addSubview:handleButton];
+    [contenView addSubview:handleButton];
     [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(144 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.centerY.mas_equalTo(0);
+        make.bottom.mas_equalTo(-60 * scale);
     }];
     [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
@@ -152,6 +144,12 @@
         self.selectSource = [[NSMutableArray alloc] initWithArray:self.startSelectSource];
     }
     [self removeFromSuperview];
+}
+
+- (void)clear
+{
+    [self.selectSource removeAllObjects];
+    [self.collectionView reloadData];
 }
 
 - (NSMutableArray *)selectSource

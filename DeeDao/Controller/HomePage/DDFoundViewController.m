@@ -25,25 +25,57 @@
 #import "DTieFoundEditView.h"
 #import "DTieNewEditViewController.h"
 #import "MBProgressHUD+DDHUD.h"
-#import <AudioToolbox/AudioToolbox.h>
-#import <CoreAudio/CoreAudioTypes.h>
 #import "SelectFriendRequest.h"
 #import "DTieMapSelectFriendView.h"
 #import "MapShowYaoyueView.h"
 #import "SelectMapYaoyueRequest.h"
 #import "DTieMapYaoyueModel.h"
+#import "UIViewController+LGSideMenuController.h"
+#import "DDMailViewController.h"
+#import "DTieNewEditViewController.h"
+#import "DTieNewViewController.h"
+#import "DTieSearchViewController.h"
+#import "ChooseTypeViewController.h"
+#import "ChooseTimeView.h"
+#import "ChooseCategoryView.h"
+#import "DDShareManager.h"
+#import "DDNotificationViewController.h"
 
-@interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate>
+@interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate>
 
 @property (nonatomic, strong) UIView * topView;
+
+@property (nonatomic, strong) UIView * searchTopView;
+@property (nonatomic, strong) UITextField * textField;
+@property (nonatomic, strong) UIButton * topTimeButton;
+@property (nonatomic, strong) UIButton * topSourceButton;
+@property (nonatomic, strong) UIButton * topSelectButton;
+
+@property (nonatomic, strong) UIButton * locationButton;
+
+@property (nonatomic, strong) UIButton * searchButton;
+@property (nonatomic, assign) BOOL isSearch;
 
 @property (nonatomic, strong) UIView * topAlertView;
 @property (nonatomic, strong) UILabel * timeLabel;
 @property (nonatomic, strong) UILabel * topAlertLabel;
 
 @property (nonatomic, strong) UIButton * sourceButton;
-@property (nonatomic, strong) UIButton * timeButton;
+//@property (nonatomic, strong) UIButton * timeButton;
+@property (nonatomic, strong) UIButton * mailButton;
 @property (nonatomic, strong) UIButton * selectButton;
+@property (nonatomic, strong) UIButton * addButton;
+
+@property (nonatomic, strong) UIButton * picButton;
+@property (nonatomic, assign) BOOL picIsUser;
+
+@property (nonatomic, strong) UIButton * tieButton;
+@property (nonatomic, assign) BOOL tieIsOpen;
+@property (nonatomic, strong) UIButton * myButton;
+@property (nonatomic, strong) UIButton * shoucangButton;
+@property (nonatomic, strong) UIButton * yuezheButton;
+
+@property (nonatomic, strong) UIButton * typeButton;
 
 @property (nonatomic, strong) BMKMapView * mapView;
 @property (nonatomic, assign) BOOL isFirst;
@@ -76,6 +108,12 @@
 
 @property (nonatomic, strong) NSMutableArray * yaoyueMapSource;
 
+@property (nonatomic, assign) NSInteger minTime;
+@property (nonatomic, assign) NSInteger maxTime;
+@property (nonatomic, assign) NSInteger searchType;
+
+@property (nonatomic, assign) BOOL isNotification;
+
 @end
 
 @implementation DDFoundViewController
@@ -101,7 +139,7 @@
     self.isFirst = YES;
     // Do any additional setup after loading the view.
     
-    self.sourceType = 7;
+    self.sourceType = 8;
     
     [self getMyFriendList];
     [self creatViews];
@@ -136,13 +174,33 @@
 
 - (void)mapSelectFriendView:(DTieMapSelectFriendView *)selectView didSelectFriend:(NSArray *)selectFriend
 {
-    if (selectView == self.yaoyueSelectView) {
-        
-        [self.yaoyueFriendSource removeAllObjects];
-        [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
-        [self.mapView removeAnnotations:self.mapView.annotations];
-        [self requestMapViewLocations];
-        
+    self.topSelectButton.alpha = 1.f;
+    
+    if (self.isSearch) {
+        if (self.sourceType == 666) {
+            
+            [self.yaoyueFriendSource removeAllObjects];
+            [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
+            [self.mapView removeAnnotations:self.mapView.annotations];
+            [self requestMapViewLocations];
+            
+        }else if (selectView == self.yaoyueSelectView) {
+            
+            [self.yaoyueFriendSource removeAllObjects];
+            [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
+            [self.mapView removeAnnotations:self.mapView.annotations];
+            [self searchMapViewLocations];
+            
+        }
+    }else{
+        if (selectView == self.yaoyueSelectView) {
+            
+            [self.yaoyueFriendSource removeAllObjects];
+            [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
+            [self.mapView removeAnnotations:self.mapView.annotations];
+            [self requestMapViewLocations];
+            
+        }
     }
 }
 
@@ -213,103 +271,359 @@
     [self.backLocationButton addTarget:self action:@selector(backLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.backLocationButton];
     [self.backLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(20 * scale);
-        make.bottom.mas_equalTo(-40 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(-520 * scale);
         make.width.height.mas_equalTo(120 * scale);
     }];
     
-    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"时光"];
-    self.timeButton.backgroundColor = UIColorFromRGB(0xdb6283);
-    [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.timeButton];
-    [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(self.backLocationButton.mas_top).offset(-30 * scale);
-        make.width.height.mas_equalTo(buttonWidth);
-    }];
-    self.timeButton.layer.cornerRadius = buttonWidth / 2.f;
-    self.timeButton.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.timeButton.layer.shadowOpacity = .5f;
-    self.timeButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
-    self.timeButton.layer.shadowRadius = 10 * scale;
+//    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"时光"];
+//    self.timeButton.backgroundColor = UIColorFromRGB(0xdb6283);
+//    [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:self.timeButton];
+//    [self.timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(30 * scale);
+//        make.bottom.mas_equalTo(self.backLocationButton.mas_top).offset(-30 * scale);
+//        make.width.height.mas_equalTo(buttonWidth);
+//    }];
+//    self.timeButton.layer.cornerRadius = buttonWidth / 2.f;
+//    self.timeButton.layer.shadowColor = [UIColor blackColor].CGColor;
+//    self.timeButton.layer.shadowOpacity = .5f;
+//    self.timeButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
+//    self.timeButton.layer.shadowRadius = 10 * scale;
     
-    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
-    self.sourceButton.backgroundColor = UIColorFromRGB(0xdb6283);
-    [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.sourceButton];
-    [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(self.timeButton.mas_top).offset(-25 * scale);
-        make.width.height.mas_equalTo(buttonWidth);
-    }];
-    self.sourceButton.layer.cornerRadius = buttonWidth / 2.f;
-    self.sourceButton.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.sourceButton.layer.shadowOpacity = .5f;
-    self.sourceButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
-    self.sourceButton.layer.shadowRadius = 10 * scale;
+//    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"博主"];
+//    self.sourceButton.backgroundColor = UIColorFromRGB(0xdb6283);
+//    [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:self.sourceButton];
+//    [self.sourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(30 * scale);
+//        make.bottom.mas_equalTo(self.backLocationButton.mas_top).offset(-30 * scale);
+//        make.width.height.mas_equalTo(buttonWidth);
+//    }];
+//    self.sourceButton.layer.cornerRadius = buttonWidth / 2.f;
+//    self.sourceButton.layer.shadowColor = [UIColor blackColor].CGColor;
+//    self.sourceButton.layer.shadowOpacity = .5f;
+//    self.sourceButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
+//    self.sourceButton.layer.shadowRadius = 10 * scale;
     
-    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"筛选"];
-    self.selectButton.backgroundColor = UIColorFromRGB(0xdb6283);
-    [self.selectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:self.selectButton];
-    [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(self.sourceButton.mas_top).offset(-25 * scale);
-        make.width.height.mas_equalTo(buttonWidth);
-    }];
-    self.selectButton.layer.cornerRadius = buttonWidth / 2.f;
-    self.selectButton.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.selectButton.layer.shadowOpacity = .5f;
-    self.selectButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
-    self.selectButton.layer.shadowRadius = 10 * scale;
-    self.selectButton.alpha = .5f;
-    self.selectButton.enabled = NO;
+//    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"筛选"];
+//    self.selectButton.backgroundColor = UIColorFromRGB(0xdb6283);
+//    [self.selectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    [self.view addSubview:self.selectButton];
+//    [self.selectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(30 * scale);
+//        make.bottom.mas_equalTo(self.sourceButton.mas_top).offset(-25 * scale);
+//        make.width.height.mas_equalTo(buttonWidth);
+//    }];
+//    self.selectButton.layer.cornerRadius = buttonWidth / 2.f;
+//    self.selectButton.layer.shadowColor = [UIColor blackColor].CGColor;
+//    self.selectButton.layer.shadowOpacity = .5f;
+//    self.selectButton.layer.shadowOffset = CGSizeMake(0, 10 * scale);
+//    self.selectButton.layer.shadowRadius = 10 * scale;
+//    self.selectButton.alpha = .5f;
+//    self.selectButton.enabled = NO;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNewNotification object:nil];
     
     self.topAlertView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.topAlertView];
-    self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.1f];
+//    self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.1f];
     [self.topAlertView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo((220 + 60 + kStatusBarHeight) * scale);
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(250 * scale);
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.topAlertView];
     
-    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
-    self.timeLabel.backgroundColor = UIColorFromRGB(0xDB6283);
-    [self.topAlertView addSubview:self.timeLabel];
-    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.mailButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.mailButton setImage:[UIImage imageNamed:@"homeMail"] forState:UIControlStateNormal];
+    [self.view addSubview:self.mailButton];
+    [self.mailButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.topAlertView);
+        make.left.mas_equalTo(60 * scale);
+        make.width.height.mas_equalTo(120 * scale);
+    }];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:self.mailButton];
+    [self.mailButton addTarget:self action:@selector(mailButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.topAlertView addSubview:timeButton];
+    [timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(24 * scale);
         make.centerY.mas_equalTo(0);
-        make.width.mas_equalTo(240 * scale);
+        make.width.mas_equalTo(300 * scale);
+        make.height.mas_equalTo(98 * scale);
+    }];
+    [timeButton setBackgroundImage:[UIImage imageNamed:@"homeTimeBG"] forState:UIControlStateNormal];
+    
+    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    [timeButton addSubview:self.timeLabel];
+    [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20 * scale);
+        make.centerY.mas_equalTo(0);
+        make.width.mas_equalTo(200 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     self.timeLabel.text = [NSString stringWithFormat:@"%ld", self.year];
-    [DDViewFactoryTool cornerRadius:24 * scale withView:self.timeLabel];
+    
+    [timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.topAlertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     [self.topAlertView addSubview:self.topAlertLabel];
-    self.topAlertLabel.text = @"当前为我和朋友的及收藏和要约";
+    self.topAlertLabel.text = @"地到博主D帖";
     [self.topAlertView addSubview:self.topAlertLabel];
     [self.topAlertLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(self.timeLabel.mas_right).offset(48 * scale);
+        make.left.mas_equalTo(timeButton.mas_right).offset(48 * scale);
         make.height.mas_equalTo(55 * scale);
         make.right.mas_equalTo(0);
     }];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self showTipWithText:@"摇一摇以刷新附近D帖"];
-    });
+    self.addButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.addButton setBackgroundImage:[UIImage imageNamed:@"homeAdd"] forState:UIControlStateNormal];
+    [self.view addSubview:self.addButton];
+    [self.addButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.bottom.mas_equalTo(-60 * scale);
+        make.width.height.mas_equalTo(180 * scale);
+    }];
+    [self.addButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.typeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.typeButton setImage:[UIImage imageNamed:@"homeSource"] forState:UIControlStateNormal];
+    [self.view addSubview:self.typeButton];
+    [self.typeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.centerY.mas_equalTo(self.addButton);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.typeButton addTarget:self action:@selector(typeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.picIsUser = YES;
+    self.picButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.picButton setImage:[UIImage imageNamed:@"homePicUser"] forState:UIControlStateNormal];
+    [self.view addSubview:self.picButton];
+    [self.picButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.centerY.mas_equalTo(self.addButton).offset(-180 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.picButton addTarget:self action:@selector(picButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.yuezheButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.yuezheButton setImage:[UIImage imageNamed:@"homeYuezhe"] forState:UIControlStateNormal];
+    [self.view addSubview:self.yuezheButton];
+    [self.yuezheButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.yuezheButton addTarget:self action:@selector(yuezheButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.shoucangButton setImage:[UIImage imageNamed:@"homeShoucang"] forState:UIControlStateNormal];
+    [self.view addSubview:self.shoucangButton];
+    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.myButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.myButton setImage:[UIImage imageNamed:@"homeMyPost"] forState:UIControlStateNormal];
+    [self.view addSubview:self.myButton];
+    [self.myButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.myButton addTarget:self action:@selector(myButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.tieIsOpen = NO;
+    self.tieButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [self.tieButton setImage:[UIImage imageNamed:@"homeMy"] forState:UIControlStateNormal];
+    [self.view addSubview:self.tieButton];
+    [self.tieButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        make.width.height.mas_equalTo(144 * scale);
+    }];
+    [self.tieButton addTarget:self action:@selector(tieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [self showTipWithText:@"摇一摇以刷新附近D帖"];
+//    });
+}
+
+- (void)typeDidChooseComplete:(NSInteger)chooseTag
+{
+    if (self.isSearch) {
+        [self topCloseButtonDidClicked];
+    }
+    
+    self.topSourceButton.hidden = NO;
+    self.topTimeButton.hidden = NO;
+    
+    [self resetSearch];
+    
+    if (chooseTag == 11) {
+        self.sourceType = 7;
+        self.logoBGName = @"touxiangkuang";
+        self.logoBGColor = UIColorFromRGB(0xDB6283);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
+        self.topAlertLabel.text = @"我和朋友的及收藏和要约";
+    }else if (chooseTag == 12) {
+        self.sourceType = 8;
+        self.logoBGName = @"touxiangkuangbozhu";
+        self.logoBGColor = UIColorFromRGB(0xB721FF);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
+        self.topAlertLabel.text = @"地到博主D帖";
+    }else if (chooseTag == 13) {
+        self.sourceType = 6;
+        self.logoBGName = @"touxiangkuanghui";
+        self.logoBGColor = UIColorFromRGB(0x999999);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
+        if (self.year == -1) {
+            OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
+            self.year = map.year;
+            self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
+        }
+        self.topAlertLabel.text = @"陌生人的公开D帖";
+    }else if (chooseTag == 14) {
+        self.sourceType = 10;
+        self.logoBGName = @"touxiangkuang";
+        self.logoBGColor = UIColorFromRGB(0xDB6283);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
+        self.topAlertLabel.text = @"提醒过的点";
+    }
+    
+    self.addButton.hidden = NO;
+    
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    [self requestMapViewLocations];
+    [self updateUserLocation];
+}
+
+- (void)yuezheButtonDidClicked
+{
+    if (self.isSearch) {
+        [self topCloseButtonDidClicked];
+    }
+    
+    self.topSourceButton.hidden = YES;
+    self.topTimeButton.hidden = YES;
+    
+    [self resetSearch];
+    if (self.sourceType == 666) {
+        return;
+    }
+    
+    self.sourceType = 666;
+//    self.selectButton.alpha = 1.f;
+//    self.selectButton.enabled = YES;
+    
+    [self.yaoyueFriendSource removeAllObjects];
+    self.topAlertLabel.text = @"所有发起约这的好友";
+    
+    if (self.year == -1) {
+        OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
+        self.year = map.year;
+        self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
+    }
+    
+    self.addButton.hidden = YES;
+    
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    [self requestMapViewLocations];
+    [self updateUserLocation];
+}
+
+- (void)typeButtonDidClicked
+{
+    ChooseTypeViewController * type = [[ChooseTypeViewController alloc] initWithSourceType:self.sourceType];
+    type.delegate = self;
+    [self.navigationController presentViewController:type animated:YES completion:nil];
+}
+
+- (void)shoucangButtonDidClicked
+{
+    DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
+    [self.navigationController presentViewController:search animated:YES completion:nil];
+}
+
+- (void)myButtonDidClicked
+{
+    DTieNewViewController * dtie = [[DTieNewViewController alloc] init];
+    [self.navigationController pushViewController:dtie animated:YES];
+}
+
+- (void)tieButtonDidClicked
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    self.tieIsOpen = !self.tieIsOpen;
+    if (self.tieIsOpen) {
+        [self.yuezheButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(-420 * scale);
+        }];
+        [self.shoucangButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(-280 * scale);
+        }];
+        [self.myButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(-140 * scale);
+        }];
+        [self.tieButton setImage:[UIImage imageNamed:@"homeClose"] forState:UIControlStateNormal];
+    }else{
+        [self.yuezheButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        }];
+        [self.shoucangButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        }];
+        [self.myButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
+        }];
+        [self.tieButton setImage:[UIImage imageNamed:@"homeMy"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)picButtonDidClicked
+{
+    self.picIsUser = !self.picIsUser;
+    
+    NSArray * dataSource = self.mapView.annotations;
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    [self.mapView addAnnotations:dataSource];
+    
+    if (self.picIsUser) {
+        [self.picButton setImage:[UIImage imageNamed:@"homePicUser"] forState:UIControlStateNormal];
+    }else{
+        [self.picButton setImage:[UIImage imageNamed:@"homePicPost"] forState:UIControlStateNormal];
+    }
+}
+
+- (void)addButtonDidClicked
+{
+    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] init];
+    [self.navigationController pushViewController:edit animated:YES];
+}
+
+- (void)mailButtonDidClicked
+{
+    DDMailViewController * mail = [[DDMailViewController alloc] init];
+    [self.navigationController pushViewController:mail animated:YES];
 }
 
 - (void)selectButtonDidClicked
 {
+    [self endTextFieldEdit];
     if (self.friendSource.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"未获取到朋友" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"暂时没有找到您的朋友哦~" inView:self.view];
         return;
     }
     
@@ -355,11 +669,18 @@
         [_mapView setRegion:adjustedRegion animated:YES];
         self.isFirst = NO;
     }
+    
+    if ([DDLocationManager shareManager].result) {
+        NSString * city = [DDLocationManager shareManager].result.addressDetail.city;
+        [self.locationButton setTitle:city forState:UIControlStateNormal];
+    }
 }
 
 - (void)requestMapViewLocations
 {
     [DTieSearchRequest cancelRequest];
+    
+    self.isNotification = NO;
     if (self.sourceType == 666) {
         
         NSMutableArray * friendList = [[NSMutableArray alloc] init];
@@ -429,12 +750,16 @@
             endDate = [DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0];
         }
         
+        if (self.sourceType == 10) {
+            self.isNotification = YES;
+        }
+        
         DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             if (KIsDictionary(response)) {
                 NSArray * data = [response objectForKey:@"data"];
-                if (KIsArray(data) && data.count > 0) {
+                if (KIsArray(data)) {
                     [self.mapView removeAnnotations:self.mapView.annotations];
                     [self.mapSource removeAllObjects];
                     
@@ -469,6 +794,102 @@
             
         }];
     }
+}
+
+- (void)searchMapViewLocations
+{
+    [DTieSearchRequest cancelRequest];
+    
+    self.isNotification = NO;
+    
+    CGFloat centerLongitude = self.mapView.region.center.longitude;
+    CGFloat centerLatitude = self.mapView.region.center.latitude;
+    
+    //当前屏幕显示范围的经纬度
+    CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
+    CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
+    //左上角
+    CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
+    CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
+    //右下角
+    CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
+    CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
+    [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
+    
+    double startDate = self.minTime;
+    double endDate = self.maxTime;
+    if (self.maxTime == 0) {
+        if (self.year == -1) {
+            startDate = 0.f;
+            endDate = [DDTool getTimeCurrentWithDouble];
+        }else{
+            startDate = [DDTool DDGetDoubleWithYear:self.year mouth:0 day:0];
+            endDate = [DDTool DDGetDoubleWithYear:self.year+1 mouth:0 day:0];
+        }
+    }
+    
+    NSInteger type = self.searchType;
+    if (type == 0) {
+        type = self.sourceType;
+    }
+    
+    if (type == 10) {
+        self.isNotification = YES;
+    }
+    
+    NSString * keyWord = @"";
+    if (!isEmptyString(self.textField.text)) {
+        keyWord = self.textField.text;
+    }
+    
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:type type:1 pageStart:0 pageSize:100];
+    
+    if (self.yaoyueFriendSource && self.yaoyueFriendSource.count > 0) {
+        NSMutableArray * authorID = [[NSMutableArray alloc] init];
+        for (UserModel * model in self.yaoyueFriendSource) {
+            [authorID addObject:@(model.cid)];
+        }
+        [request configWithAuthorID:authorID];
+    }
+    
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.mapView removeAnnotations:self.mapView.annotations];
+                [self.mapSource removeAllObjects];
+                
+                NSMutableArray * tempPointArray = [[NSMutableArray alloc] init];
+                NSMutableArray * tempMapArray = [[NSMutableArray alloc] init];
+                
+                for (NSDictionary * dict in data) {
+                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                    [tempMapArray addObject:model];
+                    
+                    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                    annotation.coordinate = CLLocationCoordinate2DMake(model.sceneAddressLat, model.sceneAddressLng);
+                    [tempPointArray addObject:annotation];
+                }
+                [self.mapSource addObjectsFromArray:[[tempMapArray reverseObjectEnumerator] allObjects]];
+                [self.mapView addAnnotations:[[tempPointArray reverseObjectEnumerator] allObjects]];
+            }
+        }
+        
+        if (self.isMotion) {
+            [MBProgressHUD showTextHUDWithText:@"刷新成功" inView:self.view];
+            self.isMotion = NO;
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.isMotion = NO;
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        self.isMotion = NO;
+        
+    }];
 }
 
 - (void)meterDistance
@@ -553,6 +974,7 @@
 - (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
 {
     if (self.sourceType == 666) {
+        
         BMKAnnotationView * yaoyueView = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationViewYue"];
         yaoyueView.annotation = annotation;
         
@@ -619,7 +1041,11 @@
         
         if ([view viewWithTag:888]) {
             UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
-            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+            if (self.picIsUser) {
+                [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+            }else{
+                [imageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
+            }
         }else{
             
             CGFloat width = view.frame.size.width;
@@ -653,7 +1079,11 @@
             imageView.tag = 888;
             [view addSubview:imageView];
             [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
-            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+            if (self.picIsUser) {
+                [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+            }else{
+                [imageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
+            }
         }
         
         return view;
@@ -675,7 +1105,11 @@
     
     if ([view viewWithTag:888]) {
         UIImageView * imageView = (UIImageView *)[view viewWithTag:888];
-        [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        if (self.picIsUser) {
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        }else{
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
+        }
     }else{
         
         CGFloat width = view.frame.size.width;
@@ -687,7 +1121,11 @@
         imageView.tag = 888;
         [view addSubview:imageView];
         [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
-        [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        if (self.picIsUser) {
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+        }else{
+            [imageView sd_setImageWithURL:[NSURL URLWithString:model.postFirstPicture]];
+        }
     }
     
     return view;
@@ -706,6 +1144,18 @@
             MapShowYaoyueView * yaoyue = [[MapShowYaoyueView alloc] initWithModel:model];
             [yaoyue show];
         }
+    }else if (self.isNotification) {
+        
+        if ([self.mapView.annotations containsObject:view.annotation]) {
+            NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
+            
+            DTieModel * model = [self.mapSource objectAtIndex:index];
+            NSInteger notificationID = [model.remark integerValue];
+            
+            DDNotificationViewController * vc = [[DDNotificationViewController alloc] initWithNotificationID:notificationID];
+            [self.navigationController pushViewController:vc animated:YES];
+        }
+        
     }else{
         if ([self.mapView.annotations containsObject:view.annotation]) {
             NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
@@ -744,13 +1194,50 @@
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
-    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"发现";
-    [self.topView addSubview:titleLabel];
-    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60.5 * scale);
-        make.height.mas_equalTo(64 * scale);
-        make.bottom.mas_equalTo(-37 * scale);
+    UIButton * logoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(60 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [logoButton setImage:[UIImage imageNamed:@"gerenzhongxin"] forState:UIControlStateNormal];
+    [self.topView addSubview:logoButton];
+    [logoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(50 * scale);
+        make.height.mas_equalTo(110 * scale);
+        make.width.mas_equalTo(110 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+    }];
+    [logoButton addTarget:self action:@selector(mineButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.locationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"正在获取位置"];
+    
+    if ([DDLocationManager shareManager].result) {
+        NSString * city = [DDLocationManager shareManager].result.addressDetail.city;
+        [self.locationButton setTitle:city forState:UIControlStateNormal];
+    }
+    
+    [self.locationButton setImage:[UIImage imageNamed:@"homeLocation"] forState:UIControlStateNormal];
+    [self.topView addSubview:self.locationButton];
+    [self.locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0 * scale);
+        make.height.mas_equalTo(72 * scale);
+        make.centerY.mas_equalTo(logoButton);
+    }];
+    
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+    [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:shareButton];
+    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+    
+    self.searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [self.searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
+    [self.searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:self.searchButton];
+    [self.searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
     }];
     
 //    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
@@ -772,6 +1259,243 @@
 //        make.bottom.mas_equalTo(-20 * scale);
 //        make.width.height.mas_equalTo(100 * scale);
 //    }];
+    
+    [self createSearchTopView];
+}
+
+- (void)shareButtonDidClicked
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    UIView * shareView = [[UIView alloc] initWithFrame:CGRectZero];
+    shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+    [self.view addSubview:shareView];
+    [shareView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    CGFloat height = kMainBoundsWidth / 4.f;
+    if (KIsiPhoneX) {
+        height += 38.f;
+    }
+    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.backgroundColor = [UIColor whiteColor];
+    [button addTarget:self action:@selector(bottomButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [shareView addSubview:button];
+    [button mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(height);
+        make.bottom.mas_equalTo(0);
+    }];
+    
+    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"homeTP"]];
+    [button addSubview:imageView];
+    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.top.mas_equalTo(50 * scale);
+        make.width.height.mas_equalTo(96 * scale);
+    }];
+    
+    UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
+    label.text = @"图片分享列表";
+    [button addSubview:label];
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(45 * scale);
+        make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
+    }];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:shareView action:@selector(removeFromSuperview)];
+    [shareView addGestureRecognizer:tap];
+}
+
+- (void)bottomButtonDidClicked:(UIButton *)button
+{
+    [button.superview removeFromSuperview];
+    [[DDShareManager shareManager] showShareList];
+}
+
+- (void)searchButtonDidClicked
+{
+    self.searchTopView.hidden = NO;
+    self.isSearch = YES;
+}
+
+- (void)createSearchTopView
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.searchTopView = [[UIView alloc] init];
+    self.searchTopView.userInteractionEnabled = YES;
+    [self.view addSubview:self.searchTopView];
+    [self.searchTopView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.mas_equalTo(0);
+        make.height.mas_equalTo((364 + kStatusBarHeight) * scale);
+    }];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
+    [self.searchTopView.layer addSublayer:gradientLayer];
+    
+    self.searchTopView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.searchTopView.layer.shadowOpacity = .24;
+    self.searchTopView.layer.shadowOffset = CGSizeMake(0, 4);
+    
+    self.textField = [[UITextField alloc] initWithFrame:CGRectZero];
+    [self.searchTopView addSubview:self.textField];
+    [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(96 * scale);
+        make.left.mas_equalTo(24 * scale);
+        make.right.mas_equalTo(-24 * scale);
+        make.height.mas_equalTo((124 + kStatusBarHeight) * scale);
+    }];
+    self.textField.backgroundColor = UIColorFromRGB(0xFAFAFA);
+    [DDViewFactoryTool cornerRadius:6 * scale withView:self.textField];
+    self.textField.layer.shadowColor = UIColorFromRGB(0x000000).CGColor;
+    self.textField.layer.shadowOpacity = .24f;
+    self.textField.layer.shadowRadius = 6 * scale;
+    self.textField.layer.shadowOffset = CGSizeMake(0, 6 * scale);
+    
+    UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 110 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+    self.textField.leftView = backButton;
+    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectMake(40 * scale, 14 * scale, 48 * scale, 48 * scale) contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"close_color"]];
+    [backButton addSubview:imageView];
+    self.textField.leftViewMode = UITextFieldViewModeAlways;
+    [backButton addTarget:self action:@selector(topCloseButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"搜索"];
+    self.textField.rightView = sendButton;
+    self.textField.rightViewMode = UITextFieldViewModeAlways;
+    [sendButton addTarget:self action:@selector(topSearchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    
+    self.topTimeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"指定时间段"];
+    [self.topTimeButton addTarget:self action:@selector(topTimeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.searchTopView addSubview:self.topTimeButton];
+    [self.topTimeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.bottom.mas_equalTo(-10 * scale);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
+    }];
+    
+    self.topSourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"指定类别"];
+    [self.topSourceButton addTarget:self action:@selector(topSourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.searchTopView addSubview:self.topSourceButton];
+    [self.topSourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
+        make.left.mas_equalTo(0 * scale);
+        make.bottom.mas_equalTo(-10 * scale);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
+    }];
+    
+    UIView * lineView2 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView2.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f];
+    [self.topSourceButton addSubview:lineView2];
+    [lineView2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(0);
+        make.width.mas_equalTo(3 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    
+    self.topSelectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"指定作者"];
+    [self.topSelectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.searchTopView addSubview:self.topSelectButton];
+    [self.topSelectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
+        make.left.mas_equalTo(kMainBoundsWidth / 3);
+        make.bottom.mas_equalTo(-10 * scale);
+        make.width.mas_equalTo(kMainBoundsWidth / 3);
+    }];
+    
+    UIView * lineView1 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView1.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f];
+    [self.topTimeButton addSubview:lineView1];
+    [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(0);
+        make.width.mas_equalTo(3 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    
+    self.searchTopView.hidden = YES;
+    
+    self.topSelectButton.alpha = .5f;
+    self.topSourceButton.alpha = .5f;
+    self.topTimeButton.alpha = .5f;
+}
+
+- (void)topCloseButtonDidClicked
+{
+    [self endTextFieldEdit];
+    self.searchTopView.hidden = YES;
+    self.isSearch = NO;
+}
+
+- (void)topTimeButtonDidClicked
+{
+    [self endTextFieldEdit];
+    ChooseTimeView * choose = [[ChooseTimeView alloc] init];
+    choose.handleButtonClicked = ^(NSInteger minTime, NSInteger maxTime) {
+        self.minTime = minTime;
+        self.maxTime = maxTime;
+        self.topTimeButton.alpha = 1.f;
+        if (self.sourceType == 666) {
+            
+        }else{
+            [self searchMapViewLocations];
+        }
+    };
+    [choose show];
+}
+
+- (void)topSourceButtonDidClicked
+{
+    [self endTextFieldEdit];
+    ChooseCategoryView * choose = [[ChooseCategoryView alloc] init];
+    choose.handleButtonClicked = ^(NSInteger tag) {
+        self.searchType = tag;
+        self.topSourceButton.alpha = 1.f;
+        if (self.sourceType == 666) {
+            
+        }else{
+            [self searchMapViewLocations];
+        }
+    };
+    [choose show];
+}
+
+- (void)topSearchButtonDidClicked
+{
+    if (self.sourceType == 666) {
+        
+    }else{
+        [self endTextFieldEdit];
+        [self searchMapViewLocations];
+    }
+}
+
+- (void)resetSearch
+{
+    self.topSelectButton.alpha = .5f;
+    self.topSourceButton.alpha = .5f;
+    self.topTimeButton.alpha = .5f;
+    self.textField.text = @"";
+    [self.yaoyueSelectView clear];
+    self.minTime = 0;
+    self.maxTime = 0;
+    self.searchType = 0;
+}
+
+- (void)mineButtonDidClicked
+{
+    [self showLeftViewAnimated:nil];
 }
 
 - (void)timeButtonDidClicked
@@ -788,15 +1512,6 @@
 - (void)sourceButtonDidClicked
 {
     if (self.sourceType == 7) {
-        self.sourceType = 8;
-        [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
-        self.logoBGName = @"touxiangkuangbozhu";
-        self.logoBGColor = UIColorFromRGB(0xB721FF);
-        self.selectButton.alpha = .5f;
-        self.selectButton.enabled = NO;
-        
-        self.topAlertLabel.text = @"地到博主D帖";
-    }else if (self.sourceType == 8) {
         self.sourceType = 6;
         [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuanghui";
@@ -810,8 +1525,7 @@
         }
         
         self.topAlertLabel.text = @"陌生人的公开D帖";
-    }else if (self.sourceType == 6) {
-        
+    }else if (self.sourceType == 8) {
         self.sourceType = 666;
         [self.sourceButton setTitle:@"约" forState:UIControlStateNormal];
         self.selectButton.alpha = 1.f;
@@ -820,11 +1534,19 @@
         self.topAlertLabel.text = @"所有发起约这的好友";
         
         if (self.year == -1) {
-            OnlyMapViewController * map = [_mapSource objectAtIndex:1];
+            OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
             self.year = map.year;
             self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
         }
+    }else if (self.sourceType == 6) {
+        self.sourceType = 8;
+        [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
+        self.logoBGName = @"touxiangkuangbozhu";
+        self.logoBGColor = UIColorFromRGB(0xB721FF);
+        self.selectButton.alpha = .5f;
+        self.selectButton.enabled = NO;
         
+        self.topAlertLabel.text = @"地到博主D帖";
     }else{
         self.sourceType = 7;
         [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
@@ -882,23 +1604,10 @@
     }
 }
 
--(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event{
-    if (motion == UIEventSubtypeMotionShake) {
-        NSLog(@"手机开始摇动");
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);//让手机震动
-        self.isMotion = YES;
-        [self requestMapViewLocations];
-    }
-}
-
-- (void) motionCancelled:(UIEventSubtype)motion withEvent:(UIEvent *)event
+- (void)motionHandle
 {
-    //摇动取消
-}
-
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
-{
-    
+    self.isMotion = YES;
+    [self requestMapViewLocations];
 }
 
 #pragma mark - getter
@@ -1009,6 +1718,13 @@
         _friendSource = [[NSMutableArray alloc] init];
     }
     return _friendSource;
+}
+
+- (void)endTextFieldEdit
+{
+    if (self.textField.isFirstResponder) {
+        [self.textField resignFirstResponder];
+    }
 }
 
 - (void)dealloc

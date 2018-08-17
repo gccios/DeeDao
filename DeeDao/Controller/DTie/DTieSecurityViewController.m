@@ -93,7 +93,7 @@
     __block NSMutableArray * friends = [[NSMutableArray alloc] init];
     __block NSMutableArray * Dties = [[NSMutableArray alloc] init];
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载小密圈" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载好友圈" inView:self.view];
     
     SelectSecurityRequest * friendRequest = [[SelectSecurityRequest alloc] initWithSelectUserWith:model.cid];
     [friendRequest sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

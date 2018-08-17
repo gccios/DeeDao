@@ -60,9 +60,13 @@
 @property (nonatomic, strong) NSArray * thankList;
 @property (nonatomic, strong) NSArray * collectList;
 @property (nonatomic, strong) NSArray * details;
+@property (nonatomic, assign) NSInteger bloggerFlg;
 
 @property (nonatomic, assign) NSInteger source;
 @property (nonatomic, assign) NSInteger concernFlg; //关注
+
+@property (nonatomic, assign) NSInteger remindStatus;
+@property (nonatomic, copy) NSString * remark;
 
 - (void)configWithAuthor:(UserModel *)model;
 

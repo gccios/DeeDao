@@ -14,7 +14,7 @@
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPGet;
-        self.methodName = [NSString stringWithFormat:@"series/showSeriesDetail?seriesId=%ld", seriesId];
+        self.methodName = [NSString stringWithFormat:@"series/showSeriesDetail/%ld", seriesId];
     }
     return self;
 }

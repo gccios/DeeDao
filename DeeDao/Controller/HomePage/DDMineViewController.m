@@ -16,11 +16,13 @@
 #import "DDFriendViewController.h"
 #import "DDPrivateViewController.h"
 #import "BloggerLinkViewController.h"
-#import "NotificationListViewController.h"
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "DTieSingleImageShareView.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "GuidePageView.h"
+#import "UIViewController+LGSideMenuController.h"
+#import "DDNotificationViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -46,38 +48,47 @@
 
 - (void)createDataSource
 {
+    self.view.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    
     self.dataSource = [NSMutableArray new];
     NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Private]];
+                            [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
     
     if ([UserManager shareManager].user.bloggerFlg == 1) {
         typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Private],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_Blogger]];
+                      [[MineMenuModel alloc] initWithType:MineMenuType_Blogger],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
     }
     
     NSArray * sysArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_System]];
-    [self.dataSource addObject:typeArray];
-    [self.dataSource addObject:sysArray];
+    [self.dataSource addObjectsFromArray:typeArray];
+    [self.dataSource addObjectsFromArray:sysArray];
 }
 
 - (void)createViews
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     [self.tableView registerClass:[MainTableViewCell class] forCellReuseIdentifier:@"MainTableViewCell"];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.backgroundColor = self.view.backgroundColor;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.tableFooterView = [UIView new];
     
-    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 288 * scale)];
-    self.tableView.tableHeaderView = headerView;
+    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 700 * scale)];
+    [self.view addSubview:headerView];
+    [headerView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(700 * scale);
+    }];
     
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((220 + kStatusBarHeight) * scale);
+        make.top.mas_equalTo(headerView.mas_bottom);
         make.left.bottom.right.mas_equalTo(0);
     }];
     self.tableView.contentInset = UIEdgeInsetsMake(60 * scale, 0, 0, 0);
@@ -97,8 +108,8 @@
         UIButton * BGButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [headerView addSubview:BGButton];
         [BGButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(0);
-            make.right.mas_equalTo(-50 * scale);
+            make.centerY.mas_equalTo(headerView.nameLabel);
+            make.left.mas_equalTo(headerView.nameLabel.mas_right).offset(20 * scale);
             make.width.height.mas_equalTo(110 * scale);
         }];
         [BGButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -108,11 +119,11 @@
         [BGButton addSubview:shareImage];
         [shareImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.center.mas_equalTo(0);
-            make.width.height.mas_equalTo(55 * scale);
+            make.width.height.mas_equalTo(45 * scale);
         }];
     }
     
-    [self createTopViews];
+//    [self createTopViews];
 }
 
 - (void)shareButtonDidClicked
@@ -164,80 +175,112 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
-    MineMenuModel * model = [data objectAtIndex:indexPath.row];
+//    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+    MineMenuModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    
+    UINavigationController * nav = (UINavigationController *)self.sideMenuController.rootViewController;
+    
     switch (model.type) {
         case MineMenuType_Wallet:
         {
+            [self hideLeftViewAnimated:nil];
             MYWalletViewController * wallet = [[MYWalletViewController alloc] init];
-            [self.navigationController pushViewController:wallet animated:YES];
+            [nav pushViewController:wallet animated:YES];
         }
             break;
             
         case MineMenuType_Achievement:
         {
+            [self hideLeftViewAnimated:nil];
             AchievementViewController * achievement = [[AchievementViewController alloc] init];
-            [self.navigationController pushViewController:achievement animated:YES];
+            [nav pushViewController:achievement animated:YES];
         }
             break;
             
         case MineMenuType_System:
         {
+            [self hideLeftViewAnimated:nil];
             DDSystemViewController * system = [[DDSystemViewController alloc] init];
-            [self.navigationController pushViewController:system animated:YES];
+            [nav pushViewController:system animated:YES];
         }
             break;
             
         case MineMenuType_Address:
         {
+            [self hideLeftViewAnimated:nil];
             DDFriendViewController * friend = [[DDFriendViewController alloc] init];
-            [self.navigationController pushViewController:friend animated:YES];
+            [nav pushViewController:friend animated:YES];
         }
             break;
             
         case MineMenuType_Private:
         {
+            [self hideLeftViewAnimated:nil];
             DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
-            [self.navigationController pushViewController:private animated:YES];
+            [nav pushViewController:private animated:YES];
         }
             break;
             
         case MineMenuType_Blogger:
         {
+            [self hideLeftViewAnimated:nil];
             BloggerLinkViewController * blogger = [[BloggerLinkViewController alloc] init];
-            [self.navigationController pushViewController:blogger animated:YES];
+            [nav pushViewController:blogger animated:YES];
         }
             break;
             
-//        case MineMenuType_AlertList:
-//        {
-//            NotificationListViewController * notification = [[NotificationListViewController alloc] init];
-//            [self.navigationController pushViewController:notification animated:YES];
-//        }
-//            break;
+        case MineMenuType_HandleGuide:
+        {
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
+            
+            UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                
+            }];
+            
+            UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//                UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+////                [self.navigationController popToRootViewControllerAnimated:NO];
+//                [tabbar setSelectedIndex:0];
+//                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//                [[UIApplication sharedApplication].keyWindow addSubview:guide];
+            }];
+            
+            [alert addAction:action1];
+            [alert addAction:action2];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+            break;
+            
+        case MineMenuType_AlertList:
+        {
+            [self hideLeftViewAnimated:nil];
+            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:0];
+            [nav pushViewController:notification animated:YES];
+        }
+            break;
             
         default:
             break;
     }
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return self.dataSource.count;
-}
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    return self.dataSource.count;
+//}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray * data = [self.dataSource objectAtIndex:section];
-    return data.count;
+//    NSArray * data = [self.dataSource objectAtIndex:section];
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MainTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"MainTableViewCell" forIndexPath:indexPath];
     
-    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
-    MineMenuModel * model = [data objectAtIndex:indexPath.row];
+//    NSArray * data = [self.dataSource objectAtIndex:indexPath.section];
+    MineMenuModel * model = [self.dataSource objectAtIndex:indexPath.row];
     [cell configWithMenuModel:model];
     
     return cell;
@@ -248,17 +291,17 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     return 144 * scale;
 }
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    return 48 * scale;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
-{
-    return .1;
-}
+//
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+//{
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
+//    return 48 * scale;
+//}
+//
+//- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+//{
+//    return .1;
+//}
 
 - (UIView *)shareView
 {
@@ -338,7 +381,7 @@
     if (button.tag == 10) {
         
         DTieSingleImageShareView * shareView = [[DTieSingleImageShareView alloc] initWithModel:[UserManager shareManager].user];
-        [self.view insertSubview:shareView atIndex:0];
+        [[UIApplication sharedApplication].keyWindow insertSubview:shareView atIndex:0];
         [shareView startShare];
         
     }else if (button.tag == 11){

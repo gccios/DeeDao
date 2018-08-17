@@ -14,6 +14,7 @@
 #import "DDShareManager.h"
 #import "DTiePOIViewController.h"
 #import "UserManager.h"
+#import "DDLGSideViewController.h"
 
 @interface DTieTitleCollectionViewCell ()
 
@@ -155,14 +156,10 @@
 {
     DTieModel * model = self.dtieModel;
     if (model) {
-        UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-        if ([tab isKindOfClass:[UITabBarController class]]) {
-            UINavigationController * na = (UINavigationController *)tab.selectedViewController;
-            if ([na isKindOfClass:[UINavigationController class]]) {
-                DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:model];
-                [na pushViewController:poi animated:YES];
-            }
-        }
+        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+        DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:model];
+        [na pushViewController:poi animated:YES];
     }
 }
 

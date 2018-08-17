@@ -11,6 +11,10 @@
 #import <MapKit/MapKit.h>
 #import "JZLocationConverter.h"
 #import "UserManager.h"
+#import "CheckNotificationRequest.h"
+#import "DaoDiAlertView.h"
+#import "DDLGSideViewController.h"
+#import "DDNotificationViewController.h"
 
 NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdateNotification";
 
@@ -46,9 +50,9 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 {
     self.locationService = [[BMKLocationService alloc] init];
     self.locationService.delegate = self;
-    self.locationService.distanceFilter = 50.f;
+    self.locationService.distanceFilter = 10.f;
     self.locationService.desiredAccuracy = kCLLocationAccuracyBest;
-//    self.locationService.allowsBackgroundLocationUpdates = YES;
+    self.locationService.allowsBackgroundLocationUpdates = YES;
     
     self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
     self.geocodesearch.delegate = self;
@@ -70,7 +74,7 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     self.userLocation = userLocation;
     [self reverseGeoCodeWith:self.userLocation.location.coordinate];
     
-//    [self registerLocaltionNotification];
+    [self checkNotification];
     
 //    [self stopLocationService];
     
@@ -189,7 +193,62 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     [viewController presentViewController:alert animated:YES completion:nil];
 }
 
-- (void)registerLocaltionNotification
+- (void)checkNotification
+{
+    if (![UserManager shareManager].isLogin) {
+        return;
+    }
+    
+    [CheckNotificationRequest cancelRequest];
+    CheckNotificationRequest * request = [[CheckNotificationRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            
+            if (data.count == 0) {
+                return ;
+            }
+            
+            NSString * title = [data objectForKey:@"remindTitle"];
+            NSString * detail = [data objectForKey:@"remindContent"];
+            NSInteger remindId = [[data objectForKey:@"remindId"] integerValue];
+            
+            UIApplicationState state = [UIApplication sharedApplication].applicationState;
+            if (state == UIApplicationStateBackground) {
+                [self registerLocaltionNotificationWithTitle:title detail:detail remindId:remindId];
+            }else{
+                DaoDiAlertView * alert = [[DaoDiAlertView alloc] init];
+                alert.handleButtonClicked = ^{
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    if ([lg isKindOfClass:[DDLGSideViewController class]]) {
+                        if (lg.leftViewShowing) {
+                            [lg hideLeftViewAnimated];
+                        }
+                        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                        if ([na.topViewController isKindOfClass:[DDNotificationViewController class]]) {
+                            [na popViewControllerAnimated:NO];
+                            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+                            [na pushViewController:notification animated:YES];
+                        }else{
+                            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+                            [na pushViewController:notification animated:YES];
+                        }
+                    }
+                };
+                [alert show];
+            }
+            
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)registerLocaltionNotificationWithTitle:(NSString *)title detail:(NSString *)detail remindId:(NSInteger)remindId
 {
     // 1.创建通知
     
@@ -199,19 +258,21 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     
     // 设置通知显示的内容
     
-    localNotification.alertBody = @"推送显示的信息";
+//    localNotification.alertTitle = title;
+    localNotification.alertBody = [NSString stringWithFormat:@"%@\n%@", title, detail];
+    localNotification.userInfo = @{@"remindId" : @(remindId)};
     
     // 设置通知的发送时间,单位秒，在多少秒之后推送
     
-    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:2];
+//    localNotification.fireDate = [NSDate dateWithTimeIntervalSinceNow:2];
     
     //解锁滑动时的事件
     
-    localNotification.alertAction = @"XXOOXX";
+//    localNotification.alertAction = @"XXOOXX";
     
     //收到通知时App icon的角标
     
-    localNotification.applicationIconBadgeNumber = 0;
+//    localNotification.applicationIconBadgeNumber = 0;
     
     //推送是带的声音提醒，设置默认的字段为UILocalNotificationDefaultSoundName
     
@@ -229,7 +290,10 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     
     // 方式一: 根据通知的发送时间(fireDate)发送通知
     
-    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+//    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+    
+    // 方式二: 立即发送通知
+    [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
 }
 
 @end

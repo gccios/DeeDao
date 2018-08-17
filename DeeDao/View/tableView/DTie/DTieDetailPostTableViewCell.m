@@ -14,6 +14,7 @@
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DDLGSideViewController.h"
 
 @interface DTieDetailPostTableViewCell ()
 
@@ -191,8 +192,8 @@
                 }
                 
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
-                UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-                UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)lg.rootViewController;
                 [na pushViewController:detail animated:YES];
             }
         }

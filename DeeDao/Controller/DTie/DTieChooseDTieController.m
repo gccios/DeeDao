@@ -24,8 +24,6 @@
 @property (nonatomic, assign) NSInteger start;
 @property (nonatomic, assign) NSInteger length;
 
-@property (nonatomic, strong) NSMutableArray * chooseSource;
-
 @end
 
 @implementation DTieChooseDTieController

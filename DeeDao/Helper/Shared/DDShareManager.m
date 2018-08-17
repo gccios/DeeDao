@@ -12,6 +12,7 @@
 #import "DDTool.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DTieShareViewController.h"
+#import "DDLGSideViewController.h"
 
 @interface DDShareManager ()
 
@@ -43,9 +44,6 @@
         number = @"99+/9";
     }
     self.numberLabel.text = number;
-    if (self.tempNumberLabel) {
-        [self.tempNumberLabel setTitle:number forState:UIControlStateNormal];
-    }
 }
 
 - (void)addShareList
@@ -60,11 +58,13 @@
 
 - (void)showShareList
 {
-    UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    if ([tabbar isKindOfClass:[UITabBarController class]]) {
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    if ([lg isKindOfClass:[DDLGSideViewController class]]) {
+        
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
         
         DTieShareViewController * share = [DTieShareViewController sharedViewController];
-        [tabbar.selectedViewController presentViewController:share animated:YES completion:nil];
+        [na presentViewController:share animated:YES completion:nil];
     }
 }
 

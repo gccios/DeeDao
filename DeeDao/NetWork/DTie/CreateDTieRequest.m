@@ -71,4 +71,9 @@
     return self;
 }
 
+- (void)configRemark:(NSString *)remark
+{
+    [self setValue:remark forParamKey:@"remark"];
+}
+
 @end

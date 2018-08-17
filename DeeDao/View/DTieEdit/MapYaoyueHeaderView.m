@@ -214,7 +214,7 @@
             if (self.yaoyueHandle) {
                 self.yaoyueHandle();
             }
-            [MBProgressHUD showTextHUDWithText:@"您已要约当前地点，查看更多信息，联系您想约的好友吧" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦" inView:[UIApplication sharedApplication].keyWindow];
             
             [self reloadStatus];
             

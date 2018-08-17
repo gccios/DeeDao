@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UserManager.h"
+#import "SeriesModel.h"
 #import <WXApi.h>
 
 extern NSString * const DDUserDidGetWeChatCodeNotification; //用户登录成功通知
@@ -34,6 +35,7 @@ extern NSString * const DDUserDidLoginWithTelNumberNotification; //用户登录�
 - (void)shareMiniProgramWithPostID:(NSInteger)postID image:(UIImage *)image isShare:(BOOL)isShare title:(NSString *)title;
 
 - (void)shareMiniProgramWithUser:(UserModel *)model;
+- (void)shareMiniProgramWithSeries:(SeriesModel *)model image:(UIImage *)image;
 
 - (void)getMiniProgromCodeWithPostID:(NSInteger)postID handle:(void (^)(UIImage * image))handle;
 - (void)getMiniProgromCodeWithUserID:(NSInteger)userID handle:(void (^)(UIImage * image))handle;

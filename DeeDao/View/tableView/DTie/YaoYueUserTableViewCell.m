@@ -13,6 +13,7 @@
 #import "UserInfoViewController.h"
 #import "DDTool.h"
 #import <UIImageView+WebCache.h>
+#import "DDLGSideViewController.h"
 
 @interface YaoYueUserTableViewCell ()
 
@@ -137,8 +138,8 @@
 
 - (void)logoImageViewDidClicked
 {
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.cid];
     [na pushViewController:info animated:YES];

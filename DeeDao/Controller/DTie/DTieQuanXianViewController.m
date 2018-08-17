@@ -136,7 +136,7 @@
         self.landAccountFlg = 4;
         self.currentQuanxianButton = button;
         
-        self.alertLabel.text = @"选择小密圈，意味着只有您指定的好友可看见您当前发布的D帖，并会收到相应提示。";
+        self.alertLabel.text = @"选择好友圈，意味着只有您指定的好友可看见您当前发布的D帖，并会收到相应提示。";
         
         [self.tableView reloadData];
     }
@@ -210,7 +210,7 @@
     
     self.miquanButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.miquanButton.titleLabel.font = kPingFangRegular(42 * scale);
-    [self.miquanButton setTitle:@"小密圈" forState:UIControlStateNormal];
+    [self.miquanButton setTitle:@"好友圈" forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [miquanView addSubview:self.miquanButton];

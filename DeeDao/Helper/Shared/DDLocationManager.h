@@ -31,6 +31,6 @@ extern NSString * const DDUserLocationDidUpdateNotification;
 
 - (void)mapNavigationToLongitude:(double)longitude latitude:(double)latitude poiName:(NSString *)name withViewController:(UIViewController *)viewController;
 
-- (void)registerLocaltionNotification;
+//- (void)configDistanceFilter:(CLLocationDistance)filter;
 
 @end

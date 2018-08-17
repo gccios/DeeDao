@@ -6,8 +6,8 @@
 //  Copyright © 2018年 郭春城. All rights reserved.
 //
 
-#import "DDTabHomeViewController.h"
+#import "DDViewController.h"
 
-@interface DDMineViewController : DDTabHomeViewController
+@interface DDMineViewController : DDViewController
 
 @end

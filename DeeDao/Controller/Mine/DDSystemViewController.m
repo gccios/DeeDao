@@ -14,7 +14,6 @@
 #import "PassWordSetViewController.h"
 #import "HelpAndAdviceController.h"
 //#import "SystemAlertTableViewCell.h"
-#import "GuidePageView.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface DDSystemViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -31,7 +30,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"操作引导", @"帮助与反馈", @"切换账号/退出登录"]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"帮助与反馈", @"切换账号/退出登录"]];
     [self createViews];
 }
 
@@ -132,30 +131,10 @@
     
     if (indexPath.row == 0) {
         
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
-        }];
-        
-        UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-            [self.navigationController popToRootViewControllerAnimated:NO];
-            [tabbar setSelectedIndex:0];
-            GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-            [[UIApplication sharedApplication].keyWindow addSubview:guide];
-        }];
-        
-        [alert addAction:action1];
-        [alert addAction:action2];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    }else  if (indexPath.row == 1) {
-        
         HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
         [self.navigationController pushViewController:help animated:YES];
         
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 1){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {

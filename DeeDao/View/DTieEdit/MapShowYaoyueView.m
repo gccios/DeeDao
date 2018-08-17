@@ -19,6 +19,7 @@
 #import "DDYaoYueViewController.h"
 #import "DTiePOIViewController.h"
 #import "UserManager.h"
+#import "DDLGSideViewController.h"
 
 @interface MapShowYaoyueView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -108,7 +109,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"查看更多信息"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发起约饭"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -260,8 +261,8 @@
                 
                 [self cancleButtonDidClicked];
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
-                UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-                UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)lg.rootViewController;
                 [na pushViewController:detail animated:YES];
             }
         }
@@ -276,8 +277,8 @@
 {
     [self cancleButtonDidClicked];
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.dtieModel.authorId];
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     [na pushViewController:info animated:YES];
 }
 
@@ -292,8 +293,8 @@
     
     DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.dtieModel];
     
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     [na pushViewController:yaoyue animated:YES];
 }
 
@@ -315,8 +316,8 @@
     }
     
     DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:self.dtieModel];
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     [na pushViewController:poi animated:YES];
 }
 

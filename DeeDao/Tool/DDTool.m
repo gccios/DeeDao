@@ -21,6 +21,7 @@
 #import "BaiduMobStat.h"
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
+#import "DDLGSideViewController.h"
 
 @implementation DDTool
 
@@ -32,12 +33,12 @@
     
     [[BaiduMobStat defaultStat] startWithAppId:BaiDuAppKey];
     
-//    // 设置通知的类型可以为弹窗提示,声音提示,应用图标数字提示
-//    UIUserNotificationSettings *setting = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert categories:nil];
-//    // 授权通知
-//    [[UIApplication sharedApplication] registerUserNotificationSettings:setting];
+    // 设置通知的类型可以为弹窗提示,声音提示,应用图标数字提示
+    UIUserNotificationSettings *setting = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert categories:nil];
+    // 授权通知
+    [[UIApplication sharedApplication] registerUserNotificationSettings:setting];
     
-    //配置用户信息
+//    配置用户信息
 //    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
 //        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
 //        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
@@ -381,8 +382,8 @@
                     }
                     DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                     
-                    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-                    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
                     if (na && [na isKindOfClass:[UINavigationController class]]) {
                         [na pushViewController:detail animated:YES];
                     }

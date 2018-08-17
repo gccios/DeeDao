@@ -265,8 +265,47 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     program.hdImageData = data;
     
     WXMediaMessage * mediaMessage = [WXMediaMessage message];
-    mediaMessage.title = @"DeeDao地到";
-    mediaMessage.description = model.nickname;
+//    mediaMessage.title = @"DeeDao地到";
+    if (model.cid == [UserManager shareManager].user.cid) {
+        mediaMessage.title = [NSString stringWithFormat:@"%@ 邀请您在 Deedao 连接", model.nickname];
+    }else{
+        mediaMessage.title = [NSString stringWithFormat:@"%@ 介绍 %@ 给您", [UserManager shareManager].user.nickname, model.nickname];
+    }
+    mediaMessage.mediaObject = program;
+    mediaMessage.thumbData = nil;
+    
+    SendMessageToWXReq * req = [[SendMessageToWXReq alloc] init];
+    req.message = mediaMessage;
+    req.scene = WXSceneSession;
+    [WXApi sendReq:req];
+}
+
+- (void)shareMiniProgramWithSeries:(SeriesModel *)model image:(UIImage *)image
+{
+    WXMiniProgramObject * program = [WXMiniProgramObject object];
+    program.webpageUrl = @"http://www.deedao.com";
+    program.userName = @"gh_3714b00f2a4c";
+    program.path = [NSString stringWithFormat:@"pages/album/album?albumId=%ld", model.cid];
+    program.miniProgramType = WXMiniProgramTypeRelease;
+    
+    NSData*  data = [NSData data];
+    data = UIImageJPEGRepresentation(image, 1);
+    float tempX = 0.9;
+    NSInteger length = data.length;
+    while (data.length > 127*1024) {
+        data = UIImageJPEGRepresentation(image, tempX);
+        tempX -= 0.1;
+        if (data.length == length) {
+            break;
+        }
+        length = data.length;
+    }
+    
+    program.hdImageData = data;
+    
+    WXMediaMessage * mediaMessage = [WXMediaMessage message];
+    mediaMessage.title = model.seriesTitle;
+    mediaMessage.description = model.seriesTitle;
     mediaMessage.mediaObject = program;
     mediaMessage.thumbData = nil;
     

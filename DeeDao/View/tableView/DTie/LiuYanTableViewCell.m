@@ -13,6 +13,7 @@
 #import "DDTool.h"
 #import "UserInfoViewController.h"
 #import <UIImageView+WebCache.h>
+#import "DDLGSideViewController.h"
 
 @interface LiuYanTableViewCell ()
 
@@ -45,8 +46,8 @@
 
 - (void)logoImageViewDidClicked
 {
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:self.model.commentatorId];
     [na pushViewController:info animated:YES];

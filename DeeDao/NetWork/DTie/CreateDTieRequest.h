@@ -13,4 +13,6 @@
 
 - (instancetype)initWithList:(NSArray *)array title:(NSString *)title address:(NSString *)address building:(NSString *)building addressLng:(double)addressLng addressLat:(double)addressLat status:(NSInteger)status remindFlg:(NSInteger)remindFlg firstPic:(NSString *)firstPic postID:(NSInteger)postId landAccountFlg:(NSInteger)landAccountFlg allowToSeeList:(NSArray *)allowToSeeList sceneTime:(NSInteger)sceneTime;
 
+- (void)configRemark:(NSString *)remark;
+
 @end

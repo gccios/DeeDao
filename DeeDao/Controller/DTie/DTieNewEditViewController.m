@@ -16,6 +16,7 @@
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "WeChatManager.h"
+#import "DDLGSideViewController.h"
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpdateNotification";
@@ -492,8 +493,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                     return;
                 }
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
-                UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-                UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)lg.rootViewController;
                 
                 [na pushViewController:detail animated:YES];
                 

@@ -10,4 +10,6 @@
 
 @interface DDFoundViewController : DDTabHomeViewController
 
+- (void)motionHandle;
+
 @end

@@ -18,4 +18,6 @@
 
 @property (nonatomic, weak) id<DTieChooseDTieControllerDelegate> delegate;
 
+@property (nonatomic, strong) NSMutableArray * chooseSource;
+
 @end

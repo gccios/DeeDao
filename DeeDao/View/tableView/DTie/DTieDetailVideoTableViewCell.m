@@ -14,6 +14,7 @@
 #import "DDLocationManager.h"
 #import "UserManager.h"
 #import <WXApi.h>
+#import "DDLGSideViewController.h"
 
 @interface DTieDetailVideoTableViewCell ()
 
@@ -145,8 +146,8 @@
 
 - (void)imageDidTap:(UITapGestureRecognizer *)tap
 {
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     if (self.model.asset) {
         

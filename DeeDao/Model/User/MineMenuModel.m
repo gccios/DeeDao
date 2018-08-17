@@ -48,7 +48,7 @@
                 
             {
                 self.imageName = @"private";
-                self.title = @"管理我的小密圈";
+                self.title = @"管理我的好友圈";
             }
                 
                 break;
@@ -76,6 +76,15 @@
             {
                 self.imageName = @"achievement";
                 self.title = @"提醒记录设置";
+            }
+                
+                break;
+                
+            case MineMenuType_HandleGuide:
+                
+            {
+                self.imageName = @"achievement";
+                self.title = @"操作引导";
             }
                 
                 break;

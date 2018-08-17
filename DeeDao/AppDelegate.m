@@ -10,7 +10,10 @@
 #import "LoginViewController.h"
 #import "DDTool.h"
 #import "WeChatManager.h"
-#import "DDTabBarController.h"
+#import "DDFoundViewController.h"
+#import "DDMineViewController.h"
+#import "DDNavigationViewController.h"
+#import "DDLGSideViewController.h"
 #import <BaiduMapAPI_Base/BMKMapManager.h>
 #import "DDLocationManager.h"
 #import "UserManager.h"
@@ -22,10 +25,12 @@
 #import "SettingModel.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <WXApi.h>
+#import "DDNotificationViewController.h"
 
 @interface AppDelegate ()
 
 @property (nonatomic, strong) BMKMapManager * mapManager;
+@property (nonatomic, strong) NSDictionary * notificationUserInfo;
 
 @end
 
@@ -62,12 +67,15 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:DDUserDidLoginOutNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userShouldRelogin) name:@"UserShouldBackToRelogin" object:nil];
     
-    //开始定位
-    [[DDLocationManager shareManager] startLocationService];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        //开始定位
+        [[DDLocationManager shareManager] startLocationService];
+    });
     
-//    if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocationKey]) {
-//        [[DDLocationManager shareManager] registerLocaltionNotification];
-//    }
+    if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey]) {
+        UILocalNotification * notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        [self handleNotificationWithUserInfo:notification.userInfo];
+    }
     
     return YES;
 }
@@ -94,15 +102,23 @@
         self.window.rootViewController = login;
         login.loginSucess = ^{
             
-            DDTabBarController * tab = [[DDTabBarController alloc] init];
-            self.window.rootViewController = tab;
+            DDFoundViewController * found = [[DDFoundViewController alloc] init];
+            DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+            DDMineViewController * mine = [[DDMineViewController alloc] init];
+            DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
+            self.window.rootViewController = side;
             if (model.status) {
-                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-                [[UIApplication sharedApplication].keyWindow addSubview:guide];
+//                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//                [[UIApplication sharedApplication].keyWindow addSubview:guide];
             }
             
             if ([WeChatManager shareManager].miniProgramPostID > 0) {
                 [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+            }
+            if (self.notificationUserInfo) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self handleNotificationWithUserInfo:self.notificationUserInfo];
+                });
             }
         };
     }else{
@@ -110,15 +126,23 @@
         self.window.rootViewController = login;
         login.loginSucess = ^{
             
-            DDTabBarController * tab = [[DDTabBarController alloc] init];
-            self.window.rootViewController = tab;
+            DDFoundViewController * found = [[DDFoundViewController alloc] init];
+            DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+            DDMineViewController * mine = [[DDMineViewController alloc] init];
+            DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
+            self.window.rootViewController = side;
             if (model.status) {
-                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-                [[UIApplication sharedApplication].keyWindow addSubview:guide];
+//                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//                [[UIApplication sharedApplication].keyWindow addSubview:guide];
             }
             
             if ([WeChatManager shareManager].miniProgramPostID > 0) {
                 [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+            }
+            if (self.notificationUserInfo) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self handleNotificationWithUserInfo:self.notificationUserInfo];
+                });
             }
         };
     }
@@ -151,6 +175,34 @@
         // 其他如支付等SDK的回调
     }
     return result;
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    NSDictionary * userInfo = notification.userInfo;
+    [self handleNotificationWithUserInfo:userInfo];
+}
+
+- (void)handleNotificationWithUserInfo:(NSDictionary *)userInfo
+{
+    NSInteger remindId = [[userInfo objectForKey:@"remindId"] integerValue];
+    DDLGSideViewController * lg = (DDLGSideViewController *)self.window.rootViewController;
+    if ([lg isKindOfClass:[DDLGSideViewController class]]) {
+        if (lg.leftViewShowing) {
+            [lg hideLeftViewAnimated];
+        }
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+        if ([na.topViewController isKindOfClass:[DDNotificationViewController class]]) {
+            [na popViewControllerAnimated:NO];
+            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+            [na pushViewController:notification animated:YES];
+        }else{
+            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+            [na pushViewController:notification animated:YES];
+        }
+    }else{
+        self.notificationUserInfo = userInfo;
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

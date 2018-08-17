@@ -1,5 +1,6 @@
 platform:ios, '8.0'
 target 'DeeDao' do
+pod 'PGDatePicker'
 pod 'BGNetwork'
 pod 'IQKeyboardManager', '~> 5.0.8'
 pod 'Masonry', '~> 1.1.0'
@@ -11,4 +12,5 @@ pod 'SDWebImage'
 pod 'MJRefresh'
 pod 'BaiduMapKit', '~> 4.1.1'
 pod 'WechatOpenSDK'
+pod 'LGSideMenuController', '~> 2.1.1'
 end

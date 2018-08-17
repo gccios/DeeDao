@@ -9,35 +9,19 @@
 #import "DDCollectionViewController.h"
 #import "TYCyclePagerView.h"
 #import "DDCollectionListViewCell.h"
-//#import "DDHandleButton.h"
-//#import <UIImageView+WebCache.h>
-//#import "DTieCollectionRequest.h"
-//#import "DTieCancleCollectRequest.h"
-//#import "DTieCancleWYYRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "DTieNewEditViewController.h"
-//#import "UserInfoViewController.h"
 #import "DDShareManager.h"
-//#import "UserManager.h"
 #import "DDDTieViewController.h"
-//#import "DTiePOIViewController.h"
-//#import "DDDazhaohuView.h"
-//#import "DDLocationManager.h"
 #import "DDCollectionSlider.h"
 #import "UserManager.h"
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
 @property (nonatomic, strong) UIView * topView;
-//@property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * titleLabel;
-//@property (nonatomic, strong) UILabel * nameLabel;
-//@property (nonatomic, strong) UILabel * locationLabel;
-//@property (nonatomic, strong) DDHandleButton * yaoyueButton;
-//@property (nonatomic, strong) DDHandleButton * shoucangButton;
-//@property (nonatomic, strong) DDHandleButton * dazhaohuButton;
 
 @property (nonatomic, strong) TYCyclePagerView *pagerView;
 
@@ -146,234 +130,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         self.isCanDelete = YES;
     });
-    
-//    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"test"]];
-//    [self.view addSubview:self.logoImageView];
-//    [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo((244 + kStatusBarHeight) * scale);
-//        make.left.mas_equalTo(120 * scale);
-//        make.width.height.mas_equalTo(96 *scale);
-//    }];
-//    [DDViewFactoryTool cornerRadius:48 * scale withView:self.logoImageView];
-//    UITapGestureRecognizer * tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
-//    self.logoImageView.userInteractionEnabled = YES;
-//    [self.logoImageView addGestureRecognizer:tap1];
-    
-//    self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-//    self.nameLabel.userInteractionEnabled = YES;
-//    [self.view addSubview:self.nameLabel];
-//    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.centerY.mas_equalTo(self.logoImageView);
-//        make.left.mas_equalTo(self.logoImageView.mas_right).offset(15 * scale);
-//        make.height.mas_equalTo(60 * scale);
-//    }];
-//    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(lookUserInfo)];
-//    [self.nameLabel addGestureRecognizer:tap2];
-    
-//    UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"location"]];
-//    [self.view addSubview:locationImageView];
-//    [locationImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(40 * scale);
-//        make.left.mas_equalTo(self.logoImageView);
-//        make.width.height.mas_equalTo(50 * scale);
-//    }];
-    
-//    self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-//    self.locationLabel.numberOfLines = 0;
-//    [self.view addSubview:self.locationLabel];
-//    [self.locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-//        make.left.mas_equalTo(locationImageView.mas_right).offset(25 * scale);
-//        make.width.mas_equalTo(450 * scale);
-//        make.height.mas_equalTo(120 * scale);
-//    }];
-//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationShouldChooseNavi)];
-//    self.locationLabel.userInteractionEnabled = YES;
-//    [self.locationLabel addGestureRecognizer:tap];
-    
-//    self.shoucangButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
-//    [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangno"]];
-//    [self.shoucangButton configTitle:@"0"];
-//    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:self.shoucangButton];
-//    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-//        make.left.mas_equalTo(self.locationLabel.mas_right).offset(30 * scale);
-//        make.width.mas_equalTo(96 * scale);
-//        make.height.mas_equalTo(96 * scale);
-//    }];
-    
-//    self.yaoyueButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
-//    [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueno"]];
-//    [self.yaoyueButton configTitle:@"0"];
-//    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:self.yaoyueButton];
-//    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-//        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(10 * scale);
-//        make.width.mas_equalTo(96 * scale);
-//        make.height.mas_equalTo(96 * scale);
-//    }];
-    
-//    self.dazhaohuButton = [DDHandleButton buttonWithType:UIButtonTypeCustom];
-//    [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohu"]];
-//    [self.dazhaohuButton configTitle:@"0"];
-//    [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:self.dazhaohuButton];
-//    [self.dazhaohuButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo(self.pagerView.mas_bottom).offset(25 * scale);
-//        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(10 * scale);
-//        make.width.mas_equalTo(96 * scale);
-//        make.height.mas_equalTo(96 * scale);
-//    }];
 }
-
-//- (void)locationShouldChooseNavi
-//{
-//    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
-//    if (model) {
-//        DTiePOIViewController * poi = [[DTiePOIViewController alloc] initWithDtieModel:model];
-//        [self.navigationController pushViewController:poi animated:YES];
-//    }
-//}
-
-//- (void)lookUserInfo
-//{
-//    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
-//    UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:model.authorId];
-//    [self.navigationController pushViewController:info animated:YES];
-//}
-
-//- (void)yaoyueButtonDidClicked
-//{
-//    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
-//
-//    if (model.authorId == [UserManager shareManager].user.cid) {
-//        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
-//        return;
-//    }
-//
-//    self.yaoyueButton.enabled = NO;
-//    if (model.wyyFlg) {
-//
-//        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.cid];
-//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//
-//            model.wyyFlg = 0;
-//            model.wyyCount--;
-//            [self reloadPageWithIndex:self.pagerView.curIndex];
-//
-//            self.yaoyueButton.enabled = YES;
-//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//            self.yaoyueButton.enabled = YES;
-//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-//            self.yaoyueButton.enabled = YES;
-//        }];
-//
-//    }else{
-//        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:1 subType:0 remark:@""];
-//
-//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//
-//            model.wyyFlg = 1;
-//            model.wyyCount++;
-//            [self reloadPageWithIndex:self.pagerView.curIndex];
-//
-//            self.yaoyueButton.enabled = YES;
-//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//            self.yaoyueButton.enabled = YES;
-//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-//            self.yaoyueButton.enabled = YES;
-//        }];
-//    }
-//}
-//
-//- (void)shoucangButtonDidClicked
-//{
-//    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
-//
-//    if (model.authorId == [UserManager shareManager].user.cid) {
-//        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
-//        return;
-//    }
-//
-//    self.shoucangButton.enabled = NO;
-//    if (model.collectFlg) {
-//
-//        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.cid];
-//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//
-//            model.collectFlg = 0;
-//            model.collectCount--;
-//            [self reloadPageWithIndex:self.pagerView.curIndex];
-//
-//            self.shoucangButton.enabled = YES;
-//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//            self.shoucangButton.enabled = YES;
-//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-//            self.shoucangButton.enabled = YES;
-//        }];
-//
-//    }else{
-//        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:0 remark:@""];
-//
-//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//
-//            model.collectFlg = 1;
-//            model.collectCount++;
-//            [self reloadPageWithIndex:self.pagerView.curIndex];
-//
-//            self.shoucangButton.enabled = YES;
-//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//            self.shoucangButton.enabled = YES;
-//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-//            self.shoucangButton.enabled = YES;
-//        }];
-//    }
-//}
-//
-//- (void)dazhaohuButtonDidClicked
-//{
-//    DTieModel * model = [self.dataSource objectAtIndex:self.pagerView.curIndex];
-//
-//    if (model.authorId == [UserManager shareManager].user.cid) {
-//        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:self.view];
-//        return;
-//    }
-//
-//    if (model.dzfFlg == 1) {
-//        [MBProgressHUD showTextHUDWithText:@"您已经打过招呼了" inView:self.view];
-//        return;
-//    }
-//
-//    BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:model];
-//    if (!canHandle) {
-//        [MBProgressHUD showTextHUDWithText:[NSString stringWithFormat:@"只能和%ld米之内的的帖子打招呼", [DDLocationManager shareManager].distance] inView:[UIApplication sharedApplication].keyWindow];
-//        return;
-//    }
-//
-//    DDDazhaohuView * view = [[DDDazhaohuView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//    view.block = ^(NSString *text) {
-//        self.dazhaohuButton.enabled = NO;
-//
-//        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:2 subType:1 remark:@""];
-//
-//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//
-//            model.dzfFlg = 1;
-//            model.dzfCount++;
-//            [self reloadPageWithIndex:self.pagerView.curIndex];
-//
-//            self.dazhaohuButton.enabled = YES;
-//            [MBProgressHUD showTextHUDWithText:@"对方已收到您的信息" inView:[UIApplication sharedApplication].keyWindow];
-//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-//            self.dazhaohuButton.enabled = YES;
-//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-//            self.dazhaohuButton.enabled = YES;
-//        }];
-//    };
-//    [view show];
-//}
 
 - (void)pagerView:(TYCyclePagerView *)pageView didScrollFromIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
 {
@@ -439,41 +196,6 @@
             }
             
         }
-        
-//        [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
-//        self.nameLabel.text = model.nickname;
-//
-//        NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
-//        [formatter setDateFormat:@"yyyy年MM月dd日 HH:mm"];
-//        NSString * createTime = [formatter stringFromDate:[NSDate dateWithTimeIntervalSince1970:(double)model.sceneTime / 1000]];
-//        self.locationLabel.text = [NSString stringWithFormat:@"%@\n%@", createTime, model.sceneBuilding];
-//
-//        [self.yaoyueButton configTitle:[NSString stringWithFormat:@"%ld", model.wyyCount]];
-//        [self.shoucangButton configTitle:[NSString stringWithFormat:@"%ld", model.collectCount]];
-//        [self.dazhaohuButton configTitle:[NSString stringWithFormat:@"%ld", model.dzfCount]];
-//
-//        if (model.wyyFlg) {
-//           [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueyes"]];
-//        }else{
-//            [self.yaoyueButton configImage:[UIImage imageNamed:@"yaoyueno"]];
-//        }
-//
-//        BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:model];
-//        if (canHandle) {
-//            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanyes"]];
-//        }else{
-//            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanno"]];
-//        }
-//
-//        if (model.collectFlg) {
-//            [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangyes"]];
-//        }else{
-//            [self.shoucangButton configImage:[UIImage imageNamed:@"shoucangno"]];
-//        }
-//
-//        if (model.authorId == [UserManager shareManager].user.cid) {
-//            [self.dazhaohuButton configImage:[UIImage imageNamed:@"dazhaohuyuanno"]];
-//        }
         
         self.titleLabel.text = model.postSummary;
     }
@@ -603,26 +325,70 @@
         make.right.mas_equalTo(-210 * scale);
     }];
     
-    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"0/9"];
-    [shareButton setImage:[UIImage imageNamed:@"topShare"] forState:UIControlStateNormal];
-    [self.topView addSubview:shareButton];
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
     [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:shareButton];
     [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.titleLabel);
-        make.right.mas_equalTo(-60 * scale);
-        make.width.mas_equalTo(150 * scale);
-        make.height.mas_equalTo(72 * scale);
+        make.right.mas_equalTo(-40 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
     }];
-    [shareButton setTitleEdgeInsets:UIEdgeInsetsMake(0, -70 * scale, 0, 0)];
-    [DDShareManager shareManager].tempNumberLabel = shareButton;
+    
     [[DDShareManager shareManager] updateNumber];
 }
 
 - (void)shareButtonDidClicked
 {
-    [[DDShareManager shareManager] showShareList];
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    UIView * shareView = [[UIView alloc] initWithFrame:CGRectZero];
+    shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+    [self.view addSubview:shareView];
+    [shareView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    CGFloat height = kMainBoundsWidth / 4.f;
+    if (KIsiPhoneX) {
+        height += 38.f;
+    }
+    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+    button.backgroundColor = [UIColor whiteColor];
+    [button addTarget:self action:@selector(bottomButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [shareView addSubview:button];
+    [button mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(height);
+        make.bottom.mas_equalTo(0);
+    }];
+    
+    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"homeTP"]];
+    [button addSubview:imageView];
+    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.top.mas_equalTo(50 * scale);
+        make.width.height.mas_equalTo(96 * scale);
+    }];
+    
+    UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
+    label.text = @"图片分享列表";
+    [button addSubview:label];
+    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(45 * scale);
+        make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
+    }];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:shareView action:@selector(removeFromSuperview)];
+    [shareView addGestureRecognizer:tap];
 }
 
+- (void)bottomButtonDidClicked:(UIButton *)button
+{
+    [button.superview removeFromSuperview];
+    [[DDShareManager shareManager] showShareList];
+}
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];

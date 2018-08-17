@@ -15,6 +15,7 @@
 #import "DTieNewDetailViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 #import <UIImageView+WebCache.h>
+#import "DDLGSideViewController.h"
 
 @interface MailSmallTableViewCell ()
 
@@ -152,8 +153,8 @@
 
 - (void)rightButtonDidClicked
 {
-    UITabBarController * tab = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)tab.selectedViewController;
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
     
     NSInteger type = self.model.mailTypeId;
     if (type == 1 || type == 3 || type == 4 || type == 5 || type == 7 || type == 10 || type == 11) {
