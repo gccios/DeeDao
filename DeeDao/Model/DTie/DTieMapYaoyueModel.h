@@ -23,4 +23,7 @@
 @property (nonatomic, assign) double sceneAddressLat;
 @property (nonatomic, assign) double sceneAddressLng;
 
+@property (nonatomic, copy) NSString * userPortrait;
+@property (nonatomic, copy) NSString * firstPicture;
+
 @end

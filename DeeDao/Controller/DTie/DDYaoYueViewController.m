@@ -543,12 +543,12 @@
 //                    [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
                     DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
                     
-                    NSInteger postID = DTie.cid;
-                    if (postID == 0) {
-                        postID = DTie.postId;
+                    NSInteger newPostID = DTie.cid;
+                    if (newPostID == 0) {
+                        newPostID = DTie.postId;
                     }
                     
-                    AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:postId];
+                    AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:newPostID];
                     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
                         
                     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -557,7 +557,7 @@
                         
                     }];
                     
-                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:firstImage isShare:NO title:building];
+                    [[WeChatManager shareManager] shareMiniProgramWithPostID:newPostID image:firstImage isShare:NO title:building];
                     
                 }
             }

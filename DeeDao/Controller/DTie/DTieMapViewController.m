@@ -127,7 +127,7 @@
     CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
     CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
     [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleTimeWithDisYear:-1 month:0 day:0] endDate:[DDTool getTimeCurrentWithDouble] sortType:2 dataSources:3 type:1 pageStart:0 pageSize:100];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:[DDTool DDGetDoubleTimeWithDisYear:-1 month:0 day:0] endDate:[DDTool getTimeCurrentWithDouble] sortType:2 dataSources:3 type:1 pageStart:0 pageSize:1000];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {

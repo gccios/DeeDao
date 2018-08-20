@@ -71,9 +71,9 @@
     
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
-    NSInteger postID = model.cid;
+    NSInteger postID = model.postId;
     if (postID == 0) {
-        postID = model.postId;
+        postID = model.cid;
     }
     if (model.status == 0) {
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];

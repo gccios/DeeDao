@@ -168,6 +168,7 @@
 		0652FB7820F779FB00080225 /* SelectPostSeeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7720F779FB00080225 /* SelectPostSeeRequest.m */; };
 		0652FB7B20F77B8200080225 /* DTieSeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7A20F77B8200080225 /* DTieSeeModel.m */; };
 		0652FB7E20F77DD900080225 /* DTieSeeShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */; };
+		0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C7FE212A717800800D7A /* DDShouCangViewController.m */; };
 		0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */; };
 		0660203F2107215E005E3D09 /* DaZhaoHuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */; };
 		06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */; };
@@ -623,6 +624,8 @@
 		0652FB7A20F77B8200080225 /* DTieSeeModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSeeModel.m; sourceTree = "<group>"; };
 		0652FB7C20F77DD900080225 /* DTieSeeShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieSeeShareViewController.h; sourceTree = "<group>"; };
 		0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSeeShareViewController.m; sourceTree = "<group>"; };
+		0658C7FD212A717800800D7A /* DDShouCangViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDShouCangViewController.h; sourceTree = "<group>"; };
+		0658C7FE212A717800800D7A /* DDShouCangViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShouCangViewController.m; sourceTree = "<group>"; };
 		0660203A21071BFF005E3D09 /* DTieHeaderLogoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieHeaderLogoCell.h; sourceTree = "<group>"; };
 		0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieHeaderLogoCell.m; sourceTree = "<group>"; };
 		0660203D2107215E005E3D09 /* DaZhaoHuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DaZhaoHuTableViewCell.h; sourceTree = "<group>"; };
@@ -1935,6 +1938,8 @@
 				06461B2B21115AFA004CAF88 /* ChooseUserViewController.m */,
 				0667DA83211BE9C800A55CE1 /* SeriesSelectViewController.h */,
 				0667DA84211BE9C800A55CE1 /* SeriesSelectViewController.m */,
+				0658C7FD212A717800800D7A /* DDShouCangViewController.h */,
+				0658C7FE212A717800800D7A /* DDShouCangViewController.m */,
 			);
 			path = DTie;
 			sourceTree = "<group>";
@@ -2186,6 +2191,7 @@
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				06180B412109A868007D402C /* SelectMapYaoyueDetailRequest.m in Sources */,
+				0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */,
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
 				06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */,
 				067A4F8320FDF5AC00869D80 /* BMKClusterAlgorithm.m in Sources */,

@@ -100,6 +100,11 @@
 
 - (void)DTieShareDidSelectIndex:(NSInteger)index
 {
+    NSInteger postID = self.model.postId;
+    if (postID == 0) {
+        postID = self.model.cid;
+    }
+    
     if (index == 0) {
         
         BOOL pflg = NO;
@@ -112,11 +117,7 @@
                 if (model.image) {
                     
                     ShareImageModel * shareModel = [[ShareImageModel alloc] init];
-                    NSInteger postId = self.model.cid;
-                    if (postId == 0) {
-                        postId = self.model.postId;
-                    }
-                    shareModel.postId = postId;
+                    shareModel.postId = postID;
                     shareModel.image = model.image;
                     shareModel.title = self.model.postSummary;
                     shareModel.PFlag = model.pFlag;
@@ -151,11 +152,7 @@
                     [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
                     
                     ShareImageModel * shareModel = [[ShareImageModel alloc] init];
-                    NSInteger postId = self.model.cid;
-                    if (postId == 0) {
-                        postId = self.model.postId;
-                    }
-                    shareModel.postId = postId;
+                    shareModel.postId = postID;
                     shareModel.image = image;
                     shareModel.title = self.model.postSummary;
                     shareModel.PFlag = tempPflg;
@@ -174,18 +171,13 @@
                             postId = self.model.postId;
                         }
 
-                        DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
+                        DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
                         [self presentViewController:share animated:YES completion:nil];
                     }
                 }];
             }
         }else{
-            NSInteger postId = self.model.cid;
-            if (postId == 0) {
-                postId = self.model.postId;
-            }
-
-            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postId];
+            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
             [self presentViewController:share animated:YES completion:nil];
         }
     }else if (index == 1) {
@@ -205,12 +197,8 @@
             for (NSInteger i = 0; i < self.model.details.count; i++) {
                 DTieEditModel * model = [self.model.details objectAtIndex:i];
                 if (model.type == DTieEditType_Image) {
-                    NSInteger postId = self.model.postId;
-                    if (postId == 0) {
-                        postId = self.model.cid;
-                    }
                     if (model.image) {
-                        [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:model.image isShare:NO title:self.model.postSummary];
+                        [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:model.image isShare:NO title:self.model.postSummary];
                     }else{
                         NSString * urlPath = self.model.postFirstPicture;
                         if (isEmptyString(urlPath)) {
@@ -223,7 +211,7 @@
                             [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
                             
                             if (image) {
-                                [[WeChatManager shareManager] shareMiniProgramWithPostID:postId image:image isShare:NO title:self.model.postSummary];
+                                [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
                             }else{
                                 [MBProgressHUD showTextHUDWithText:@"分享失败" inView:self.view];
                             }
@@ -257,7 +245,7 @@
 //            return;
 //        }
         
-        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ldisBlogger", self.model.postId, [UserManager shareManager].user.cid];
+        NSString * urlLink = [NSString stringWithFormat:@"pages/detail/detail?postId=%lduserIs%ldisBlogger", postID, [UserManager shareManager].user.cid];
 //        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"博主小程序链接" message:[NSString stringWithFormat:@"此帖的小程序链接是:\n%@\n请复制到微信公众平台文章编辑页", urlLink]];
 //        RDAlertAction * rdaction1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
 //
@@ -275,7 +263,7 @@
         if (isEmptyString(scene)) {
             scene = self.model.sceneAddress;
         }
-        NSString * text = [NSString stringWithFormat:@"%@\n%@\n%@\n%@\n\n", self.model.postSummary, [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], scene, urlLink];
+        NSString * text = [NSString stringWithFormat:@"%@\n%@\n%@\n请把以下文字和链接放置到您的微信公众号博文里：点击这里，一键把这个地点收藏到您的 Deedao 小程序（和APP） 里，在您恰好路过的时候提醒您不要错过😃\n %@\n\n",  [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime], self.model.postSummary, scene, urlLink];
         
         NSError * error = nil;
         NSFileManager * manager = [NSFileManager defaultManager];

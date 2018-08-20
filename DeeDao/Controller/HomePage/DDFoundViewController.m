@@ -40,6 +40,7 @@
 #import "ChooseCategoryView.h"
 #import "DDShareManager.h"
 #import "DDNotificationViewController.h"
+#import "DDShouCangViewController.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate>
 
@@ -553,8 +554,8 @@
 
 - (void)shoucangButtonDidClicked
 {
-    DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
-    [self.navigationController presentViewController:search animated:YES completion:nil];
+    DDShouCangViewController * search = [[DDShouCangViewController alloc] init];
+    [self.navigationController pushViewController:search animated:YES];
 }
 
 - (void)myButtonDidClicked
@@ -754,7 +755,7 @@
             self.isNotification = YES;
         }
         
-        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:100];
+        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:1000];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             if (KIsDictionary(response)) {
@@ -842,7 +843,7 @@
         keyWord = self.textField.text;
     }
     
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:type type:1 pageStart:0 pageSize:100];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:keyWord lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:type type:1 pageStart:0 pageSize:1000];
     
     if (self.yaoyueFriendSource && self.yaoyueFriendSource.count > 0) {
         NSMutableArray * authorID = [[NSMutableArray alloc] init];
@@ -978,7 +979,7 @@
         BMKAnnotationView * yaoyueView = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationViewYue"];
         yaoyueView.annotation = annotation;
         
-        yaoyueView.image = [UIImage imageNamed:@"friendyue"];
+        yaoyueView.image = [UIImage imageNamed:@"mapyueguo"];
         yaoyueView.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
         
         NSInteger index = [self.mapView.annotations indexOfObject:annotation];
@@ -998,14 +999,16 @@
             
             label.text = title;
         }else{
+            CGFloat scale = kMainBoundsWidth / 1080.f;
             
             CGFloat width = yaoyueView.frame.size.width;
+            CGFloat height = yaoyueView.frame.size.height;
             CGFloat logoWidth = width * 47.5f / 52.f;
-            CGFloat origin = (width - logoWidth) / 2;
+            CGFloat originX = (width - logoWidth) / 2;
+            CGFloat originY = height * .63f;
             
-            CGFloat scale = kMainBoundsWidth / 1080.f;
             UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
-            label.frame = CGRectMake(origin, origin, logoWidth, logoWidth);
+            label.frame = CGRectMake(originX, originY, logoWidth, 50 * scale);
             [yaoyueView addSubview:label];
             
             NSString * title = @"";
@@ -1019,6 +1022,33 @@
             
             label.text = title;
             
+        }
+        
+        if ([yaoyueView viewWithTag:999]) {
+            UIImageView * imageView = (UIImageView *)[yaoyueView viewWithTag:888];
+            if (self.picIsUser) {
+                [imageView sd_setImageWithURL:[NSURL URLWithString:yaoyueModel.userPortrait]];
+            }else{
+                [imageView sd_setImageWithURL:[NSURL URLWithString:yaoyueModel.firstPicture]];
+            }
+        }else{
+            
+            CGFloat width = yaoyueView.frame.size.width;
+            CGFloat height = yaoyueView.frame.size.height;
+            CGFloat logoWidth = width * 4.f / 5.f;
+            CGFloat originX = (width - logoWidth) / 2;
+            CGFloat originY = height * .09f;
+            
+            UIImageView * imageView = [[UIImageView alloc] initWithFrame:CGRectMake(originX, originY, logoWidth, logoWidth)];
+            imageView.contentMode = UIViewContentModeScaleAspectFill;
+            imageView.tag = 999;
+            [yaoyueView addSubview:imageView];
+            [DDViewFactoryTool cornerRadius:logoWidth / 2 withView:imageView];
+            if (self.picIsUser) {
+                [imageView sd_setImageWithURL:[NSURL URLWithString:yaoyueModel.userPortrait]];
+            }else{
+                [imageView sd_setImageWithURL:[NSURL URLWithString:yaoyueModel.firstPicture]];
+            }
         }
         
         return yaoyueView;

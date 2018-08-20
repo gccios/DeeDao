@@ -60,6 +60,7 @@
     
     [[IQKeyboardManager sharedManager] setEnable:YES];
     [[IQKeyboardManager sharedManager] setEnableAutoToolbar:NO];
+    [[IQKeyboardManager sharedManager] setShouldResignOnTouchOutside:YES];
     
     [self getApplicationConfigFromSever];
 }

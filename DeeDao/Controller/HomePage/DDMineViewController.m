@@ -390,9 +390,9 @@
         
     }else{
         
-        NSString * urlLink = [NSString stringWithFormat:@"pages/user/user?authorId=%lduserIs%ld", [UserManager shareManager].user.cid, [UserManager shareManager].user.cid];
+        NSString * urlLink = [NSString stringWithFormat:@"pages/user/user?authorId=%lduserIs%ldisBlogger", [UserManager shareManager].user.cid, [UserManager shareManager].user.cid];
         
-        NSString * text = [NSString stringWithFormat:@"博主名片链接\n%@\n\n", urlLink];
+        NSString * text = [NSString stringWithFormat:@"博主名片链接\n请把以下文字和链接放置到您的微信公众号博文里：点击这里，一键在 Deedao 小程序（和 APP）里关注我。 不再错过我的优质生活推荐😃\n%@\n\n", urlLink];
         
         NSError * error = nil;
         NSFileManager * manager = [NSFileManager defaultManager];

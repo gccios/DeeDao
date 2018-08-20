@@ -332,6 +332,11 @@
         [hud hideAnimated:YES];
         
         if (KIsDictionary(response)) {
+            NSInteger code = [[response objectForKey:@"status"] integerValue];
+            if (code == 4002) {
+                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                return;
+            }
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 [model mj_setKeyValues:data];
@@ -506,7 +511,7 @@
         
         NSString * urlLink = [NSString stringWithFormat:@"pages/album/album?albumId=%ldisBlogger", self.seriesModel.cid];
         
-        NSString * text = [NSString stringWithFormat:@"系列 -- %@\n%@\n\n", self.seriesModel.seriesTitle, urlLink];
+        NSString * text = [NSString stringWithFormat:@"系列 -- %@\n请把以下文字和链接放置到您的微信公众号博文里：点击这里，一键收藏本文所有的推荐到您的 Deedao 小程序（和 APP）里，在您恰好路过的时候提醒您不要错过😃\n%@\n\n", self.seriesModel.seriesTitle, urlLink];
         
         NSError * error = nil;
         NSFileManager * manager = [NSFileManager defaultManager];

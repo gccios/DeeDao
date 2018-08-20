@@ -165,7 +165,6 @@
                 }
                 [self.collectionView reloadData];
                 self.start += self.length;
-                return;
                 
             }
         }

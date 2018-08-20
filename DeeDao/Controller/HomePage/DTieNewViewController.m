@@ -27,6 +27,7 @@
 #import <AFHTTPSessionManager.h>
 #import "SeriesSelectViewController.h"
 #import "ShowSeriesViewController.h"
+#import "DTieSearchRequest.h"
 
 @interface DTieNewViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -123,7 +124,9 @@
 {
 //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:0 length:self.length];
+    self.start = 0;
+    self.length = 10;
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
 //        [hud hideAnimated:YES];
@@ -159,7 +162,7 @@
 {
     //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         //        [hud hideAnimated:YES];
