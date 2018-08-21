@@ -13,6 +13,7 @@
 #import "UserManager.h"
 #import "DTieCancleWYYRequest.h"
 #import "DTieCollectionRequest.h"
+#import "DTieCancleCollectRequest.h"
 #import "MBProgressHUD+DDHUD.h"
 
 @interface MapYaoyueHeaderView ()
@@ -27,6 +28,7 @@
 
 @property (nonatomic, strong) UIView * titleView;
 
+@property (nonatomic, strong) UIButton * collectButton;
 @property (nonatomic, strong) UIButton * yaoyueButton;
 //@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
 //@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
@@ -137,11 +139,21 @@
         make.height.mas_equalTo(60 * scale);
     }];
     
+    self.collectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
+    [self.collectButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
+    [self addSubview:self.collectButton];
+    [self.collectButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.contenImageView).offset(-70 * scale);
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(200 * scale);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    [self.collectButton addTarget:self action:@selector(collectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
     self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
     [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
     [self addSubview:self.yaoyueButton];
     [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.contenImageView);
+        make.centerY.mas_equalTo(self.contenImageView).offset(70 * scale);
         make.left.mas_equalTo(self.contenImageView.mas_right).offset(200 * scale);
         make.height.mas_equalTo(120 * scale);
     }];
@@ -227,11 +239,50 @@
     }
 }
 
+- (void)collectButtonDidClicked
+{
+    DTieModel * model = self.model;
+    
+    self.collectButton.enabled = NO;
+    if (model.collectFlg) {
+        
+        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.cid];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.collectFlg = 0;
+            model.collectCount--;
+            [self reloadStatus];
+            
+            self.collectButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.collectButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.collectButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.collectFlg = 1;
+            model.collectCount++;
+            [self reloadStatus];
+            
+            self.collectButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.collectButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.collectButton.enabled = YES;
+        }];
+    }
+}
+
 - (void)reloadStatus
 {
 //    CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    if (self.model.wyyFlg) {
+    if (self.model.wyyFlg == 1) {
         [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
         [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueyes"] forState:UIControlStateNormal];
         self.yaoyueButton.alpha = .5f;
@@ -239,6 +290,16 @@
         [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
         [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
         self.yaoyueButton.alpha = 1.f;
+    }
+    
+    if (self.model.collectFlg == 1) {
+        [self.collectButton setTitle:@"" forState:UIControlStateNormal];
+        [self.collectButton setImage:[UIImage imageNamed:@"shoucangyes"] forState:UIControlStateNormal];
+        self.collectButton.alpha = .5f;
+    }else{
+        [self.collectButton setTitle:@"" forState:UIControlStateNormal];
+        [self.collectButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
+        self.collectButton.alpha = 1.f;
     }
     
 //    if (self.model.wyyCount <= 0) {

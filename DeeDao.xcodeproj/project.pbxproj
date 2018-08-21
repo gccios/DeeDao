@@ -169,6 +169,7 @@
 		0652FB7B20F77B8200080225 /* DTieSeeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7A20F77B8200080225 /* DTieSeeModel.m */; };
 		0652FB7E20F77DD900080225 /* DTieSeeShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */; };
 		0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C7FE212A717800800D7A /* DDShouCangViewController.m */; };
+		0658C81C212ADD8100800D7A /* MapShowPostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C81B212ADD8100800D7A /* MapShowPostView.m */; };
 		0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */; };
 		0660203F2107215E005E3D09 /* DaZhaoHuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */; };
 		06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */; };
@@ -626,6 +627,8 @@
 		0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieSeeShareViewController.m; sourceTree = "<group>"; };
 		0658C7FD212A717800800D7A /* DDShouCangViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDShouCangViewController.h; sourceTree = "<group>"; };
 		0658C7FE212A717800800D7A /* DDShouCangViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShouCangViewController.m; sourceTree = "<group>"; };
+		0658C81A212ADD8100800D7A /* MapShowPostView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapShowPostView.h; sourceTree = "<group>"; };
+		0658C81B212ADD8100800D7A /* MapShowPostView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapShowPostView.m; sourceTree = "<group>"; };
 		0660203A21071BFF005E3D09 /* DTieHeaderLogoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieHeaderLogoCell.h; sourceTree = "<group>"; };
 		0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieHeaderLogoCell.m; sourceTree = "<group>"; };
 		0660203D2107215E005E3D09 /* DaZhaoHuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DaZhaoHuTableViewCell.h; sourceTree = "<group>"; };
@@ -1026,6 +1029,8 @@
 				0660204721073F4A005E3D09 /* DTieMapSelectFriendView.m */,
 				0614E7A121088A3E002F8FC5 /* MapShowYaoyueView.h */,
 				0614E7A221088A3E002F8FC5 /* MapShowYaoyueView.m */,
+				0658C81A212ADD8100800D7A /* MapShowPostView.h */,
+				0658C81B212ADD8100800D7A /* MapShowPostView.m */,
 				0614E7A421088C4F002F8FC5 /* MapYaoyueHeaderView.h */,
 				0614E7A521088C4F002F8FC5 /* MapYaoyueHeaderView.m */,
 				066D5E912122C9EE00A7AD27 /* DaoDiAlertView.h */,
@@ -2056,7 +2061,7 @@
 						CreatedOnToolsVersion = 9.3;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
-								enabled = 1;
+								enabled = 0;
 							};
 						};
 					};
@@ -2278,6 +2283,7 @@
 				064AA5AE20F30B9100EBF20A /* DTieSingleImageShareView.m in Sources */,
 				064CF28621267E4600AC2F42 /* NotificationHistoryModel.m in Sources */,
 				061994AA20B509F500AD64AB /* SecurityRequest.m in Sources */,
+				0658C81C212ADD8100800D7A /* MapShowPostView.m in Sources */,
 				063926B320F85AEC000E7818 /* DTieSeeDetailViewController.m in Sources */,
 				067A4F8120FDF5AC00869D80 /* BMKClusterQuadtree.m in Sources */,
 				0647F30720B66132009B7C27 /* SeriesDetailModel.m in Sources */,

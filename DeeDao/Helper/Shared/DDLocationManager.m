@@ -18,10 +18,12 @@
 
 NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdateNotification";
 
-@interface DDLocationManager () <BMKLocationServiceDelegate, BMKGeoCodeSearchDelegate>
+@interface DDLocationManager () <BMKLocationServiceDelegate, BMKGeoCodeSearchDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic, strong) BMKLocationService * locationService;
 @property (nonatomic, strong) BMKGeoCodeSearch *geocodesearch;
+
+@property (nonatomic, strong) CLLocationManager * sysLocationManager;
 
 @end
 
@@ -41,18 +43,85 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
 {
     if (self = [super init]) {
         [self setUpLocationManager];
+        [self startSignificantChangeUpdates];
         self.distance = 500;
     }
     return self;
 }
 
+#pragma mark - 显著位置更新
+- (void)startSignificantChangeUpdates
+{
+    if (self.sysLocationManager == nil)
+        self.sysLocationManager = [[CLLocationManager alloc] init];
+    self.sysLocationManager.delegate = self;
+    [self.sysLocationManager startMonitoringSignificantLocationChanges];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    if (![UserManager shareManager].isLogin) {
+        return;
+    }
+    CLLocation * location = locations.firstObject;
+    [CheckNotificationRequest cancelRequest];
+    CheckNotificationRequest * request = [[CheckNotificationRequest alloc] init];
+    [request configLat:location.coordinate.latitude lng:location.coordinate.longitude];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            
+            if (data.count == 0) {
+                return ;
+            }
+            
+            NSString * title = [data objectForKey:@"remindTitle"];
+            NSString * detail = [data objectForKey:@"remindContent"];
+            NSInteger remindId = [[data objectForKey:@"remindId"] integerValue];
+            
+            UIApplicationState state = [UIApplication sharedApplication].applicationState;
+            if (state == UIApplicationStateBackground) {
+                [self registerLocaltionNotificationWithTitle:title detail:detail remindId:remindId];
+            }else{
+                DaoDiAlertView * alert = [[DaoDiAlertView alloc] init];
+                alert.handleButtonClicked = ^{
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    if ([lg isKindOfClass:[DDLGSideViewController class]]) {
+                        if (lg.leftViewShowing) {
+                            [lg hideLeftViewAnimated];
+                        }
+                        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                        if ([na.topViewController isKindOfClass:[DDNotificationViewController class]]) {
+                            [na popViewControllerAnimated:NO];
+                            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+                            [na pushViewController:notification animated:YES];
+                        }else{
+                            DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:remindId];
+                            [na pushViewController:notification animated:YES];
+                        }
+                    }
+                };
+                [alert show];
+            }
+            
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+#pragma mark - 实时位置更新
 - (void)setUpLocationManager
 {
     self.locationService = [[BMKLocationService alloc] init];
     self.locationService.delegate = self;
     self.locationService.distanceFilter = 10.f;
     self.locationService.desiredAccuracy = kCLLocationAccuracyBest;
-    self.locationService.allowsBackgroundLocationUpdates = YES;
+    self.locationService.allowsBackgroundLocationUpdates = NO;
     
     self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
     self.geocodesearch.delegate = self;

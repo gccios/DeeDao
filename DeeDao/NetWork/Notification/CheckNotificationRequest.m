@@ -23,4 +23,10 @@
     return self;
 }
 
+- (void)configLat:(double)lat lng:(double)lng
+{
+    [self setDoubleValue:lat forParamKey:@"lat"];
+    [self setDoubleValue:lng forParamKey:@"lng"];
+}
+
 @end

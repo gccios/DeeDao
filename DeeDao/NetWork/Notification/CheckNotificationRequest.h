@@ -10,4 +10,6 @@
 
 @interface CheckNotificationRequest : BGNetworkRequest
 
+- (void)configLat:(double)lat lng:(double)lng;
+
 @end

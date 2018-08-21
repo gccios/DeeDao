@@ -41,6 +41,7 @@
 #import "DDShareManager.h"
 #import "DDNotificationViewController.h"
 #import "DDShouCangViewController.h"
+#import "MapShowPostView.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate>
 
@@ -1193,6 +1194,9 @@
             DTieModel * model = [self.mapSource objectAtIndex:index];
             NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
             index = [tempArray indexOfObject:model];
+            
+//            MapShowPostView * view = [[MapShowPostView alloc] initWithModel:model source:tempArray index:index];
+//            [view show];
             
             DDCollectionViewController * vc = [[DDCollectionViewController alloc] initWithDataSource:tempArray index:index];
             [self.navigationController pushViewController:vc animated:YES];
