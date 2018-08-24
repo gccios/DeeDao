@@ -16,6 +16,7 @@
 #import "UserManager.h"
 #import <WXApi.h>
 #import "DDLGSideViewController.h"
+#import "DDBackWidow.h"
 
 @interface DTieDetailImageTableViewCell ()
 
@@ -147,9 +148,11 @@
     if (self.model.image) {
         LookImageViewController * look = [[LookImageViewController alloc] initWithImage:self.model.image];
         [na presentViewController:look animated:NO completion:nil];
+        [[DDBackWidow shareWindow] hidden];
     }else{
         LookImageViewController * look = [[LookImageViewController alloc] initWithImageURL:self.model.detailContent];
         [na presentViewController:look animated:NO completion:nil];
+        [[DDBackWidow shareWindow] hidden];
     }
 }
 

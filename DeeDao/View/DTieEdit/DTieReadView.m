@@ -45,6 +45,13 @@
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
 #import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 
+#import "SelectWYYBlockRequest.h"
+#import "UserYaoYueBlockModel.h"
+#import <AFHTTPSessionManager.h>
+#import "DDBackWidow.h"
+#import "DaoDiAlertView.h"
+#import "NewAchievementViewController.h"
+
 @interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete, BMKMapViewDelegate>
 
 @property (nonatomic, strong) UIView * headerView;
@@ -62,6 +69,8 @@
 @property (nonatomic, strong) NSMutableArray * contentSources;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 
+@property (nonatomic, strong) NSMutableArray * yaoyueList;
+
 @property (nonatomic, strong) UIImage * firstImage;
 
 @property (nonatomic, assign) BOOL isSelfFlg;
@@ -71,6 +80,8 @@
 @property (nonatomic, assign) BOOL isInsatllWX;
 
 @property (nonatomic, strong) BMKMapView * mapView;
+
+@property (nonatomic, assign) BOOL hasDaoDi;
 
 @end
 
@@ -102,8 +113,34 @@
         [self createDTieReadView];
         
         [self configUserInteractionEnabled];
+        
+        [self checkWYYBlock];
     }
     return self;
+}
+
+- (void)checkWYYBlock
+{
+    NSInteger postID = self.model.postId;
+    if (postID == 0) {
+        postID = self.model.cid;
+    }
+    SelectWYYBlockRequest * request = [[SelectWYYBlockRequest alloc] initWithPostID:postID];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                self.yaoyueList = [UserYaoYueBlockModel mj_objectArrayWithKeyValuesArray:data];
+                [self.tableView reloadData];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)getLiuyanList
@@ -198,6 +235,7 @@
         if (self.firstImage) {
             LookImageViewController * look = [[LookImageViewController alloc] initWithImage:self.firstImage];
             [self.parentDDViewController presentViewController:look animated:NO completion:nil];
+            [[DDBackWidow shareWindow] hidden];
         }
     }
 }
@@ -345,6 +383,11 @@
     
     if (indexPath.section == 0) {
         DTieEditModel * model = [self.modelSources objectAtIndex:indexPath.row];
+        
+        if (model.pFlag == 1) {
+            [self hasGetDaoDiAchievement];
+        }
+        
         if (model.type == DTieEditType_Image) {
             DTieDetailImageTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailImageTableViewCell" forIndexPath:indexPath];
             
@@ -380,6 +423,45 @@
     
     return cell;
     
+}
+
+- (void)hasGetDaoDiAchievement
+{
+    if (self.hasDaoDi || [UserManager shareManager].user.cid == self.model.authorId) {
+        return;
+    }
+    self.hasDaoDi = YES;
+    
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSInteger postID = self.model.postId;
+    if (postID == 0) {
+        postID = self.model.cid;
+    }
+    
+    NSString * url = [NSString stringWithFormat:@"%@/medal/arriveCanSeeMedal", HOSTURL];
+    [manager POST:url parameters:@{@"postId":@(postID)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSDictionary * respones = [NSJSONSerialization JSONObjectWithData:responseObject options:kNilOptions error:nil];
+        NSInteger status = [[respones objectForKey:@"status"] integerValue];
+        if (status == 1100) {
+            DaoDiAlertView * view = [[DaoDiAlertView alloc] init];
+            view.handleButtonClicked = ^{
+                NewAchievementViewController * vc = [[NewAchievementViewController alloc] init];
+                [self.parentDDViewController pushViewController:vc animated:YES];
+            };
+            [view show];
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+    }];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -426,6 +508,13 @@
             };
         }
         
+        if (self.yaoyueList) {
+            [footer configWithYaoyueModel:self.yaoyueList];
+            footer.addButtonDidClickedHandle = ^{
+                [weakSelf checkWYYBlock];
+            };
+        }
+        
         return footer;
     }
     
@@ -443,7 +532,25 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     if (section == 0) {
-        return 620 * scale;
+        
+        if (self.yaoyueList.count > 0) {
+            NSInteger count = self.yaoyueList.count + 2;
+            
+            CGFloat height = 144 * scale * count + 60 * scale;
+            
+            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"userId == %d", [UserManager shareManager].user.cid];
+            NSArray * tempArray = [self.yaoyueList filteredArrayUsingPredicate:predicate];
+            if (tempArray.count == 0) {
+                height = height + 144 * scale;
+            }
+            
+            return 620 * scale + height;
+        }else if (self.yaoyueList) {
+            
+            return 620 * scale + 3 * 144 * scale + 60 * scale;
+        }else{
+            return 620 * scale;
+        }
     }
     return .1f;
 }

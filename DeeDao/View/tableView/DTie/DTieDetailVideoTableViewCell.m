@@ -15,6 +15,7 @@
 #import "UserManager.h"
 #import <WXApi.h>
 #import "DDLGSideViewController.h"
+#import "DDBackWidow.h"
 
 @interface DTieDetailVideoTableViewCell ()
 
@@ -162,6 +163,7 @@
             player.player = [[AVPlayer alloc] initWithPlayerItem:[AVPlayerItem playerItemWithAsset:asset]];
             player.videoGravity = AVLayerVideoGravityResizeAspect;
             [na presentViewController:player animated:YES completion:nil];
+            [[DDBackWidow shareWindow] hidden];
         }];
         
     }else{
@@ -177,6 +179,7 @@
         player.player = [[AVPlayer alloc] initWithURL:url];
         player.videoGravity = AVLayerVideoGravityResizeAspect;
         [na presentViewController:player animated:YES completion:nil];
+        [[DDBackWidow shareWindow] hidden];
     }
 }
 

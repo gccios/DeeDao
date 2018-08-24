@@ -15,6 +15,7 @@
 #import "DaoDiAlertView.h"
 #import "DDLGSideViewController.h"
 #import "DDNotificationViewController.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdateNotification";
 
@@ -277,6 +278,30 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
             
             if (data.count == 0) {
                 return ;
+            }
+            
+            BOOL xiangling = [DDUserDefaultsGet(@"xiangling") boolValue];
+            BOOL zhendong = [DDUserDefaultsGet(@"zhendong") boolValue];
+            
+            if (xiangling) {
+                NSInteger shichangtype = [DDUserDefaultsGet(@"shichangtype") integerValue];
+                SystemSoundID soundID;
+                //NSBundle来返回音频文件路径
+                NSString *soundFile = [[NSBundle mainBundle] pathForResource:@"ten" ofType:@"caf"];
+                if (shichangtype == 0) {
+                    soundFile = [[NSBundle mainBundle] pathForResource:@"two" ofType:@"caf"];
+                }else if (shichangtype == 1) {
+                    soundFile = [[NSBundle mainBundle] pathForResource:@"five" ofType:@"caf"];
+                }
+                //建立SystemSoundID对象，但是这里要传地址(加&符号)。 第一个参数需要一个CFURLRef类型的url参数，要新建一个NSString来做桥接转换(bridge)，而这个NSString的值，就是上面的音频文件路径
+                AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath:soundFile], &soundID);
+                //播放提示音 带震动
+                AudioServicesPlaySystemSound(soundID);
+                AudioServicesRemoveSystemSoundCompletion(soundID);
+            }
+            
+            if (zhendong) {
+                AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);//让手机震动
             }
             
             NSString * title = [data objectForKey:@"remindTitle"];

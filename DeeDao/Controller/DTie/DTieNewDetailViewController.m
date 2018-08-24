@@ -24,6 +24,7 @@
 #import "DTiePostShareView.h"
 #import "AddPostSeeRequest.h"
 #import "ShareImageModel.h"
+#import "DDBackWidow.h"
 
 @interface DTieNewDetailViewController ()<SecurityFriendDelegate, DTieShareDelegate>
 
@@ -173,18 +174,22 @@
 
                         DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
                         [self presentViewController:share animated:YES completion:nil];
+                        [[DDBackWidow shareWindow] hidden];
                     }
                 }];
             }
         }else{
             DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
             [self presentViewController:share animated:YES completion:nil];
+            [[DDBackWidow shareWindow] hidden];
         }
     }else if (index == 1) {
         
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"分享到" message:@"请选择想要分享的方式" preferredStyle:UIAlertControllerStyleActionSheet];
         
         UIAlertAction * friendAction = [UIAlertAction actionWithTitle:@"微信朋友圈" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            [[DDBackWidow shareWindow] show];
             
             DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
             [self.view insertSubview:share atIndex:0];
@@ -193,6 +198,8 @@
         }];
         
         UIAlertAction * quanAction = [UIAlertAction actionWithTitle:@"微信群或好友" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            [[DDBackWidow shareWindow] show];
             
             for (NSInteger i = 0; i < self.model.details.count; i++) {
                 DTieEditModel * model = [self.model.details objectAtIndex:i];
@@ -226,13 +233,14 @@
         }];
         
         UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
+            [[DDBackWidow shareWindow] show];
         }];
         
         [alert addAction:friendAction];
         [alert addAction:quanAction];
         [alert addAction:cancleAction];
         [self presentViewController:alert animated:YES completion:nil];
+        [[DDBackWidow shareWindow] hidden];
         
     }else if (index == 2) {
         SecurityFriendController * friend = [[SecurityFriendController alloc] initMulSelectWithDataDict:[NSDictionary new] nameKeys:[NSArray new] selectModels:[NSMutableArray new]];
@@ -421,6 +429,12 @@
 - (void)backButtonDidClicked
 {
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)didReceiveMemoryWarning {

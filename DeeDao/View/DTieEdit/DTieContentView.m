@@ -101,6 +101,12 @@
     [self.tableView reloadData];
 }
 
+- (void)configChoosePOI:(BMKPoiInfo *)poi
+{
+    self.locationLabel.text = poi.name;
+    self.choosePOI = poi;
+}
+
 #pragma mark - 时间和地点的选择
 - (void)timeViewDidTap
 {

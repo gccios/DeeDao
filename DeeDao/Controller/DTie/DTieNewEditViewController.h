@@ -8,6 +8,7 @@
 
 #import "DDViewController.h"
 #import "DTieModel.h"
+#import <BaiduMapAPI_Search/BMKPoiSearch.h>
 
 extern NSString * const DTieDidCreateNewNotification;
 extern NSString * const DTieCollectionNeedUpdateNotification;
@@ -17,5 +18,7 @@ extern NSString * const DTieCollectionNeedUpdateNotification;
 @property (nonatomic, assign) BOOL needPopTwoVC;
 
 - (instancetype)initWithDtieModel:(DTieModel *)model;
+
+- (void)configWith:(BMKPoiInfo *)poi;
 
 @end

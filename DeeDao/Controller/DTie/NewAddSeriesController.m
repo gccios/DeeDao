@@ -15,6 +15,7 @@
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "DTieNewEditViewController.h"
+#import "DeletePostFromSeriesRequest.h"
 
 @interface NewAddSeriesController ()<UITableViewDelegate, UITableViewDataSource, DTieChooseDTieControllerDelegate>
 
@@ -195,9 +196,12 @@
     
     if (indexPath && indexPath.row < self.dataSource.count) {
         
-//        DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
-//        NSInteger seriesId = model.cid;
-//        [self deleteSeriesWithID:seriesId];
+        DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
+        NSInteger postID = model.postId;
+        if (postID == 0) {
+            postID = model.cid;
+        }
+//        [self deleteSeriesWithID:postID];
         
         [self.dataSource removeObjectAtIndex:indexPath.row];
         [self.tableView beginUpdates];
@@ -206,10 +210,17 @@
     }
 }
 
-//- (void)deleteSeriesWithID:(NSInteger)seriesID
-//{
-//
-//}
+- (void)deleteSeriesWithID:(NSInteger)postID
+{
+    DeletePostFromSeriesRequest * request = [[DeletePostFromSeriesRequest alloc] initWithPostID:postID];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+
+    }];
+}
 
 - (void)leftButtonDidClicked
 {
@@ -241,11 +252,11 @@
     
     NSMutableArray * postIdList = [[NSMutableArray alloc] init];
     for (DTieModel * model in self.dataSource) {
-        NSInteger postID = model.cid;
+        NSInteger postID = model.postId;
         if (postID == 0) {
-            postID = model.postId;
+            postID = model.cid;
         }
-        [postIdList addObject:@(model.cid)];
+        [postIdList addObject:@(postID)];
     }
     
     CreateOrUpdateSeriesRequest * request;

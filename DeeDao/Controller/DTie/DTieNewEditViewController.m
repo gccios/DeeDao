@@ -17,6 +17,7 @@
 #import "DTieNewDetailViewController.h"
 #import "WeChatManager.h"
 #import "DDLGSideViewController.h"
+#import "DDBackWidow.h"
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpdateNotification";
@@ -38,6 +39,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
 
 @property (nonatomic, assign) BOOL isPflg;
 
+@property (nonatomic, strong) BMKPoiInfo * poi;
+
 @end
 
 @implementation DTieNewEditViewController
@@ -48,6 +51,11 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         self.editModel = model;
     }
     return self;
+}
+
+- (void)configWith:(BMKPoiInfo *)poi
+{
+    self.poi = poi;
 }
 
 - (void)viewDidLoad {
@@ -674,6 +682,9 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     [self showContenView];
+    if (self.poi) {
+        [self.contenView configChoosePOI:self.poi];
+    }
     if (nil == self.editModel) {
         [self.contenView showChoosePhotoPicker];
     }
@@ -903,6 +914,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (void)didReceiveMemoryWarning {

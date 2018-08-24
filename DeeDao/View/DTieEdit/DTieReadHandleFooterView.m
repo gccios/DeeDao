@@ -20,10 +20,15 @@
 #import "DTieSeeShareViewController.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DDLGSideViewController.h"
+#import "UserYaoYueBlockModel.h"
+#import "DTieYaoyueBlockView.h"
+#import "ChangeWYYStatusRequest.h"
 
 @interface DTieReadHandleFooterView ()
 
 @property (nonatomic, strong) DTieModel * model;
+@property (nonatomic, strong) NSArray * yaoyueList;
+@property (nonatomic, strong) UIView * yaoyueView;
 
 @property (nonatomic, strong) UILabel * timeLabel;
 @property (nonatomic, strong) UIButton * handleButton;
@@ -79,9 +84,134 @@
     [self reloadStatus];
 }
 
+- (void)configWithYaoyueModel:(NSArray *)models
+{
+    self.yaoyueList = models;
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    [self.yaoyueView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    if (!self.yaoyueView.superview) {
+        [self addSubview:self.yaoyueView];
+    }
+    
+    
+    UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView.backgroundColor = UIColorFromRGB(0xCCCCCC);
+    [self.yaoyueView addSubview:lineView];
+    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.top.mas_equalTo(59 * scale);
+        make.height.mas_equalTo(2 * scale);
+    }];
+    
+    UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentCenter];
+    titleLabel.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    titleLabel.text = @"邀请好友";
+    [self.yaoyueView addSubview:titleLabel];
+    [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.mas_equalTo(0);
+        make.width.mas_equalTo(310 * scale);
+        make.height.mas_equalTo(72 * scale);
+        make.centerY.mas_equalTo(lineView);
+    }];
+    
+    if (models.count > 0) {
+        
+        NSInteger postID = self.model.cid;
+        if (postID == 0) {
+            postID = self.model.postId;
+        }
+        for (NSInteger i = 0; i < models.count; i++) {
+            UserYaoYueBlockModel * model = [models objectAtIndex:i];
+            model.postID = postID;
+            DTieYaoyueBlockView * view = [[DTieYaoyueBlockView alloc] initWithBlockModel:model];
+            [self.yaoyueView addSubview:view];
+            [view mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo((i+1) * 144 * scale);
+                make.left.right.mas_equalTo(0);
+                make.height.mas_equalTo(144 * scale);
+            }];
+        }
+        
+        NSInteger count = models.count + 1;
+        CGFloat height = 144 * scale * count + 60 * scale;
+        
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"userId == %d", [UserManager shareManager].user.cid];
+        NSArray * tempArray = [models filteredArrayUsingPredicate:predicate];
+        if (tempArray.count == 0) {
+            height = height + 144 * scale;
+            
+            UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我也要加入聚会"];
+            [self.yaoyueView addSubview:handleButton];
+            [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(60 * scale);
+                make.right.mas_equalTo(-60 * scale);
+                make.bottom.mas_equalTo(-50 * scale);
+                make.height.mas_equalTo(120 * scale);
+            }];
+            [handleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
+            [DDViewFactoryTool cornerRadius:60 * scale withView:handleButton];
+            [handleButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        }
+        
+        [self.yaoyueView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(60 * scale);
+            make.right.mas_equalTo(-60 * scale);
+            make.top.mas_equalTo(50 * scale);
+            make.height.mas_equalTo(height);
+        }];
+        
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(height + 144 * scale);
+        }];
+    }else if (models){
+        
+        UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我也要加入聚会"];
+        [self.yaoyueView addSubview:handleButton];
+        [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(60 * scale);
+            make.right.mas_equalTo(-60 * scale);
+            make.bottom.mas_equalTo(-50 * scale);
+            make.height.mas_equalTo(120 * scale);
+        }];
+        [handleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
+        [DDViewFactoryTool cornerRadius:60 * scale withView:handleButton];
+        [handleButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        NSInteger postID = self.model.cid;
+        if (postID == 0) {
+            postID = self.model.postId;
+        }
+        
+        CGFloat height = 144 * scale * 2 + 60 * scale;
+        
+        [self.yaoyueView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(60 * scale);
+            make.right.mas_equalTo(-60 * scale);
+            make.top.mas_equalTo(50 * scale);
+            make.height.mas_equalTo(height);
+        }];
+        
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(height + 144 * scale);
+        }];
+    }
+}
+
 - (void)createDTieReadHandleView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.yaoyueView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.yaoyueView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self addSubview:self.yaoyueView];
+    self.yaoyueView.layer.cornerRadius = 24 * scale;
+    self.yaoyueView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    self.yaoyueView.layer.shadowOpacity = .3f;
+    self.yaoyueView.layer.shadowRadius = 24 * scale;
+    self.yaoyueView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
     
     self.readLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.readLabel.text = @"阅读量";
@@ -108,7 +238,7 @@
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     [self addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(170 * scale);
+        make.top.mas_equalTo(self.readLabel.mas_bottom).offset(70 * scale);
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(50 * scale);
     }];
@@ -338,6 +468,24 @@
     if (self.handleButtonDidClicked) {
         self.handleButtonDidClicked();
     }
+}
+
+- (void)addButtonDidClicked
+{
+    NSInteger postID = self.model.cid;
+    if (postID == 0) {
+        postID = self.model.postId;
+    }
+    ChangeWYYStatusRequest * request =  [[ChangeWYYStatusRequest alloc] initWithPostID:postID subType:1];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        if (self.addButtonDidClickedHandle) {
+            self.addButtonDidClickedHandle();
+        }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)shoucangButtonDidClicked

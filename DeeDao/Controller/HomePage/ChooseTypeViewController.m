@@ -9,6 +9,7 @@
 #import "ChooseTypeViewController.h"
 #import "ChooseTypeButton.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DDBackWidow.h"
 
 @interface ChooseTypeViewController ()
 
@@ -44,7 +45,7 @@
     myButton.layer.borderWidth = 3 * scale;
     myButton.tag = 11;
     [myButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [myButton setTitle:@"我的" forState:UIControlStateNormal];
+    [myButton setTitle:@"好友" forState:UIControlStateNormal];
     [myButton setBackgroundColor:[UIColorFromRGB(0xdb6283) colorWithAlphaComponent:.1f]];
     myButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
     [DDViewFactoryTool cornerRadius:200 * scale withView:myButton];
@@ -84,8 +85,8 @@
     [DDViewFactoryTool cornerRadius:110 * scale withView:otherButton];
     [self.view addSubview:otherButton];
     [otherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(350 * scale);
-        make.top.mas_equalTo(myButton.mas_bottom).offset(30 * scale);
+        make.left.mas_equalTo(550 * scale);
+        make.top.mas_equalTo(myButton.mas_bottom).offset(120 * scale);
         make.width.height.mas_equalTo(otherButton.frame.size.width);
     }];
     [otherButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -106,6 +107,23 @@
         make.width.height.mas_equalTo(alertButton.frame.size.width);
     }];
     [alertButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    
+    ChooseTypeButton * ziwoButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
+    ziwoButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    ziwoButton.layer.borderWidth = 3 * scale;
+    ziwoButton.tag = 15;
+    [ziwoButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
+    [ziwoButton setTitle:@"自我" forState:UIControlStateNormal];
+    [ziwoButton setBackgroundColor:[UIColorFromRGB(0xdb6283) colorWithAlphaComponent:.1f]];
+    ziwoButton.frame = CGRectMake(0, 0, 300 * scale, 300 * scale);
+    [DDViewFactoryTool cornerRadius:150 * scale withView:ziwoButton];
+    [self.view addSubview:ziwoButton];
+    [ziwoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(200 * scale);
+        make.top.mas_equalTo(myButton.mas_bottom).offset(30 * scale);
+        make.width.height.mas_equalTo(ziwoButton.frame.size.width);
+    }];
+    [ziwoButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     self.currentImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"currentPD"]];
     [self.view addSubview:self.currentImageView];
@@ -142,6 +160,14 @@
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
+    }else if (self.sourceType == 1) {
+        [ziwoButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(ziwoButton);
+            make.bottom.mas_equalTo(ziwoButton.mas_top);
+            make.width.mas_equalTo(270 * scale);
+            make.height.mas_equalTo(100 * scale);
+        }];
     }
 }
 
@@ -151,6 +177,12 @@
         [self.delegate typeDidChooseComplete:button.tag];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle

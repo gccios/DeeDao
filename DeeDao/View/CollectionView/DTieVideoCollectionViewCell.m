@@ -127,6 +127,9 @@
         }];
     }
     
+    if (nil == dtieModel) {
+        return;
+    }
     if (model.pFlag == 1) {
         
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {

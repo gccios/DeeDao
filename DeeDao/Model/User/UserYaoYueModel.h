@@ -12,6 +12,7 @@
 @interface UserYaoYueModel : NSObject
 
 @property (nonatomic, assign) NSInteger cid;
+@property (nonatomic, assign) NSInteger userId;
 @property (nonatomic, copy) NSString * nickname;
 @property (nonatomic, copy) NSString * portraituri;
 @property (nonatomic, assign) NSInteger createTime;

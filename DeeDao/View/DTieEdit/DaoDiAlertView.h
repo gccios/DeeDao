@@ -10,6 +10,8 @@
 
 @interface DaoDiAlertView : UIView
 
+@property (nonatomic, assign) BOOL isDaoDi;
+
 @property (nonatomic, copy) void (^handleButtonClicked)(void);
 
 - (void)show;

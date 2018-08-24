@@ -14,6 +14,8 @@
 
 @interface DaoDiAlertView ()
 
+@property (nonatomic, strong) UILabel * detailLabel;
+
 @end
 
 @implementation DaoDiAlertView
@@ -80,10 +82,10 @@
         make.right.mas_equalTo(-40 * scale);
     }];
     
-    UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x9B9B9B) alignment:NSTextAlignmentCenter];
-    detailLabel.text = @"您找到了D帖的真实位置";
-    [BGImageview addSubview:detailLabel];
-    [detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x9B9B9B) alignment:NSTextAlignmentCenter];
+    self.detailLabel.text = @"您找到了D帖的真实位置";
+    [BGImageview addSubview:self.detailLabel];
+    [self.detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(titleLabel.mas_bottom).offset(10 * scale);
         make.centerX.mas_equalTo(0);
         make.left.mas_equalTo(40 * scale);
@@ -93,7 +95,7 @@
     UIButton * OKButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"好的，打开看看"];
     [contentView addSubview:OKButton];
     [OKButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(detailLabel.mas_bottom).offset(80 * scale);
+        make.top.mas_equalTo(self.detailLabel.mas_bottom).offset(80 * scale);
         make.centerX.mas_equalTo(0);
         make.width.mas_equalTo(600 * scale);
         make.height.mas_equalTo(120 * scale);
@@ -139,6 +141,14 @@
         
     }else{
         [[UIApplication sharedApplication].keyWindow addSubview:self];
+    }
+}
+
+- (void)setIsDaoDi:(BOOL)isDaoDi
+{
+    _isDaoDi = isDaoDi;
+    if (isDaoDi) {
+        self.detailLabel.text = @"恭喜你获得地到体验官成就";
     }
 }
 

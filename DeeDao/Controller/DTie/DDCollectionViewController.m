@@ -273,12 +273,12 @@
         return;
     }
     
-    if (model.details) {
+//    if (model.details) {
         DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:model];
         [self.navigationController pushViewController:detail animated:NO];
-    }else{
-        [MBProgressHUD showTextHUDWithText:@"正在获取帖子内容" inView:self.view];
-    }
+//    }else{
+//        [MBProgressHUD showTextHUDWithText:@"正在获取帖子内容" inView:self.view];
+//    }
 }
 
 - (void)createTopView

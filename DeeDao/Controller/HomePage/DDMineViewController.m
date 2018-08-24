@@ -23,6 +23,7 @@
 #import "GuidePageView.h"
 #import "UIViewController+LGSideMenuController.h"
 #import "DDNotificationViewController.h"
+#import "NewAchievementViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -53,12 +54,14 @@
     self.dataSource = [NSMutableArray new];
     NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
                             [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
     
     if ([UserManager shareManager].user.bloggerFlg == 1) {
         typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Private],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Blogger],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
                       [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
     }
     
@@ -192,7 +195,7 @@
         case MineMenuType_Achievement:
         {
             [self hideLeftViewAnimated:nil];
-            AchievementViewController * achievement = [[AchievementViewController alloc] init];
+            NewAchievementViewController * achievement = [[NewAchievementViewController alloc] init];
             [nav pushViewController:achievement animated:YES];
         }
             break;

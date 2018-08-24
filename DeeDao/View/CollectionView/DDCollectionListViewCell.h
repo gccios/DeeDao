@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "DTieModel.h"
-#import "TYCyclePagerView.h"
 
 @interface DDCollectionListViewCell : UICollectionViewCell
 

@@ -31,7 +31,7 @@
 
 - (void)createChooseTimeView
 {
-    self.titleArray = @[@"博主", @"我的", @"提醒", @"公开"];
+    self.titleArray = @[@"博主", @"好友", @"提醒", @"公开", @"自我"];
     
     self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
     
@@ -104,6 +104,8 @@
             tag = 10;
         }else if (indexPath.row == 3) {
             tag = 6;
+        }else if (indexPath.row == 4) {
+            tag = 1;
         }
         
         self.handleButtonClicked(tag);

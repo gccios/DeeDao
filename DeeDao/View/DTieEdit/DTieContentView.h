@@ -31,4 +31,6 @@
 - (instancetype)initWithFrame:(CGRect)frame editModel:(DTieModel *)editModel;
 - (void)showChoosePhotoPicker;
 
+- (void)configChoosePOI:(BMKPoiInfo *)poi;
+
 @end

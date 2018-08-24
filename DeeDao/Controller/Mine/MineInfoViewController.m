@@ -10,6 +10,7 @@
 #import "MineEditTableViewCell.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "DDTool.h"
+#import "DDBackWidow.h"
 
 @interface MineInfoViewController ()<UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
@@ -160,6 +161,7 @@
     [self.imagePickerController setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
     self.imagePickerController.mediaTypes = @[(NSString *)kUTTypeImage];
     [self presentViewController:self.imagePickerController animated:YES completion:nil];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 #pragma mark UIImagePickerControllerDelegate
@@ -212,6 +214,12 @@
 - (void)endEdit
 {
     [[UIApplication sharedApplication].keyWindow endEditing:YES];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)didReceiveMemoryWarning {

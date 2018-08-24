@@ -142,6 +142,23 @@
     
     self.detailLabel.attributedText = attributeStr;
     
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    CGFloat height = [DDTool getHeightByWidth:kMainBoundsWidth - 360* scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 140 * scale;
+    CGFloat maxHeight = kMainBoundsHeight - (kStatusBarHeight + 824) * scale - 60 * scale;
+    if (height > maxHeight) {
+        height = maxHeight;
+    }
+    [self.baseCornerView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(height);
+    }];
+    [self.baseView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.height.mas_equalTo(height);
+    }];
+    
+    if (nil == dtieModel) {
+        return;
+    }
+    
     if (model.pFlag == 1) {
         
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {
@@ -192,19 +209,6 @@
             }
         }
     }
-    
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    CGFloat height = [DDTool getHeightByWidth:kMainBoundsWidth - 360* scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 140 * scale;
-    CGFloat maxHeight = kMainBoundsHeight - (kStatusBarHeight + 824) * scale - 60 * scale;
-    if (height > maxHeight) {
-        height = maxHeight;
-    }
-    [self.baseCornerView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.height.mas_equalTo(height);
-    }];
-    [self.baseView mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.height.mas_equalTo(height);
-    }];
 }
 
 @end

@@ -28,6 +28,7 @@
 #import "SeriesSelectViewController.h"
 #import "ShowSeriesViewController.h"
 #import "DTieSearchRequest.h"
+#import "DDBackWidow.h"
 
 @interface DTieNewViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -124,7 +125,7 @@
 {
 //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    self.start = 0;
+    self.start = 1;
     self.length = 10;
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -140,7 +141,7 @@
                 }
                 [self.DtieCollectionView reloadData];
                 
-                self.start = self.length + 1;
+                self.start = self.length;
                 
             }
         }
@@ -625,6 +626,7 @@
     DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
     DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:search];
     [self presentViewController:na animated:YES completion:nil];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -740,6 +742,12 @@
         _seriesDataSource = [[NSMutableArray alloc] init];
     }
     return _seriesDataSource;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)dealloc

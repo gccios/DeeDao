@@ -29,7 +29,7 @@
             case MineMenuType_Achievement:
                 
             {
-                self.imageName = @"achievement";
+                self.imageName = @"chengjiurukou";
                 self.title = @"我的成就";
             }
                 
@@ -74,8 +74,8 @@
             case MineMenuType_AlertList:
                 
             {
-                self.imageName = @"achievement";
-                self.title = @"提醒记录设置";
+                self.imageName = @"alertList";
+                self.title = @"提醒记录";
             }
                 
                 break;

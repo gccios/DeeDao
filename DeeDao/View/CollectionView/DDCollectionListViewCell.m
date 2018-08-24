@@ -551,7 +551,6 @@
     
     DTieEditModel * model = [self.dataSource objectAtIndex:indexPath.row - 1];
     
-    
     if (model.type == DTieEditType_Image) {
         DTieImageCollectionViewCell * imageCell = [tableView dequeueReusableCellWithIdentifier:@"DTieImageCollectionViewCell" forIndexPath:indexPath];
         [imageCell configWithModel:model Dtie:self.model];

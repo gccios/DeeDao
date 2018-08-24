@@ -23,6 +23,7 @@
 #import "DTieDeleteRequest.h"
 #import "UserManager.h"
 #import <MJRefresh.h>
+#import "DDBackWidow.h"
 
 @interface DDDTieViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -324,6 +325,7 @@
     DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
     DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:search];
     [self presentViewController:na animated:YES completion:nil];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
@@ -409,6 +411,12 @@
     }
     
     return _dataSource;
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)dealloc

@@ -20,6 +20,7 @@
 #import "DTiePOIViewController.h"
 #import "UserManager.h"
 #import "DDLGSideViewController.h"
+#import "YueFanViewController.h"
 
 @interface MapShowYaoyueView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -323,7 +324,28 @@
 
 - (void)leftHandleButtonDidClicked
 {
-    [self showYaoYue];
+//    [self showYaoYue];
+    [self cancleButtonDidClicked];
+    
+    if (self.dtieModel == nil) {
+        [MBProgressHUD showTextHUDWithText:@"该点暂时没有帖子哟~" inView:[UIApplication sharedApplication].keyWindow];
+        return;
+    }
+    
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    poi.pt = CLLocationCoordinate2DMake(self.dtieModel.sceneAddressLat, self.dtieModel.sceneAddressLng);
+    poi.address = self.dtieModel.sceneAddress;
+    poi.name = self.dtieModel.sceneBuilding;
+    
+    NSMutableArray * yaoyueSource = [[NSMutableArray alloc] initWithArray:self.userSource];
+    if ([yaoyueSource.firstObject isKindOfClass:[UserModel class]]) {
+        [yaoyueSource removeObjectAtIndex:0];
+    }
+    YueFanViewController * yuefan = [[YueFanViewController alloc] initWithBMKPoiInfo:poi friendArray:yaoyueSource];
+    
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+    [na pushViewController:yuefan animated:YES];
 }
 
 - (void)cancleButtonDidClicked
