@@ -125,7 +125,7 @@
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         
     }];
 }

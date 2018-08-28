@@ -154,7 +154,7 @@
         count++;
         if (count == 2) {
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"用户列表获取失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }
         
     }];
@@ -188,7 +188,7 @@
         count++;
         if (count == 2) {
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"D帖列表获取失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }
         
     }];

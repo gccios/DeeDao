@@ -230,9 +230,9 @@
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注失败" inView:na.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:na.view];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注失败" inView:na.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:na.view];
         }
         
     }];

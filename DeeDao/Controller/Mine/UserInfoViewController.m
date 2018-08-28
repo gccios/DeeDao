@@ -111,9 +111,9 @@
         
         self.rightHandleButton.enabled = YES;
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }
         
     }];
@@ -157,7 +157,7 @@
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [MBProgressHUD showTextHUDWithText:@"好友请求发送失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         
     }];
 }
@@ -181,7 +181,7 @@
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [MBProgressHUD showTextHUDWithText:@"删除好友失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         
     }];
 }

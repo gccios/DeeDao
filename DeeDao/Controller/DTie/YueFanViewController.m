@@ -25,6 +25,7 @@
 #import "WeChatManager.h"
 #import "DDLGSideViewController.h"
 #import "DDBackWidow.h"
+#import "RDAlertView.h"
 
 @interface YueFanViewController () <UICollectionViewDelegate, UICollectionViewDataSource, DTieQuanXianViewControllerDelegate, ChooseLocationDelegate, PGDatePickerDelegate, SecurityFriendDelegate>
 
@@ -296,7 +297,6 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"请选择要约的时间";
     [timeView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.height.centerY.mas_equalTo(timeTitleLabel);
@@ -304,8 +304,8 @@
         make.right.mas_equalTo(-180 * scale);
     }];
     
-    NSString * str = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.createTime];
-    self.timeLabel.text = str;
+//    NSString * str = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.createTime];
+//    self.timeLabel.text = str;
     
     UIImageView * timeImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"timeEdit"]];
     [timeView addSubview:timeImageView];
@@ -395,6 +395,7 @@
         make.left.mas_equalTo(60 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
+        make.width.mas_equalTo(180 * scale);
     }];
     
     self.remarkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -519,6 +520,31 @@
 
 - (void)rightButtonDidClicked
 {
+    if (isEmptyString(self.timeLabel.text)) {
+        [MBProgressHUD showTextHUDWithText:@"请选择要约的时间" inView:self.view];
+        return;
+    }
+    
+    NSInteger timeDistance = self.createTime / 1000 - [[NSDate date] timeIntervalSince1970];
+    NSInteger totalTime = 24 * 60 * 60 * 3;
+    
+    if (timeDistance < totalTime) {
+        
+        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"约这" message:@"您目前选择的相约时间在三天之内，是否确定约起来？"];
+        RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+            
+        } bold:NO];
+        
+        RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+            [self createPostWithShare:YES];
+        } bold:NO];
+        [alertView addActions:@[leftAction, rightAction]];
+        [alertView show];
+        
+        return;
+        
+    }
+    
     [self createPostWithShare:YES];
 }
 
@@ -583,6 +609,7 @@
     }
     
     NSMutableArray * userList = [[NSMutableArray alloc] init];
+    [userList addObject:[NSNumber numberWithInteger:[UserManager shareManager].user.cid]];
     for (UserModel * model in self.selectFriend) {
         [userList addObject:@(model.cid)];
     }
@@ -624,7 +651,6 @@
         [request configRemark:@"WYY"];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
-            [hud hideAnimated:YES];
             if (KIsDictionary(response)) {
                 NSDictionary * data = [response objectForKey:@"data"];
                 if (KIsDictionary(data)) {
@@ -639,18 +665,37 @@
                     AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:newPostID];
                     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
                         
+                        [hud hideAnimated:YES];
+                        [self.navigationController popViewControllerAnimated:YES];
+                        if (share) {
+                            [self checkShareWithPostId:newPostID share:YES];
+                        }
+                        
                     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                        
+                        [hud hideAnimated:YES];
+                        [self.navigationController popViewControllerAnimated:YES];
+                        if (share) {
+                            [self checkShareWithPostId:newPostID share:YES];
+                        }
                         
                     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
                         
+                        [hud hideAnimated:YES];
+                        [self.navigationController popViewControllerAnimated:YES];
+                        if (share) {
+                            [self checkShareWithPostId:newPostID share:YES];
+                        }
+                        
                     }];
                     
-                    [self.navigationController popViewControllerAnimated:YES];
-                    if (share) {
-                        [self checkShareWithPostId:newPostID share:YES];
-                    }
-                    
+                }else{
+                    [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+                    [hud hideAnimated:YES];
                 }
+            }else{
+                [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+                [hud hideAnimated:YES];
             }
             
         } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -658,12 +703,12 @@
             [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }];
         
     } failed:^(NSError *error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 

@@ -85,6 +85,8 @@
     if (self.model.subtype == 1) {
         resultStatus = 2;
     }else if (self.model.subtype == 2) {
+        resultStatus = 0;
+    }else if (self.model.subtype == 0) {
         resultStatus = 1;
     }
     [ChangeWYYStatusRequest cancelRequest];

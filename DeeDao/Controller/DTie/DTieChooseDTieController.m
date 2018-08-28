@@ -83,10 +83,7 @@
     
     [cell configWithDTieModel:model];
     
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.postId];
-    NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
-    
-    if (tempArray && tempArray.count > 0) {
+    if ([self.chooseSource containsObject:model]) {
         [cell configSelectStatus:YES];
     }else{
         [cell configSelectStatus:NO];
@@ -99,12 +96,8 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     
-    
-    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.postId];
-    NSArray * tempArray = [self.chooseSource filteredArrayUsingPredicate:predicate];
-    
-    if (tempArray && tempArray.count > 0) {
-        [self.chooseSource removeObjectsInArray:tempArray];
+    if ([self.chooseSource containsObject:model]) {
+        [self.chooseSource removeObject:model];
     }else{
         [self.chooseSource addObject:model];
     }

@@ -567,12 +567,12 @@
             [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         }];
         
     } failed:^(NSError *error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
     
 //    DDShareYaoYueViewController * share = [[DDShareYaoYueViewController alloc] initWithDtieModel:self.model selectUser:self.selectSource];

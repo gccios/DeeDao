@@ -68,7 +68,7 @@
         [MBProgressHUD showTextHUDWithText:@"获取评论失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"获取评论失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 
@@ -160,7 +160,7 @@
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
         sendButton.enabled = YES;
-        [MBProgressHUD showTextHUDWithText:@"留言失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
         
     }];
 }

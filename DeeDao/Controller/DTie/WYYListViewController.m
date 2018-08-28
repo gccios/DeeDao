@@ -8,6 +8,7 @@
 
 #import "WYYListViewController.h"
 #import "WXHistoryTableViewCell.h"
+#import "FanjuTableViewCell.h"
 #import <MJRefresh.h>
 #import "DTieSearchRequest.h"
 #import "DDTool.h"
@@ -230,7 +231,7 @@
     if (tableView == self.zujuTableView) {
         DTieModel * model = [self.zujuSource objectAtIndex:indexPath.row];
         
-        WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WXHistoryTableViewCell" forIndexPath:indexPath];
+        FanjuTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"FanjuTableViewCell" forIndexPath:indexPath];
         
         [cell configWithModel:model];
         
@@ -253,6 +254,10 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (tableView == self.zujuTableView) {
+        return 500 * scale;
+    }
     
     return 400 * scale;
 }
@@ -316,8 +321,7 @@
     self.zujuTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.zujuTableView.backgroundColor = self.view.backgroundColor;
     self.zujuTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.zujuTableView.rowHeight = 540 * scale;
-    [self.zujuTableView registerClass:[WXHistoryTableViewCell class] forCellReuseIdentifier:@"WXHistoryTableViewCell"];
+    [self.zujuTableView registerClass:[FanjuTableViewCell class] forCellReuseIdentifier:@"FanjuTableViewCell"];
     self.zujuTableView.delegate = self;
     self.zujuTableView.dataSource = self;
     [self.view addSubview:self.zujuTableView];
@@ -331,7 +335,6 @@
     self.ganxingquTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.ganxingquTableView.backgroundColor = self.view.backgroundColor;
     self.ganxingquTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.ganxingquTableView.rowHeight = 540 * scale;
     [self.ganxingquTableView registerClass:[WXHistoryTableViewCell class] forCellReuseIdentifier:@"WXHistoryTableViewCell"];
     self.ganxingquTableView.delegate = self;
     self.ganxingquTableView.dataSource = self;

@@ -328,7 +328,7 @@
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
-        [MBProgressHUD showTextHUDWithText:@"举报失败" inView:self.parentDDViewController.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.parentDDViewController.view];
         
     }];
 }

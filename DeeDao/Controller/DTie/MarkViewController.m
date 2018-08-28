@@ -164,7 +164,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1200 * scale)];
+    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1250 * scale)];
     baseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     self.topImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
@@ -290,6 +290,7 @@
         make.left.mas_equalTo(60 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
+        make.width.mas_equalTo(180 * scale);
     }];
     
     self.remarkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -359,7 +360,8 @@
     }];
     
     UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(35 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    tipLabel.text = @"标记约这可以让您的DeeDao直接好友知道您的兴趣。";
+    tipLabel.numberOfLines = 0;
+    tipLabel.text = @"您可以通过短按加号快速完成打卡，也可以通过长按加号选择照片，并进入深度编辑页发布完整D帖。";
     [tipView addSubview:tipLabel];
     [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(tipImageview.mas_right).offset(20 * scale);
@@ -381,7 +383,7 @@
     tableView.tableHeaderView = baseView;
     tableView.tableFooterView = [UIView new];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"标记约这"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并返回地图"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -393,7 +395,7 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:@"直接约起来"];
+    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:@"发布并分享"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:rightHandleButton];
     [self.view addSubview:rightHandleButton];
     [rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -543,7 +545,7 @@
         
     } failed:^(NSError *error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 

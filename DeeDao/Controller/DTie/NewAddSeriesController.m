@@ -16,14 +16,15 @@
 #import "DTieNewDetailViewController.h"
 #import "DTieNewEditViewController.h"
 #import "DeletePostFromSeriesRequest.h"
+#import "RTDragCellTableView.h"
 
-@interface NewAddSeriesController ()<UITableViewDelegate, UITableViewDataSource, DTieChooseDTieControllerDelegate>
+@interface NewAddSeriesController ()<RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, DTieChooseDTieControllerDelegate>
 
 @property (nonatomic, strong) SeriesModel * seriesModel;
 @property (nonatomic, strong) SeriesDetailModel * model;
 
 @property (nonatomic, strong) UIView * topView;
-@property (nonatomic, strong) UITableView * tableView;
+@property (nonatomic, strong) RTDragCellTableView * tableView;
 @property (nonatomic, strong) UITextField * titleField;
 
 @property (nonatomic, strong) NSMutableArray * dataSource;
@@ -45,6 +46,18 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self createViews];
+}
+
+- (NSArray *)originalArrayDataForTableView:(RTDragCellTableView *)tableView
+{
+    return self.dataSource;
+}
+
+- (void)tableView:(RTDragCellTableView *)tableView newArrayDataForDataSource:(NSArray *)newArray
+{
+    [self.dataSource removeAllObjects];
+    [self.dataSource addObjectsFromArray:newArray];
+//    [tableView reloadData];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -136,7 +149,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.tableView = [[RTDragCellTableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.backgroundColor = self.view.backgroundColor;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 312 * scale;
@@ -222,6 +235,7 @@
     }];
 }
 
+
 - (void)leftButtonDidClicked
 {
     DTieChooseDTieController * choose = [[DTieChooseDTieController alloc] init];
@@ -271,7 +285,7 @@
 //        if (self.delegate && [self.delegate respondsToSelector:@selector(seriesNeedUpdate)]) {
 //            [self.delegate seriesNeedUpdate];
 //        }
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.navigationController popToViewController:[self.navigationController.viewControllers objectAtIndex:self.navigationController.viewControllers.count-3] animated:YES];
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         [hud hideAnimated:YES];

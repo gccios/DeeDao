@@ -199,6 +199,8 @@
 		0652FB7E20F77DD900080225 /* DTieSeeShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */; };
 		0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C7FE212A717800800D7A /* DDShouCangViewController.m */; };
 		0658C81C212ADD8100800D7A /* MapShowPostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C81B212ADD8100800D7A /* MapShowPostView.m */; };
+		065FE61F21353BE6005DAB06 /* paopao.png in Resources */ = {isa = PBXBuildFile; fileRef = 065FE61E21353BE6005DAB06 /* paopao.png */; };
+		065FE625213578A8005DAB06 /* FanjuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 065FE624213578A8005DAB06 /* FanjuTableViewCell.m */; };
 		0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */; };
 		0660203F2107215E005E3D09 /* DaZhaoHuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203E2107215E005E3D09 /* DaZhaoHuTableViewCell.m */; };
 		06602042210722A4005E3D09 /* DDDaZhaoHuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06602041210722A4005E3D09 /* DDDaZhaoHuViewController.m */; };
@@ -714,6 +716,9 @@
 		0658C7FE212A717800800D7A /* DDShouCangViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShouCangViewController.m; sourceTree = "<group>"; };
 		0658C81A212ADD8100800D7A /* MapShowPostView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapShowPostView.h; sourceTree = "<group>"; };
 		0658C81B212ADD8100800D7A /* MapShowPostView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapShowPostView.m; sourceTree = "<group>"; };
+		065FE61E21353BE6005DAB06 /* paopao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paopao.png; sourceTree = "<group>"; };
+		065FE623213578A8005DAB06 /* FanjuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FanjuTableViewCell.h; sourceTree = "<group>"; };
+		065FE624213578A8005DAB06 /* FanjuTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FanjuTableViewCell.m; sourceTree = "<group>"; };
 		0660203A21071BFF005E3D09 /* DTieHeaderLogoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieHeaderLogoCell.h; sourceTree = "<group>"; };
 		0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieHeaderLogoCell.m; sourceTree = "<group>"; };
 		0660203D2107215E005E3D09 /* DaZhaoHuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DaZhaoHuTableViewCell.h; sourceTree = "<group>"; };
@@ -1619,6 +1624,7 @@
 				061ADC1E212D33C4005A5438 /* default3.jpg */,
 				061ADC1D212D33C4005A5438 /* default4.jpg */,
 				0619BAF120D6417300D49A7A /* gongzhongCode.png */,
+				065FE61E21353BE6005DAB06 /* paopao.png */,
 				06286AA820BFC8E500434068 /* mapChooseBG.jpeg */,
 				063E7D1920BE601E004AFF63 /* custom_config_0323 */,
 				06733F6D20A2934B007875A7 /* Image */,
@@ -1920,6 +1926,8 @@
 				069D60B420F4B2DA00DB1147 /* MailUserCardTableViewCell.m */,
 				06AED40621273F2D005EE7EC /* WXHistoryTableViewCell.h */,
 				06AED40721273F2D005EE7EC /* WXHistoryTableViewCell.m */,
+				065FE623213578A8005DAB06 /* FanjuTableViewCell.h */,
+				065FE624213578A8005DAB06 /* FanjuTableViewCell.m */,
 			);
 			path = Mail;
 			sourceTree = "<group>";
@@ -2261,6 +2269,7 @@
 			files = (
 				0619BAF220D6417300D49A7A /* gongzhongCode.png in Resources */,
 				063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */,
+				065FE61F21353BE6005DAB06 /* paopao.png in Resources */,
 				061ADC24212D33C5005A5438 /* default2.jpg in Resources */,
 				064BA8B0212EB98B00E96CF4 /* five.caf in Resources */,
 				064BA8AF212EB98B00E96CF4 /* two.caf in Resources */,
@@ -2632,6 +2641,7 @@
 				06BDF54E20E0AF7E005AB920 /* DTieQuanXianViewController.m in Sources */,
 				06733F9020A2CB26007875A7 /* DDTool.m in Sources */,
 				060CF1C0212FBD820038CC5D /* NewAchievementViewController.m in Sources */,
+				065FE625213578A8005DAB06 /* FanjuTableViewCell.m in Sources */,
 				062BA31720EDEC8F00F4EF58 /* DTieCreateLocationView.m in Sources */,
 				0641711820B42F360075ECB6 /* DraftSeriesRequest.m in Sources */,
 				0667DA82211BE76200A55CE1 /* SeriesSelectTableViewCell.m in Sources */,

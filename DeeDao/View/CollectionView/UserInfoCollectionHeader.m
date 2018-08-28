@@ -184,9 +184,9 @@
         
         self.guanzhuButton.enabled = YES;
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注失败" inView:self];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注失败" inView:self];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self];
         }
         
     }];

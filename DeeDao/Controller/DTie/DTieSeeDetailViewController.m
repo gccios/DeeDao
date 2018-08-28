@@ -196,7 +196,7 @@
         
         [self.navigationController popViewControllerAnimated:YES];
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"信息获取失败" inView:[UIApplication sharedApplication].keyWindow];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:[UIApplication sharedApplication].keyWindow];
         
     }];
     

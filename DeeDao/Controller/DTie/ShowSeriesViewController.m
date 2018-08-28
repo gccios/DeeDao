@@ -555,7 +555,7 @@
         [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [self.navigationController popViewControllerAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 

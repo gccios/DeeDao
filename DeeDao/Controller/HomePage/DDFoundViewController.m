@@ -365,6 +365,7 @@
     }];
     [DDViewFactoryTool cornerRadius:60 * scale withView:self.wyyButton];
     [self.wyyButton addTarget:self action:@selector(wyyButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    self.wyyButton.hidden = YES;
     
     UIButton * timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
     [self.topAlertView addSubview:timeButton];
@@ -500,6 +501,8 @@
     self.topTimeButton.hidden = NO;
     
     [self resetSearch];
+    [self.addButton setImage:[UIImage imageNamed:@"homeAdd"]];
+    self.wyyButton.hidden = YES;
     
     if (chooseTag == 11) {
         self.sourceType = 7;
@@ -558,6 +561,10 @@
     self.topTimeButton.hidden = YES;
     
     [self resetSearch];
+    
+    [self.addButton setImage:[UIImage imageNamed:@"homeYue"]];
+    self.wyyButton.hidden = NO;
+    
     if (self.sourceType == 666) {
         return;
     }
@@ -657,11 +664,12 @@
     
     self.isPushing = YES;
     if (self.sourceType == 666) {
-        if ([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
-            self.addType = 2;
-        }else{
-            self.addType = 3;
-        }
+        self.addType = 2;
+//        if ([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
+//            self.addType = 2;
+//        }else{
+//            self.addType = 3;
+//        }
     }else{
         if ([gesture isKindOfClass:[UITapGestureRecognizer class]]) {
             self.addType = 1;

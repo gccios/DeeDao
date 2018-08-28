@@ -25,12 +25,16 @@
 #import "AddPostSeeRequest.h"
 #import "ShareImageModel.h"
 #import "DDBackWidow.h"
+#import "DTieDeleteRequest.h"
+#import "RDAlertView.h"
 
 @interface DTieNewDetailViewController ()<SecurityFriendDelegate, DTieShareDelegate>
 
 @property (nonatomic, strong) DTieReadView * readView;
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, strong) UIView * topView;
+
+@property (nonatomic, strong) UIView * paopaoView;
 
 @property (nonatomic, assign) BOOL isPreRead;
 
@@ -83,6 +87,99 @@
     // Do any additional setup after loading the view.
     
     [self createViews];
+    [self createPaopaoView];
+}
+
+- (void)createPaopaoView
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.paopaoView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    self.paopaoView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
+    
+    UIImageView * paopaoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"paopao.png"]];
+    paopaoImageView.userInteractionEnabled = YES;
+    [self.paopaoView addSubview:paopaoImageView];
+    [paopaoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-70 * scale);
+        make.top.mas_equalTo((130 + kStatusBarHeight) * scale);
+        make.width.height.mas_equalTo(280 * scale);
+    }];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(paopaoViewDidClicked)];
+    [self.paopaoView addGestureRecognizer:tap];
+    
+    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"编辑D帖"];
+    [paopaoImageView addSubview:editButton];
+    [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(25 * scale);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"删除D帖"];
+    [paopaoImageView addSubview:deleteButton];
+    [deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(editButton.mas_bottom);
+        make.height.mas_equalTo(120 * scale);
+    }];
+    
+    [deleteButton addTarget:self action:@selector(deleteButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)deleteButtonDidClicked
+{
+    [self paopaoViewDidClicked];
+    
+    RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"删除D帖提示" message:@"您是否确定要删除当前D帖？点取消返回，点确定将立即删除。"];
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+        
+    } bold:NO];
+    
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+        
+        NSInteger postID = self.model.postId;
+        if (postID == 0) {
+            postID = self.model.cid;
+        }
+        
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在删除" inView:self.view];
+        DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:postID];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            [hud hideAnimated:YES];
+            
+            self.model.deleteFlg = 1;
+            [self.navigationController popViewControllerAnimated:YES];
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            [hud hideAnimated:YES];
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+            [hud hideAnimated:YES];
+            
+        }];
+        
+    } bold:NO];
+    [alertView addActions:@[leftAction, rightAction]];
+    [alertView show];
+}
+
+- (void)paopaoViewDidClicked
+{
+    [self.paopaoView removeFromSuperview];
+}
+
+- (void)showPaopaoView
+{
+    [self.view addSubview:self.paopaoView];
+    [self.paopaoView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
 }
 
 - (void)shareButtonDidClicked
@@ -317,7 +414,7 @@
         [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [self.navigationController popViewControllerAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 
@@ -336,19 +433,73 @@
         [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [self.navigationController popViewControllerAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"转发失败" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
     }];
 }
 
 - (void)editButtonDidClicked
 {
+    [self paopaoViewDidClicked];
+    
     NSInteger postID = self.model.cid;
     if (postID == 0) {
         postID = self.model.postId;
     }
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
-    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:self.model.postSummary address:self.model.sceneAddress building:self.model.sceneBuilding addressLng:self.model.sceneAddressLng addressLat:self.model.sceneAddressLat status:0 remindFlg:1 firstPic:self.model.postFirstPicture postID:self.model.cid landAccountFlg:self.model.landAccountFlg allowToSeeList:self.model.allowToSeeList sceneTime:self.model.sceneTime];
+    
+    NSMutableArray * details = [[NSMutableArray alloc] init];
+
+    for (NSInteger i = 0; i < self.model.details.count; i++) {
+
+        DTieEditModel * model = [self.model.details objectAtIndex:i];
+
+        if (model.type == DTieEditType_Image) {
+
+            NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                    @"datadictionaryType":@"CONTENT_IMG",
+                                    @"detailsContent":model.detailsContent,
+                                    @"textInformation":@"",
+                                    @"pFlag":@(model.pFlag),
+                                    @"wxCansee":@(model.shareEnable)};
+            [details addObject:dict];
+
+        }else if (model.type == DTieEditType_Text) {
+
+            NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                    @"datadictionaryType":@"CONTENT_TEXT",
+                                    @"detailsContent":model.detailsContent,
+                                    @"textInformation":@"",
+                                    @"pFlag":@(model.pFlag),
+                                    @"wxCansee":@(model.shareEnable)};
+            [details addObject:dict];
+
+        }else if (model.type == DTieEditType_Video) {
+
+            NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                    @"datadictionaryType":@"CONTENT_VIDEO",
+                                    @"detailsContent":model.detailsContent,
+                                    @"textInformation":model.textInformation,
+                                    @"pFlag":@(model.pFlag),
+                                    @"wxCansee":@(model.shareEnable)};
+            [details addObject:dict];
+
+        }else if (model.type == DTieEditType_Post) {
+
+            NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                    @"datadictionaryType":@"CONTENT_POST",
+                                    @"detailsContent":@"",
+                                    @"textInformation":@"",
+                                    @"pFlag":@(0),
+                                    @"wxCansee":@(1),
+                                    @"postToPostId":@(model.postId)
+                                    };
+            [details addObject:dict];
+
+        }
+    }
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:self.model.postSummary address:self.model.sceneAddress building:self.model.sceneBuilding addressLng:self.model.sceneAddressLng addressLat:self.model.sceneAddressLat status:0 remindFlg:1 firstPic:self.model.postFirstPicture postID:self.model.cid landAccountFlg:self.model.landAccountFlg allowToSeeList:self.model.allowToSeeList sceneTime:self.model.sceneTime];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -415,7 +566,7 @@
         if (self.model.authorId == [UserManager shareManager].user.cid) {
             UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
             [editButton setImage:[UIImage imageNamed:@"contentEdit"] forState:UIControlStateNormal];
-            [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+            [editButton addTarget:self action:@selector(bianjiButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
             [self.topView addSubview:editButton];
             [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
@@ -424,6 +575,11 @@
             }];
         }
     }
+}
+
+- (void)bianjiButtonDidClicked
+{
+    [self showPaopaoView];
 }
 
 - (void)backButtonDidClicked

@@ -205,7 +205,7 @@
             
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             
-            [MBProgressHUD showTextHUDWithText:@"添加失败" inView:na.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:na.view];
             
         }];
     }else{

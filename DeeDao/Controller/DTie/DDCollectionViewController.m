@@ -241,6 +241,26 @@
         postID = model.cid;
     }
     
+    if (model.deleteFlg == 1) {
+        
+        [MBProgressHUD showTextHUDWithText:@"帖子已被作者删除" inView:self.view];
+        
+        [self.dataSource removeObjectAtIndex:index];
+        [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+        
+        NSArray * vcs = self.navigationController.viewControllers;
+        UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
+        if ([vc isKindOfClass:[DDDTieViewController class]]) {
+            DDDTieViewController * tie = (DDDTieViewController *)vc;
+            [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+        }
+        if (self.dataSource.count == 0) {
+            [self.navigationController popViewControllerAnimated:YES];
+        }
+        
+        return;
+    }
+    
     if (model.status == 0) {
         
         if (model.authorId != [UserManager shareManager].user.cid) {

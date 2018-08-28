@@ -125,7 +125,7 @@
 {
 //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    self.start = 1;
+    self.start = 0;
     self.length = 10;
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -198,7 +198,12 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
-    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:model.postId];
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:postID];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -457,8 +462,8 @@
     self.rightHandleButton.center = center;
     self.tempAddButton.center = center;
     
-    CGPoint leftCenter = CGPointMake(center.x - 80 * scale, center.y - 100 * scale);
-    CGPoint rightCenter = CGPointMake(center.x + 80 * scale, center.y - 100 * scale);
+    CGPoint leftCenter = CGPointMake(center.x - 100 * scale, center.y - 100 * scale);
+    CGPoint rightCenter = CGPointMake(center.x + 100 * scale, center.y - 100 * scale);
     
     [UIView animateWithDuration:.5f delay:0.f usingSpringWithDamping:.5f initialSpringVelocity:15.f options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.leftHandleButton.center = leftCenter;
@@ -634,6 +639,11 @@
     if (collectionView == self.DtieCollectionView) {
         DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
         
+        NSInteger postID = model.postId;
+        if (postID == 0) {
+            postID = model.cid;
+        }
+        
         if (model.status == 0) {
             if (model.authorId != [UserManager shareManager].user.cid) {
                 
@@ -645,7 +655,7 @@
             
             MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
             
-            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
             [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
                 [hud hideAnimated:YES];
                 
@@ -689,7 +699,7 @@
             [MBProgressHUD showTextHUDWithText:@"获取系列信息失败" inView:self.view];
             [hud hideAnimated:YES];
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [MBProgressHUD showTextHUDWithText:@"获取系列信息失败" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
             [hud hideAnimated:YES];
         }];
     }

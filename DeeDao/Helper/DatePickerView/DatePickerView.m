@@ -92,7 +92,7 @@
         NSDateComponents *comps = [[NSDateComponents alloc] init];
         NSInteger unitFlags =  NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
         comps = [calendar0 components:unitFlags fromDate:[NSDate date]];
-        NSInteger year=[comps year];
+        NSInteger year=[comps year]+50;
         
         startYear=1949;
         yearRange=year-1949 + 1;
@@ -243,7 +243,7 @@
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     NSInteger unitFlags =  NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute;
     comps = [calendar0 components:unitFlags fromDate:[NSDate date]];
-    NSInteger year=[comps year];
+    NSInteger year=[comps year]+50;
     NSInteger month=[comps month];
     NSInteger day=[comps day];
     NSInteger hour=[comps hour];

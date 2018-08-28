@@ -135,7 +135,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:viewController.view];
         
     }];
 }
@@ -196,7 +196,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:viewController.view];
         
     }];
 }
