@@ -384,7 +384,7 @@
     if (indexPath.section == 0) {
         DTieEditModel * model = [self.modelSources objectAtIndex:indexPath.row];
         
-        if (model.pFlag == 1) {
+        if (model.pFlag == 1 && [[DDLocationManager shareManager] contentIsCanSeeWith:self.model detailModle:model]) {
             [self hasGetDaoDiAchievement];
         }
         
@@ -805,6 +805,7 @@
     }];
     
     self.locationButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.locationButton.enabled = NO;
     [locationButton addSubview:self.locationButton];
     [self.locationButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(40 * scale);

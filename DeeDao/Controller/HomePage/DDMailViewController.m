@@ -703,6 +703,11 @@
                         return;
                     }
                     
+                    if (dtieModel.landAccountFlg == 2 && dtieModel.authorId != [UserManager shareManager].user.cid) {
+                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:[UIApplication sharedApplication].keyWindow];
+                        return;
+                    }
+                    
                     DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                     [self.navigationController pushViewController:detail animated:YES];
                 }else{
@@ -797,7 +802,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     if (tableView == self.historyTableView) {
-        return 400 * scale;
+        return 700 * scale;
     }
     
     return 330 * scale;

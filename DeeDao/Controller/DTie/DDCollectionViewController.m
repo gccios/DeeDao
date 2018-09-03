@@ -176,24 +176,24 @@
             return;
         }else if (model.landAccountFlg == 2) {
             
-            if (model.authorId != [UserManager shareManager].user.cid) {
-                [MBProgressHUD showTextHUDWithText:@"帖子已被作者设置为私密" inView:self.view];
+//            if (model.authorId != [UserManager shareManager].user.cid) {
+//                [MBProgressHUD showTextHUDWithText:@"帖子已被作者设置为私密" inView:self.view];
+            
+//                [self.dataSource removeObjectAtIndex:index];
+//                [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
                 
-                [self.dataSource removeObjectAtIndex:index];
-                [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+//                NSArray * vcs = self.navigationController.viewControllers;
+//                UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
+//                if ([vc isKindOfClass:[DDDTieViewController class]]) {
+//                    DDDTieViewController * tie = (DDDTieViewController *)vc;
+//                    [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+//                }
+//                if (self.dataSource.count == 0) {
+//                    [self.navigationController popViewControllerAnimated:YES];
+//                }
                 
-                NSArray * vcs = self.navigationController.viewControllers;
-                UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
-                if ([vc isKindOfClass:[DDDTieViewController class]]) {
-                    DDDTieViewController * tie = (DDDTieViewController *)vc;
-                    [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
-                }
-                if (self.dataSource.count == 0) {
-                    [self.navigationController popViewControllerAnimated:YES];
-                }
-                
-                return;
-            }
+//                return;
+//            }
             
         }
         
@@ -258,6 +258,11 @@
             [self.navigationController popViewControllerAnimated:YES];
         }
         
+        return;
+    }
+    
+    if (model.landAccountFlg == 2 && model.authorId != [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:self.view];
         return;
     }
     

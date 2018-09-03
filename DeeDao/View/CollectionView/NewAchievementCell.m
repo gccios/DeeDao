@@ -80,6 +80,11 @@
                     [MBProgressHUD showTextHUDWithText:@"该帖已被删除~" inView:self];
                     return;
                 }
+                
+                for (DTieEditModel * blockModel in dtieModel.details) {
+                    blockModel.pFlag = 0;
+                }
+                
                 DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
                 UINavigationController * na = (UINavigationController *)lg.rootViewController;
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
@@ -212,9 +217,9 @@
     
     //    [DTieDetailRequest cancelRequest];
     
-    NSInteger postID = model.cid;
+    NSInteger medalID = model.cid;
     
-    self.request = [[GetMedalDetailRequest alloc] initWithID:postID];
+    self.request = [[GetMedalDetailRequest alloc] initWithID:medalID];
     [self.request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {

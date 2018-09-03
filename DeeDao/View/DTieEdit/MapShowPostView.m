@@ -21,6 +21,7 @@
 #import "DTiePOIViewController.h"
 #import "DDCollectionViewController.h"
 #import "DDLGSideViewController.h"
+#import "YueFanViewController.h"
 
 @interface MapShowPostView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -260,11 +261,20 @@
         return;
     }
     
-    DDYaoYueViewController * yaoyue = [[DDYaoYueViewController alloc] initWithDtieModel:self.model];
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    poi.pt = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    poi.address = self.model.sceneAddress;
+    poi.name = self.model.sceneBuilding;
+    
+    NSMutableArray * yaoyueSource = [[NSMutableArray alloc] initWithArray:self.userSource];
+    if ([yaoyueSource.firstObject isKindOfClass:[UserModel class]]) {
+        [yaoyueSource removeObjectAtIndex:0];
+    }
+    YueFanViewController * yuefan = [[YueFanViewController alloc] initWithBMKPoiInfo:poi friendArray:yaoyueSource];
     
     DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
     UINavigationController * na = (UINavigationController *)lg.rootViewController;
-    [na pushViewController:yaoyue animated:YES];
+    [na pushViewController:yuefan animated:YES];
 }
 
 - (NSMutableArray *)userSource

@@ -24,6 +24,10 @@
 #import "UserManager.h"
 #import <MJRefresh.h>
 #import "DTieSearchRequest.h"
+#import "SeriesSelectViewController.h"
+#import "GetSeriesRequest.h"
+#import "SeriesModel.h"
+#import "DDBackWidow.h"
 
 @interface DDShouCangViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -43,6 +47,13 @@
 @property (nonatomic, assign) NSInteger length;
 
 @property (nonatomic, strong) UILongPressGestureRecognizer * longPress;
+
+@property (nonatomic, strong) UIView * addChooseView;
+@property (nonatomic, strong) UIButton * tempAddButton;
+@property (nonatomic, strong) UIButton * leftHandleButton;
+@property (nonatomic, strong) UIButton * rightHandleButton;
+@property (nonatomic, strong) NSIndexPath * handleIndex;
+@property (nonatomic, strong) NSMutableArray * seriesDataSource;
 @property (nonatomic, assign) BOOL isEdit;
 
 @end
@@ -52,11 +63,59 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.seriesDataSource = [[NSMutableArray alloc] init];
+    
     self.isEdit = NO;
     
     [self createViews];
     
     [self refreshData];
+    [self getSeriesData];
+}
+
+- (void)getSeriesData
+{
+    GetSeriesRequest * request = [[GetSeriesRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            [self.seriesDataSource removeAllObjects];
+            if (KIsArray(data)) {
+                [self analysisSeriesData:data];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)analysisSeriesData:(NSArray *)data
+{
+    [self.seriesDataSource removeAllObjects];
+    NSMutableArray * topArray = [[NSMutableArray alloc] init];
+    NSMutableArray * seriesArray = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < data.count; i++) {
+        NSDictionary * info = [data objectAtIndex:i];
+        NSDictionary * dict = [info objectForKey:@"series"];
+        SeriesModel * model = [SeriesModel mj_objectWithKeyValues:dict];
+        model.seriesFirstPicture = [info objectForKey:@"seriesFirstPicture"];
+        if (model.stickyFlag) {
+            [topArray addObject:model];
+        }else{
+            [seriesArray addObject:model];
+        }
+    }
+    
+    if (topArray.count > 0) {
+        NSSortDescriptor *sort = [NSSortDescriptor sortDescriptorWithKey:@"stickyTime" ascending:NO];
+        [topArray sortUsingDescriptors:@[sort]];
+        [self.seriesDataSource addObjectsFromArray:topArray];
+    }
+    [self.seriesDataSource addObjectsFromArray:seriesArray];
 }
 
 - (void)refreshData
@@ -135,7 +194,12 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
-    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:model.postId];
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:postID];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -175,14 +239,107 @@
     self.longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidChange:)];
     [self.collectionView addGestureRecognizer:self.longPress];
     [self createTopView];
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hiddenChooseView)];
+    self.addChooseView = [[UIView alloc] initWithFrame:self.view.bounds];
+    self.addChooseView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
+    [self.addChooseView addGestureRecognizer:tap];
+    
+    self.leftHandleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.leftHandleButton setImage:[UIImage imageNamed:@"imageChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.leftHandleButton];
+    self.leftHandleButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.leftHandleButton.center = self.addChooseView.center;
+    [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.rightHandleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.rightHandleButton setImage:[UIImage imageNamed:@"videoChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.rightHandleButton];
+    self.rightHandleButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.rightHandleButton.center = self.addChooseView.center;
+    [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.tempAddButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.tempAddButton setImage:[UIImage imageNamed:@"addEdit"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.tempAddButton];
+    self.tempAddButton.frame = CGRectMake(0, 0, 72 * scale, 72 * scale);
+    self.tempAddButton.center = self.addChooseView.center;
+    [self.tempAddButton addTarget:self action:@selector(hiddenChooseView) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)hiddenChooseView
+{
+    [self.addChooseView removeFromSuperview];
+    self.tempAddButton.transform = CGAffineTransformMakeRotation(0);
+}
+
+- (void)leftHandleButtonDidClicked
+{
+    [self hiddenChooseView];
+    DTieModel * model = [self.dataSource objectAtIndex:self.handleIndex.row];
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
+    SeriesSelectViewController * select = [[SeriesSelectViewController alloc] initWithPostID:postID seriesSource:self.seriesDataSource];
+    [self.navigationController pushViewController:select animated:YES];
+}
+
+- (void)rightHandleButtonDidClicked
+{
+    [self hiddenChooseView];
+    [self deleteDtieWithIndexPath:self.handleIndex];
 }
 
 - (void)longPressDidChange:(UILongPressGestureRecognizer *)longPress
 {
     if (longPress.state == UIGestureRecognizerStateBegan) {
-        self.isEdit = !self.isEdit;
-        [self.collectionView reloadData];
+        CGPoint point = [longPress locationInView:self.collectionView];
+        NSIndexPath * index = [self.collectionView indexPathForItemAtPoint:point];
+        if (index) {
+            [self showChooseViewWithCenter:[longPress locationInView:self.view] handleIndex:index];
+        }
     }
+//    if (longPress.state == UIGestureRecognizerStateBegan) {
+//        self.isEdit = !self.isEdit;
+//        [self.collectionView reloadData];
+//    }
+}
+
+#pragma mark - 添加新的元素
+//展示进行选择添加项
+- (void)showChooseViewWithCenter:(CGPoint)center handleIndex:(NSIndexPath *)handleIndex;
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    //    UICollectionViewCell * cell = [self.DtieCollectionView cellForItemAtIndexPath:handleIndex];
+    //    center = [self.view convertPoint:cell.center toView:self.view];
+    
+    [self.leftHandleButton setImage:[UIImage imageNamed:@"jiaruxilie"] forState:UIControlStateNormal];
+    [self.rightHandleButton setImage:[UIImage imageNamed:@"quxiaoshoucang"] forState:UIControlStateNormal];
+    
+    self.handleIndex = handleIndex;
+    
+    [self.view addSubview:self.addChooseView];
+    [self.addChooseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    self.leftHandleButton.center = center;
+    self.rightHandleButton.center = center;
+    self.tempAddButton.center = center;
+    
+    CGPoint leftCenter = CGPointMake(center.x - 100 * scale, center.y - 100 * scale);
+    CGPoint rightCenter = CGPointMake(center.x + 100 * scale, center.y - 100 * scale);
+    
+    [UIView animateWithDuration:.5f delay:0.f usingSpringWithDamping:.5f initialSpringVelocity:15.f options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.leftHandleButton.center = leftCenter;
+        self.rightHandleButton.center = rightCenter;
+        self.addChooseView.alpha = 1;
+        self.tempAddButton.transform = CGAffineTransformMakeRotation(M_PI/4.f);
+    } completion:^(BOOL finished) {
+        
+    }];
 }
 
 - (void)newDTieDidCreate
@@ -232,6 +389,24 @@
         make.height.mas_equalTo(64 * scale);
         make.bottom.mas_equalTo(-37 * scale);
     }];
+    
+    UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
+    [searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:searchButton];
+    [searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.centerY.mas_equalTo(titleLabel);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+}
+
+- (void)searchButtonDidClicked
+{
+    DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
+    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:search];
+    [self presentViewController:na animated:YES completion:nil];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (void)backButtonDidClicked
@@ -324,9 +499,10 @@
     return _dataSource;
 }
 
-- (void)dealloc
+- (void)viewDidAppear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)didReceiveMemoryWarning {

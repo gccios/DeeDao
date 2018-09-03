@@ -24,6 +24,7 @@
 #import "UserYaoYueModel.h"
 #import "WeChatManager.h"
 #import <UIImageView+WebCache.h>
+#import "YueFanViewController.h"
 
 #import "UserManager.h"
 #import "QNDDUploadManager.h"
@@ -311,7 +312,7 @@
         make.height.mas_equalTo(324 * scale);
     }];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"分享到好友或群"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"约起来"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
@@ -489,91 +490,100 @@
 
 - (void)handleButtonDidClicked
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
     
-    //获取参数配置
-    NSString * address = self.model.sceneAddress;
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    poi.pt = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    poi.address = self.model.sceneAddress;
+    poi.name = self.model.sceneBuilding;
     
-    NSString * building = self.model.sceneBuilding;
-    if (isEmptyString(building)) {
-        building = address;
-    }
+    NSMutableArray * yaoyueSource = [[NSMutableArray alloc] init];
+    YueFanViewController * yuefan = [[YueFanViewController alloc] initWithBMKPoiInfo:poi friendArray:yaoyueSource];
+    [self.navigationController pushViewController:yuefan animated:YES];
     
-    double lon = self.model.sceneAddressLng;
-    double lat = self.model.sceneAddressLat;
-    
-    NSInteger postId = 0;
-    if (self.model) {
-        postId = self.model.postId;
-        if (postId == 0) {
-            postId = self.model.cid;
-        }
-    }
-    
-    NSInteger landAccountFlg = 1;
-    
-    NSMutableArray * userList = [[NSMutableArray alloc] init];
-    for (UserYaoYueModel * model in self.selectSource) {
-        [userList addObject:@(model.cid)];
-    }
-    
-    NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
-    
-    NSString * title = self.model.postSummary;
-    if (isEmptyString(title)) {
-        title = building;
-    }
-    
-    UIImage * firstImage = [self.mapView takeSnapshot];
-    QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
-    [manager uploadImage:firstImage progress:^(NSString *key, float percent) {
-        
-    } success:^(NSString *url) {
-        
-        NSString * firstPic = url;
-        
-        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:building address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:[DDTool getTimeCurrentWithDouble]];
-        [request configRemark:@"WYY"];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-            [hud hideAnimated:YES];
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-//                    [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
-                    DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
-                    
-                    NSInteger newPostID = DTie.cid;
-                    if (newPostID == 0) {
-                        newPostID = DTie.postId;
-                    }
-                    
-                    AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:newPostID];
-                    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                        
-                    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                        
-                    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-                        
-                    }];
-                    
-                    [[WeChatManager shareManager] shareMiniProgramWithPostID:newPostID image:firstImage isShare:NO title:building];
-                    
-                }
-            }
-            
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
-        }];
-        
-    } failed:^(NSError *error) {
-        [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
-    }];
+//    //获取参数配置
+//    NSString * address = self.model.sceneAddress;
+//
+//    NSString * building = self.model.sceneBuilding;
+//    if (isEmptyString(building)) {
+//        building = address;
+//    }
+//
+//    double lon = self.model.sceneAddressLng;
+//    double lat = self.model.sceneAddressLat;
+//
+//    NSInteger postId = 0;
+//    if (self.model) {
+//        postId = self.model.postId;
+//        if (postId == 0) {
+//            postId = self.model.cid;
+//        }
+//    }
+//
+//    NSInteger landAccountFlg = 1;
+//
+//    NSMutableArray * userList = [[NSMutableArray alloc] init];
+//    for (UserYaoYueModel * model in self.selectSource) {
+//        [userList addObject:@(model.cid)];
+//    }
+//
+//    NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
+//
+//    NSString * title = self.model.postSummary;
+//    if (isEmptyString(title)) {
+//        title = building;
+//    }
+//
+//    UIImage * firstImage = [self.mapView takeSnapshot];
+//    QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+//    [manager uploadImage:firstImage progress:^(NSString *key, float percent) {
+//
+//    } success:^(NSString *url) {
+//
+//        NSString * firstPic = url;
+//
+//        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:building address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:[DDTool getTimeCurrentWithDouble]];
+//        [request configRemark:@"WYY"];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//            [hud hideAnimated:YES];
+//            if (KIsDictionary(response)) {
+//                NSDictionary * data = [response objectForKey:@"data"];
+//                if (KIsDictionary(data)) {
+////                    [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
+//                    DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
+//
+//                    NSInteger newPostID = DTie.cid;
+//                    if (newPostID == 0) {
+//                        newPostID = DTie.postId;
+//                    }
+//
+//                    AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:newPostID];
+//                    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//                    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//                    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//
+//                    }];
+//
+//                    [[WeChatManager shareManager] shareMiniProgramWithPostID:newPostID image:firstImage isShare:NO title:building];
+//
+//                }
+//            }
+//
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//            [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//            [hud hideAnimated:YES];
+//            [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
+//        }];
+//
+//    } failed:^(NSError *error) {
+//        [hud hideAnimated:YES];
+//        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
+//    }];
     
 //    DDShareYaoYueViewController * share = [[DDShareYaoYueViewController alloc] initWithDtieModel:self.model selectUser:self.selectSource];
 //    [self.navigationController pushViewController:share animated:YES];

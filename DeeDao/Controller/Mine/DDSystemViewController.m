@@ -32,7 +32,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"提醒设置", @"帮助与反馈", @"切换账号/退出登录"]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"帮助与反馈", @"切换账号/退出登录"]];
     [self createViews];
 }
 
@@ -133,15 +133,10 @@
     
     if (indexPath.row == 0) {
         
-        AlertSettingViewController * setting = [[AlertSettingViewController alloc] init];
-        [self.navigationController pushViewController:setting animated:YES];
-        
-    }else if (indexPath.row == 1) {
-        
         HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
         [self.navigationController pushViewController:help animated:YES];
         
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 1){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {

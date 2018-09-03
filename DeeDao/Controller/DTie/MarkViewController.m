@@ -106,7 +106,7 @@
 - (void)chooseLocationDidChoose:(BMKPoiInfo *)poi
 {
     self.choosePOI = poi;
-    self.locationLabel.text = [NSString stringWithFormat:@"%@", poi.address];
+    self.locationLabel.text = [NSString stringWithFormat:@"%@", poi.name];
 }
 
 - (void)quanxianButtonDidClicked
@@ -164,7 +164,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1250 * scale)];
+    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1350 * scale)];
     baseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     self.topImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
@@ -197,14 +197,14 @@
         make.height.mas_equalTo(3 * scale);
     }];
     
-    UILabel * locationTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * locationTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     locationTitleLabel.text = @"打卡地址：";
     [locationView addSubview:locationTitleLabel];
     [locationTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
-        make.width.mas_equalTo(180 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
@@ -216,7 +216,7 @@
         make.right.mas_equalTo(-180 * scale);
     }];
     if (self.choosePOI) {
-        self.locationLabel.text = self.choosePOI.address;
+        self.locationLabel.text = self.choosePOI.name;
     }
     
     UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"locationEdit"]];
@@ -237,13 +237,14 @@
     UITapGestureRecognizer * timeTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(timeViewDidTap)];
     [timeView addGestureRecognizer:timeTap];
     
-    UILabel * timeTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * timeTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     timeTitleLabel.text = @"打卡时间：";
     [timeView addSubview:timeTitleLabel];
     [timeTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
@@ -283,20 +284,20 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    UILabel * ramerkTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    ramerkTitleLabel.text = @"备      注：";
+    UILabel * ramerkTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
+    ramerkTitleLabel.text = @"标      题：";
     [remarkView addSubview:ramerkTitleLabel];
     [ramerkTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
-        make.width.mas_equalTo(180 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.remarkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
-    self.remarkTextField.placeholder = @"人均消费情况或聚会主题等……";
+    self.remarkTextField.placeholder = @"";
     self.remarkTextField.font = kPingFangRegular(36 * scale);
-    self.remarkTextField.textColor = UIColorFromRGB(0x999999);
+    self.remarkTextField.textColor = UIColorFromRGB(0x333333);
     [remarkView addSubview:self.remarkTextField];
     [self.remarkTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(ramerkTitleLabel.mas_right).offset(12 * scale);
@@ -359,7 +360,7 @@
         make.width.height.mas_equalTo(72 * scale);
     }];
     
-    UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(35 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+    UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     tipLabel.numberOfLines = 0;
     tipLabel.text = @"您可以通过短按加号快速完成打卡，也可以通过长按加号选择照片，并进入深度编辑页发布完整D帖。";
     [tipView addSubview:tipLabel];
@@ -479,7 +480,11 @@
         }
     }
     
-    NSString * title = building;
+    NSString * title = self.remarkTextField.text;
+    if (isEmptyString(title)) {
+        title = building;
+    }
+    
     if (isEmptyString(title)) {
         title = @"";
     }
@@ -502,17 +507,7 @@
                                 @"wxCansee":@(1)};
         [details addObject:dict];
         
-        if (!isEmptyString(self.remarkTextField.text)) {
-            NSDictionary * remarkDict = @{@"detailNumber":@"2",
-                                          @"datadictionaryType":@"CONTENT_TEXT",
-                                          @"detailsContent":self.remarkTextField.text,
-                                          @"textInformation":@"",
-                                          @"pFlag":@(0),
-                                          @"wxCansee":@(1)};
-            [details addObject:remarkDict];
-        }
-        
-        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:building address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:[DDTool getTimeCurrentWithDouble]];
+        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:title address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.createTime];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             [hud hideAnimated:YES];
@@ -562,10 +557,6 @@
             if (KIsDictionary(data)) {
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
-                if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
-                    return;
-                }
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                 DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
                 UINavigationController * na = (UINavigationController *)lg.rootViewController;

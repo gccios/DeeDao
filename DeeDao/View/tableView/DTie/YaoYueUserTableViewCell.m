@@ -90,13 +90,13 @@
     [lineView layerDotteLinePoints:@[[NSValue valueWithCGPoint:CGPointMake(0, 0)], [NSValue valueWithCGPoint:CGPointMake(960 * scale, 0)]] Color:UIColorFromRGB(0x999999) Width:2 * scale SolidLength:4 * scale DotteLength:8 * scale];
     
     self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0XFFFFFF) title:@"约ta"];
-    [self.contentView addSubview:self.yaoyueButton];
-    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-60 * scale);
-        make.centerY.mas_equalTo(0);
-        make.width.mas_equalTo(132 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
+//    [self.contentView addSubview:self.yaoyueButton];
+//    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(-60 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.width.mas_equalTo(132 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//    }];
     [DDViewFactoryTool cornerRadius:12 * scale withView:self.yaoyueButton];
     CAGradientLayer *gradientLayer = [CAGradientLayer layer];
     gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];

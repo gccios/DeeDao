@@ -56,7 +56,7 @@
         make.top.mas_equalTo(80 * scale);
         make.left.mas_equalTo(60 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(306 * scale);
+        make.height.mas_equalTo(606 * scale);
     }];
     
     UIView * coverView = [[UIView alloc] initWithFrame:CGRectZero];

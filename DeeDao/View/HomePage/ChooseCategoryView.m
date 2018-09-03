@@ -31,7 +31,7 @@
 
 - (void)createChooseTimeView
 {
-    self.titleArray = @[@"博主", @"好友", @"提醒", @"公开", @"自我"];
+    self.titleArray = @[@"博主", @"好友", @"提醒", @"公开", @"我的"];
     
     self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
     

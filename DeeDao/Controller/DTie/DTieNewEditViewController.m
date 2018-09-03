@@ -18,6 +18,8 @@
 #import "WeChatManager.h"
 #import "DDLGSideViewController.h"
 #import "DDBackWidow.h"
+#import "DTieDeleteRequest.h"
+#import "RDAlertView.h"
 
 NSString * const DTieDidCreateNewNotification = @"DTieDidCreateNewNotification";
 NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpdateNotification";
@@ -33,9 +35,9 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
 
 @property (nonatomic, strong) UIButton * leftHandleButton;
 @property (nonatomic, strong) UIButton * rightHandleButton;
+@property (nonatomic, strong) UIButton * publishButton;
 
 @property (nonatomic, copy) NSString * firstImageURL;
-//@property (nonatomic, assign) NSInteger sharePostId;
 
 @property (nonatomic, assign) BOOL isPflg;
 
@@ -238,37 +240,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                         
                     }];
                     
-//                    [manager uploadVideoWith:model.image filePath:model.videoURL progress:^(NSString *key, float percent) {
-//                        
-//                    } success:^(NSString *url) {
-//                        
-//                        model.textInformation = url;
-//                        NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
-//                                                @"datadictionaryType":@"CONTENT_VIDEO",
-//                                                @"detailsContent":model.detailsContent,
-//                                                @"textInformation":model.textInformation,
-//                                                @"pFlag":@(model.pFlag),
-//                                                @"wxCansee":@(model.shareEnable)};
-//                        [details addObject:dict];
-//                        
-//                        [[NSFileManager defaultManager] removeItemAtURL:model.videoURL error:nil];
-//                        
-//                        tempCount++;
-//                        if (tempCount == self.contenView.modleSources.count) {
-//                            [hud hideAnimated:YES];
-//                            success(details);
-//                        }
-//                        
-//                    } failed:^(NSError *error) {
-//                        
-//                        tempCount++;
-//                        if (tempCount == self.contenView.modleSources.count) {
-//                            [hud hideAnimated:YES];
-//                            success(details);
-//                        }
-//                        
-//                    }];
-                    
                 } failed:^(NSError *error) {
                     
                     tempCount++;
@@ -386,11 +357,13 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     NSString * firstPic = self.firstImageURL;
     
     NSInteger postId = 0;
+    NSString * remark = @"";
     if (self.editModel) {
         postId = self.editModel.postId;
         if (postId == 0) {
             postId = self.editModel.cid;
         }
+        remark = self.editModel.remark;
     }
     
     NSInteger landAccountFlg = self.contenView.landAccountFlg;
@@ -439,6 +412,11 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }
     
     CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:title address:address building:building addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
+    
+    if (!isEmptyString(remark)) {
+        [request configRemark:remark];
+    }
+    
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
@@ -518,6 +496,49 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }];
 }
 
+- (void)deleteButtonDidClicked
+{
+    RDAlertView * alert = [[RDAlertView alloc] initWithTitle:@"删除草稿确认" message:@"点“确定”删除当前草稿并返回浏览列表，点“取消”则不删除。"];
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+        
+    } bold:NO];
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+        
+        [self deleteEditModel];
+        
+    } bold:YES];
+    [alert addActions:@[leftAction, rightAction]];
+    [alert show];
+}
+
+- (void)deleteEditModel
+{
+    NSInteger postID = self.editModel.postId;
+    if (postID == 0) {
+        postID = self.editModel.cid;
+    }
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:postID];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [self.navigationController popViewControllerAnimated:YES];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"删除失败" inView:self.view];
+        [hud hideAnimated:YES];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
+        [hud hideAnimated:YES];
+        
+    }];
+}
+
 - (void)leftHandleButtonDidClicked
 {
     [self saveDtie];
@@ -561,81 +582,92 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     [self.contenView removeFromSuperview];
 }
 
-//#pragma mark - 第二步
-//- (void)showQuanxianView
-//{
-//    CGFloat scale = kMainBoundsWidth / 1080.f;
-//    [self.view insertSubview:self.quanxianTableView atIndex:0];
-//    [self.quanxianTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
-//        make.left.bottom.right.mas_equalTo(0);
-//    }];
-//}
-
-//- (void)hiddenQuanxianView
-//{
-//    [self.quanxianTableView removeFromSuperview];
-//}
-//
-//#pragma mark - 第三步
-//- (void)showReadView
-//{
-//    DTieModel * model = [[DTieModel alloc] init];
-//    model.postSummary = self.contenView.titleTextField.text;
-//    model.sceneTime = self.contenView.createTime;
-//    model.details = [NSArray arrayWithArray:self.contenView.modleSources];
-//    model.nickname = [UserManager shareManager].user.nickname;
-//    model.authorId = [UserManager shareManager].user.cid;
-//    model.portraituri = [UserManager shareManager].user.portraituri;
-//    model.sceneAddress = self.contenView.locationLabel.text;
-//    model.updateTime = [[NSDate date] timeIntervalSince1970];
-//
-//    NSString * scene = self.contenView.choosePOI.name;
-//    if (isEmptyString(scene)) {
-//        scene = model.sceneAddress;
-//    }
-//    model.sceneBuilding = scene;
-//
-//    double lon;
-//    double lat;
-//    if (self.contenView.choosePOI) {
-//        lon = self.contenView.choosePOI.pt.longitude;
-//        lat = self.contenView.choosePOI.pt.latitude;
-//    }else if (self.editModel){
-//        lon = self.editModel.sceneAddressLng;
-//        lat = self.editModel.sceneAddressLat;
-//    }else{
-//        lon = [DDLocationManager shareManager].userLocation.location.coordinate.longitude;
-//        lat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude;
-//    }
-//    model.sceneAddressLat = lat;
-//    model.sceneAddressLng = lon;
-//
-//    CGFloat scale = kMainBoundsWidth / 1080.f;
-//
-//    self.readView = [[DTieReadView alloc] initWithFrame:self.view.bounds model:model];
-//    self.readView.parentDDViewController = self.navigationController;
-//    self.readView.isPreRead = YES;
-//    [self.view insertSubview:self.readView atIndex:0];
-//    [self.readView mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
-//        make.left.bottom.right.mas_equalTo(0);
-//    }];
-//}
-//
-//- (void)hiddenReadView
-//{
-//    [self.readView removeFromSuperview];
-//}
-
 - (void)createViews
+{
+    [self createTopView];
+    
+    if (self.editModel) {
+        [self createWithEdit];
+    }else{
+        [self createWithAdd];
+    }
+    
+    [self showContenView];
+    if (self.poi) {
+        [self.contenView configChoosePOI:self.poi];
+    }
+    if (nil == self.editModel) {
+        [self.contenView showChoosePhotoPicker];
+    }
+}
+
+- (void)createWithEdit
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    [self createTopView];
+    UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.view addSubview:bottomHandleView];
+    [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.height.mas_equalTo(528 * scale);
+    }];
+    
+    self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"删除草稿"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
+    self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.leftHandleButton.layer.borderWidth = 3 * scale;
+    [bottomHandleView addSubview:self.leftHandleButton];
+    [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.width.mas_equalTo(444 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.top.mas_equalTo(90 * scale);
+    }];
+    
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并退出"];
+    self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.rightHandleButton.layer.borderWidth = 3 * scale;
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
+    [bottomHandleView addSubview:self.rightHandleButton];
+    [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.width.mas_equalTo(444 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.top.mas_equalTo(90 * scale);
+    }];
+    
+    self.publishButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.publishButton];
+    [bottomHandleView addSubview:self.publishButton];
+    [self.publishButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.width.mas_equalTo(kMainBoundsWidth - 120 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.bottom.mas_equalTo(-90 * scale);
+    }];
+    
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 120 * scale, 144 * scale);
+    [self.publishButton.layer insertSublayer:gradientLayer atIndex:0];
+    
+    self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+    self.topView.layer.shadowOpacity = .24;
+    self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+    
+    [self.leftHandleButton addTarget:self action:@selector(deleteButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.publishButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)createWithAdd
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
     
     UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
-    bottomHandleView.backgroundColor = [UIColorFromRGB(0xEEEEF4) colorWithAlphaComponent:.7f];
     [self.view addSubview:bottomHandleView];
     [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.mas_equalTo(0);
@@ -656,8 +688,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     
     self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
-//    self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-//    self.rightHandleButton.layer.borderWidth = 3 * scale;
     [bottomHandleView addSubview:self.rightHandleButton];
     [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);
@@ -680,36 +710,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     
     [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self showContenView];
-    if (self.poi) {
-        [self.contenView configChoosePOI:self.poi];
-    }
-    if (nil == self.editModel) {
-        [self.contenView showChoosePhotoPicker];
-    }
-    
-//    self.quanxianTableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-//    self.quanxianTableView.backgroundColor = self.view.backgroundColor;
-//    self.quanxianTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//    [self.quanxianTableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"UITableViewCell"];
-//    self.quanxianTableView.rowHeight = .1 * scale;
-//    self.quanxianTableView.delegate = self;
-//    self.quanxianTableView.dataSource = self;
-//    self.quanxianTableView.tableHeaderView = self.quanxianView;
 }
-
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-//{
-//    return 1;
-//}
-//
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"UITableViewCell" forIndexPath:indexPath];
-//
-//    return cell;
-//}
 
 - (void)createTopView
 {
@@ -766,36 +767,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.centerY.mas_equalTo(titleLabel);
         make.right.mas_equalTo(-60 * scale);
     }];
-//    
-//    CGFloat buttonWidth = kMainBoundsWidth / 3.f;
-//    self.yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"3.预览发布"];
-//    self.yulanButton.alpha = .5f;
-//    [self.topView addSubview:self.yulanButton];
-//    [self.yulanButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.right.mas_equalTo(0);
-//        make.bottom.mas_equalTo(0);
-//        make.width.mas_equalTo(buttonWidth);
-//        make.height.mas_equalTo(144 * scale);
-//    }];
-//    
-//    self.quxianButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"2.权限设置"];
-//    self.quxianButton.alpha = .5f;
-//    [self.topView addSubview:self.quxianButton];
-//    [self.quxianButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.centerX.mas_equalTo(0);
-//        make.bottom.mas_equalTo(0);
-//        make.width.mas_equalTo(buttonWidth);
-//        make.height.mas_equalTo(144 * scale);
-//    }];
-//    
-//    self.contentButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"1.添加内容"];
-//    [self.topView addSubview:self.contentButton];
-//    [self.contentButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.left.mas_equalTo(0);
-//        make.bottom.mas_equalTo(0);
-//        make.width.mas_equalTo(buttonWidth);
-//        make.height.mas_equalTo(144 * scale);
-//    }];
 }
 
 - (void)yulanButtonDidClicked
@@ -875,22 +846,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }
     return _contenView;
 }
-
-//- (DTieQuanxianView *)quanxianView
-//{
-//    if (!_quanxianView) {
-//        _quanxianView = [[DTieQuanxianView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//    }
-//    return _quanxianView;
-//}
-//
-//- (NSMutableArray *)shareImages
-//{
-//    if (!_shareImages) {
-//        _shareImages = [[NSMutableArray alloc] init];
-//    }
-//    return _shareImages;
-//}
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {

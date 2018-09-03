@@ -539,7 +539,11 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(endEdit)];
     [self.tableView addGestureRecognizer:tap];
     
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
+    if (self.editDTModel) {
+         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 528 * scale, 0);
+    }else{
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
+    }
     
     UISwipeGestureRecognizer * swipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
     swipe.direction = UISwipeGestureRecognizerDirectionLeft | UISwipeGestureRecognizerDirectionRight;

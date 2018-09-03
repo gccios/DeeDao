@@ -320,6 +320,10 @@
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
     if (model.details && model.details.count > 0) {
+        if (model.landAccountFlg == 2 && model.authorId != [UserManager shareManager].user.cid) {
+            [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:self.view];
+            return;
+        }
         DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:model];
         [self.navigationController pushViewController:detail animated:YES];
         return;
@@ -343,6 +347,11 @@
                 
                 if (model.deleteFlg == 1) {
                     [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除" inView:self.view];
+                    return;
+                }
+                
+                if (model.landAccountFlg == 2 && model.authorId != [UserManager shareManager].user.cid) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:self.view];
                     return;
                 }
                 

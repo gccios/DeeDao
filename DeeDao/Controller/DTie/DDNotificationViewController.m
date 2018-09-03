@@ -13,6 +13,7 @@
 #import "SelectNotificationRequest.h"
 #import "NotificationHistoryModel.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "AlertSettingViewController.h"
 
 @interface DDNotificationViewController () <TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
@@ -227,6 +228,22 @@
         make.bottom.mas_equalTo(-37 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
+    
+    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [shareButton setImage:[UIImage imageNamed:@"setting"] forState:UIControlStateNormal];
+    [shareButton addTarget:self action:@selector(settingButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:shareButton];
+    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.bottom.mas_equalTo(-20 * scale);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+}
+
+- (void)settingButtonDidClicked
+{
+    AlertSettingViewController * set = [[AlertSettingViewController alloc] init];
+    [self.navigationController pushViewController:set animated:YES];
 }
 
 - (void)backButtonDidClicked

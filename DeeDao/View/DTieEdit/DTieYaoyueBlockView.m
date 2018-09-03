@@ -105,19 +105,17 @@
 
 - (void)reloadButtonStatus
 {
-    if (self.model.subtype == 0) {
+    if (self.model.subtype == 1) {
         [self.handleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
         [self.handleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
-        [self.handleButton setTitle:@"待定" forState:UIControlStateNormal];
+        [self.handleButton setTitle:@"赴约" forState:UIControlStateNormal];
     }else{
         [self.handleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
         [self.handleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-        if (self.model.subtype == 1) {
-            [self.handleButton setTitle:@"赴约" forState:UIControlStateNormal];
+        if (self.model.subtype == 0) {
+            [self.handleButton setTitle:@"待定" forState:UIControlStateNormal];
         }else if (self.model.subtype == 2) {
             [self.handleButton setTitle:@"请假" forState:UIControlStateNormal];
-        }else{
-            [self.handleButton setTitle:@"赴约" forState:UIControlStateNormal];
         }
     }
 }

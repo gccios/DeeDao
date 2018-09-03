@@ -80,6 +80,7 @@
                     NSDictionary * dict = [data objectAtIndex:i];
                     NSDictionary * result = [dict objectForKey:@"securityGroup"];
                     SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:result];
+                    model.isNotification = YES;
                     [self.dataSource addObject:model];
                 }
                 

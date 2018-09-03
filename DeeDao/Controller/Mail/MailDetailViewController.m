@@ -71,6 +71,12 @@
                     [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
                     return;
                 }
+                
+                if (dtieModel.landAccountFlg == 2 && dtieModel.authorId != [UserManager shareManager].user.cid) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:[UIApplication sharedApplication].keyWindow];
+                    return;
+                }
+                
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                 [self.navigationController pushViewController:detail animated:YES];
             }

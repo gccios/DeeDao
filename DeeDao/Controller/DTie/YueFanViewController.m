@@ -26,6 +26,7 @@
 #import "DDLGSideViewController.h"
 #import "DDBackWidow.h"
 #import "RDAlertView.h"
+#import "DTieCollectionRequest.h"
 
 @interface YueFanViewController () <UICollectionViewDelegate, UICollectionViewDataSource, DTieQuanXianViewControllerDelegate, ChooseLocationDelegate, PGDatePickerDelegate, SecurityFriendDelegate>
 
@@ -53,6 +54,8 @@
 @property (nonatomic, strong) NSMutableArray * selectFriend;
 
 @property (nonatomic, strong) NSArray * startArray;
+
+@property (nonatomic, strong) UIButton * leftHandleButton;
 
 @end
 
@@ -124,6 +127,15 @@
 {
     [self.friendCollectionView reloadData];
     [self.navigationController popViewControllerAnimated:YES];
+    
+    if (selectArray.count > 0) {
+        self.leftHandleButton.alpha = .5f;
+        self.leftHandleButton.enabled = NO;
+    }else{
+        self.leftHandleButton.alpha = 1.f;
+        self.leftHandleButton.enabled = YES;
+    }
+    
 }
 
 - (void)timeViewDidTap
@@ -165,7 +177,7 @@
 - (void)chooseLocationDidChoose:(BMKPoiInfo *)poi
 {
     self.choosePOI = poi;
-    self.locationLabel.text = [NSString stringWithFormat:@"%@", poi.address];
+    self.locationLabel.text = [NSString stringWithFormat:@"%@", poi.name];
 }
 
 - (void)quanxianButtonDidClicked
@@ -247,14 +259,14 @@
         make.height.mas_equalTo(3 * scale);
     }];
     
-    UILabel * locationTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * locationTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     locationTitleLabel.text = @"相约地址：";
     [locationView addSubview:locationTitleLabel];
     [locationTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
-        make.width.mas_equalTo(180 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
@@ -266,7 +278,7 @@
         make.right.mas_equalTo(-180 * scale);
     }];
     if (self.choosePOI) {
-        self.locationLabel.text = self.choosePOI.address;
+        self.locationLabel.text = self.choosePOI.name;
     }
     
     UIImageView * locationImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"locationEdit"]];
@@ -287,13 +299,14 @@
     UITapGestureRecognizer * timeTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(timeViewDidTap)];
     [timeView addGestureRecognizer:timeTap];
     
-    UILabel * timeTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * timeTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     timeTitleLabel.text = @"相约时间：";
     [timeView addSubview:timeTitleLabel];
     [timeTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
@@ -334,13 +347,14 @@
     UITapGestureRecognizer * friendTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseFriend)];
     [friendView addGestureRecognizer:friendTap];
     
-    UILabel * friendTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * friendTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     friendTitleLabel.text = @"邀请好友：";
     [friendView addSubview:friendTitleLabel];
     [friendTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
@@ -388,18 +402,18 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    UILabel * ramerkTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    UILabel * ramerkTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
     ramerkTitleLabel.text = @"备      注：";
     [remarkView addSubview:ramerkTitleLabel];
     [ramerkTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(0 * scale);
         make.centerY.mas_equalTo(0);
         make.height.mas_equalTo(56 * scale);
-        make.width.mas_equalTo(180 * scale);
+        make.width.mas_equalTo(240 * scale);
     }];
     
     self.remarkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
-    self.remarkTextField.placeholder = @"人均消费情况或聚会主题等……";
+    self.remarkTextField.placeholder = @"";
     self.remarkTextField.font = kPingFangRegular(36 * scale);
     self.remarkTextField.textColor = UIColorFromRGB(0x999999);
     [remarkView addSubview:self.remarkTextField];
@@ -487,19 +501,19 @@
     tableView.tableHeaderView = baseView;
     tableView.tableFooterView = [UIView new];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"标记约这"];
-    [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
-    leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    leftHandleButton.layer.borderWidth = 3 * scale;
-    [self.view addSubview:leftHandleButton];
-    [leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"标记约这"];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
+    self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.leftHandleButton.layer.borderWidth = 3 * scale;
+    [self.view addSubview:self.leftHandleButton];
+    [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
         make.width.mas_equalTo(444 * scale);
         make.height.mas_equalTo(144 * scale);
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:@"直接约起来"];
+    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:@"约起来"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:rightHandleButton];
     [self.view addSubview:rightHandleButton];
     [rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -509,7 +523,7 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    [leftHandleButton addTarget:self action:@selector(leftButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.leftHandleButton addTarget:self action:@selector(leftButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [rightHandleButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -647,7 +661,7 @@
             [details addObject:remarkDict];
         }
         
-        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:building address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:[DDTool getTimeCurrentWithDouble]];
+        CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:building address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.createTime];
         [request configRemark:@"WYY"];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -661,6 +675,8 @@
                     if (newPostID == 0) {
                         newPostID = DTie.postId;
                     }
+                    
+                    [self yaoyueWithPostID:newPostID];
                     
                     AddUserToWYYRequest * request = [[AddUserToWYYRequest alloc] initWithUserList:userList postId:newPostID];
                     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -712,6 +728,19 @@
     }];
 }
 
+- (void)yaoyueWithPostID:(NSInteger)postID
+{
+    DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:postID type:1 subType:0 remark:@""];
+    
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
 - (void)checkShareWithPostId:(NSInteger)postId share:(BOOL)sharenable;
 {
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
@@ -725,10 +754,6 @@
             if (KIsDictionary(data)) {
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
-                if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
-                    return;
-                }
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                 DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
                 UINavigationController * na = (UINavigationController *)lg.rootViewController;

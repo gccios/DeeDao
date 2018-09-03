@@ -13,6 +13,7 @@
 @interface RDAlertView ()
 
 @property (nonatomic, strong) UIView * showView;
+@property (nonatomic, strong) UIView * contenView;
 
 @end
 
@@ -53,15 +54,15 @@
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 687 * scale);
     [self.showView.layer addSublayer:gradientLayer];
     
-    UIView * coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 687 * scale)];
-    coverView.backgroundColor = UIColorFromRGB(0xffffff);
-    [self.showView addSubview:coverView];
-    [coverView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.contenView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth - 240 * scale, 687 * scale)];
+    self.contenView.backgroundColor = UIColorFromRGB(0xffffff);
+    [self.showView addSubview:self.contenView];
+    [self.contenView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.mas_equalTo(6 * scale);
         make.bottom.right.mas_equalTo(-6 * scale);
     }];
-    coverView.layer.cornerRadius = 8.f;
-    coverView.layer.masksToBounds = YES;
+    self.contenView.layer.cornerRadius = 8.f;
+    self.contenView.layer.masksToBounds = YES;
     
     UILabel * titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, self.showView.frame.size.width - 20, 20)];
     titleLabel.textColor = UIColorFromRGB(0x666666);
@@ -120,7 +121,7 @@
     if (actions.count == 1) {
         RDAlertAction * action = [actions firstObject];
         [action addTarget:self action:@selector(actionDidBeClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [self.showView addSubview:action];
+        [self.contenView addSubview:action];
         [action mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
             make.bottom.mas_equalTo(0);
@@ -130,7 +131,7 @@
         
         UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
         lineView.backgroundColor = UIColorFromRGB(0xCCCCCC);
-        [self.showView addSubview:lineView];
+        [self.contenView addSubview:lineView];
         [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(6 * scale);
             make.right.mas_equalTo(-6 * scale);
@@ -141,7 +142,7 @@
     }else if (actions.count == 2) {
         RDAlertAction * leftAction = [actions firstObject];
         [leftAction addTarget:self action:@selector(actionDidBeClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [self.showView addSubview:leftAction];
+        [self.contenView addSubview:leftAction];
         CGFloat width = self.showView.frame.size.width / 2;
         [leftAction mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(0);
@@ -152,7 +153,7 @@
         
         RDAlertAction * rightAction = [actions lastObject];
         [rightAction addTarget:self action:@selector(actionDidBeClicked:) forControlEvents:UIControlEventTouchUpInside];
-        [self.showView addSubview:rightAction];
+        [self.contenView addSubview:rightAction];
         [rightAction mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(0);
             make.bottom.mas_equalTo(0);
@@ -162,7 +163,7 @@
         
         UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
         lineView.backgroundColor = UIColorFromRGB(0xCCCCCC);
-        [self.showView addSubview:lineView];
+        [self.contenView addSubview:lineView];
         [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(6 * scale);
             make.right.mas_equalTo(-6 * scale);
@@ -172,12 +173,12 @@
         
         UIView * lineView2 = [[UIView alloc] initWithFrame:CGRectZero];
         lineView2.backgroundColor = UIColorFromRGB(0xCCCCCC);
-        [self.showView addSubview:lineView2];
+        [self.contenView addSubview:lineView2];
         [lineView2 mas_makeConstraints:^(MASConstraintMaker *make) {
             make.bottom.mas_equalTo(-6 * scale);
             make.centerX.mas_equalTo(0);
             make.width.mas_equalTo(3 * scale);
-            make.height.mas_equalTo(144 * scale);
+            make.height.mas_equalTo(132 * scale);
         }];
     }
 }

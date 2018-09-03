@@ -320,8 +320,6 @@
 //    self.selectButton.alpha = .5f;
 //    self.selectButton.enabled = NO;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(requestMapViewLocations) name:DTieDidCreateNewNotification object:nil];
-    
     self.topAlertView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.topAlertView];
 //    self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.1f];
@@ -434,6 +432,15 @@
     }];
     [self.typeButton addTarget:self action:@selector(typeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
+    UILabel * typeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(32 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+    typeLabel.text = @"频道";
+    [self.view addSubview:typeLabel];
+    [typeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.typeButton.mas_bottom).offset(-10 * scale);
+        make.centerX.mas_equalTo(self.typeButton);
+        make.height.mas_equalTo(40 * scale);
+    }];
+    
     self.picIsUser = YES;
     self.picButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
     [self.picButton setImage:[UIImage imageNamed:@"homePicUser"] forState:UIControlStateNormal];
@@ -446,14 +453,14 @@
     [self.picButton addTarget:self action:@selector(picButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.yuezheButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
-    [self.yuezheButton setImage:[UIImage imageNamed:@"homeYuezhe"] forState:UIControlStateNormal];
+    [self.yuezheButton setImage:[UIImage imageNamed:@"homeFanju"] forState:UIControlStateNormal];
     [self.view addSubview:self.yuezheButton];
     [self.yuezheButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);
         make.centerY.mas_equalTo(self.addButton).offset(0 * scale);
         make.width.height.mas_equalTo(144 * scale);
     }];
-    [self.yuezheButton addTarget:self action:@selector(yuezheButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.yuezheButton addTarget:self action:@selector(wyyButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
     [self.shoucangButton setImage:[UIImage imageNamed:@"homeShoucang"] forState:UIControlStateNormal];
@@ -485,6 +492,15 @@
         make.width.height.mas_equalTo(144 * scale);
     }];
     [self.tieButton addTarget:self action:@selector(tieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UILabel * myLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(32 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
+    myLabel.text = @"我的";
+    [self.view addSubview:myLabel];
+    [myLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.tieButton.mas_bottom).offset(-10 * scale);
+        make.centerX.mas_equalTo(self.tieButton);
+        make.height.mas_equalTo(40 * scale);
+    }];
 //
 //    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 //        [self showTipWithText:@"摇一摇以刷新附近D帖"];
@@ -496,9 +512,6 @@
     if (self.isSearch) {
         [self topCloseButtonDidClicked];
     }
-    
-    self.topSourceButton.hidden = NO;
-    self.topTimeButton.hidden = NO;
     
     [self resetSearch];
     [self.addButton setImage:[UIImage imageNamed:@"homeAdd"]];
@@ -544,8 +557,12 @@
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
         self.topAlertLabel.text = @"我自己的D帖";
+    }else if (chooseTag == 16) {
+        [self yuezheButtonDidClicked];
+        return;
     }
     
+    self.searchButton.hidden = NO;
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self requestMapViewLocations];
     [self updateUserLocation];
@@ -553,17 +570,16 @@
 
 - (void)yuezheButtonDidClicked
 {
+    self.searchButton.hidden = YES;
+    
     if (self.isSearch) {
         [self topCloseButtonDidClicked];
     }
     
-    self.topSourceButton.hidden = YES;
-    self.topTimeButton.hidden = YES;
-    
     [self resetSearch];
     
     [self.addButton setImage:[UIImage imageNamed:@"homeYue"]];
-    self.wyyButton.hidden = NO;
+    self.wyyButton.hidden = YES;
     
     if (self.sourceType == 666) {
         return;
@@ -685,6 +701,17 @@
 
 - (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeSearchResult *)result errorCode:(BMKSearchErrorCode)error
 {
+    if (!self.isPushing) {
+        
+        if (error == BMK_SEARCH_NO_ERROR) {
+            if (!isEmptyString(result.addressDetail.city)) {
+                [self.locationButton setTitle:result.addressDetail.city forState:UIControlStateNormal];
+            }
+        }
+        return;
+        
+    }
+    
     BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
     if (result) {
         NSString * address = result.address;
@@ -772,17 +799,26 @@
         [_mapView setRegion:adjustedRegion animated:YES];
         self.isFirst = NO;
     }
-    
-    if ([DDLocationManager shareManager].result) {
-        NSString * city = [DDLocationManager shareManager].result.addressDetail.city;
-        [self.locationButton setTitle:city forState:UIControlStateNormal];
-    }
 }
 
 //正常请求
 - (void)requestMapViewLocations
 {
     [DTieSearchRequest cancelRequest];
+    [SelectMapYaoyueRequest cancelRequest];
+    
+    CGFloat centerLongitude = self.mapView.region.center.longitude;
+    CGFloat centerLatitude = self.mapView.region.center.latitude;
+    
+    //当前屏幕显示范围的经纬度
+    CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
+    CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
+    //左上角
+    CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
+    CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
+    //右下角
+    CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
+    CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
     
     self.isNotification = NO;
     if (self.sourceType == 666) {
@@ -792,7 +828,7 @@
             [friendList addObject:@(model.cid)];
         }
         
-        SelectMapYaoyueRequest * request = [[SelectMapYaoyueRequest alloc] initWithFriendList:friendList];
+        SelectMapYaoyueRequest * request = [[SelectMapYaoyueRequest alloc] initWithFriendList:friendList lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             if (KIsDictionary(response)) {
@@ -829,20 +865,6 @@
         }];
         
     }else{
-        
-        CGFloat centerLongitude = self.mapView.region.center.longitude;
-        CGFloat centerLatitude = self.mapView.region.center.latitude;
-        
-        //当前屏幕显示范围的经纬度
-        CLLocationDegrees pointssLongitudeDelta = self.mapView.region.span.longitudeDelta;
-        CLLocationDegrees pointssLatitudeDelta = self.mapView.region.span.latitudeDelta;
-        //左上角
-        CGFloat leftUpLong = centerLongitude - pointssLongitudeDelta/2.0;
-        CGFloat leftUpLati = centerLatitude - pointssLatitudeDelta/2.0;
-        //右下角
-        CGFloat rightDownLong = centerLongitude + pointssLongitudeDelta/2.0;
-        CGFloat rightDownLati = centerLatitude + pointssLatitudeDelta/2.0;
-        [self.mapView convertPoint:CGPointZero toCoordinateFromView:self.mapView];
         
         double startDate;
         double endDate;
@@ -1058,7 +1080,15 @@
 #pragma mark - BMKMapViewDelegate
 - (void)mapView:(BMKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
-//    [self requestMapViewLocations];
+//    if (self.isSearch) {
+//        [self searchMapViewLocations];
+//    }else{
+//        [self requestMapViewLocations];
+//    }
+    
+    BMKReverseGeoCodeSearchOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeSearchOption alloc] init];
+    reverseGeocodeSearchOption.location = self.mapView.centerCoordinate;
+    [self.geocodesearch reverseGeoCode:reverseGeocodeSearchOption];
 }
 
 //- (void)mapview:(BMKMapView *)mapView onLongClick:(CLLocationCoordinate2D)coordinate
@@ -1352,11 +1382,6 @@
     [logoButton addTarget:self action:@selector(mineButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.locationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"正在获取位置"];
-    
-    if ([DDLocationManager shareManager].result) {
-        NSString * city = [DDLocationManager shareManager].result.addressDetail.city;
-        [self.locationButton setTitle:city forState:UIControlStateNormal];
-    }
     
     [self.locationButton setImage:[UIImage imageNamed:@"homeLocation"] forState:UIControlStateNormal];
     [self.topView addSubview:self.locationButton];
@@ -1889,7 +1914,6 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
     self.mapView.delegate = nil;
 }
 

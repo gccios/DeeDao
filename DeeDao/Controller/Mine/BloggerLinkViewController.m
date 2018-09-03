@@ -7,7 +7,9 @@
 //
 
 #import "BloggerLinkViewController.h"
+#import "RDAlertView.h"
 #import "BloggerTextView.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface BloggerLinkViewController ()
 
@@ -105,6 +107,19 @@
         make.centerY.mas_equalTo(titleLabel);
         make.right.mas_equalTo(-60 * scale);
     }];
+    
+    UIButton * copyButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"复制所有链接"];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:copyButton];
+    copyButton.layer.borderWidth = .5f;
+    copyButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+    [copyButton addTarget:self action:@selector(copyButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:copyButton];
+    [copyButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(320 * scale);
+        make.height.mas_equalTo(72 * scale);
+        make.centerY.mas_equalTo(titleLabel);
+        make.right.mas_equalTo(saveButton.mas_left).offset(-40 * scale);
+    }];
 }
 
 - (void)backButtonDidClicked
@@ -112,10 +127,31 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void)copyButtonDidClicked
+{
+    if (isEmptyString(self.textView.text)) {
+        [MBProgressHUD showTextHUDWithText:@"没有可复制的内容" inView:self.view];
+        return;
+    }
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = self.textView.text;
+    [MBProgressHUD showTextHUDWithText:@"复制成功" inView:self.view];
+}
+
 - (void)clearButtonDidClicked
 {
-    self.textView.text = @"";
-    [[NSFileManager defaultManager] removeItemAtPath:DDBloggerLinkPath error:nil];
+    RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"提示" message:@"是否确认清空博主链接？"];
+    
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+        
+    } bold:NO];
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+        self.textView.text = @"";
+        [[NSFileManager defaultManager] removeItemAtPath:DDBloggerLinkPath error:nil];
+    } bold:NO];
+    
+    [alertView addActions:@[leftAction, rightAction]];
+    [alertView show];
 }
 
 - (void)didReceiveMemoryWarning {

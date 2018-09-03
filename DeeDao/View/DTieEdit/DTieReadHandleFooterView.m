@@ -59,7 +59,7 @@
     model.readTimes += 1;
     self.model = model;
     
-    self.timeLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime]];
+    self.timeLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.createTime]];
     
     if (model.authorId == [UserManager shareManager].user.cid) {
         self.handleButton.hidden = NO;

@@ -130,6 +130,14 @@
     if (nil == dtieModel) {
         return;
     }
+    
+    if (dtieModel.landAccountFlg == 2 && dtieModel.authorId != [UserManager shareManager].user.cid) {
+        self.deedaoLabel.text = @"暂无浏览权限";
+        self.detailImageView.userInteractionEnabled = NO;
+        self.converView.hidden = NO;
+        return;
+    }
+    
     if (model.pFlag == 1) {
         
         if ([[DDLocationManager shareManager] contentIsCanSeeWith:dtieModel detailModle:model]) {

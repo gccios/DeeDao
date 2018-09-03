@@ -148,6 +148,10 @@
         make.height.mas_equalTo(120 * scale);
     }];
     [self.collectButton addTarget:self action:@selector(collectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    if ([UserManager shareManager].user.cid == self.model.authorId) {
+        self.collectButton.alpha = .5f;
+        self.collectButton.enabled = NO;
+    }
     
     self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
     [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
@@ -300,6 +304,11 @@
         [self.collectButton setTitle:@"" forState:UIControlStateNormal];
         [self.collectButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
         self.collectButton.alpha = 1.f;
+    }
+    
+    if ([UserManager shareManager].user.cid == self.model.authorId) {
+        self.collectButton.alpha = .5f;
+        self.collectButton.enabled = NO;
     }
     
 //    if (self.model.wyyCount <= 0) {

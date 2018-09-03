@@ -47,8 +47,8 @@
         [self.nameButton setImage:[UIImage imageNamed:@"chooseyes"] forState:UIControlStateNormal];
     }else{
         [self.nameButton setImage:[UIImage imageNamed:@"chooseno"] forState:UIControlStateNormal];
-        self.model.isNotification = NO;
-        [self.notificationButton setImage:[UIImage imageNamed:@"chooseno"] forState:UIControlStateNormal];
+//        self.model.isNotification = NO;
+//        [self.notificationButton setImage:[UIImage imageNamed:@"chooseno"] forState:UIControlStateNormal];
     }
 }
 
@@ -87,14 +87,14 @@
     }];
     [self.nameButton addTarget:self action:@selector(nameButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"推送给Ta们"];
-    [self.contentView addSubview:self.notificationButton];
-    [self.notificationButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(520 * scale);
-        make.top.bottom.mas_equalTo(0);
-        make.width.mas_lessThanOrEqualTo(330 * scale);
-    }];
-    [self.notificationButton addTarget:self action:@selector(notificationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"推送给Ta们"];
+//    [self.contentView addSubview:self.notificationButton];
+//    [self.notificationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(520 * scale);
+//        make.top.bottom.mas_equalTo(0);
+//        make.width.mas_lessThanOrEqualTo(330 * scale);
+//    }];
+//    [self.notificationButton addTarget:self action:@selector(notificationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)awakeFromNib {

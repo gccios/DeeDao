@@ -265,7 +265,7 @@
     }];
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 350 * scale, 0);
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并筛选"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并保存"];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
@@ -294,7 +294,7 @@
     }else if (self.forthChooseIndex == 2) {
         remindInterval = 1;
     }else{
-        remindInterval = 4;
+        remindInterval = 0;
     }
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在保存" inView:self.view];

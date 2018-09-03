@@ -16,6 +16,10 @@
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "SelectFanjuRequest.h"
+#import <AFHTTPSessionManager.h>
+#import "DDNavigationViewController.h"
+#import "DTieSearchViewController.h"
+#import "DDBackWidow.h"
 
 @interface WYYListViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -57,6 +61,7 @@
 
 - (void)requestZujuMessage
 {
+    [SelectFanjuRequest cancelRequest];
     self.zujuStart = 0;
     self.zujuSize = 20;
     SelectFanjuRequest * request = [[SelectFanjuRequest alloc] initWithStart:self.zujuStart size:self.zujuSize];
@@ -143,6 +148,7 @@
 
 - (void)requestGanxingquMessage
 {
+    [DTieSearchRequest cancelRequest];
     self.ganxingquStart = 0;
     self.ganxingquSize = 20;
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:9 type:2 pageStart:self.ganxingquStart pageSize:self.ganxingquSize];
@@ -256,10 +262,10 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     if (tableView == self.zujuTableView) {
-        return 500 * scale;
+        return 800 * scale;
     }
     
-    return 400 * scale;
+    return 700 * scale;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -286,6 +292,15 @@
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
                 [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                
+                if (tableView == self.zujuTableView) {
+                    [self.zujuSource removeObject:model];
+                }else if (tableView == self.ganxingquTableView) {
+                    [self.ganxingquSource removeObject:model];
+                }
+                [tableView reloadData];
+                [self deletePostWithModel:postID];
+                
                 return;
             }
             
@@ -295,6 +310,20 @@
                 
                 if (dtieModel.deleteFlg == 1) {
                     [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    
+                    if (tableView == self.zujuTableView) {
+                        [self.zujuSource removeObject:model];
+                    }else if (tableView == self.ganxingquTableView) {
+                        [self.ganxingquSource removeObject:model];
+                    }
+                    [tableView reloadData];
+                    [self deletePostWithModel:postID];
+                    
+                    return;
+                }
+                
+                if (dtieModel.landAccountFlg == 2 && dtieModel.authorId != [UserManager shareManager].user.cid) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:[UIApplication sharedApplication].keyWindow];
                     return;
                 }
                 
@@ -311,6 +340,24 @@
         [hud hideAnimated:YES];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
+    }];
+}
+
+- (void)deletePostWithModel:(NSInteger)postID
+{
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+    manager.requestSerializer = [AFJSONRequestSerializer serializer];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSString * url = [NSString stringWithFormat:@"%@/post/collection/deleteAllPostCollection", HOSTURL];
+    [manager POST:url parameters:@{@"postId":@(postID)} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
     }];
 }
 
@@ -424,6 +471,24 @@
     
     [self.zujuButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.ganxingquButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+    [searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];
+    [searchButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.topView addSubview:searchButton];
+    [searchButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-40 * scale);
+        make.centerY.mas_equalTo(titleLabel);
+        make.width.height.mas_equalTo(100 * scale);
+    }];
+}
+
+- (void)searchButtonDidClicked
+{
+    DTieSearchViewController * search = [[DTieSearchViewController alloc] init];
+    DDNavigationViewController * na = [[DDNavigationViewController alloc] initWithRootViewController:search];
+    [self presentViewController:na animated:YES completion:nil];
+    [[DDBackWidow shareWindow] hidden];
 }
 
 - (void)backButtonDidClicked
@@ -451,6 +516,10 @@
         self.zujuTableView.hidden = NO;
         self.ganxingquTableView.hidden = YES;
         
+        if (self.zujuSource.count == 0) {
+            [self requestZujuMessage];
+        }
+        
     }else if (self.pageIndex == 2) {
         
         self.zujuButton.alpha = .5f;
@@ -459,7 +528,17 @@
         self.zujuTableView.hidden = YES;
         self.ganxingquTableView.hidden = NO;
         
+        if (self.ganxingquSource.count == 0) {
+            [self requestGanxingquMessage];
+        }
+        
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [[DDBackWidow shareWindow] show];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -321,8 +321,6 @@
     
     [self createTopView];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDTieDidCreate) name:DTieDidCreateNewNotification object:nil];
-    
     self.pageType = 1;
     [self reloadWithPageType];
 }
@@ -652,7 +650,6 @@
                 return;
             }
             
-            
             MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
             
             DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
@@ -660,6 +657,16 @@
                 [hud hideAnimated:YES];
                 
                 if (KIsDictionary(response)) {
+                    
+                    NSInteger code = [[response objectForKey:@"status"] integerValue];
+                    if (code == 4002) {
+                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                        [self.dataSource removeObject:model];
+                        [self.DtieCollectionView reloadData];
+                        
+                        return;
+                    }
+                    
                     NSDictionary * data = [response objectForKey:@"data"];
                     if (KIsDictionary(data)) {
                         DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
@@ -758,11 +765,6 @@
 {
     [super viewDidAppear:animated];
     [[DDBackWidow shareWindow] show];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:DTieDidCreateNewNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning {

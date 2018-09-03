@@ -167,7 +167,7 @@
     }
     
     self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    self.shareLabel.text = @"微信可见";
+    self.shareLabel.text = @"微信通行";
     [self.shareButton addSubview:self.shareLabel];
     [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
