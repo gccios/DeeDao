@@ -72,6 +72,11 @@
                 return;
             }
             
+            if (code == 4003) {
+                [MBProgressHUD showTextHUDWithText:@"该帖已被作者更改为草稿~" inView:self];
+                return;
+            }
+            
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];

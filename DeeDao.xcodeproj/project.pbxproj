@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0606C847213D860600C6FEDA /* MapShowNotificationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0606C846213D860600C6FEDA /* MapShowNotificationView.m */; };
 		060B4A3E20D9FA7F0023E18B /* DTieImageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 060B4A3D20D9FA7F0023E18B /* DTieImageCollectionViewCell.m */; };
 		060B4A4120D9FA8D0023E18B /* DTieTextCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 060B4A4020D9FA8D0023E18B /* DTieTextCollectionViewCell.m */; };
 		060B4A4420D9FAAA0023E18B /* DTieVideoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 060B4A4320D9FAAA0023E18B /* DTieVideoCollectionViewCell.m */; };
@@ -348,6 +349,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0606C845213D860600C6FEDA /* MapShowNotificationView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapShowNotificationView.h; sourceTree = "<group>"; };
+		0606C846213D860600C6FEDA /* MapShowNotificationView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapShowNotificationView.m; sourceTree = "<group>"; };
 		060B4A3C20D9FA7F0023E18B /* DTieImageCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieImageCollectionViewCell.h; sourceTree = "<group>"; };
 		060B4A3D20D9FA7F0023E18B /* DTieImageCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieImageCollectionViewCell.m; sourceTree = "<group>"; };
 		060B4A3F20D9FA8C0023E18B /* DTieTextCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieTextCollectionViewCell.h; sourceTree = "<group>"; };
@@ -1135,6 +1138,8 @@
 				0614E7A221088A3E002F8FC5 /* MapShowYaoyueView.m */,
 				0658C81A212ADD8100800D7A /* MapShowPostView.h */,
 				0658C81B212ADD8100800D7A /* MapShowPostView.m */,
+				0606C845213D860600C6FEDA /* MapShowNotificationView.h */,
+				0606C846213D860600C6FEDA /* MapShowNotificationView.m */,
 				0614E7A421088C4F002F8FC5 /* MapYaoyueHeaderView.h */,
 				0614E7A521088C4F002F8FC5 /* MapYaoyueHeaderView.m */,
 				060CF1D821303C700038CC5D /* AchievementShareView.h */,
@@ -2542,6 +2547,7 @@
 				060F005520AC11A800C810A1 /* TYCyclePagerView.m in Sources */,
 				066033F920B2BF3D00A54D81 /* OnlyMapViewController.m in Sources */,
 				0652FB6920F7130900080225 /* DDShareYaoYueViewController.m in Sources */,
+				0606C847213D860600C6FEDA /* MapShowNotificationView.m in Sources */,
 				064AA5B220F30FCE00EBF20A /* GCCScreenImage.m in Sources */,
 				061EDD6920C4E60800066E73 /* DDTelLoginViewController.m in Sources */,
 				06180B352109718F007D402C /* SelectMapYaoyueRequest.m in Sources */,

@@ -39,7 +39,8 @@
 #import "ChooseTimeView.h"
 #import "ChooseCategoryView.h"
 #import "DDShareManager.h"
-#import "DDNotificationViewController.h"
+//#import "DDNotificationViewController.h"
+#import "MapShowNotificationView.h"
 #import "DDShouCangViewController.h"
 #import "MapShowPostView.h"
 #import "WYYListViewController.h"
@@ -1323,10 +1324,12 @@
             NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
             
             DTieModel * model = [self.mapSource objectAtIndex:index];
-            NSInteger notificationID = [model.remark integerValue];
+            MapShowNotificationView * view = [[MapShowNotificationView alloc] initWithModel:model];
+            [view show];
+//            NSInteger notificationID = [model.remark integerValue];
             
-            DDNotificationViewController * vc = [[DDNotificationViewController alloc] initWithNotificationID:notificationID];
-            [self.navigationController pushViewController:vc animated:YES];
+//            DDNotificationViewController * vc = [[DDNotificationViewController alloc] initWithNotificationID:notificationID];
+//            [self.navigationController pushViewController:vc animated:YES];
         }
         
     }else{
