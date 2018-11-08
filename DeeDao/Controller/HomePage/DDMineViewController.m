@@ -24,6 +24,7 @@
 #import "UIViewController+LGSideMenuController.h"
 #import "DDNotificationViewController.h"
 #import "NewAchievementViewController.h"
+#import "ConverUtil.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -234,13 +235,13 @@
             
         case MineMenuType_HandleGuide:
         {
-            UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
             
-            UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
                 
             }];
             
-            UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UIAlertAction * action2 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Yes") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
 //                UITabBarController * tabbar = (UITabBarController *)[UIApplication sharedApplication].keyWindow.rootViewController;
 ////                [self.navigationController popToRootViewControllerAnimated:NO];
 //                [tabbar setSelectedIndex:0];
@@ -325,16 +326,16 @@
         }
         
         if (isBozhu && isInstallWX) {
-            imageNames = @[@"sharepengyouquan", @"shareweixin", @"sharebozhu"];
-            titles = @[@"微信朋友圈", @"微信好友或群", @"地到博主码"];
+            imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareKouling", @"sharebozhu"];
+            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"好友口令", @"地到博主码"];
             startTag = 10;
         }else if (isBozhu && !isInstallWX) {
-            imageNames = @[@"sharebozhu"];
-            titles = @[@"地到博主码"];
+            imageNames = @[@"shareKouling", @"sharebozhu"];
+            titles = @[@"好友口令", @"地到博主码"];
             startTag = 12;
         }else if (!isBozhu && isInstallWX) {
-            imageNames = @[@"sharepengyouquan", @"shareweixin"];
-            titles = @[@"微信朋友圈", @"微信好友或群"];
+            imageNames = @[@"sharepengyouquan", @"shareweixin",  @"shareKouling"];
+            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"好友口令"];
             startTag = 10;
         }
         
@@ -390,6 +391,22 @@
     }else if (button.tag == 11){
         
         [[WeChatManager shareManager] shareMiniProgramWithUser:[UserManager shareManager].user];
+        
+    }else if(button.tag == 12) {
+        
+        NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+        NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+        
+        NSString * userID = [NSString stringWithFormat:@"%ld", [UserManager shareManager].user.cid];
+        
+        NSString * string = [NSString stringWithFormat:@"%@+%@", timeString, userID];
+        NSString * result = [ConverUtil base64EncodeString:string];
+        
+        NSString * pasteString = [NSString stringWithFormat:@"【DeeDao地到】%@#复制此消息，打开DeeDao地到查看好友名片", result];
+        
+        UIPasteboard * pasteBoard = [UIPasteboard generalPasteboard];
+        pasteBoard.string = pasteString;
+        [MBProgressHUD showTextHUDWithText:@"口令复制成功，快去发送给好友吧" inView:[UIApplication sharedApplication].keyWindow];
         
     }else{
         

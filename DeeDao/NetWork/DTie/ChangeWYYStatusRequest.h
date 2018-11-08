@@ -12,4 +12,6 @@
 
 - (instancetype)initWithPostID:(NSInteger)postID subType:(NSInteger)subType;
 
+- (instancetype)initRemoveSelfWithPostID:(NSInteger)postID userID:(NSInteger)userID;
+
 @end

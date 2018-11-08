@@ -12,4 +12,8 @@
 
 - (instancetype)initWithPostID:(NSInteger)postID;
 
+- (instancetype)initSwitchWithPostID:(NSInteger)postID status:(BOOL)status;
+
+- (instancetype)initAddUserSwitchWithPostID:(NSInteger)postID status:(BOOL)status;
+
 @end

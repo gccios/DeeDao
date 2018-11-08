@@ -11,6 +11,8 @@
 
 @interface DTieYaoyueBlockView : UIView
 
-- (instancetype)initWithBlockModel:(UserYaoYueBlockModel *)model;
+@property (nonatomic, copy) void (^removeDidClicked)(UserYaoYueBlockModel * blockModel);
+
+- (instancetype)initWithBlockModel:(UserYaoYueBlockModel *)model isAuthor:(BOOL)isAuthor;
 
 @end

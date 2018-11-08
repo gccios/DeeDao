@@ -168,7 +168,7 @@
 
 - (void)showPostDetail
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:self.model.postId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -178,7 +178,7 @@
             
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
                 return;
             }
             
@@ -187,7 +187,7 @@
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
                 if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
                     return;
                 }
                 

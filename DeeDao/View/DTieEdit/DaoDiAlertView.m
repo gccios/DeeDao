@@ -111,7 +111,7 @@
     gradientLayer.frame = CGRectMake(0, 0, 600 * scale, 120 * scale);
     [OKButton.layer insertSublayer:gradientLayer atIndex:0];
     
-    UIButton * closeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"关闭"];
+    UIButton * closeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Off")];
     [contentView addSubview:closeButton];
     [closeButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(OKButton.mas_bottom).offset(40 * scale);

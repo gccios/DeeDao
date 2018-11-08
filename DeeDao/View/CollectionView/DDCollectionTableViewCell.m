@@ -294,7 +294,7 @@
     self.firstReadLabel.text = [DDTool getTextWithHtml:model.detailContent];
     self.timeLabel.text = firstTime;
     self.locationLabel.text = location;
-    self.lastLabel.text = [NSString stringWithFormat:@"最后更新时间：%@", updateTime];
+    self.lastLabel.text = [NSString stringWithFormat:@"%@：%@", DDLocalizedString(@"Last updated"), updateTime];
 }
 
 - (void)awakeFromNib {

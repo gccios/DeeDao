@@ -122,12 +122,12 @@
     
     NSString * title = @"";
     if (landAccountFlg == 1) {
-        title = @"公开";
+        title = DDLocalizedString(@"Open");
     }else if (landAccountFlg == 2) {
-        title = @"私密";
+        title = DDLocalizedString(@"Private");
     }else{
         if (source.count == 0) {
-            title = @"私密";
+            title = DDLocalizedString(@"Private");
         }else{
             for (SecurityGroupModel * model in source) {
                 title = [NSString stringWithFormat:@"%@,%@", title, model.securitygroupName];
@@ -198,7 +198,7 @@
     }];
     
     UILabel * locationTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
-    locationTitleLabel.text = @"打卡地址：";
+    locationTitleLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"SnapPOI")];
     [locationView addSubview:locationTitleLabel];
     [locationTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0 * scale);
@@ -238,7 +238,7 @@
     [timeView addGestureRecognizer:timeTap];
     
     UILabel * timeTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
-    timeTitleLabel.text = @"打卡时间：";
+    timeTitleLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"SnapTime")];
     [timeView addSubview:timeTitleLabel];
     [timeTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0 * scale);
@@ -325,7 +325,7 @@
     [quanxianView addGestureRecognizer:quanxianTap];
     
     UILabel * quanxianTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    quanxianTitleLabel.text = @"浏览权限";
+    quanxianTitleLabel.text = DDLocalizedString(@"Security");
     [quanxianView addSubview:quanxianTitleLabel];
     [quanxianTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -334,7 +334,7 @@
     }];
     
     self.quanxianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentRight];
-    self.quanxianLabel.text = @"公开";
+    self.quanxianLabel.text = DDLocalizedString(@"Private");
     [quanxianView addSubview:self.quanxianLabel];
     [self.quanxianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(quanxianTitleLabel.mas_right).offset(12 * scale);
@@ -342,7 +342,7 @@
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(144 * scale);
     }];
-    self.landAccountFlg = 1;
+    self.landAccountFlg = 2;
     
     UIView * tipView = [[UIView alloc] initWithFrame:CGRectZero];
     tipView.backgroundColor = UIColorFromRGB(0xEFEFF4);
@@ -384,7 +384,7 @@
     tableView.tableHeaderView = baseView;
     tableView.tableFooterView = [UIView new];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并返回地图"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"OKBackMap")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -396,7 +396,7 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:@"发布并分享"];
+    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"DoneAndShare")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:rightHandleButton];
     [self.view addSubview:rightHandleButton];
     [rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -422,7 +422,7 @@
 
 - (void)createPostWithShare:(BOOL)share
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     if (nil == self.choosePOI) {
         [MBProgressHUD showTextHUDWithText:@"请选择要约地点" inView:self.view];
@@ -504,7 +504,8 @@
                                 @"detailsContent":url,
                                 @"textInformation":@"",
                                 @"pFlag":@(0),
-                                @"wxCansee":@(1)};
+                                @"wxCansee":@(1),
+                                @"authorID":@([UserManager shareManager].user.cid)};
         [details addObject:dict];
         
         CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:title address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:firstPic postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.createTime];
@@ -546,7 +547,7 @@
 
 - (void)checkShareWithPostId:(NSInteger)postId share:(BOOL)sharenable;
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -610,7 +611,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"打卡";
+    titleLabel.text = DDLocalizedString(@"Snap");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -618,7 +619,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"取消打卡"];
+    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"CancleSnap")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:cancleButton];
     cancleButton.layer.borderWidth = .5f;
     cancleButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -646,6 +647,7 @@
 {
     if (!_quanxian) {
         _quanxian = [[DTieQuanXianViewController alloc] init];
+        [_quanxian configWithType:2];
         _quanxian.delegate = self;
     }
     return _quanxian;

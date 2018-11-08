@@ -243,7 +243,7 @@
     }else if ([kind isEqualToString:UICollectionElementKindSectionFooter]) {
         DDCollectionHandleView * view = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@"DDCollectionHandleView" forIndexPath:indexPath];
         
-        [view configButtonBackgroundColor:UIColorFromRGB(0xFFFFFF) title:@"删除密圈"];
+        [view configButtonBackgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Delete")];
         if (self.model) {
             view.handleButton.hidden = NO;
         }else{
@@ -329,7 +329,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"编辑好友圈";
+    titleLabel.text = DDLocalizedString(@"EditDPage");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -337,7 +337,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * createButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
+    UIButton * createButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Create")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:createButton];
     createButton.layer.borderWidth = .5f;
     createButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;

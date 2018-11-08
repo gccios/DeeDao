@@ -15,6 +15,7 @@
 #import "DTieCreateLocationView.h"
 #import "CreateLocationRequest.h"
 #import "GetUserCreateLocationRequest.h"
+#import <AFHTTPSessionManager.h>
 
 @interface DTieChooseLocationController () <BMKMapViewDelegate, UITableViewDelegate, UITableViewDataSource, BMKPoiSearchDelegate, UICollectionViewDelegate, UICollectionViewDataSource, BMKGeoCodeSearchDelegate, DTieCreateLocationViewDelegate>
 
@@ -148,14 +149,14 @@
         make.height.mas_equalTo(72 * scale);
         make.width.mas_equalTo(3 * scale);
     }];
-    self.defaultButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"默认列表"];
+    self.defaultButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Default")];
     [tabView addSubview:self.defaultButton];
     [self.defaultButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.bottom.mas_equalTo(0);
         make.right.mas_equalTo(tabLineView.mas_left);
     }];
     
-    self.deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"地到标记"];
+    self.deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Deedao POI")];
     [tabView addSubview:self.deedaoButton];
     [self.deedaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.right.bottom.mas_equalTo(0);
@@ -226,14 +227,14 @@
     
     UIView * tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 140 * scale)];
     UILabel * footerLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
-    footerLabel.text = @"没有合适的地址？";
+    footerLabel.text = DDLocalizedString(@"NoAddress");
     [tableFooterView addSubview:footerLabel];
     [footerLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.bottom.mas_equalTo(0);
         make.width.mas_equalTo(kMainBoundsWidth / 2);
     }];
     
-    UIButton * footerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"自己标记一个吧！"];
+    UIButton * footerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"MakeAddress")];
     [tableFooterView addSubview:footerButton];
     [footerButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(footerLabel.mas_right);
@@ -453,6 +454,10 @@
     [self.dataSource removeAllObjects];
     [self.dataSource addObjectsFromArray:result.poiList];
     [self.tableView reloadData];
+    
+    if (self.dataSource.count == 0) {
+        [self searchLocationWithWebAPI];
+    }
 }
 
 - (void)poiSearchWithCoordinate:(CLLocationCoordinate2D)coordinate
@@ -511,6 +516,138 @@
     }
 }
 
+//百度WebAPI集成
+- (void)searchLocationWithWebAPI
+{
+    CLLocationCoordinate2D coordinate = self.mapView.centerCoordinate;
+    
+    [self.dataSource removeAllObjects];
+    [self.tableView reloadData];
+    
+    NSString * keyWord = self.textField.text;
+    NSString * cityWord = self.cityField.text;
+    
+    AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+                                      
+    if (isEmptyString(cityWord)) {
+        
+        if (self.searchType == 1 && isEmptyString(keyWord)) {
+            NSString * webURL = [NSString stringWithFormat:@"http://api.map.baidu.com/geocoder/v2/?location=%lf,%lf&output=json&pois=1&ak=zRbyY6PzeXazsBG4wEd8znv4hL8lIPxH&coordtype=gcj02ll&ret_coordtype=gcj02ll", coordinate.latitude, coordinate.longitude];
+            
+            [manager GET:webURL parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+                
+            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                
+                NSInteger status = [[responseObject objectForKey:@"status"] integerValue];
+                if (status == 0) {
+                    NSDictionary * result = [responseObject objectForKey:@"result"];
+                    NSArray * pois = [result objectForKey:@"pois"];
+                    if (KIsArray(pois)) {
+                        for (NSDictionary * poi in pois) {
+                            BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
+                            
+                            NSDictionary * point = [poi objectForKey:@"point"];
+                            double lat = [[point objectForKey:@"x"] doubleValue];
+                            double lng = [[point objectForKey:@"y"] doubleValue];
+                            resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
+                            resultPOI.name = [poi objectForKey:@"name"];
+                            resultPOI.address = [poi objectForKey:@"addr"];
+                            [self.dataSource addObject:resultPOI];
+                            [self.tableView reloadData];
+                        }
+                    }
+                }
+                
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                
+            }];
+            
+            return;
+        }
+        
+        NSString * webAPI;
+        if (isEmptyString(keyWord)) {
+            webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=%@&location=%lf,%lf&radius=1000&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&radius=5000&coord_type=2&ret_coordtype=gcj02ll", self.tagTitle, coordinate.latitude, coordinate.longitude];
+        }else{
+            if (self.searchType != 1) {
+                webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=&tag=%@&location=%lf,%lf&radius=1000&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&radius=5000&coord_type=2&ret_coordtype=gcj02ll", self.tagTitle, coordinate.latitude, coordinate.longitude];
+            }
+            webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=%@&location=%lf,%lf&radius=1000&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&radius=5000&coord_type=2&ret_coordtype=gcj02ll", keyWord, coordinate.latitude, coordinate.longitude];
+        }
+        
+        [manager GET:[webAPI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+            NSInteger status = [[responseObject objectForKey:@"status"] integerValue];
+            if (status == 0) {
+                NSArray * result = [responseObject objectForKey:@"results"];
+                if (KIsArray(result)) {
+                    for (NSDictionary * poi in result) {
+                        BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
+
+                        NSDictionary * location = [poi objectForKey:@"location"];
+                        double lat = [[location objectForKey:@"lat"] doubleValue];
+                        double lng = [[location objectForKey:@"lng"] doubleValue];
+                        resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
+                        resultPOI.name = [poi objectForKey:@"name"];
+                        resultPOI.address = [poi objectForKey:@"address"];
+                        [self.dataSource addObject:resultPOI];
+                        [self.tableView reloadData];
+                    }
+                }
+                if (result.count == 0) {
+//                    [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
+                }
+            }
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+        
+    }else{
+        NSString * webAPI;
+        if (isEmptyString(keyWord)) {
+            webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=%@&page_size=10&page_num=0&scope=1&region=%@&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&ret_coordtype=gcj02ll", keyWord, cityWord];
+        }else{
+            if (self.searchType == 1) {
+                webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=%@&tag=%@&page_size=10&page_num=0&scope=1&region=%@&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&ret_coordtype=gcj02ll", keyWord, @"美食", cityWord];
+            }
+            webAPI = [NSString stringWithFormat:@"http://api.map.baidu.com/place_abroad/v1/search?query=%@&tag=%@&page_size=10&page_num=0&scope=1&region=%@&output=json&ak=ox3YsuZCU0dFkShaPY4iNDkVlwAQUMKV&ret_coordtype=gcj02ll", keyWord, self.tagTitle, cityWord];
+        }
+        
+        [manager GET:[webAPI stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+            
+        } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            
+            NSInteger status = [[responseObject objectForKey:@"status"] integerValue];
+            if (status == 0) {
+                NSArray * result = [responseObject objectForKey:@"results"];
+                if (KIsArray(result)) {
+                    for (NSDictionary * poi in result) {
+                        BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
+                        
+                        NSDictionary * location = [poi objectForKey:@"location"];
+                        double lat = [[location objectForKey:@"lat"] doubleValue];
+                        double lng = [[location objectForKey:@"lng"] doubleValue];
+                        resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
+                        resultPOI.name = [poi objectForKey:@"name"];
+                        resultPOI.address = [poi objectForKey:@"address"];
+                        [self.dataSource addObject:resultPOI];
+                        [self.tableView reloadData];
+                    }
+                }
+                if (result.count == 0) {
+//                    [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
+                }
+            }
+            
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            
+        }];
+    }
+}
+
 - (void)requestDeedaoUserLocation
 {
     GetUserCreateLocationRequest * request  = [[GetUserCreateLocationRequest alloc] initWithKeyWord:self.textField.text lat:self.mapView.centerCoordinate.latitude lng:self.mapView.centerCoordinate.longitude];
@@ -549,9 +686,19 @@
     if (errorCode == BMK_SEARCH_NO_ERROR) {
         //在此处理正常结果
         
+        if (poiResult.poiInfoList.count == 0) {
+            [self searchLocationWithWebAPI];
+            return;
+        }
+        
         [self.dataSource removeAllObjects];
         [self.dataSource addObjectsFromArray:poiResult.poiInfoList];
         [self.tableView reloadData];
+        
+        BMKPoiInfo * poi = poiResult.poiInfoList.firstObject;
+        if (isEmptyString(poi.address)) {
+            [self searchLocationWithWebAPI];
+        }
         
     }
     else if (errorCode == BMK_SEARCH_AMBIGUOUS_KEYWORD){
@@ -559,7 +706,7 @@
         // result.cityList;
         NSLog(@"起始点有歧义");
     } else {
-        [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
+        [self searchLocationWithWebAPI];
     }
 }
 
@@ -638,7 +785,7 @@
     self.cityField.layer.shadowOpacity = .24f;
     self.cityField.layer.shadowRadius = 6 * scale;
     self.cityField.layer.shadowOffset = CGSizeMake(0, 6 * scale);
-    self.cityField.placeholder = @"城市";
+    self.cityField.placeholder = DDLocalizedString(@"City");
     UIView * leftView1 = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20 * scale, 20 * scale)];
     self.cityField.leftView = leftView1;
     self.cityField.leftViewMode = UITextFieldViewModeAlways;
@@ -657,13 +804,13 @@
     self.textField.layer.shadowOpacity = .24f;
     self.textField.layer.shadowRadius = 6 * scale;
     self.textField.layer.shadowOffset = CGSizeMake(0, 6 * scale);
-    self.textField.placeholder = @"关键字";
+    self.textField.placeholder = DDLocalizedString(@"Keywords");
     
     UIView * leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20 * scale, 20 * scale)];
     self.textField.leftView = leftView;
     self.textField.leftViewMode = UITextFieldViewModeAlways;
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"搜索"];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Search")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

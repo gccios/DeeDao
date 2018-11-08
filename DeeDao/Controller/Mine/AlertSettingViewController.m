@@ -45,16 +45,16 @@
     [self.openList addObject:[NSNumber numberWithBool:NO]];
     
     self.firstSource = [[NSMutableArray alloc] init];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"关注的人" status:YES type:11]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"收藏的点" status:YES type:12]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"约点" status:YES type:13]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"好友的D帖" status:YES type:14]];
+    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Follow") status:YES type:11]];
+    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:YES type:12]];
+    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Interested POI") status:YES type:13]];
+    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:YES type:14]];
     
     self.secondSource = [[NSMutableArray alloc] init];
     BOOL xiangling = [DDUserDefaultsGet(@"xiangling") boolValue];
     BOOL zhendong = [DDUserDefaultsGet(@"zhendong") boolValue];
-    [self.secondSource addObject:[[AlertModel alloc] initWithTitle:@"响铃" status:xiangling type:21]];
-    [self.secondSource addObject:[[AlertModel alloc] initWithTitle:@"震动" status:zhendong type:22]];
+    [self.secondSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Bell") status:xiangling type:21]];
+    [self.secondSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Vibrate") status:zhendong type:22]];
     
     NSInteger shichangtype = [DDUserDefaultsGet(@"shichangtype") integerValue];
     self.thirdChooseIndex = shichangtype;
@@ -79,10 +79,10 @@
                 NSInteger ifCollection = [[data objectForKey:@"ifCollection"] integerValue];
                 NSInteger ifWyy = [[data objectForKey:@"ifWyy"] integerValue];
                 NSInteger ifFriend = [[data objectForKey:@"ifFriend"] integerValue];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"关注的人" status:ifConcern type:11]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"收藏的点" status:ifCollection type:12]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"约点" status:ifWyy type:13]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:@"好友的D帖" status:ifFriend type:14]];
+                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Follow") status:ifConcern type:11]];
+                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:ifCollection type:12]];
+                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Interested POI") status:ifWyy type:13]];
+                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:ifFriend type:14]];
                 
                 NSInteger remindInterval = [[data objectForKey:@"remindInterval"] integerValue];
                 if (remindInterval == 0) {
@@ -158,11 +158,11 @@
         AlertSingleTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"AlertSingleTableViewCell" forIndexPath:indexPath];
         
         if (indexPath.row == 0) {
-            [cell configTitle:@"2 秒"];
+            [cell configTitle:[NSString stringWithFormat:@"2 %@", DDLocalizedString(@"Seconds")]];
         }else if (indexPath.row == 1) {
-            [cell configTitle:@"5 秒"];
+            [cell configTitle:[NSString stringWithFormat:@"5 %@", DDLocalizedString(@"Seconds")]];
         }else{
-            [cell configTitle:@"10 秒"];
+            [cell configTitle:[NSString stringWithFormat:@"10 %@", DDLocalizedString(@"Seconds")]];
         }
         if (self.thirdChooseIndex == indexPath.row) {
             [cell configChooseStatus:YES];
@@ -177,13 +177,13 @@
         AlertSingleTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"AlertSingleTableViewCell" forIndexPath:indexPath];
         
         if (indexPath.row == 0) {
-            [cell configTitle:@"当日不再提醒"];
+            [cell configTitle:DDLocalizedString(@"No more for today")];
         }else if (indexPath.row == 1) {
-            [cell configTitle:@"三个月内不再提醒"];
+            [cell configTitle:DDLocalizedString(@"Not in 3 months")];
         }else if (indexPath.row == 2) {
-            [cell configTitle:@"一年内不再提醒"];
+            [cell configTitle:DDLocalizedString(@"Not in 1 year")];
         }else{
-            [cell configTitle:@"不再提醒"];
+            [cell configTitle:DDLocalizedString(@"Never this again")];
         }
         if (self.forthChooseIndex == indexPath.row) {
             [cell configChooseStatus:YES];
@@ -222,13 +222,13 @@
     AlertHeaderView * view = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"AlertHeaderView"];
     
     if (section == 0) {
-        [view configWithTitle:@"提醒项目"];
+        [view configWithTitle:DDLocalizedString(@"Items")];
     }else if (section == 1){
-        [view configWithTitle:@"提醒类型"];
+        [view configWithTitle:DDLocalizedString(@"AlertType")];
     }else if (section == 2) {
-        [view configWithTitle:@"提醒时长"];
+        [view configWithTitle:DDLocalizedString(@"Duration")];
     }else{
-        [view configWithTitle:@"提醒间隔"];
+        [view configWithTitle:DDLocalizedString(@"Intervals")];
     }
     
     BOOL isOpen = [[self.openList objectAtIndex:section] boolValue];
@@ -265,7 +265,7 @@
     }];
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 350 * scale, 0);
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并保存"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SaveBack")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;

@@ -48,7 +48,7 @@
     
     if (isBozhu && isInstallWX) {
         imageNames = @[@"sharepengyouquan", @"singleShare", @"sharebozhu"];
-        titles = @[@"多图分享", @"单图海报", @"地到博主"];
+        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), @"地到博主"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
         imageNames = @[@"sharebozhu"];
@@ -56,11 +56,11 @@
         startTag = 13;
     }else if (!isBozhu && isInstallWX) {
         imageNames = @[@"sharepengyouquan", @"singleShare"];
-        titles = @[@"多图分享", @"单图海报"];
+        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster")];
         startTag = 10;
     }else{
         imageNames = @[@"shareFriend"];
-        titles = @[@"地到好友"];
+        titles = @[DDLocalizedString(@"Deedao Connections")];
         startTag = 12;
     }
     
@@ -125,19 +125,19 @@
     
     if (isBozhu && isInstallWX) {
         imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend", @"sharebozhu"];
-        titles = @[@"多图分享", @"单图海报", @"地到好友", @"地到博主"];
+        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), DDLocalizedString(@"Deedao Connections"), @"地到博主"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
         imageNames = @[@"shareFriend", @"sharebozhu"];
-        titles = @[@"地到好友", @"地到博主"];
+        titles = @[DDLocalizedString(@"Deedao Connections"), @"地到博主"];
         startTag = 12;
     }else if (!isBozhu && isInstallWX) {
         imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend"];
-        titles = @[@"多图分享", @"单图海报", @"地到好友"];
+        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), DDLocalizedString(@"Deedao Connections")];
         startTag = 10;
     }else{
         imageNames = @[@"shareFriend"];
-        titles = @[@"地到好友"];
+        titles = @[DDLocalizedString(@"Deedao Connections")];
         startTag = 12;
     }
     

@@ -19,4 +19,38 @@
     return self;
 }
 
+- (instancetype)initSwitchWithPostID:(NSInteger)postID status:(BOOL)status
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"post/uploadPicSwitch";
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        if (status) {
+            [self setIntegerValue:1 forParamKey:@"switchStatus"];
+        }else{
+            [self setIntegerValue:0 forParamKey:@"switchStatus"];
+        }
+        
+    }
+    return self;
+}
+
+- (instancetype)initAddUserSwitchWithPostID:(NSInteger)postID status:(BOOL)status
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"post/wyyPermissionSwitch";
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        if (status) {
+            [self setIntegerValue:1 forParamKey:@"wYYPermission"];
+        }else{
+            [self setIntegerValue:0 forParamKey:@"wYYPermission"];
+        }
+        
+    }
+    return self;
+}
+
 @end

@@ -12,5 +12,6 @@ pod 'SDWebImage'
 pod 'MJRefresh'
 pod 'BaiduMapKit', '~> 4.1.1'
 pod 'WechatOpenSDK'
+pod 'PPGetAddressBook', '~> 0.2.8'
 pod 'LGSideMenuController', '~> 2.1.1'
 end

@@ -88,6 +88,11 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         
         DTieEditModel * model = [self.contenView.modleSources objectAtIndex:i];
         
+        NSInteger authorID = model.authorID;
+        if (authorID == 0) {
+            authorID = [UserManager shareManager].user.cid;
+        }
+        
         if (model.pFlag == 1) {
             self.isPflg = YES;
         }
@@ -105,7 +110,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":@"",
                                         @"pFlag":@(model.pFlag),
-                                        @"wxCansee":@(model.shareEnable)};
+                                        @"wxCansee":@(model.shareEnable),
+                                        @"authorID":@(authorID)};
                 [details addObject:dict];
                 tempCount++;
                 if (tempCount == self.contenView.modleSources.count) {
@@ -134,7 +140,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":@"",
                                                 @"pFlag":@(model.pFlag),
-                                                @"wxCansee":@(model.shareEnable)};
+                                                @"wxCansee":@(model.shareEnable),
+                                                @"authorID":@(authorID)};
                         [details addObject:dict];
                         tempCount++;
                         if (tempCount == self.contenView.modleSources.count) {
@@ -165,7 +172,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":@"",
                                     @"pFlag":@(model.pFlag),
-                                    @"wxCansee":@(model.shareEnable)};
+                                    @"wxCansee":@(model.shareEnable),
+                                    @"authorID":@(authorID)};
             [details addObject:dict];
             tempCount++;
             if (tempCount == self.contenView.modleSources.count) {
@@ -181,7 +189,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                         @"detailsContent":model.detailsContent,
                                         @"textInformation":model.textInformation,
                                         @"pFlag":@(model.pFlag),
-                                        @"wxCansee":@(model.shareEnable)};
+                                        @"wxCansee":@(model.shareEnable),
+                                        @"authorID":@(authorID)};
                 tempCount++;
                 [details addObject:dict];
                 if (tempCount == self.contenView.modleSources.count) {
@@ -220,7 +229,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                                 @"detailsContent":model.detailsContent,
                                                 @"textInformation":model.textInformation,
                                                 @"pFlag":@(model.pFlag),
-                                                @"wxCansee":@(model.shareEnable)};
+                                                @"wxCansee":@(model.shareEnable),
+                                                @"authorID":@(authorID)};
                         [details addObject:dict];
                         
                         [[NSFileManager defaultManager] removeItemAtURL:model.videoURL error:nil];
@@ -257,7 +267,8 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                                     @"textInformation":@"",
                                     @"pFlag":@(0),
                                     @"wxCansee":@(1),
-                                    @"postToPostId":@(model.postId)
+                                    @"postToPostId":@(model.postId),
+                                    @"authorID":@(authorID)
                                     };
             [details addObject:dict];
             tempCount++;
@@ -412,7 +423,6 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }
     
     CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:details title:title address:address building:building addressLng:lon addressLat:lat status:status remindFlg:1 firstPic:firstPic postID:postId landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:self.contenView.createTime];
-    
     if (!isEmptyString(remark)) {
         [request configRemark:remark];
     }
@@ -457,13 +467,13 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
     }];
 }
 
 - (void)checkShareWithPostId:(NSInteger)postId share:(BOOL)sharenable;
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -475,7 +485,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
                 if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                     return;
                 }
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
@@ -499,10 +509,10 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
 - (void)deleteButtonDidClicked
 {
     RDAlertView * alert = [[RDAlertView alloc] initWithTitle:@"删除草稿确认" message:@"点“确定”删除当前草稿并返回浏览列表，点“取消”则不删除。"];
-    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
         
     } bold:NO];
-    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
         
         [self deleteEditModel];
         
@@ -518,7 +528,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         postID = self.editModel.cid;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:postID];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -624,7 +634,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.top.mas_equalTo(90 * scale);
     }];
     
-    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并退出"];
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SaveBack")];
     self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     self.rightHandleButton.layer.borderWidth = 3 * scale;
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
@@ -636,7 +646,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.top.mas_equalTo(90 * scale);
     }];
     
-    self.publishButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
+    self.publishButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"DoneAndRead")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.publishButton];
     [bottomHandleView addSubview:self.publishButton];
     [self.publishButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -674,7 +684,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.height.mas_equalTo(324 * scale);
     }];
     
-    self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并退出"];
+    self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SaveBack")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
     self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     self.leftHandleButton.layer.borderWidth = 3 * scale;
@@ -686,7 +696,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.centerY.mas_equalTo(0);
     }];
     
-    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发布并浏览"];
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"DoneAndRead")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
     [bottomHandleView addSubview:self.rightHandleButton];
     [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -747,7 +757,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"编辑D帖";
+    titleLabel.text = DDLocalizedString(@"EditDPage");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -755,7 +765,7 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"预览D帖"];
+    UIButton * yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Preview")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:yulanButton];
     yulanButton.layer.borderWidth = .5f;
     yulanButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -811,13 +821,13 @@ NSString * const DTieCollectionNeedUpdateNotification = @"DTieCollectionNeedUpda
 
 - (void)backButtonDidClicked
 {
-    UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定要放弃当前编辑的内容？" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:@"确定要放弃当前编辑的内容？" preferredStyle:UIAlertControllerStyleAlert];
     
-    UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     
-    UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction * action2 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Yes") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         if (self.needPopTwoVC) {
             
             NSArray * vcArray = self.navigationController.viewControllers;

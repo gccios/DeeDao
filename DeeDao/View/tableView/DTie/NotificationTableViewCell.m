@@ -46,15 +46,15 @@
 - (void)reloadModelAlertStatus
 {
     if (self.model.remindStatus == 0) {
-        [self.handleButton setTitle:@" 未提醒 " forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"Not yet reminded") forState:UIControlStateNormal];
     }else if (self.model.remindStatus == 1) {
-        [self.handleButton setTitle:@" 今日不再提醒 " forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"No more for today") forState:UIControlStateNormal];
     }else if (self.model.remindStatus == 2) {
-        [self.handleButton setTitle:@" 三个月内不再提醒 " forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"Not in 3 months") forState:UIControlStateNormal];
     }else if (self.model.remindStatus == 3) {
-        [self.handleButton setTitle:@" 一年内不再提醒 " forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"Not in 1 year") forState:UIControlStateNormal];
     }else if (self.model.remindStatus == 4) {
-        [self.handleButton setTitle:@" 永不提醒 " forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"Never this again") forState:UIControlStateNormal];
     }
 }
 
@@ -121,7 +121,7 @@
     }];
     [DDViewFactoryTool cornerRadius:54 * scale withView:self.logoImageView];
     
-    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@" 今日不再提醒 "];
+    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"No more for today")];
     [self.contentView addSubview:self.handleButton];
     [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(0);

@@ -109,7 +109,7 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(paopaoViewDidClicked)];
     [self.paopaoView addGestureRecognizer:tap];
     
-    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"编辑D帖"];
+    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"EditDPage")];
     [paopaoImageView addSubview:editButton];
     [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
@@ -118,7 +118,7 @@
     }];
     [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"删除D帖"];
+    UIButton * deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"DeleteDPage")];
     [paopaoImageView addSubview:deleteButton];
     [deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
@@ -134,11 +134,11 @@
     [self paopaoViewDidClicked];
     
     RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"删除D帖提示" message:@"您是否确定要删除当前D帖？点取消返回，点确定将立即删除。"];
-    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
         
     } bold:NO];
     
-    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
         
         NSInteger postID = self.model.postId;
         if (postID == 0) {
@@ -184,6 +184,13 @@
 
 - (void)shareButtonDidClicked
 {
+//    if (self.readView.yaoyueList) {
+//        DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+//        [self.view insertSubview:share atIndex:0];
+//        [share startShare];
+//        return;
+//    }
+    
     DTieShareView * share = [[DTieShareView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     share.delegate = self;
     [share show];
@@ -247,6 +254,24 @@
                 [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:path] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
 
                 } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                    
+                    if (nil == image) {
+                        count++;
+                        if (count == urlSource.count) {
+                            [hud hideAnimated:YES];
+                            
+                            NSInteger postId = self.model.cid;
+                            if (postId == 0) {
+                                postId = self.model.postId;
+                            }
+                            
+                            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
+                            [self presentViewController:share animated:YES completion:nil];
+                            [[DDBackWidow shareWindow] hidden];
+                        }
+                        return;
+                    }
+                    
                     [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
                     
                     ShareImageModel * shareModel = [[ShareImageModel alloc] init];
@@ -282,9 +307,9 @@
         }
     }else if (index == 1) {
         
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"分享到" message:@"请选择想要分享的方式" preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"分享到" message:DDLocalizedString(@"To Share") preferredStyle:UIAlertControllerStyleActionSheet];
         
-        UIAlertAction * friendAction = [UIAlertAction actionWithTitle:@"微信朋友圈" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction * friendAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Groups") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [[DDBackWidow shareWindow] show];
             
@@ -294,47 +319,55 @@
             
         }];
         
-        UIAlertAction * quanAction = [UIAlertAction actionWithTitle:@"微信群或好友" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction * quanAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Connections") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [[DDBackWidow shareWindow] show];
+            
+            NSString * urlPath = self.model.postFirstPicture;
             
             for (NSInteger i = 0; i < self.model.details.count; i++) {
                 DTieEditModel * model = [self.model.details objectAtIndex:i];
                 if (model.type == DTieEditType_Image) {
-                    if (model.image) {
-                        [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:model.image isShare:NO title:self.model.postSummary];
-                    }else{
-                        NSString * urlPath = self.model.postFirstPicture;
-                        if (isEmptyString(urlPath)) {
-                            urlPath = model.detailContent;
-                        }
-                        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
-                        [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
-                            
-                        } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-                            [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
-                            
-                            if (image) {
-                                [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
-                            }else{
-                                [MBProgressHUD showTextHUDWithText:@"分享失败" inView:self.view];
-                            }
-                            
-                            [hud hideAnimated:YES];
-                        }];
+                    if (isEmptyString(urlPath)) {
+                        urlPath = model.detailContent;
                     }
                     break;
                 }
             }
             
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
+            [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                
+            } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
+                
+                if (image) {
+                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
+                }else{
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:self.view];
+                }
+                
+                [hud hideAnimated:YES];
+            }];
         }];
         
-        UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction * saveAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"StampSave") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            [[DDBackWidow shareWindow] show];
+            
+            DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+            [self.view insertSubview:share atIndex:0];
+            [share saveToAlbum];
+            
+        }];
+        
+        UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             [[DDBackWidow shareWindow] show];
         }];
         
         [alert addAction:friendAction];
         [alert addAction:quanAction];
+        [alert addAction:saveAction];
         [alert addAction:cancleAction];
         [self presentViewController:alert animated:YES completion:nil];
         [[DDBackWidow shareWindow] hidden];
@@ -446,7 +479,7 @@
         postID = self.model.postId;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     NSMutableArray * details = [[NSMutableArray alloc] init];
 
@@ -461,7 +494,8 @@
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":@"",
                                     @"pFlag":@(model.pFlag),
-                                    @"wxCansee":@(model.shareEnable)};
+                                    @"wxCansee":@(model.shareEnable),
+                                    @"authorID":@(model.authorID)};
             [details addObject:dict];
 
         }else if (model.type == DTieEditType_Text) {
@@ -471,7 +505,8 @@
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":@"",
                                     @"pFlag":@(model.pFlag),
-                                    @"wxCansee":@(model.shareEnable)};
+                                    @"wxCansee":@(model.shareEnable),
+                                    @"authorID":@(model.authorID)};
             [details addObject:dict];
 
         }else if (model.type == DTieEditType_Video) {
@@ -481,7 +516,8 @@
                                     @"detailsContent":model.detailsContent,
                                     @"textInformation":model.textInformation,
                                     @"pFlag":@(model.pFlag),
-                                    @"wxCansee":@(model.shareEnable)};
+                                    @"wxCansee":@(model.shareEnable),
+                                    @"authorID":@(model.authorID)};
             [details addObject:dict];
 
         }else if (model.type == DTieEditType_Post) {
@@ -492,7 +528,8 @@
                                     @"textInformation":@"",
                                     @"pFlag":@(0),
                                     @"wxCansee":@(1),
-                                    @"postToPostId":@(model.postId)
+                                    @"postToPostId":@(model.postId),
+                                    @"authorID":@(model.authorID)
                                     };
             [details addObject:dict];
 
@@ -518,7 +555,7 @@
 
 - (void)createViews
 {
-    self.readView = [[DTieReadView alloc] initWithFrame:[UIScreen mainScreen].bounds model:self.model];
+    self.readView = [[DTieReadView alloc] initWithFrame:[UIScreen mainScreen].bounds model:self.model isRemark:self.isRemark];
     self.readView.isPreRead = self.isPreRead;
     self.readView.parentDDViewController = self.navigationController;
     [self.view addSubview:self.readView];
@@ -591,6 +628,14 @@
 {
     [super viewDidAppear:animated];
     [[DDBackWidow shareWindow] show];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    if (self.isRemark) {
+        [NSObject cancelPreviousPerformRequestsWithTarget:self.readView selector:@selector(secondNumberChange) object:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning {

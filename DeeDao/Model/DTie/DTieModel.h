@@ -68,6 +68,11 @@
 @property (nonatomic, assign) NSInteger remindStatus;
 @property (nonatomic, copy) NSString * remark;
 
+@property (nonatomic, assign) NSInteger subType;
+
+@property (nonatomic, assign) NSInteger postClassification;//是否允许用户上传照片
+@property (nonatomic, assign) NSInteger wyyPermission;//是都允许用户主动加入
+
 - (void)configWithAuthor:(UserModel *)model;
 
 @end

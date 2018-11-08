@@ -20,4 +20,6 @@
 
 - (void)delegateShouldBlock;
 
+- (void)configWithType:(NSInteger)type;
+
 @end

@@ -27,7 +27,7 @@
     self.frame = CGRectMake(0, 0, kMainBoundsWidth, 710 * scale);
     
     UILabel * nameTip = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.87f] alignment:NSTextAlignmentLeft];
-    nameTip.text = @"圈子名称";
+    nameTip.text = DDLocalizedString(@"Name");
     [self addSubview:nameTip];
     [nameTip mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(60 * scale);
@@ -57,7 +57,7 @@
     self.nameTextField.leftViewMode = UITextFieldViewModeAlways;
     
     UILabel * DTieTip = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.87f] alignment:NSTextAlignmentLeft];
-    DTieTip.text = @"圈内D帖";
+    DTieTip.text = DDLocalizedString(@"D Page Included");
     [self addSubview:DTieTip];
     [DTieTip mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(whiteView1.mas_bottom).offset(48 * scale);
@@ -92,7 +92,7 @@
     }];
     
     self.numberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.87f] alignment:NSTextAlignmentLeft];
-    self.numberLabel.text = @"成员列表";
+    self.numberLabel.text = DDLocalizedString(@"Members");
     [self addSubview:self.numberLabel];
     [self.numberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.whiteView2.mas_bottom).offset(48 * scale);

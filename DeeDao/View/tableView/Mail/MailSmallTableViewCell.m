@@ -103,7 +103,7 @@
         make.right.mas_equalTo(-45 * scale);
     }];
     
-    self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"添加关注"];
+    self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"AddFollow")];
     [self.baseView addSubview:self.rightButton];
     [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.InfoLabel);
@@ -116,7 +116,7 @@
     self.rightButton.layer.borderWidth = 3 * scale;
     self.rightButton.hidden = YES;
     
-    self.leftButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"添加好友"];
+    self.leftButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Connect")];
     [self.baseView addSubview:self.leftButton];
     [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.InfoLabel);
@@ -159,7 +159,7 @@
     NSInteger type = self.model.mailTypeId;
     if (type == 1 || type == 3 || type == 4 || type == 5 || type == 7 || type == 10 || type == 11) {
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:na.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:na.view];
         
         DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:self.model.postId type:4 start:0 length:10];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -169,7 +169,7 @@
                 
                 NSInteger code = [[response objectForKey:@"status"] integerValue];
                 if (code == 4002) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:na.view];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:na.view];
                     return;
                 }
                 
@@ -178,7 +178,7 @@
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                     
                     if (dtieModel.deleteFlg == 1) {
-                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:na.view];
+                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:na.view];
                         return;
                     }
                     
@@ -256,7 +256,7 @@
         [self.InfoLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(-280 * scale);
         }];
-        [self.rightButton setTitle:@"点击查看" forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"ClickedOpen") forState:UIControlStateNormal];
     }else if (type == 8) {
         self.leftButton.hidden = NO;
         self.rightButton.hidden = NO;
@@ -269,8 +269,8 @@
         [self.InfoLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(-375 * scale);
         }];
-        [self.rightButton setTitle:@"同意" forState:UIControlStateNormal];
-        [self.leftButton setTitle:@"拒绝" forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"Agree") forState:UIControlStateNormal];
+        [self.leftButton setTitle:DDLocalizedString(@"NotAgree") forState:UIControlStateNormal];
     }else{
         self.leftButton.hidden = YES;
         self.rightButton.hidden = YES;

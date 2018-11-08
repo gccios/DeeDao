@@ -33,7 +33,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x3F3F3F) alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"好友列表";
+    self.titleLabel.text = DDLocalizedString(@"Connections");
     [self addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);

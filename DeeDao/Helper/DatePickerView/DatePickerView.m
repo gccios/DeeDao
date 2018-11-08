@@ -59,7 +59,7 @@
         //左边的取消按钮
         cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
         cancelButton.frame = CGRectMake(12, 0, 40, 40);
-        [cancelButton setTitle:@"取消" forState:UIControlStateNormal];
+        [cancelButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
         cancelButton.backgroundColor = [UIColor clearColor];
         cancelButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [cancelButton setTitleColor:UIColorFromRGB(0x0d8bf5) forState:UIControlStateNormal];
@@ -69,7 +69,7 @@
         //右边的确定按钮
         chooseButton = [UIButton buttonWithType:UIButtonTypeCustom];
         chooseButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 52, 0, 40, 40);
-        [chooseButton setTitle:@"确定" forState:UIControlStateNormal];
+        [chooseButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
         chooseButton.backgroundColor = [UIColor clearColor];
         chooseButton.titleLabel.font = [UIFont systemFontOfSize:15];
         [chooseButton setTitleColor:UIColorFromRGB(0x0d8bf5) forState:UIControlStateNormal];

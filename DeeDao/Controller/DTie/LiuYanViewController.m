@@ -91,7 +91,7 @@
     }];
     
     self.textField = [[UITextField alloc] initWithFrame:CGRectZero];
-    self.textField.placeholder = @"请输入您的留言内容...";
+    self.textField.placeholder = DDLocalizedString(@"Please enter your comments");
     [self.view addSubview:self.textField];
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.mas_equalTo(0);
@@ -103,7 +103,7 @@
     [self.textField layerSolidLinePoints:@[[NSValue valueWithCGPoint:CGPointMake(0, 0)], [NSValue valueWithCGPoint:CGPointMake(kMainBoundsWidth, 0)]] Color:[UIColorFromRGB(0x000000) colorWithAlphaComponent:.12f] Width:3 * scale];
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 144 * scale, 0);
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 150 * scale, 70 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"确认"];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 150 * scale, 70 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Yes")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(sendButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
@@ -215,7 +215,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"留言详情";
+    titleLabel.text = DDLocalizedString(@"MessageDetails");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

@@ -247,7 +247,7 @@
     }];
     
     UILabel * timeInputLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    timeInputLabel.text = @"时间：";
+    timeInputLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Time")];
     [contenView addSubview:timeInputLabel];
     [timeInputLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(titleInputLabel.mas_bottom).offset(60 * scale);
@@ -456,7 +456,7 @@
         make.height.mas_equalTo(55 * scale);
     }];
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -631,7 +631,7 @@
         
         if (isInstallWX) {
             imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone"];
-            titles = @[@"微信朋友圈", @"微信好友或群", @"保存到手机"];
+            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"保存到手机"];
             startTag = 10;
         }else {
             imageNames = @[@"saveToPhone"];

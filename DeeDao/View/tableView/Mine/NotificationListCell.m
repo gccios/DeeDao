@@ -109,7 +109,7 @@
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    self.timeLabel.text = @"时间";
+    self.timeLabel.text = DDLocalizedString(@"Time");
     [self.contentView addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.postAddressLabel.mas_bottom).offset(15 * scale);

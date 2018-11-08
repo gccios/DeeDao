@@ -49,7 +49,7 @@
 
 - (void)getNotificationList
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     SelectNotificationRequest * request = [[SelectNotificationRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -220,7 +220,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(54 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"Hi~你感兴趣的点就在你周围！";
+    titleLabel.text = [NSString stringWithFormat:@"Hi~%@!", DDLocalizedString(@"Your interests nearby")];
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

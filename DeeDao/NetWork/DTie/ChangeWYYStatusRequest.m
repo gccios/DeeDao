@@ -23,4 +23,16 @@
     return self;
 }
 
+- (instancetype)initRemoveSelfWithPostID:(NSInteger)postID userID:(NSInteger)userID
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"post/removeUserFromWYY";
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setIntegerValue:userID forParamKey:@"userId"];
+    }
+    return self;
+}
+
 @end

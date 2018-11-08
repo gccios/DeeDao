@@ -111,7 +111,7 @@
             [hud hideAnimated:YES];
         }];
     }else{
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
         
         DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -165,7 +165,7 @@
     
     [self createTableHeaderFooter];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"导入D帖"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Import D Page")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -177,7 +177,7 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确认"];
+    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Yes")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:rightHandleButton];
     rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     rightHandleButton.layer.borderWidth = 3 * scale;
@@ -302,7 +302,7 @@
     headerView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"标题：";
+    titleLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Theme")];
     [headerView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -399,7 +399,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"编辑系列";
+    titleLabel.text = DDLocalizedString(@"EditSeries");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

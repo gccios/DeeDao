@@ -61,6 +61,8 @@
         
         if (allowToSeeList) {
             [self setValue:allowToSeeList forParamKey:@"allowToSeeList"];
+        }else{
+            [self setValue:[NSArray new] forParamKey:@"allowToSeeList"];
         }
         
         if (postId) {
@@ -74,6 +76,56 @@
 - (void)configRemark:(NSString *)remark
 {
     [self setValue:remark forParamKey:@"remark"];
+}
+
+- (instancetype)initChangeFirstPicWithPostID:(NSInteger)postID image:(NSString *)image
+{
+    if (self = [super init]) {
+        self.methodName = @"post/changeFristPicture";
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setValue:image forParamKey:@"firstPicture"];
+    }
+    return self;
+}
+
+- (instancetype)initAddWithPostID:(NSInteger)postID blocks:(NSArray *)blocks
+{
+    if (self = [super init]) {
+        self.methodName = @"post/uploadPicAuthor";
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setValue:blocks forParamKey:@"postDetailList"];
+    }
+    return self;
+}
+
+- (instancetype)initAddWYYWithPostID:(NSInteger)postID blocks:(NSArray *)blocks
+{
+    if (self = [super init]) {
+        self.methodName = @"post/uploadPic";
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setValue:blocks forParamKey:@"postDetailList"];
+    }
+    return self;
+}
+
+- (instancetype)initRepelaceWithPostID:(NSInteger)postID details:(NSArray *)details
+{
+    if (self = [super init]) {
+        
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"post/replaceDetailList";
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setValue:details forParamKey:@"postDetailList"];
+        
+    }
+    return self;
 }
 
 @end

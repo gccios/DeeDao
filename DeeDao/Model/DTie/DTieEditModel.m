@@ -95,4 +95,9 @@
     }
 }
 
+- (void)changeNoSelect
+{
+    self.isChoose = NO;
+}
+
 @end

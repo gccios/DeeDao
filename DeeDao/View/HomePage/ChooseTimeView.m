@@ -49,7 +49,7 @@
     
     UIButton * cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancleButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
     [contenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);
@@ -59,7 +59,7 @@
     }];
     [cancleButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并筛选"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"OKAndSelect")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;

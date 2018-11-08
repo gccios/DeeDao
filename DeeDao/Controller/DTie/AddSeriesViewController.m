@@ -200,7 +200,7 @@
     gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth - 120 * scale, 144 * scale);
     [fabuButton.layer insertSublayer:gradientLayer atIndex:0];
     
-    UIButton * yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(60 * scale, 1145 * scale, 450 * scale, 144 * scale) font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"预览"];
+    UIButton * yulanButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(60 * scale, 1145 * scale, 450 * scale, 144 * scale) font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Preview")];
     [yulanButton addTarget:self action:@selector(yulanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [footerView addSubview:yulanButton];
     

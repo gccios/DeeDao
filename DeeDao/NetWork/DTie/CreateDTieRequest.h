@@ -15,4 +15,12 @@
 
 - (void)configRemark:(NSString *)remark;
 
+- (instancetype)initChangeFirstPicWithPostID:(NSInteger)postID image:(NSString *)image;
+
+- (instancetype)initAddWithPostID:(NSInteger)postID blocks:(NSArray *)blocks;
+
+- (instancetype)initAddWYYWithPostID:(NSInteger)postID blocks:(NSArray *)blocks;
+
+- (instancetype)initRepelaceWithPostID:(NSInteger)postID details:(NSArray *)details;
+
 @end

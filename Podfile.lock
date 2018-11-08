@@ -27,6 +27,7 @@ PODS:
   - PGDatePicker (2.4.6):
     - PGPickerView
   - PGPickerView (1.2.6)
+  - PPGetAddressBook (0.2.8)
   - Qiniu (7.2.3):
     - HappyDNS (~> 0.3)
   - SDWebImage (4.3.3):
@@ -45,6 +46,7 @@ DEPENDENCIES:
   - MJExtension (~> 3.0.13)
   - MJRefresh
   - PGDatePicker
+  - PPGetAddressBook (~> 0.2.8)
   - Qiniu (~> 7.1)
   - SDWebImage
   - TZImagePickerController (~> 2.1.4)
@@ -64,6 +66,7 @@ SPEC REPOS:
     - MJRefresh
     - PGDatePicker
     - PGPickerView
+    - PPGetAddressBook
     - Qiniu
     - SDWebImage
     - TZImagePickerController
@@ -82,11 +85,12 @@ SPEC CHECKSUMS:
   MJRefresh: b48380ae2b927b46c4ef000de9adb8dc748e1df7
   PGDatePicker: 1bfc96eabc38736a1d6d1bac79a8a3fbe263b334
   PGPickerView: 8fbbf63d0404065a43a495a0115d339455e0f819
+  PPGetAddressBook: e4b6b0a87e852df5d5b90c44ecd9ded7f6f1ccf6
   Qiniu: ae0fea1cc379fae1560d8748ac537e0fbeb8626e
   SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
   TZImagePickerController: 2a8f41ba058e215bc9b699ade241fdbcc910c2bd
   WechatOpenSDK: 676feec516a11173eafd1fe64b10d27babf28701
 
-PODFILE CHECKSUM: 1eb2b3e95a9431cb814362f85e2eb3e402cefc40
+PODFILE CHECKSUM: 7043e3b40f7919a2888b4b7e60b2f31cc6053cf1
 
 COCOAPODS: 1.5.0

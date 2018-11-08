@@ -81,7 +81,7 @@
     
     UIButton * cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancleButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
     [contenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);
@@ -111,7 +111,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发起约饭"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Book")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;

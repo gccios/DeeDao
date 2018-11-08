@@ -13,6 +13,7 @@
 #import "WeChatManager.h"
 #import "GCCScreenImage.h"
 #import "GetWXAccessTokenRequest.h"
+#import "DDTool.h"
 
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
@@ -44,7 +45,7 @@
 
 - (void)startShare
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -97,6 +98,13 @@
 {
     UIImage * shareImage = [GCCScreenImage screenView:self];
     [[WeChatManager shareManager] shareImage:shareImage];
+    [self removeFromSuperview];
+}
+
+- (void)saveToAlbum
+{
+    UIImage * shareImage = [GCCScreenImage screenView:self];
+    [DDTool saveImageInSystemPhoto:shareImage];
     [self removeFromSuperview];
 }
 

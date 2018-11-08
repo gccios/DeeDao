@@ -159,7 +159,7 @@
         make.height.mas_equalTo(120 * scale);
     }];
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -271,7 +271,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"阅读地图热力图";
+    titleLabel.text = DDLocalizedString(@"Readership Heat Map");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -301,7 +301,7 @@
         
         if (isInstallWX) {
             imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone"];
-            titles = @[@"微信朋友圈", @"微信好友或群", @"保存到手机"];
+            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"保存到手机"];
             startTag = 10;
         }else {
             imageNames = @[@"saveToPhone"];

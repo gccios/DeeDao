@@ -11,6 +11,8 @@
 
 @interface DTieNewDetailViewController : DDViewController
 
+@property (nonatomic, assign) BOOL isRemark;
+
 - (instancetype)initWithDTie:(DTieModel *)model;
 
 - (instancetype)initPreReadWithDTie:(DTieModel *)model;

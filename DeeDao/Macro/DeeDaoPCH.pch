@@ -18,14 +18,12 @@
 #define HOSTURL @"https://portal.deedao.com" //正式地址
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
-#define NSLog(...) {}
 
 #else
 #define HOSTURL @"http://10.93.20.171:8080"  //测试地址
 //#define HOSTURL @"https://portal.deedao.com"
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
-#define NSLog(...) NSLog(__VA_ARGS__)
 #endif
 
 // Include any system framework and library headers here that should be included in all compilation units.
@@ -54,6 +52,8 @@
 #define DDUserDefaults  [NSUserDefaults standardUserDefaults]
 #define DDUserDefaultsGet(key) [DDUserDefaults objectForKey:key]
 #define DDUserDefaultsSet(key, value)   [DDUserDefaults setObject:value forKey:key];
+
+#define DDLocalizedString(key) NSLocalizedString(key, "RDLocalizedString")
 
 /*
  路径

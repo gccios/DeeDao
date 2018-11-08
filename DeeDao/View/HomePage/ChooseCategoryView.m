@@ -31,7 +31,7 @@
 
 - (void)createChooseTimeView
 {
-    self.titleArray = @[@"博主", @"好友", @"提醒", @"公开", @"我的"];
+    self.titleArray = @[DDLocalizedString(@"Blogger"), DDLocalizedString(@"Friend"), DDLocalizedString(@"Reminder"), DDLocalizedString(@"Open"), DDLocalizedString(@"My")];
     
     self.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
     
@@ -47,7 +47,7 @@
     
     UIButton * cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancleButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
     [contenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);

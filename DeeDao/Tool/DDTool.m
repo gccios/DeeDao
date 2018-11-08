@@ -17,11 +17,14 @@
 #import <SDWebImageManager.h>
 #import "WeChatManager.h"
 #import "DDLocationManager.h"
+#import "UserInfoViewController.h"
+#import "DDLGSideViewController.h"
 #import "ApplicationConfigRequest.h"
 #import "BaiduMobStat.h"
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "DDLGSideViewController.h"
+#import "ConverUtil.h"
 
 @implementation DDTool
 
@@ -39,16 +42,16 @@
     [[UIApplication sharedApplication] registerUserNotificationSettings:setting];
     
 //    配置用户信息
-//    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
-//        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
-//        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
-//            
-//            [[UserManager shareManager] loginWithDictionary:userInfo];
-//            
-//        }else {
-//            
-//        }
-//    }
+    if ([[NSFileManager defaultManager] fileExistsAtPath:DDUserInfoPath]) {
+        NSDictionary * userInfo = [NSDictionary dictionaryWithContentsOfFile:DDUserInfoPath];
+        if (userInfo && [userInfo isKindOfClass:[NSDictionary class]]) {
+            
+            [[UserManager shareManager] loginWithDictionary:userInfo];
+            
+        }else {
+            
+        }
+    }
     
     [[UITableView appearance] setEstimatedRowHeight:0];
     [[UITableView appearance] setEstimatedSectionFooterHeight:0];
@@ -359,7 +362,7 @@
     
     if ([UserManager shareManager].isLogin) {
         [WeChatManager shareManager].miniProgramPostID = 0;
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
         
         DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -369,7 +372,7 @@
                 
                 NSInteger code = [[response objectForKey:@"status"] integerValue];
                 if (code == 4002) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:[UIApplication sharedApplication].keyWindow];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:[UIApplication sharedApplication].keyWindow];
                     return;
                 }
                 
@@ -378,7 +381,7 @@
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                     
                     if (dtieModel.deleteFlg == 1) {
-                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:[UIApplication sharedApplication].keyWindow];
+                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:[UIApplication sharedApplication].keyWindow];
                         return;
                     }
                     DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
@@ -395,6 +398,58 @@
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             [hud hideAnimated:YES];
         }];
+    }
+}
+
++ (void)checkDKouling
+{
+    UIViewController * root = [UIApplication sharedApplication].keyWindow.rootViewController;
+    if (![root isKindOfClass:[DDLGSideViewController class]]) {
+        return;
+    }
+    
+    UIPasteboard * pasteBoard = [UIPasteboard generalPasteboard];
+    NSString * string = pasteBoard.string;
+    
+    if (!isEmptyString(string)) {
+        
+        if ([string containsString:@"【DeeDao地到】"]) {
+            
+            NSArray * array = [string componentsSeparatedByString:@"#"];
+            if (array.count == 2) {
+                NSString * preString = [array firstObject];
+                NSArray * resultArray = [preString componentsSeparatedByString:@"】"];
+                if (resultArray.count == 2) {
+                    NSString * baseString = [resultArray lastObject];
+                    
+                    NSString * result = [ConverUtil base64DecodeString:baseString];
+                    
+                    NSArray * koulingArray = [result componentsSeparatedByString:@"+"];
+                    if (koulingArray.count == 2) {
+                        NSString * userIDString = [koulingArray lastObject];
+                        NSInteger userID = [userIDString integerValue];
+                        
+                        pasteBoard.string = @"";
+                        
+                        if (userID != [UserManager shareManager].user.cid) {
+                            DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                            
+                            if (lg.isLeftViewShowing) {
+                                [lg hideLeftViewAnimated];
+                            }
+                            
+                            UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                            
+                            [MBProgressHUD showTextHUDWithText:@"通过口令打开好友名片" inView:[UIApplication sharedApplication].keyWindow];
+                            
+                            UserInfoViewController * userInfo = [[UserInfoViewController alloc] initWithUserId:userID];
+                            [na pushViewController:userInfo animated:YES];
+                        }
+                    }
+                }
+            }
+        }
+        
     }
 }
 

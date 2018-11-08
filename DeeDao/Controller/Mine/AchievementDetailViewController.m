@@ -160,7 +160,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"我的成就";
+    titleLabel.text = DDLocalizedString(@"My treasure");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -188,7 +188,7 @@
 
 - (void)shareButtonDidClicked
 {
-    NSLog(@"分享");
+    NSLog(DDLocalizedString(@"Share"));
 }
 
 - (void)didReceiveMemoryWarning {

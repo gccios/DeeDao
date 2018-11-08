@@ -71,7 +71,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"圈子名称";
+    self.titleLabel.text = DDLocalizedString(@"Name");
     [self.baseView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.logoImageView.mas_bottom).offset(35 * scale);

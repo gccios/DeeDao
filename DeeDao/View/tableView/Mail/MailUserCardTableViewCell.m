@@ -105,7 +105,7 @@
         make.height.mas_equalTo(45 * scale);
     }];
     
-    self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"添加关注"];
+    self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"AddFollow")];
     [self.baseView addSubview:self.rightButton];
     [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(35 * scale);
@@ -214,9 +214,9 @@
         [self reloadWithModelStatus];
         
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注成功" inView:na.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"AddFollow") inView:na.view];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注" inView:na.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"De-Follow") inView:na.view];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -263,7 +263,7 @@
     }
     
     if (self.model.ifFriendFlg == 1) {
-        [self.leftButton setTitle:@"已加好友" forState:UIControlStateNormal];
+        [self.leftButton setTitle:DDLocalizedString(@"Already connected") forState:UIControlStateNormal];
         self.leftButton.alpha = .5f;
     }else{
         [self.leftButton setTitle:@"申请好友" forState:UIControlStateNormal];
@@ -271,10 +271,10 @@
     }
     
     if (self.model.ifFollowedFlg == 1) {
-        [self.rightButton setTitle:@"已关注" forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"Already follow") forState:UIControlStateNormal];
         self.rightButton.alpha = .5f;
     }else{
-        [self.rightButton setTitle:@"添加关注" forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"AddFollow") forState:UIControlStateNormal];
         self.rightButton.alpha = 1.f;
     }
 }

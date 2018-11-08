@@ -11,6 +11,9 @@
 
 @interface FanjuTableViewCell : UITableViewCell
 
+@property (nonatomic, copy) void (^leftButtonHandle)(void);
+@property (nonatomic, copy) void (^rightButtonHandle)(void);
+
 - (void)configWithModel:(DTieModel *)model;
 
 @end

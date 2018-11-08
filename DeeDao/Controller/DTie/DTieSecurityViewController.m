@@ -43,7 +43,7 @@
 {
     SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
     model1.landAccountFlg = 1;
-    model1.securitygroupName = @"公开";
+    model1.securitygroupName = DDLocalizedString(@"Open");
     model1.securitygroupPropName = @"所有用户都可见，包括陌生人";
     model1.createPerson = [UserManager shareManager].user.cid;
     model1.createTime = [[NSDate date] timeIntervalSince1970] * 1000;

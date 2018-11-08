@@ -142,7 +142,7 @@
         make.width.height.mas_equalTo(100 * scale);
     }];
     
-    UIButton * editSeriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"编辑系列"];
+    UIButton * editSeriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"EditSeries")];
     editSeriesButton.backgroundColor = UIColorFromRGB(0xFFFFFF);
     [DDViewFactoryTool cornerRadius:24 * scale withView:editSeriesButton];
     editSeriesButton.layer.borderColor = UIColorFromRGB(0xDB5282).CGColor;
@@ -329,7 +329,7 @@
         return;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -338,7 +338,7 @@
         if (KIsDictionary(response)) {
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                 return;
             }
             NSDictionary * data = [response objectForKey:@"data"];
@@ -451,15 +451,15 @@
         
         if (isBozhu && isInstallWX) {
             imageNames = @[@"shareweixin", @"shareFriend", @"sharebozhu"];
-            titles = @[@"微信好友或群", @"地到好友", @"地到博主"];
+            titles = @[@"微信好友或群", DDLocalizedString(@"Deedao Connections"), @"地到博主"];
             startTag = 10;
         }else if (isBozhu && !isInstallWX) {
             imageNames = @[@"shareFriend", @"sharebozhu"];
-            titles = @[@"地到好友", @"地到博主"];
+            titles = @[DDLocalizedString(@"Deedao Connections"), @"地到博主"];
             startTag = 11;
         }else if (!isBozhu && isInstallWX) {
             imageNames = @[@"shareweixin", @"shareFriend"];
-            titles = @[@"微信好友或群", @"地到好友"];
+            titles = @[@"微信好友或群", DDLocalizedString(@"Deedao Connections")];
             startTag = 10;
         }
         

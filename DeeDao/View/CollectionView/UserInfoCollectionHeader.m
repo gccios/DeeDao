@@ -97,7 +97,7 @@
     }];
     
     UILabel * geqian = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    geqian.text = @"个性签名";
+    geqian.text = DDLocalizedString(@"Motto");
     [self addSubview:geqian];
     [geqian mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -127,7 +127,7 @@
     }];
     
     UILabel * liebiao = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    liebiao.text = @"公开的D帖";
+    liebiao.text = DDLocalizedString(@"Open D Blog");
     [self addSubview:liebiao];
     [liebiao mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -155,20 +155,20 @@
         
         if (self.isGuanzhu) {
             self.model.concernFlg = YES;
-            [self.guanzhuButton setTitle:@"已关注" forState:UIControlStateNormal];
+            [self.guanzhuButton setTitle:DDLocalizedString(@"Already follow") forState:UIControlStateNormal];
             self.isGuanzhu = YES;
         }else{
             self.model.concernFlg = NO;
-            [self.guanzhuButton setTitle:@"未关注" forState:UIControlStateNormal];
+            [self.guanzhuButton setTitle:DDLocalizedString(@"Not yet a followed") forState:UIControlStateNormal];
             self.isGuanzhu = NO;
         }
         
         self.guanzhuButton.enabled = YES;
         
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注成功" inView:self];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"AddFollow") inView:self];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注" inView:self];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"De-Follow") inView:self];
         }
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -206,10 +206,10 @@
     }else{
         self.guanzhuButton.hidden = NO;
         if (model.concernFlg) {
-            [self.guanzhuButton setTitle:@"已关注" forState:UIControlStateNormal];
+            [self.guanzhuButton setTitle:DDLocalizedString(@"Already follow") forState:UIControlStateNormal];
             self.isGuanzhu = YES;
         }else{
-            [self.guanzhuButton setTitle:@"未关注" forState:UIControlStateNormal];
+            [self.guanzhuButton setTitle:DDLocalizedString(@"Not yet a followed") forState:UIControlStateNormal];
             self.isGuanzhu = NO;
         }
     }

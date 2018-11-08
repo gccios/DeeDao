@@ -52,7 +52,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 
 - (void)shareTimeLineWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -100,13 +100,13 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                             UIActivityViewController * activityView = [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
                             activityView.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
                                 if (activityError) {
-                                    [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
                                 }else{
                                     if (completed) {
-                                        [MBProgressHUD showTextHUDWithText:@"分享成功" inView:viewController.view];
+                                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"ShareCompleted") inView:viewController.view];
                                         [viewController dismissViewControllerAnimated:YES completion:nil];
                                     }else{
-                                        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
                                     }
                                 }
                             };
@@ -119,18 +119,18 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                 
             }else{
                 [hud hideAnimated:YES];
-                [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
             }
         }else{
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
         }
         
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
@@ -142,7 +142,7 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
 
 - (void)savePhotoWithImages:(NSArray *)images title:(NSString *)title viewController:(UIViewController *)viewController
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -156,43 +156,52 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
                 for (NSInteger i = 0; i < images.count; i++) {
                     
                     ShareImageModel * model = [images objectAtIndex:i];
-                    UIImage * bgImage = model.image;
+//                    UIImage * bgImage = model.image;
+                    UIImage * result = [self addLogoWithImage:model.image];
+                    [DDTool saveImageInSystemPhotoWithNoHUD:result];
                     
-                    [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
-                        model.codeImage = image;
-                        
-                        UIImage * result;
-                        if (i == images.count - 1) {
-                            result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
-                        }else{
-                            result = [self image:bgImage addMiniProgramCodeImage:model.codeImage];
-                        }
-                        [DDTool saveImageInSystemPhotoWithNoHUD:result];
-                        
-                        
-                        count++;
-                        
-                        if (count == images.count) {
-                            [hud hideAnimated:YES];
-                            [MBProgressHUD showTextHUDWithText:@"保存成功，您可以在相册中查看" inView:viewController.view];
-                        }
-                        
-                    }];
+                    count++;
+                    
+                    if (count == images.count) {
+                        [hud hideAnimated:YES];
+                        [MBProgressHUD showTextHUDWithText:@"保存成功，您可以在相册中查看" inView:viewController.view];
+                    }
+                    
+//                    [self getMiniProgromCodeWithPostID:model.postId handle:^(UIImage *image) {
+//                        model.codeImage = image;
+//
+//                        UIImage * result;
+//                        if (i == images.count - 1) {
+//                            result = [self image:bgImage addTitle:model.title text:model.detail codeImage:model.codeImage pflg:model.PFlag];
+//                        }else{
+//                            result = [self image:bgImage addMiniProgramCodeImage:model.codeImage];
+//                        }
+//                        [DDTool saveImageInSystemPhotoWithNoHUD:result];
+//
+//
+//                        count++;
+//
+//                        if (count == images.count) {
+//                            [hud hideAnimated:YES];
+//                            [MBProgressHUD showTextHUDWithText:@"保存成功，您可以在相册中查看" inView:viewController.view];
+//                        }
+//
+//                    }];
                 }
                 
             }else{
                 [hud hideAnimated:YES];
-                [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
             }
         }else{
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
         }
         
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         [hud hideAnimated:YES];
-        [MBProgressHUD showTextHUDWithText:@"分享失败" inView:viewController.view];
+        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:viewController.view];
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         [hud hideAnimated:YES];
@@ -451,6 +460,32 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     return resultImage;
 }
 
+- (UIImage *)addLogoWithImage:(UIImage *)image
+{
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, [UIScreen mainScreen].scale);
+    
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+    
+    CGFloat logoWidth = width * .2f;
+    CGFloat codeWidth = width * .12f;
+    
+    if (height > width) {
+        logoWidth = height * .18f;
+        codeWidth = height * .1f;
+    }
+    
+    CGFloat leftMargin = codeWidth * .1f;
+    
+    [image drawInRect:CGRectMake(0, 0, width, height)];
+    
+    UIImage * logoImage = [UIImage imageNamed:@"letterLogoShare"];
+    [logoImage drawInRect:CGRectMake(width - leftMargin * 1.5 - logoWidth, leftMargin * 2, logoWidth, 36.f / 86.f * logoWidth)];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultImage;
+}
 
 - (UIImage *)image:(UIImage *)image addTitle:(NSString *)title text:(NSString *)text codeImage:(UIImage *)codeImage pflg:(NSInteger)pflag
 {

@@ -390,7 +390,7 @@
     UIView * headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 684 * scale)];
     
     UILabel * titleLeftView = [DDViewFactoryTool createLabelWithFrame:CGRectMake(0, 0, 186 * scale, 144 * scale) font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
-    titleLeftView.text = @"标题：";
+    titleLeftView.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Theme")];
     self.titleTextField = [[UITextField alloc] initWithFrame:CGRectZero];
     self.titleTextField.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.titleTextField.leftView = titleLeftView;
@@ -501,7 +501,7 @@
     }];
     
     UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    label.text = @"浏览权限";
+    label.text = DDLocalizedString(@"Security");
     [quanxianButton addSubview:label];
     [label mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -510,7 +510,7 @@
     }];
     
     self.quanxianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentRight];
-    self.quanxianLabel.text = @"公开";
+//    self.quanxianLabel.text = @"所有朋友,关注我的";
     [quanxianButton addSubview:self.quanxianLabel];
     [self.quanxianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(label.mas_right).offset(60 * scale);
@@ -569,12 +569,12 @@
     
     NSString * title = @"";
     if (landAccountFlg == 1) {
-        title = @"公开";
+        title = DDLocalizedString(@"Open");
     }else if (landAccountFlg == 2) {
-        title = @"私密";
+        title = DDLocalizedString(@"Private");
     }else{
         if (source.count == 0) {
-            title = @"私密";
+            title = DDLocalizedString(@"Private");
         }else{
             for (SecurityGroupModel * model in source) {
                 title = [NSString stringWithFormat:@"%@,%@", title, model.securitygroupName];
@@ -651,7 +651,7 @@
 //    model2.isChoose = YES;
 //    model2.isNotification = YES;
 //    [self.selectSource addObject:model2];
-    self.landAccountFlg = 1;
+    self.landAccountFlg = 2;
 }
 
 #pragma mark - 左滑删除
@@ -878,6 +878,7 @@
 {
     if (!_quanxian) {
         _quanxian = [[DTieQuanXianViewController alloc] init];
+        [_quanxian configWithType:2];
         _quanxian.delegate = self;
         [_quanxian delegateShouldBlock];
     }

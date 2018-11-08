@@ -156,7 +156,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"确定"];
+    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Yes")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:cancleButton];
     cancleButton.layer.borderWidth = .5f;
     cancleButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;

@@ -95,7 +95,7 @@
         make.right.mas_equalTo(-135 * scale);
     }];
     
-    UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"清空"];
+    UIButton * saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Clear")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:saveButton];
     saveButton.layer.borderWidth = .5f;
     saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -140,12 +140,12 @@
 
 - (void)clearButtonDidClicked
 {
-    RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"提示" message:@"是否确认清空博主链接？"];
+    RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:DDLocalizedString(@"Information") message:@"是否确认清空博主链接？"];
     
-    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+    RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
         
     } bold:NO];
-    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+    RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
         self.textView.text = @"";
         [[NSFileManager defaultManager] removeItemAtPath:DDBloggerLinkPath error:nil];
     } bold:NO];

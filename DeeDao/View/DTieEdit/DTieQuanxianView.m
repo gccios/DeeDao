@@ -80,7 +80,7 @@
                 
                 SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
                 model2.cid = -2;
-                model2.securitygroupName = @"关注我的人";
+                model2.securitygroupName = DDLocalizedString(@"My Fans");
                 model2.isChoose = YES;
                 model2.isNotification = YES;
                 [self.dataSource addObject:model2];
@@ -118,7 +118,7 @@
     if (self.currentQuanxianButton != button) {
         [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-        [self configQuanxianLabelText:@"浏览权限（公开）"];
+        [self configQuanxianLabelText:[NSString stringWithFormat:@"%@（%@）", DDLocalizedString(@"Security"), DDLocalizedString(@"Open")]];
         self.landAccountFlg = 1;
         self.currentQuanxianButton = button;
     }
@@ -129,7 +129,7 @@
     if (self.currentQuanxianButton != button) {
         [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-        [self configQuanxianLabelText:@"浏览权限（隐私）"];
+        [self configQuanxianLabelText:[NSString stringWithFormat:@"%@（%@）", DDLocalizedString(@"Security"), DDLocalizedString(@"Private")]];
         self.landAccountFlg = 2;
         self.currentQuanxianButton = button;
     }
@@ -158,7 +158,7 @@
 {
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    [self configQuanxianLabelText:@"浏览权限（好友圈）"];
+    [self configQuanxianLabelText:[NSString stringWithFormat:@"%@（%@）", DDLocalizedString(@"Security"), DDLocalizedString(@"Network")]];
     self.landAccountFlg = 4;
     self.currentQuanxianButton = self.miquanButton;
     
@@ -303,7 +303,7 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    NSString * quanxianText = @"浏览权限（好友圈）";
+    NSString * quanxianText = [NSString stringWithFormat:@"%@（%@）", DDLocalizedString(@"Security"), DDLocalizedString(@"Network")];
     [self configQuanxianLabelText:quanxianText];
     
     NSString * shareText = @"微信分享（分享到朋友圈）";
@@ -321,7 +321,7 @@
     UIButton * gongkaiButton = [UIButton buttonWithType:UIButtonTypeCustom];
     gongkaiButton.titleLabel.font = kPingFangRegular(42 * scale);
     [gongkaiButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    [gongkaiButton setTitle:@"公开" forState:UIControlStateNormal];
+    [gongkaiButton setTitle:DDLocalizedString(@"Open") forState:UIControlStateNormal];
     [gongkaiButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [self.quanxianView addSubview:gongkaiButton];
     [gongkaiButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -432,7 +432,7 @@
         make.height.mas_equalTo(58 * scale);
     }];
     
-    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"取消"];
+    UIButton * cancleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:DDLocalizedString(@"Cancel")];
     [self.miquanContenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.mas_equalTo(0);
@@ -441,7 +441,7 @@
     }];
     [cancleButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * sureButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:@"确定"];
+    UIButton * sureButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0x666666) title:DDLocalizedString(@"Yes")];
     [self.miquanContenView addSubview:sureButton];
     [sureButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.bottom.mas_equalTo(0);
@@ -491,7 +491,7 @@
     
     SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
     model2.cid = -2;
-    model2.securitygroupName = @"关注我的人";
+    model2.securitygroupName = DDLocalizedString(@"My Fans");
     model2.isChoose = YES;
     model2.isNotification = YES;
     [self.dataSource addObject:model2];

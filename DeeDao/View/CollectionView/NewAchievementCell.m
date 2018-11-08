@@ -58,7 +58,7 @@
 
 - (void)showButtonDidClicked
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:self.model.medalObjectId type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

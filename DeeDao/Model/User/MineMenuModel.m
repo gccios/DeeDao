@@ -30,7 +30,7 @@
                 
             {
                 self.imageName = @"chengjiurukou";
-                self.title = @"我的成就";
+                self.title = DDLocalizedString(@"My treasure");
             }
                 
                 break;
@@ -39,7 +39,7 @@
                 
             {
                 self.imageName = @"address";
-                self.title = @"关系列表";
+                self.title = DDLocalizedString(@"ConnectionsList");
             }
                 
                 break;
@@ -48,7 +48,7 @@
                 
             {
                 self.imageName = @"private";
-                self.title = @"管理我的好友圈";
+                self.title = DDLocalizedString(@"Network circles");
             }
                 
                 break;
@@ -57,7 +57,7 @@
                 
             {
                 self.imageName = @"system";
-                self.title = @"系统设置";
+                self.title = DDLocalizedString(@"Settings");
             }
                 
                 break;
@@ -75,7 +75,7 @@
                 
             {
                 self.imageName = @"alertList";
-                self.title = @"提醒记录";
+                self.title = DDLocalizedString(@"Reminder history");
             }
                 
                 break;

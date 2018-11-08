@@ -61,7 +61,7 @@
         self.DTieDataSource = [[NSMutableArray alloc] init];
         self.selectSource = [[NSMutableArray alloc] init];
         [self.selectSource addObject:[UserManager shareManager].user];
-        self.titleSource = @[@"", @"我和好友", @"博主", @"我所关注人", @"部分公开"];
+        self.titleSource = @[@"", DDLocalizedString(@"Me and friends"), DDLocalizedString(@"Blogger"), DDLocalizedString(@"Follow"), DDLocalizedString(@"Partially open")];
         self.model = model;
     }
     return self;
@@ -231,7 +231,7 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    UIButton * navButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] title:@"导航过去"];
+    UIButton * navButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Direction")];
     [navButton addTarget:self action:@selector(navButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [DDViewFactoryTool cornerRadius:12 * scale withView:navButton];
     navButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
@@ -312,7 +312,7 @@
         make.height.mas_equalTo(324 * scale);
     }];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"约起来"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Get organized")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
@@ -461,7 +461,7 @@
         return;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.cid type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -490,7 +490,7 @@
 
 - (void)handleButtonDidClicked
 {
-//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
     poi.pt = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);

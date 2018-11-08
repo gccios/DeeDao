@@ -123,7 +123,7 @@
 
 - (void)refreshData
 {
-//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     self.start = 0;
     self.length = 10;
@@ -161,7 +161,7 @@
 
 - (void)getMoreList
 {
-    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -305,7 +305,7 @@
     self.tempAddButton.center = self.addChooseView.center;
     [self.tempAddButton addTarget:self action:@selector(hiddenChooseView) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * createSeriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"新建系列"];
+    UIButton * createSeriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"CreateSeries")];
     createSeriesButton.backgroundColor = UIColorFromRGB(0xFFFFFF);
     [DDViewFactoryTool cornerRadius:24 * scale withView:createSeriesButton];
     createSeriesButton.layer.borderColor = UIColorFromRGB(0xDB5282).CGColor;
@@ -519,7 +519,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"我的";
+    titleLabel.text = DDLocalizedString(@"My");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -548,7 +548,7 @@
     }];
     
     CGFloat buttonWidth = kMainBoundsWidth / 2.f;
-    self.DTieButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的D帖"];
+    self.DTieButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"My D Page")];
     [self.DTieButton addTarget:self action:@selector(dtieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.DTieButton];
     [self.DTieButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -558,7 +558,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.seriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:[UIColor whiteColor] title:@"我的系列"];
+    self.seriesButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:[UIColor whiteColor] title:DDLocalizedString(@"My Series")];
     [self.seriesButton addTarget:self action:@selector(seriesButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.seriesButton];
     [self.seriesButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -660,7 +660,7 @@
                     
                     NSInteger code = [[response objectForKey:@"status"] integerValue];
                     if (code == 4002) {
-                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                         [self.dataSource removeObject:model];
                         [self.DtieCollectionView reloadData];
                         

@@ -62,7 +62,7 @@
     
     DDMineViewController * mine = [[DDMineViewController alloc] init];
     DDNavigationViewController * mineNa = [[DDNavigationViewController alloc] initWithRootViewController:mine];
-    UITabBarItem * tabBarItem4 = [self tabBarItemWithImageName:@"mine" selectName:@"mineSelect" title:@"我的"];
+    UITabBarItem * tabBarItem4 = [self tabBarItemWithImageName:@"mine" selectName:@"mineSelect" title:DDLocalizedString(@"My")];
     [mineNa setTabBarItem:tabBarItem4];
     [vcArray addObject:mineNa];
     

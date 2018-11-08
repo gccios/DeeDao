@@ -22,4 +22,10 @@
 /*将16进制数据转化成NSData 数组*/
 +(NSData*) parseHexToByteArray:(NSString*) hexString;
 
+//给定一个字符串，对该字符串进行Base64编码，然后返回编码后的结果
++(NSString *)base64EncodeString:(NSString *)string;
+
+//对base64编码后的字符串进行解码
++(NSString *)base64DecodeString:(NSString *)string;
+
 @end

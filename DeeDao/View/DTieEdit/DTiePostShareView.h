@@ -15,4 +15,6 @@
 
 - (void)startShare;
 
+- (void)saveToAlbum;
+
 @end

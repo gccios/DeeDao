@@ -210,9 +210,9 @@
     }
     
     if (self.sourceType == 1) {
-        [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"My") forState:UIControlStateNormal];
     }else if (self.sourceType == 2){
-        [self.sourceButton setTitle:@"收藏" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"Collection") forState:UIControlStateNormal];
     }else if (self.sourceType == 9){
         [self.sourceButton setTitle:@"要约" forState:UIControlStateNormal];
     }else if (self.sourceType == -1){
@@ -238,7 +238,7 @@
 
 - (void)requestChooseUserList
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     SelectPostAuthorRequest * request = [[SelectPostAuthorRequest alloc] init];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -329,14 +329,14 @@
     self.textField.leftViewMode = UITextFieldViewModeAlways;
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"搜索"];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Search")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(searchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     
-    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"时间"];
+    self.timeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Time")];
     [self.timeButton addTarget:self action:@selector(timeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.timeButton setImage:[UIImage imageNamed:@"time_tab"] forState:UIControlStateNormal];
     [self.topView addSubview:self.timeButton];
@@ -357,7 +357,7 @@
         make.height.mas_equalTo(72 * scale);
     }];
     
-    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"我的"];
+    self.sourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"My")];
     [self.sourceButton addTarget:self action:@selector(sourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.sourceButton setImage:[UIImage imageNamed:@"source_tab"] forState:UIControlStateNormal];
     [self.topView addSubview:self.sourceButton];
@@ -378,7 +378,7 @@
         make.height.mas_equalTo(72 * scale);
     }];
     
-    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"筛选"];
+    self.selectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Filter")];
     [self.selectButton addTarget:self action:@selector(selectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.selectButton setImage:[UIImage imageNamed:@"zuozhe_tab"] forState:UIControlStateNormal];
     [self.topView addSubview:self.selectButton];

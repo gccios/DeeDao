@@ -70,7 +70,7 @@
 {
     SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
     model1.landAccountFlg = 1;
-    model1.securitygroupName = @"公开";
+    model1.securitygroupName = DDLocalizedString(@"Open");
     model1.securitygroupPropName = @"所有用户都可见，包括陌生人";
     model1.createPerson = [UserManager shareManager].user.cid;
     model1.createTime = [[NSDate date] timeIntervalSince1970] * 1000;
@@ -257,7 +257,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"我的圈子";
+    titleLabel.text = DDLocalizedString(@"My network");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -265,7 +265,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    UIButton * createButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"新建"];
+    UIButton * createButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"New")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:createButton];
     createButton.layer.borderWidth = .5f;
     createButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;

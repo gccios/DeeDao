@@ -173,7 +173,7 @@
     if (!self.mainView.editing) {
         [self.mainView xw_enterEditingModel];
         
-        [self.saveButton setTitle:@"确定" forState:UIControlStateNormal];
+        [self.saveButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
         self.clearButton.hidden = YES;
         self.bottomHandleView.hidden = YES;
     }
@@ -212,7 +212,7 @@
         make.height.mas_equalTo(324 * scale);
     }];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"加码并保存至手机相册"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"StampSave")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
@@ -231,13 +231,13 @@
 - (void)handleButtonDidClicked
 {
     if (self.selectSource.count == 0) {
-        [MBProgressHUD showTextHUDWithText:@"请选择要分享的图片" inView:self.view];
+        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PleaseSelectPhotos") inView:self.view];
     }else if (self.selectSource.count > 9){
         [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:self.view];
     }else {
         [DDTool userLibraryAuthorizationStatusWithSuccess:^{
             
-            [[WeChatManager shareManager] savePhotoWithImages:self.selectSource title:@"分享" viewController:self];
+            [[WeChatManager shareManager] savePhotoWithImages:self.selectSource title:DDLocalizedString(@"Share") viewController:self];
             
         } failure:^{
             [MBProgressHUD showTextHUDWithText:@"没有相册访问权限" inView:self.view];
@@ -280,7 +280,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"地到分享";
+    self.titleLabel.text = DDLocalizedString(@"Share within Deedao");
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -288,7 +288,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"分享"];
+    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Share")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:self.saveButton];
     self.saveButton.layer.borderWidth = .5f;
     self.saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -301,7 +301,7 @@
         make.right.mas_equalTo(-60 * scale);
     }];
     
-    self.clearButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"清空"];
+    self.clearButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Clear")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:self.clearButton];
     self.clearButton.layer.borderWidth = .5f;
     self.clearButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
@@ -330,16 +330,16 @@
 {
     if (self.mainView.editing) {
         [self.mainView xw_stopEditingModel];
-        [self.saveButton setTitle:@"分享" forState:UIControlStateNormal];
+        [self.saveButton setTitle:DDLocalizedString(@"Share") forState:UIControlStateNormal];
         self.clearButton.hidden = NO;
         self.bottomHandleView.hidden = NO;
     }else{
         if (self.selectSource.count == 0) {
-            [MBProgressHUD showTextHUDWithText:@"请选择要分享的图片" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PleaseSelectPhotos") inView:self.view];
         }else if (self.selectSource.count > 9){
             [MBProgressHUD showTextHUDWithText:@"最多只能分享9张图片" inView:self.view];
         }else {
-            [[WeChatManager shareManager] shareTimeLineWithImages:self.selectSource title:@"分享" viewController:self];
+            [[WeChatManager shareManager] shareTimeLineWithImages:self.selectSource title:DDLocalizedString(@"Share") viewController:self];
         }
     }
 }

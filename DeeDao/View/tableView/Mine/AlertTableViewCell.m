@@ -42,18 +42,18 @@
 {
     if (self.model.type < 20) {
         if (self.model.openStatus) {
-            self.statusLabel.text = @"提醒";
+            self.statusLabel.text = DDLocalizedString(@"AlertYes");
             self.statusLabel.textColor = UIColorFromRGB(0xDB6283);
         }else{
-            self.statusLabel.text = @"不提醒";
+            self.statusLabel.text = DDLocalizedString(@"AlertNo");
             self.statusLabel.textColor = UIColorFromRGB(0x999999);
         }
     }else{
         if (self.model.openStatus) {
-            self.statusLabel.text = @"打开";
+            self.statusLabel.text = DDLocalizedString(@"On");
             self.statusLabel.textColor = UIColorFromRGB(0xDB6283);
         }else{
-            self.statusLabel.text = @"关闭";
+            self.statusLabel.text = DDLocalizedString(@"Off");
             self.statusLabel.textColor = UIColorFromRGB(0x999999);
         }
     }

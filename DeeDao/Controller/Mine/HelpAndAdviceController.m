@@ -46,7 +46,7 @@
     [self.webView loadRequest:request];
     
     self.textField = [[UITextField alloc] initWithFrame:CGRectZero];
-    self.textField.placeholder = @"请输入您的留言内容...";
+    self.textField.placeholder = DDLocalizedString(@"Please enter your comments");
     [self.view addSubview:self.textField];
     [self.textField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.mas_equalTo(0);
@@ -57,7 +57,7 @@
     self.textField.leftViewMode = UITextFieldViewModeAlways;
     [self.textField layerSolidLinePoints:@[[NSValue valueWithCGPoint:CGPointMake(0, 0)], [NSValue valueWithCGPoint:CGPointMake(kMainBoundsWidth, 0)]] Color:[UIColorFromRGB(0x000000) colorWithAlphaComponent:.12f] Width:3 * scale];
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 150 * scale, 70 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"确认"];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 150 * scale, 70 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Yes")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(sendButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];

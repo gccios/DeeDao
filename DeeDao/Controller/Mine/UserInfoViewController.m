@@ -90,9 +90,9 @@
         self.rightHandleButton.enabled = YES;
         
         if (isAdd) {
-            [MBProgressHUD showTextHUDWithText:@"关注成功" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"AddFollow") inView:self.view];
         }else{
-            [MBProgressHUD showTextHUDWithText:@"取消关注" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"De-Follow") inView:self.view];
         }
         if (self.delegate && [self.delegate respondsToSelector:@selector(userFriendInfoDidUpdate:)]) {
             [self.delegate userFriendInfoDidUpdate:self.model];
@@ -240,7 +240,7 @@
             make.height.mas_equalTo(324 * scale);
         }];
         
-        self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"删除好友"];
+        self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Disconnect")];
         [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
         self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
         self.leftHandleButton.layer.borderWidth = 3 * scale;
@@ -252,7 +252,7 @@
             make.centerY.mas_equalTo(0);
         }];
         
-        self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"添加关注"];
+        self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"AddFollow")];
         [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
         self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
         self.rightHandleButton.layer.borderWidth = 3 * scale;
@@ -275,21 +275,21 @@
 - (void)reloadBottomViewStatus
 {
     if (self.model.friendFlg == 1) {
-        [self.leftHandleButton setTitle:@"删除好友" forState:UIControlStateNormal];
+        [self.leftHandleButton setTitle:DDLocalizedString(@"Disconnect") forState:UIControlStateNormal];
         [self.leftHandleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
         [self.leftHandleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
     }else{
-        [self.leftHandleButton setTitle:@"添加好友" forState:UIControlStateNormal];
+        [self.leftHandleButton setTitle:DDLocalizedString(@"Connect") forState:UIControlStateNormal];
         [self.leftHandleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
         [self.leftHandleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
     }
     
     if (self.model.concernFlg == 1) {
-        [self.rightHandleButton setTitle:@"取消关注" forState:UIControlStateNormal];
+        [self.rightHandleButton setTitle:DDLocalizedString(@"De-Follow") forState:UIControlStateNormal];
         [self.rightHandleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
         [self.rightHandleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
     }else{
-        [self.rightHandleButton setTitle:@"添加关注" forState:UIControlStateNormal];
+        [self.rightHandleButton setTitle:DDLocalizedString(@"AddFollow") forState:UIControlStateNormal];
         [self.rightHandleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
         [self.rightHandleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
     }
@@ -390,7 +390,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"详细资料";
+    titleLabel.text = DDLocalizedString(@"Details");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

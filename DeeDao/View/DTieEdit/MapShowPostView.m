@@ -85,7 +85,7 @@
     
     UIButton * cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [cancleButton setTitle:@"取消" forState:UIControlStateNormal];
+    [cancleButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
     [contenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(10 * scale);
@@ -115,7 +115,7 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"发起约饭"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Book")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -237,10 +237,50 @@
 - (void)showPostDetail
 {
     [self cancleButtonDidClicked];
-    DDCollectionViewController * collect = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:self.index];
-    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-    UINavigationController * na = (UINavigationController *)lg.rootViewController;
-    [na pushViewController:collect animated:YES];
+//    DDCollectionViewController * collect = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:self.index];
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:[UIApplication sharedApplication].keyWindow];
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:self.model.cid type:4 start:0 length:10];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        
+        if (KIsDictionary(response)) {
+            
+            NSInteger code = [[response objectForKey:@"status"] integerValue];
+            if (code == 4002) {
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
+                return;
+            }
+            
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                
+                if (dtieModel.deleteFlg == 1) {
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
+                    return;
+                }
+                
+                [self cancleButtonDidClicked];
+                DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                [na pushViewController:detail animated:YES];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"获取详情失败" inView:[UIApplication sharedApplication].keyWindow];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }];
 }
 
 - (void)showUserInfo

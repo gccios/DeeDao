@@ -217,7 +217,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self];
     
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
     
@@ -234,7 +234,7 @@
             
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
                 return;
             }
             
@@ -243,7 +243,7 @@
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
                 if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
                     return;
                 }
                 

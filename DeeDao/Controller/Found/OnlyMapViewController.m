@@ -31,7 +31,7 @@
     }];
     self.yearLabel.text = [NSString stringWithFormat:@"%ld", self.year];
     if (self.year == -1) {
-        self.yearLabel.text = @"全部时间";
+        self.yearLabel.text = DDLocalizedString(@"Across time");
     }
 }
 

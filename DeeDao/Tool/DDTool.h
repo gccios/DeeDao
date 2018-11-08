@@ -44,4 +44,6 @@
 
 + (void)WXMiniProgramHandleWithPostID:(NSInteger)postID;
 
++ (void)checkDKouling;
+
 @end

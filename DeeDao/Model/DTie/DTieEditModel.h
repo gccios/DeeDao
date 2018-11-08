@@ -31,6 +31,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) NSURL * videoURL;
 @property (nonatomic, assign) NSInteger shareEnable;
 @property (nonatomic, strong) PHAsset * asset;
+@property (nonatomic, assign) NSInteger authorID;
 
 @property (nonatomic, copy) NSString * detailsContent;
 @property (nonatomic, assign) NSInteger detailNumber;
@@ -58,6 +59,10 @@ typedef enum : NSUInteger {
 @property (nonatomic, assign) NSInteger bloggerFlg;
 @property (nonatomic, assign) BOOL isPost;
 
+@property (nonatomic, assign) BOOL isChoose;
+
 //@property (nonatomic, assign) CGFloat height;
+
+- (void)changeNoSelect;
 
 @end

@@ -47,6 +47,9 @@
 #import "YueFanViewController.h"
 #import "MarkViewController.h"
 #import "DDBackWidow.h"
+#import "CreateDTieRequest.h"
+#import "DTieDetailRequest.h"
+#import "DTieNewDetailViewController.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate, BMKGeoCodeSearchDelegate>
 
@@ -390,7 +393,7 @@
     
     self.topAlertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     [self.topAlertView addSubview:self.topAlertLabel];
-    self.topAlertLabel.text = @"地到博主D帖";
+    self.topAlertLabel.text = DDLocalizedString(@"Blogs");
     [self.topAlertView addSubview:self.topAlertLabel];
     [self.topAlertLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
@@ -434,7 +437,7 @@
     [self.typeButton addTarget:self action:@selector(typeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     UILabel * typeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(32 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-    typeLabel.text = @"频道";
+    typeLabel.text = DDLocalizedString(@"Channel");
     [self.view addSubview:typeLabel];
     [typeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.typeButton.mas_bottom).offset(-10 * scale);
@@ -495,7 +498,7 @@
     [self.tieButton addTarget:self action:@selector(tieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     UILabel * myLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(32 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-    myLabel.text = @"我的";
+    myLabel.text = DDLocalizedString(@"My");
     [self.view addSubview:myLabel];
     [myLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.tieButton.mas_bottom).offset(-10 * scale);
@@ -524,14 +527,14 @@
         self.logoBGColor = UIColorFromRGB(0xDB6283);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
-        self.topAlertLabel.text = @"我和朋友的及收藏和要约";
+        self.topAlertLabel.text = DDLocalizedString(@"D Page");
     }else if (chooseTag == 12) {
         self.sourceType = 8;
         self.logoBGName = @"touxiangkuangbozhu";
         self.logoBGColor = UIColorFromRGB(0xB721FF);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
-        self.topAlertLabel.text = @"地到博主D帖";
+        self.topAlertLabel.text = DDLocalizedString(@"Blogs");
     }else if (chooseTag == 13) {
         self.sourceType = 6;
         self.logoBGName = @"touxiangkuanghui";
@@ -543,21 +546,21 @@
             self.year = map.year;
             self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
         }
-        self.topAlertLabel.text = @"陌生人的公开D帖";
+        self.topAlertLabel.text = DDLocalizedString(@"Public");
     }else if (chooseTag == 14) {
         self.sourceType = 10;
         self.logoBGName = @"touxiangkuang";
         self.logoBGColor = UIColorFromRGB(0xDB6283);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
-        self.topAlertLabel.text = @"提醒过的点";
+        self.topAlertLabel.text = DDLocalizedString(@"Reminder history");
     }else if (chooseTag == 15) {
         self.sourceType = 1;
         self.logoBGName = @"touxiangkuang";
         self.logoBGColor = UIColorFromRGB(0xDB6283);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
-        self.topAlertLabel.text = @"我自己的D帖";
+        self.topAlertLabel.text = DDLocalizedString(@"My D Page");
     }else if (chooseTag == 16) {
         [self yuezheButtonDidClicked];
         return;
@@ -591,7 +594,7 @@
 //    self.selectButton.enabled = YES;
     
     [self.yaoyueFriendSource removeAllObjects];
-    self.topAlertLabel.text = @"所有发起约这的好友";
+    self.topAlertLabel.text = DDLocalizedString(@"Friends who are interested");
     
     if (self.year == -1) {
         OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
@@ -696,7 +699,7 @@
     }
     
     BMKReverseGeoCodeSearchOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeSearchOption alloc] init];
-    reverseGeocodeSearchOption.location = self.mapView.centerCoordinate;
+    reverseGeocodeSearchOption.location = [DDLocationManager shareManager].userLocation.location.coordinate;
     [self.geocodesearch reverseGeoCode:reverseGeocodeSearchOption];;
 }
 
@@ -713,32 +716,134 @@
         
     }
     
-    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
-    if (result) {
-        NSString * address = result.address;
-        if (isEmptyString(address)) {
-            address = result.sematicDescription;
-        }
-        
-        poi.pt = result.location;
-        poi.address = result.sematicDescription;
-        poi.name = address;
-    }
-    
     if (self.addType == 1) {
         
-        MarkViewController * mark = [[MarkViewController alloc] initWithBMKPoiInfo:poi friendArray:[NSArray new]];
-        [self.navigationController pushViewController:mark animated:YES];
+        BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+        poi.pt = result.location;
+        poi.address = result.sematicDescription;
+        poi.name = result.address;
+        
+        [self createPostWithPOI:poi];
         
     }else if (self.addType == 2) {
+        
+        BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+        if (result) {
+            if (result.poiList.count > 0) {
+                poi = result.poiList.firstObject;
+            }else{
+                NSString * address = result.address;
+                if (isEmptyString(address)) {
+                    address = result.sematicDescription;
+                }
+                
+                poi.pt = result.location;
+                poi.address = result.sematicDescription;
+                poi.name = address;
+            }
+        }
+        
         YueFanViewController * yuefan = [[YueFanViewController alloc] initWithBMKPoiInfo:poi friendArray:[NSArray new]];
         [self.navigationController pushViewController:yuefan animated:YES];
     }else{
+        
+        BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+        if (result) {
+            if (result.poiList.count > 0) {
+                poi = result.poiList.firstObject;
+            }else{
+                NSString * address = result.address;
+                if (isEmptyString(address)) {
+                    address = result.sematicDescription;
+                }
+                
+                poi.pt = result.location;
+                poi.address = result.sematicDescription;
+                poi.name = address;
+            }
+        }
+        
         DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] init];
         [edit configWith:poi];
         [self.navigationController pushViewController:edit animated:YES];
     }
     self.isPushing = NO;
+}
+
+- (void)createPostWithPOI:(BMKPoiInfo *)poi
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
+    
+    //获取参数配置
+    NSString * address = poi.address;
+    
+    NSString * building = poi.name;
+    if (isEmptyString(building)) {
+        building = address;
+    }
+    
+    double lon = poi.pt.longitude;
+    double lat = poi.pt.latitude;
+    
+    NSInteger landAccountFlg = 2;
+    
+    NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
+    
+    NSString * title = @"";
+    
+    NSInteger createTime = [[NSDate date] timeIntervalSince1970] * 1000;
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initWithList:[NSArray new] title:title address:address building:building addressLng:lon addressLat:lat status:1 remindFlg:1 firstPic:@"" postID:0 landAccountFlg:landAccountFlg allowToSeeList:allowToSeeList sceneTime:createTime];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                //                    [MBProgressHUD showTextHUDWithText:@"操作成功" inView:self.view];
+                DTieModel * DTie = [DTieModel mj_objectWithKeyValues:data];
+                
+                NSInteger newPostID = DTie.cid;
+                if (newPostID == 0) {
+                    newPostID = DTie.postId;
+                }
+                [self showPostDetailWithPostId:newPostID];
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"操作失败" inView:self.view];
+    }];
+}
+
+- (void)showPostDetailWithPostId:(NSInteger)postId;
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+    
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postId type:4 start:0 length:10];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        
+        if (KIsDictionary(response)) {
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                
+                DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                detail.isRemark = YES;
+                
+                [self.navigationController pushViewController:detail animated:YES];
+            }
+        }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
 }
 
 - (void)mailButtonDidClicked
@@ -798,7 +903,11 @@
         BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake([DDLocationManager shareManager].userLocation.location.coordinate, BMKCoordinateSpanMake(.017, .017));
         BMKCoordinateRegion adjustedRegion = [_mapView regionThatFits:viewRegion];
         [_mapView setRegion:adjustedRegion animated:YES];
-        self.isFirst = NO;
+        if (adjustedRegion.center.latitude == 0 && adjustedRegion.center.longitude == 0) {
+            self.isFirst = YES;
+        }else{
+            self.isFirst = NO;
+        }
     }
 }
 
@@ -881,7 +990,7 @@
             self.isNotification = YES;
         }
         
-        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:1000];
+        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:5000];
         
         if (self.yaoyueFriendSource && self.yaoyueFriendSource.count > 0) {
             NSMutableArray * authorID = [[NSMutableArray alloc] init];
@@ -1471,7 +1580,7 @@
     }];
     
     UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    label.text = @"图片分享列表";
+    label.text = DDLocalizedString(@"Share Basket");
     [button addSubview:label];
     [label mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);
@@ -1541,14 +1650,14 @@
     self.textField.leftViewMode = UITextFieldViewModeAlways;
     [backButton addTarget:self action:@selector(topCloseButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"搜索"];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Search")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(topSearchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     self.textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     
-    self.topTimeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"指定时间段"];
+    self.topTimeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SetTime")];
     [self.topTimeButton addTarget:self action:@selector(topTimeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.searchTopView addSubview:self.topTimeButton];
     [self.topTimeButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -1558,7 +1667,7 @@
         make.width.mas_equalTo(kMainBoundsWidth / 2);
     }];
     
-    self.topSourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"指定类别"];
+    self.topSourceButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SetType")];
     [self.topSourceButton addTarget:self action:@selector(topSourceButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.searchTopView addSubview:self.topSourceButton];
     [self.topSourceButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -1688,7 +1797,7 @@
 {
     if (self.sourceType == 7) {
         self.sourceType = 6;
-        [self.sourceButton setTitle:@"公开" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"Open") forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuanghui";
         self.logoBGColor = UIColorFromRGB(0x999999);
         self.selectButton.alpha = .5f;
@@ -1699,14 +1808,14 @@
             self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
         }
         
-        self.topAlertLabel.text = @"陌生人的公开D帖";
+        self.topAlertLabel.text = DDLocalizedString(@"Public");
     }else if (self.sourceType == 8) {
         self.sourceType = 666;
-        [self.sourceButton setTitle:@"约" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"D") forState:UIControlStateNormal];
         self.selectButton.alpha = 1.f;
         self.selectButton.enabled = YES;
         
-        self.topAlertLabel.text = @"所有发起约这的好友";
+        self.topAlertLabel.text = DDLocalizedString(@"Friends who are interested");
         
         if (self.year == -1) {
             OnlyMapViewController * map = [_mapVCSource objectAtIndex:1];
@@ -1715,22 +1824,22 @@
         }
     }else if (self.sourceType == 6) {
         self.sourceType = 8;
-        [self.sourceButton setTitle:@"博主" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"Blogger") forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuangbozhu";
         self.logoBGColor = UIColorFromRGB(0xB721FF);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
         
-        self.topAlertLabel.text = @"地到博主D帖";
+        self.topAlertLabel.text = DDLocalizedString(@"Blogs");
     }else{
         self.sourceType = 7;
-        [self.sourceButton setTitle:@"我的" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:DDLocalizedString(@"My") forState:UIControlStateNormal];
         self.logoBGName = @"touxiangkuang";
         self.logoBGColor = UIColorFromRGB(0xDB6283);
         self.selectButton.alpha = .5f;
         self.selectButton.enabled = NO;
         
-        self.topAlertLabel.text = @"我和朋友的及收藏和要约";
+        self.topAlertLabel.text = DDLocalizedString(@"D Page");
     }
     
     [self.mapView removeAnnotations:self.mapView.annotations];
@@ -1772,7 +1881,7 @@
         self.year = viewController.year;
         self.timeLabel.text = [NSString stringWithFormat:@"%ld年", self.year];
         if (self.year == -1) {
-            self.timeLabel.text = @"全部时间";
+            self.timeLabel.text = DDLocalizedString(@"Across time");
         }
         [self.mapView removeAnnotations:self.mapView.annotations];
         [self requestMapViewLocations];

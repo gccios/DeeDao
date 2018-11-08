@@ -97,7 +97,7 @@
     [self.DTieTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(18 * scale);
         make.left.mas_equalTo(24 * scale);
-        make.right.mas_equalTo(-60 * scale);
+        make.right.mas_equalTo(-24 * scale);
         make.height.mas_equalTo(40 * scale);
     }];
     
@@ -190,14 +190,22 @@
 
 - (void)configWithDTieModel:(DTieModel *)model
 {
-    if (!isEmptyString(model.postSummary)) {
-        self.DTieTitleLabel.text = model.postSummary;
+    if (isEmptyString(model.postSummary)) {
+        if (isEmptyString(model.sceneBuilding)) {
+            self.DTieTitleLabel.text = @"";
+        }else{
+            self.DTieTitleLabel.text = model.sceneBuilding;
+        }
     }else{
-        self.DTieTitleLabel.text = @"";
+        self.DTieTitleLabel.text = model.postSummary;
     }
     
     NSURL * imageURL = [NSURL URLWithString:model.postFirstPicture];
-    [self.contenImageView sd_setImageWithURL:imageURL placeholderImage:[UIImage imageNamed:@"list_bg"]];
+    if (isEmptyString(imageURL)) {
+        [self.contenImageView setImage:[UIImage imageNamed:@"defaultRemark.jpg"]];
+    }else{
+        [self.contenImageView sd_setImageWithURL:imageURL placeholderImage:[UIImage imageNamed:@"list_bg"]];
+    }
     
     if (model.status == 0 && [UserManager shareManager].user.cid == model.authorId ) {
         self.editButton.hidden = NO;

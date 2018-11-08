@@ -63,7 +63,7 @@
 
 - (void)refreshData
 {
-    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieListRequest * request = [[DTieListRequest alloc] initWithStart:0 length:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -99,7 +99,7 @@
 
 - (void)getMoreList
 {
-//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieListRequest * request = [[DTieListRequest alloc] initWithStart:self.start length:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -115,7 +115,6 @@
                 [self.collectionView reloadData];
                 
                 self.start += self.length;
-                
             }
         }
         [self.collectionView.mj_footer endRefreshing];
@@ -264,7 +263,7 @@
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"我的D帖";
+    titleLabel.text = DDLocalizedString(@"My D Page");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60.5 * scale);

@@ -188,10 +188,13 @@
     if (model.image) {
         [self.detailImageView setImage:model.image];
     }else{
-        
-        [self.detailImageView sd_setImageWithURL:[NSURL URLWithString:model.detailContent] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-            model.image = image;
-        }];
+        if (isEmptyString(model.detailContent)) {
+            [self.detailImageView setImage:[UIImage imageNamed:@"defaultRemark.jpg"]];
+        }else{
+            [self.detailImageView sd_setImageWithURL:[NSURL URLWithString:model.detailContent] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+                model.image = image;
+            }];
+        }
     }
     self.timeLabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:dtieModel.sceneTime];
     self.locationLabel.text = dtieModel.sceneBuilding;

@@ -255,7 +255,7 @@ NSString * const DDUserLocationDidUpdateNotification = @"DDUserLocationDidUpdate
     }];
     [alert addAction:appleAction];
     
-    UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         
     }];
     [alert addAction:cancleAction];

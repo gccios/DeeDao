@@ -20,8 +20,14 @@
 #import "DDNavigationViewController.h"
 #import "DTieSearchViewController.h"
 #import "DDBackWidow.h"
+#import "DDLocationManager.h"
+#import <TZImagePickerController.h>
+#import "QNDDUploadManager.h"
+#import "CreateDTieRequest.h"
 
-@interface WYYListViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface WYYListViewController () <UITableViewDelegate, UITableViewDataSource, TZImagePickerControllerDelegate>
+
+@property (nonatomic, strong) DTieModel * uploadModel;
 
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UIButton * zujuButton;
@@ -239,6 +245,14 @@
         
         FanjuTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"FanjuTableViewCell" forIndexPath:indexPath];
         
+        __weak typeof(self) weakSelf = self;
+        cell.leftButtonHandle = ^{
+            [weakSelf navPOIWithModel:model];
+        };
+        cell.rightButtonHandle = ^{
+            [weakSelf uploadPhotoWithModel:model];
+        };
+        
         [cell configWithModel:model];
         
         return cell;
@@ -257,26 +271,18 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)navPOIWithModel:(DTieModel *)model
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
+    [[DDLocationManager shareManager] mapNavigationToLongitude:model.sceneAddressLng latitude:model.sceneAddressLat poiName:model.sceneBuilding withViewController:self];
     
-    if (tableView == self.zujuTableView) {
-        return 800 * scale;
-    }
-    
-    return 700 * scale;
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    pasteboard.string = model.sceneBuilding;
+    [MBProgressHUD showTextHUDWithText:@"地址已复制到粘贴板" inView:self.navigationController.view];
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)uploadPhotoWithModel:(DTieModel *)model
 {
-    DTieModel * model;
-    if (tableView == self.zujuTableView) {
-        model = [self.zujuSource objectAtIndex:indexPath.row];
-    }else if (tableView == self.ganxingquTableView) {
-        model = [self.ganxingquSource objectAtIndex:indexPath.row];
-    }
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     NSInteger postID = model.postId;
     if (postID == 0) {
@@ -291,7 +297,181 @@
             
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
+                
+                [self.zujuSource removeObject:model];
+                [self.zujuTableView reloadData];
+                [self deletePostWithModel:postID];
+                
+                return;
+            }
+            
+            NSDictionary * data = [response objectForKey:@"data"];
+            if (KIsDictionary(data)) {
+                DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                
+                if (dtieModel.deleteFlg == 1) {
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
+                    
+                    [self.zujuSource removeObject:model];
+                    [self.zujuTableView reloadData];
+                    [self deletePostWithModel:postID];
+                    
+                    return;
+                }
+                
+                if (dtieModel.landAccountFlg == 2 && dtieModel.authorId != [UserManager shareManager].user.cid) {
+                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者设为私密状态" inView:[UIApplication sharedApplication].keyWindow];
+                    return;
+                }
+                
+                if (dtieModel.wyyPermission == 0) {
+                    [MBProgressHUD showTextHUDWithText:@"发起人还没有开放照片添加" inView:[UIApplication sharedApplication].keyWindow];
+                    return;
+                }
+                
+                self.uploadModel = dtieModel;
+                
+                TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:100 delegate:self];
+                picker.allowPickingOriginalPhoto = NO;
+                picker.allowPickingVideo = NO;
+                picker.showSelectedIndex = YES;
+                picker.allowCrop = NO;
+                [self.navigationController presentViewController:picker animated:YES completion:nil];
+                
+            }else{
+                NSString * msg = [response objectForKey:@"msg"];
+                if (!isEmptyString(msg)) {
+                    [MBProgressHUD showTextHUDWithText:msg inView:self.view];
+                }
+            }
+        }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+    }];
+}
+
+#pragma mark - 选取照片
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
+{
+    if (picker.showSelectedIndex) {
+        
+        NSMutableArray * details = [[NSMutableArray alloc] init];
+        
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传" inView:self.view];
+        QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+        
+        __block NSInteger count = 0;
+        NSInteger totalCount = photos.count+self.uploadModel.details.count;
+        for (NSInteger i = self.uploadModel.details.count; i < totalCount; i++) {
+            
+            UIImage * image = [photos objectAtIndex:i-self.uploadModel.details.count];
+            
+            [manager uploadImage:image progress:^(NSString *key, float percent) {
+                
+            } success:^(NSString *url) {
+                
+                NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                        @"datadictionaryType":@"CONTENT_IMG",
+                                        @"detailsContent":url,
+                                        @"textInformation":@"",
+                                        @"pFlag":@(0),
+                                        @"wxCansee":@(1),
+                                        @"authorID":@([UserManager shareManager].user.cid)};
+                [details addObject:dict];
+                count++;
+                if (count == photos.count) {
+                    [hud hideAnimated:YES];
+                    [self uploadWithPhotos:details];
+                }
+                
+            } failed:^(NSError *error) {
+                if (count == photos.count) {
+                    [hud hideAnimated:YES];
+                    [self uploadWithPhotos:details];
+                }
+            }];
+        }
+        
+        
+    }
+}
+
+- (void)uploadWithPhotos:(NSMutableArray *)details
+{
+    [details sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        NSInteger detailNumber1 = [[obj1 objectForKey:@"detailNumber"] integerValue];
+        NSInteger detailNumber2 = [[obj2 objectForKey:@"detailNumber"] integerValue];
+        if (detailNumber1 > detailNumber2) {
+            return NSOrderedDescending;
+        }else if (detailNumber1 < detailNumber2) {
+            return NSOrderedAscending;
+        }else{
+            return NSOrderedSame;
+        }
+    }];
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在添加照片" inView:self.view];
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initAddWYYWithPostID:self.uploadModel.cid blocks:details];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        
+        NSInteger status = [[response objectForKey:@"status"] integerValue];
+        if (status == 1200) {
+            [MBProgressHUD showTextHUDWithText:@"发起人还没有开放照片添加" inView:self.view];
+        }else{
+            [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self.view];
+            [self.zujuTableView reloadData];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self.view];
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self.view];
+    }];
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    if (tableView == self.zujuTableView) {
+        return 620 * scale;
+    }
+    
+    return 700 * scale;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DTieModel * model;
+    if (tableView == self.zujuTableView) {
+        model = [self.zujuSource objectAtIndex:indexPath.row];
+    }else if (tableView == self.ganxingquTableView) {
+        model = [self.ganxingquSource objectAtIndex:indexPath.row];
+    }
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
+    
+    NSInteger postID = model.postId;
+    if (postID == 0) {
+        postID = model.cid;
+    }
+    
+    DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        [hud hideAnimated:YES];
+        
+        if (KIsDictionary(response)) {
+            
+            NSInteger code = [[response objectForKey:@"status"] integerValue];
+            if (code == 4002) {
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                 
                 if (tableView == self.zujuTableView) {
                     [self.zujuSource removeObject:model];
@@ -309,7 +489,7 @@
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
                 if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                     
                     if (tableView == self.zujuTableView) {
                         [self.zujuSource removeObject:model];
@@ -430,7 +610,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"约这列表记录";
+    titleLabel.text = DDLocalizedString(@"YueZheList");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -439,7 +619,7 @@
     }];
     
     CGFloat buttonWidth = kMainBoundsWidth / 2.f;
-    self.zujuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"组局中的"];
+    self.zujuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Appointments")];
     [self.topView addSubview:self.zujuButton];
     [self.zujuButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
@@ -448,7 +628,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.ganxingquButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"感兴趣的"];
+    self.ganxingquButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Interested")];
     self.ganxingquButton.alpha = .5f;
     [self.topView addSubview:self.ganxingquButton];
     [self.ganxingquButton mas_makeConstraints:^(MASConstraintMaker *make) {

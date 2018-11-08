@@ -17,18 +17,21 @@
 
 @property (nonatomic, strong) UIImageView * imageView;
 @property (nonatomic, strong) UILabel * nameLabel;
+@property (nonatomic, strong) UIButton * removeButton;
 @property (nonatomic, strong) UIButton * handleButton;
 
 @property (nonatomic, strong) UserYaoYueBlockModel * model;
+@property (nonatomic, assign) BOOL isAuthor;
 
 @end
 
 @implementation DTieYaoyueBlockView
 
-- (instancetype)initWithBlockModel:(UserYaoYueBlockModel *)model
+- (instancetype)initWithBlockModel:(UserYaoYueBlockModel *)model isAuthor:(BOOL)isAuthor
 {
     if (self = [super init]) {
         self.model = model;
+        self.isAuthor = isAuthor;
         [self createYaoyueBlockView];
     }
     return self;
@@ -42,11 +45,25 @@
     
     [self addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
+        make.left.mas_equalTo(100 * scale);
         make.centerY.mas_equalTo(0);
         make.width.height.mas_equalTo(96 * scale);
     }];
     [DDViewFactoryTool cornerRadius:48 * scale withView:self.imageView];
+    
+    if (self.isAuthor) {
+        if (self.model.userId != [UserManager shareManager].user.cid) {
+            self.removeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(12 * scale) titleColor:UIColorFromRGB(0xffffff) title:@""];
+            [self.removeButton setImage:[UIImage imageNamed:@"wyyremove"] forState:UIControlStateNormal];
+            [self addSubview:self.removeButton];
+            [self.removeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(self.imageView);
+                make.right.mas_equalTo(self.imageView.mas_left).offset(-20 * scale);
+                make.width.height.mas_equalTo(20);
+            }];
+            [self.removeButton addTarget:self action:@selector(removeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        }
+    }
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     [self addSubview:self.nameLabel];
@@ -62,7 +79,7 @@
     [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);
         make.centerY.mas_equalTo(0);
-        make.width.mas_equalTo(144 * scale);
+        make.width.mas_equalTo(200 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     [DDViewFactoryTool cornerRadius:36 * scale withView:self.handleButton];
@@ -73,6 +90,13 @@
     [self.imageView sd_setImageWithURL:[NSURL URLWithString:self.model.portrait]];
     self.nameLabel.text = self.model.nickname;
     [self reloadButtonStatus];
+}
+
+- (void)removeButtonDidClicked
+{
+    if (self.removeDidClicked) {
+        self.removeDidClicked(self.model);
+    }
 }
 
 - (void)handleButtonDidClicked
@@ -106,17 +130,17 @@
 - (void)reloadButtonStatus
 {
     if (self.model.subtype == 1) {
-        [self.handleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
-        [self.handleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
-        [self.handleButton setTitle:@"赴约" forState:UIControlStateNormal];
-    }else{
         [self.handleButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
         [self.handleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-        if (self.model.subtype == 0) {
-            [self.handleButton setTitle:@"待定" forState:UIControlStateNormal];
-        }else if (self.model.subtype == 2) {
-            [self.handleButton setTitle:@"请假" forState:UIControlStateNormal];
-        }
+        [self.handleButton setTitle:DDLocalizedString(@"Attend") forState:UIControlStateNormal];
+    }else if (self.model.subtype == 0) {
+        [self.handleButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.5f]];
+        [self.handleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"TBD") forState:UIControlStateNormal];
+    }else if (self.model.subtype == 2) {
+        [self.handleButton setBackgroundColor:UIColorFromRGB(0xDB6283)];
+        [self.handleButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
+        [self.handleButton setTitle:DDLocalizedString(@"OutFollow") forState:UIControlStateNormal];
     }
 }
 

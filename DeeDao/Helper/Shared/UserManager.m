@@ -35,6 +35,7 @@ NSString * const DDUserDidLoginOutNotification = @"DDUserDidLoginOutNotification
 {
     NSDictionary * userInfo = [self.user mj_keyValues];
     
+    NSLog(@"%@", DDUserInfoPath);
     return [userInfo writeToFile:DDUserInfoPath atomically:YES];
 }
 

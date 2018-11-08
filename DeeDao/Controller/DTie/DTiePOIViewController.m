@@ -39,7 +39,7 @@
         self.dataSource = [[NSMutableArray alloc] init];
         self.model = model;
         [self.dataSource addObject:[NSArray arrayWithObject:model]];
-        self.titleSource = @[@"", @"我和好友", @"博主", @"我所关注人", @"部分公开"];
+        self.titleSource = @[@"", DDLocalizedString(@"Me and friends"), DDLocalizedString(@"Blogger"), DDLocalizedString(@"Follow"), DDLocalizedString(@"Partially open")];
     }
     return self;
 }
@@ -172,7 +172,7 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    UIButton * navButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] title:@"导航过去"];
+    UIButton * navButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Direction")];
     [navButton addTarget:self action:@selector(navButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [DDViewFactoryTool cornerRadius:12 * scale withView:navButton];
     navButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
@@ -284,7 +284,7 @@
         return;
     }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.cid type:4 start:0 length:10];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

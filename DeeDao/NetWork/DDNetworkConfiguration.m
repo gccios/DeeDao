@@ -9,6 +9,7 @@
 #import "DDNetworkConfiguration.h"
 #import "DesUtil.h"
 #import "BGUtilFunction.h"
+#import "UserManager.h"
 
 @implementation DDNetworkConfiguration
 
@@ -17,9 +18,18 @@
 }
 
 - (NSDictionary *)requestCommonHTTPHeaderFields {
+    
+    NSString * cookie = @"";
+    if (isEmptyString([UserManager shareManager].user.rongcloudtoken)) {
+        cookie = @"JSESSIONID=";
+    }else{
+        cookie = [NSString stringWithFormat:@"JSESSIONID=%@", [UserManager shareManager].user.rongcloudtoken];
+    }
+    
     return @{
              @"Content-Type":@"application/json;charset:utf-8",
              @"User-Agent":@"iPhone",
+             @"Cookie":cookie
              };
 }
 

@@ -341,7 +341,7 @@
     }];
     
     self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    self.titleLabel.text = @"浏览D帖";
+    self.titleLabel.text = DDLocalizedString(@"Browse");
     [self.topView addSubview:self.titleLabel];
     [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -397,7 +397,7 @@
     }];
     
     UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    label.text = @"图片分享列表";
+    label.text = DDLocalizedString(@"Share Basket");
     [button addSubview:label];
     [label mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(0);

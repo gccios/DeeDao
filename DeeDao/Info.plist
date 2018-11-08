@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>zh_CN</string>
+	<string>cn</string>
 	<key>CFBundleDisplayName</key>
 	<string>DeeDao地到</string>
 	<key>CFBundleExecutable</key>
@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.0</string>
+	<string>1.1.1</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -32,7 +32,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>1.1</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>wechat</string>
@@ -50,6 +50,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>允许访问摄像头以录制视频</string>
+	<key>NSContactsUsageDescription</key>
+	<string>是否允许访问通讯录，以匹配认识的好友</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>允许开启定位，以获取您的发帖位置和您附近的帖子信息</string>
 	<key>NSLocationAlwaysUsageDescription</key>

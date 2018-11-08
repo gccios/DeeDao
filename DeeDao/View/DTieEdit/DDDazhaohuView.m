@@ -169,11 +169,11 @@
     [self.secondButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.thirdButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+    RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
         
     } bold:NO];
     
-    RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+    RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
         if (self.block) {
             self.block(self.text);
         }

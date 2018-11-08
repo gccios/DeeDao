@@ -673,7 +673,7 @@
         info.delegate = self;
         [self.navigationController pushViewController:info animated:YES];
     }else if (tableView == self.historyTableView) {
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
         
         DTieModel * model = [self.historySource objectAtIndex:indexPath.row];
         
@@ -690,7 +690,7 @@
                 
                 NSInteger code = [[response objectForKey:@"status"] integerValue];
                 if (code == 4002) {
-                    [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                     return;
                 }
                 
@@ -699,7 +699,7 @@
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                     
                     if (dtieModel.deleteFlg == 1) {
-                        [MBProgressHUD showTextHUDWithText:@"该帖已被作者删除~" inView:self.view];
+                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
                         return;
                     }
                     
@@ -852,7 +852,7 @@
     }];
     
     CGFloat buttonWidth = kMainBoundsWidth / 4.f;
-    self.userCardButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"名片夹"];
+    self.userCardButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Name card")];
     self.userCardButton.alpha = .5f;
     [self.topView addSubview:self.userCardButton];
     [self.userCardButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -862,7 +862,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.exchangeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"互动交流"];
+    self.exchangeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Connecting")];
     self.exchangeButton.alpha = .5f;
     [self.topView addSubview:self.exchangeButton];
     [self.exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -872,7 +872,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"信息通知"];
+    self.notificationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Notifications")];
     self.exchangeButton.alpha = .5f;
     [self.topView addSubview:self.notificationButton];
     [self.notificationButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -882,7 +882,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.historyButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"浏览历史"];
+    self.historyButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Browsing history")];
     [self.topView addSubview:self.historyButton];
     [self.historyButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);

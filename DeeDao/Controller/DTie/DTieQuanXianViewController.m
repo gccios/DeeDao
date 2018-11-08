@@ -71,7 +71,7 @@
                 
                 SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
                 model2.cid = -2;
-                model2.securitygroupName = @"关注我的人";
+                model2.securitygroupName = DDLocalizedString(@"My Fans");
                 model2.isChoose = YES;
                 model2.isNotification = YES;
                 [self.dataSource addObject:model2];
@@ -96,6 +96,15 @@
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
     }];
+}
+
+- (void)configWithType:(NSInteger)type
+{
+    if (type == 2) {
+        [self yinsiButtonDidClicked:self.yinsiButton];
+    }else if (type == 4) {
+        [self miquanButtonDidClicked:self.miquanButton];
+    }
 }
 
 #pragma mark - 选择不同的选项
@@ -164,7 +173,7 @@
     self.gongkaiButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.gongkaiButton.titleLabel.font = kPingFangRegular(42 * scale);
     [self.gongkaiButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
-    [self.gongkaiButton setTitle:@"公开" forState:UIControlStateNormal];
+    [self.gongkaiButton setTitle:DDLocalizedString(@"Open") forState:UIControlStateNormal];
     [self.gongkaiButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [gongkaiView addSubview:self.gongkaiButton];
     [self.gongkaiButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -172,7 +181,6 @@
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(buttonHeight);
     }];
-    self.landAccountFlg = 1;
     [self.gongkaiButton addTarget:self action:@selector(gongkaiButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     
@@ -189,7 +197,7 @@
     self.yinsiButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.yinsiButton.titleLabel.font = kPingFangRegular(42 * scale);
     [self.yinsiButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
-    [self.yinsiButton setTitle:@"私密" forState:UIControlStateNormal];
+    [self.yinsiButton setTitle:DDLocalizedString(@"Private") forState:UIControlStateNormal];
     [self.yinsiButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [yinsiView addSubview:self.yinsiButton];
     [self.yinsiButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -211,7 +219,7 @@
     
     self.miquanButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.miquanButton.titleLabel.font = kPingFangRegular(42 * scale);
-    [self.miquanButton setTitle:@"好友圈" forState:UIControlStateNormal];
+    [self.miquanButton setTitle:DDLocalizedString(@"Network") forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [miquanView addSubview:self.miquanButton];
@@ -267,14 +275,14 @@
 
     SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
     model2.cid = -2;
-    model2.securitygroupName = @"关注我的人";
+    model2.securitygroupName = DDLocalizedString(@"My Fans");
     model2.isChoose = YES;
     model2.isNotification = YES;
     [self.dataSource addObject:model2];
-//    [self.selectSource addObject:model1];
-//    [self.selectSource addObject:model2];
+    [self.selectSource addObject:model1];
+    [self.selectSource addObject:model2];
     [self.gongkaiButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    self.landAccountFlg = 1;
+    self.landAccountFlg = 4;
     self.currentQuanxianButton = self.gongkaiButton;
     
     [self.tableView reloadData];
@@ -287,7 +295,7 @@
         make.height.mas_equalTo(324 * scale);
     }];
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"确定并返回"];
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"OKBack")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
@@ -381,7 +389,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"浏览权限";
+    titleLabel.text = DDLocalizedString(@"Security");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

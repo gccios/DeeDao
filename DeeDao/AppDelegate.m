@@ -60,22 +60,20 @@
 //    [BMKMapView customMapStyle:path];
 //    [BMKMapView enableCustomMapStyle:YES];//打开个性化地图
     
-    [self createRootViewController];
-    
-    [self.window makeKeyAndVisible];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidLogout) name:DDUserDidLoginOutNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userShouldRelogin) name:@"UserShouldBackToRelogin" object:nil];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        //开始定位
-        [[DDLocationManager shareManager] startLocationService];
-    });
+    //开始定位
+    [[DDLocationManager shareManager] startLocationService];
     
     if ([launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey]) {
         UILocalNotification * notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
         [self handleNotificationWithUserInfo:notification.userInfo];
     }
+    
+    [self createRootViewController];
+    
+    [self.window makeKeyAndVisible];
     
     return YES;
 }
@@ -96,55 +94,63 @@
 
 - (void)createRootViewController
 {
-    SettingModel * model = [[SettingModel alloc] initWithType:SettingType_AlertTip];
-    if ([WXApi isWXAppInstalled]) {
-        LoginViewController * login = [[LoginViewController alloc] init];
-        self.window.rootViewController = login;
-        login.loginSucess = ^{
-            
-            DDFoundViewController * found = [[DDFoundViewController alloc] init];
-            DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
-            DDMineViewController * mine = [[DDMineViewController alloc] init];
-            DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
-            self.window.rootViewController = side;
-            if (model.status) {
-//                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//                [[UIApplication sharedApplication].keyWindow addSubview:guide];
-            }
-            
-            if ([WeChatManager shareManager].miniProgramPostID > 0) {
-                [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
-            }
-            if (self.notificationUserInfo) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self handleNotificationWithUserInfo:self.notificationUserInfo];
-                });
-            }
-        };
+    if ([UserManager shareManager].isLogin) {
+        DDFoundViewController * found = [[DDFoundViewController alloc] init];
+        DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+        DDMineViewController * mine = [[DDMineViewController alloc] init];
+        DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
+        self.window.rootViewController = side;
+        
+        if ([WeChatManager shareManager].miniProgramPostID > 0) {
+            [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+        }
+        if (self.notificationUserInfo) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self handleNotificationWithUserInfo:self.notificationUserInfo];
+            });
+        }
     }else{
-        DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
-        self.window.rootViewController = login;
-        login.loginSucess = ^{
-            
-            DDFoundViewController * found = [[DDFoundViewController alloc] init];
-            DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
-            DDMineViewController * mine = [[DDMineViewController alloc] init];
-            DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
-            self.window.rootViewController = side;
-            if (model.status) {
-//                GuidePageView * guide = [[GuidePageView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-//                [[UIApplication sharedApplication].keyWindow addSubview:guide];
-            }
-            
-            if ([WeChatManager shareManager].miniProgramPostID > 0) {
-                [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
-            }
-            if (self.notificationUserInfo) {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self handleNotificationWithUserInfo:self.notificationUserInfo];
-                });
-            }
-        };
+        if ([WXApi isWXAppInstalled]) {
+            LoginViewController * login = [[LoginViewController alloc] init];
+            self.window.rootViewController = login;
+            login.loginSucess = ^{
+                
+                DDFoundViewController * found = [[DDFoundViewController alloc] init];
+                DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+                DDMineViewController * mine = [[DDMineViewController alloc] init];
+                DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
+                self.window.rootViewController = side;
+                
+                if ([WeChatManager shareManager].miniProgramPostID > 0) {
+                    [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+                }
+                if (self.notificationUserInfo) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [self handleNotificationWithUserInfo:self.notificationUserInfo];
+                    });
+                }
+            };
+        }else{
+            DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_Register];
+            self.window.rootViewController = login;
+            login.loginSucess = ^{
+                
+                DDFoundViewController * found = [[DDFoundViewController alloc] init];
+                DDNavigationViewController * foundNa = [[DDNavigationViewController alloc] initWithRootViewController:found];
+                DDMineViewController * mine = [[DDMineViewController alloc] init];
+                DDLGSideViewController * side = [[DDLGSideViewController alloc] initWithRootViewController:foundNa leftViewController:mine rightViewController:nil];
+                self.window.rootViewController = side;
+                
+                if ([WeChatManager shareManager].miniProgramPostID > 0) {
+                    [DDTool WXMiniProgramHandleWithPostID:[WeChatManager shareManager].miniProgramPostID];
+                }
+                if (self.notificationUserInfo) {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [self handleNotificationWithUserInfo:self.notificationUserInfo];
+                    });
+                }
+            };
+        }
     }
 }
 
@@ -230,6 +236,8 @@
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    [DDTool checkDKouling];
 }
 
 

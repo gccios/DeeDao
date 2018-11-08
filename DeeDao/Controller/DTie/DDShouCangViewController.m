@@ -120,7 +120,7 @@
 
 - (void)refreshData
 {
-    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     self.start = 0;
     self.length = 10;
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:2 type:2 pageStart:self.start pageSize:self.length];
@@ -157,7 +157,7 @@
 
 - (void)getMoreList
 {
-    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self.view];
+    //    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:2 type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -382,7 +382,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"我的收藏";
+    titleLabel.text = DDLocalizedString(@"My Collections");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);

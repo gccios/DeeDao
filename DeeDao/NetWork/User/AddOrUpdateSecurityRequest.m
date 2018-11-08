@@ -27,7 +27,7 @@
         }
         [securitygroup setObject:groupName forKey:@"securitygroupName"];
         if (isEmptyString(groupPropName)) {
-            [securitygroup setObject:@"指定朋友可见" forKey:@"securitygroupPropName"];
+            [securitygroup setObject:DDLocalizedString(@"Designed Friends") forKey:@"securitygroupPropName"];
         }else{
             [securitygroup setObject:groupPropName forKey:@"securitygroupPropName"];
         }

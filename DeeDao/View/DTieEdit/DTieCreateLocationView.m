@@ -66,7 +66,7 @@
     self.nameField.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.nameField.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.nameField.placeholder = @"请输入您想要的名称";
-    self.nameField.text = [NSString stringWithFormat:@"地到标记 %@", [DDTool getCurrentTimeWithFormat:@"yyyy/MM/dd"]];
+    self.nameField.text = [NSString stringWithFormat:@"%@ %@", DDLocalizedString(@"Deedao POI"), [DDTool getCurrentTimeWithFormat:@"yyyy/MM/dd"]];
     [self addSubview:self.nameField];
     [self.nameField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.addressField.mas_bottom);
@@ -92,7 +92,7 @@
     self.introduceField.placeholderLabel.textColor = [[UIColor lightGrayColor] colorWithAlphaComponent:.7];
     self.introduceField.placeholderLabel.font = kPingFangRegular(42 * scale);
     self.introduceField.font = kPingFangRegular(42 * scale);
-    self.introduceField.placeholder = @"描述一下这里";
+    self.introduceField.placeholder = DDLocalizedString(@"Describe");
     [self addSubview:self.introduceField];
     [self.introduceField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameField.mas_bottom);
@@ -110,7 +110,7 @@
         make.height.mas_equalTo(3 * scale);
     }];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"取消"];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Cancel")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
     leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     leftHandleButton.layer.borderWidth = 3 * scale;
@@ -122,7 +122,7 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存"];
+    UIButton * rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Create")];
     [DDViewFactoryTool cornerRadius:24 * scale withView:rightHandleButton];
     rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     rightHandleButton.layer.borderWidth = 3 * scale;

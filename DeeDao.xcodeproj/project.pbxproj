@@ -200,6 +200,8 @@
 		0652FB7E20F77DD900080225 /* DTieSeeShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0652FB7D20F77DD900080225 /* DTieSeeShareViewController.m */; };
 		0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C7FE212A717800800D7A /* DDShouCangViewController.m */; };
 		0658C81C212ADD8100800D7A /* MapShowPostView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0658C81B212ADD8100800D7A /* MapShowPostView.m */; };
+		065E7925217DCC030001DABA /* defaultRemark.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 065E7923217DCC030001DABA /* defaultRemark.jpg */; };
+		065E7926217DCC030001DABA /* defaultRemarkFirst.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 065E7924217DCC030001DABA /* defaultRemarkFirst.jpg */; };
 		065FE61F21353BE6005DAB06 /* paopao.png in Resources */ = {isa = PBXBuildFile; fileRef = 065FE61E21353BE6005DAB06 /* paopao.png */; };
 		065FE625213578A8005DAB06 /* FanjuTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 065FE624213578A8005DAB06 /* FanjuTableViewCell.m */; };
 		0660203C21071BFF005E3D09 /* DTieHeaderLogoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0660203B21071BFF005E3D09 /* DTieHeaderLogoCell.m */; };
@@ -268,6 +270,7 @@
 		0676837A21218C5E007B5E9B /* NotificationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0676837921218C5E007B5E9B /* NotificationTableViewCell.m */; };
 		06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */; };
 		06790B3E20A4418A00929228 /* DTieModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 06790B3D20A4418A00929228 /* DTieModel.m */; };
+		0679C438218197400069E0D8 /* DTieWatchPhotoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0679C437218197400069E0D8 /* DTieWatchPhotoTableViewCell.m */; };
 		067A4F8020FDF5AC00869D80 /* BMKClusterItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7820FDF5AC00869D80 /* BMKClusterItem.m */; };
 		067A4F8120FDF5AC00869D80 /* BMKClusterQuadtree.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7A20FDF5AC00869D80 /* BMKClusterQuadtree.m */; };
 		067A4F8220FDF5AC00869D80 /* BMKClusterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 067A4F7C20FDF5AC00869D80 /* BMKClusterManager.m */; };
@@ -276,6 +279,7 @@
 		067EB5A120DB83D30021E71B /* DTieReadHandleFooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB5A020DB83D30021E71B /* DTieReadHandleFooterView.m */; };
 		067EB5A420DB94AA0021E71B /* DTieReadCommentHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB5A320DB94AA0021E71B /* DTieReadCommentHeaderView.m */; };
 		067EB5A720DBA3C70021E71B /* GetWXAccessTokenRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 067EB5A620DBA3C70021E71B /* GetWXAccessTokenRequest.m */; };
+		067FFDF821705EE90021E57F /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 067FFDFA21705EE90021E57F /* Localizable.strings */; };
 		0685A52D20C660A20050424D /* DDDazhaohuView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0685A52C20C660A20050424D /* DDDazhaohuView.m */; };
 		0685A53020C68C3C0050424D /* TransPostRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0685A52F20C68C3C0050424D /* TransPostRequest.m */; };
 		0685A53320C693900050424D /* GetTelCodeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 0685A53220C693900050424D /* GetTelCodeRequest.m */; };
@@ -298,6 +302,7 @@
 		06C6022820C432870009E536 /* RDAlertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022420C432870009E536 /* RDAlertAction.m */; };
 		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
 		06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1488C20C6DDDB00DB010A /* DTieShareView.m */; };
+		06DA97602192EE3000B16037 /* DDAddressBookViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DA975F2192EE3000B16037 /* DDAddressBookViewController.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
 		06DAB76B20A35A120055FA60 /* DDMineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76A20A35A120055FA60 /* DDMineViewController.m */; };
@@ -719,6 +724,8 @@
 		0658C7FE212A717800800D7A /* DDShouCangViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShouCangViewController.m; sourceTree = "<group>"; };
 		0658C81A212ADD8100800D7A /* MapShowPostView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MapShowPostView.h; sourceTree = "<group>"; };
 		0658C81B212ADD8100800D7A /* MapShowPostView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapShowPostView.m; sourceTree = "<group>"; };
+		065E7923217DCC030001DABA /* defaultRemark.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = defaultRemark.jpg; sourceTree = "<group>"; };
+		065E7924217DCC030001DABA /* defaultRemarkFirst.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = defaultRemarkFirst.jpg; sourceTree = "<group>"; };
 		065FE61E21353BE6005DAB06 /* paopao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = paopao.png; sourceTree = "<group>"; };
 		065FE623213578A8005DAB06 /* FanjuTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FanjuTableViewCell.h; sourceTree = "<group>"; };
 		065FE624213578A8005DAB06 /* FanjuTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FanjuTableViewCell.m; sourceTree = "<group>"; };
@@ -858,6 +865,8 @@
 		06790B3620A3ECEE00929228 /* DTieCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieCollectionViewCell.m; sourceTree = "<group>"; };
 		06790B3C20A4418A00929228 /* DTieModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieModel.h; sourceTree = "<group>"; };
 		06790B3D20A4418A00929228 /* DTieModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieModel.m; sourceTree = "<group>"; };
+		0679C436218197400069E0D8 /* DTieWatchPhotoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieWatchPhotoTableViewCell.h; sourceTree = "<group>"; };
+		0679C437218197400069E0D8 /* DTieWatchPhotoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieWatchPhotoTableViewCell.m; sourceTree = "<group>"; };
 		067A4F7820FDF5AC00869D80 /* BMKClusterItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterItem.m; sourceTree = "<group>"; };
 		067A4F7920FDF5AC00869D80 /* BMKClusterManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BMKClusterManager.h; sourceTree = "<group>"; };
 		067A4F7A20FDF5AC00869D80 /* BMKClusterQuadtree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BMKClusterQuadtree.m; sourceTree = "<group>"; };
@@ -874,6 +883,8 @@
 		067EB5A320DB94AA0021E71B /* DTieReadCommentHeaderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieReadCommentHeaderView.m; sourceTree = "<group>"; };
 		067EB5A520DBA3C70021E71B /* GetWXAccessTokenRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GetWXAccessTokenRequest.h; sourceTree = "<group>"; };
 		067EB5A620DBA3C70021E71B /* GetWXAccessTokenRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GetWXAccessTokenRequest.m; sourceTree = "<group>"; };
+		067FFDF921705EE90021E57F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		067FFDFB21705EFD0021E57F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		0685A52B20C660A20050424D /* DDDazhaohuView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDDazhaohuView.h; sourceTree = "<group>"; };
 		0685A52C20C660A20050424D /* DDDazhaohuView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDDazhaohuView.m; sourceTree = "<group>"; };
 		0685A52E20C68C3C0050424D /* TransPostRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TransPostRequest.h; sourceTree = "<group>"; };
@@ -918,6 +929,8 @@
 		06C6022720C432870009E536 /* RDAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertView.m; sourceTree = "<group>"; };
 		06D1488B20C6DDDB00DB010A /* DTieShareView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieShareView.h; sourceTree = "<group>"; };
 		06D1488C20C6DDDB00DB010A /* DTieShareView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieShareView.m; sourceTree = "<group>"; };
+		06DA975E2192EE3000B16037 /* DDAddressBookViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDAddressBookViewController.h; sourceTree = "<group>"; };
+		06DA975F2192EE3000B16037 /* DDAddressBookViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDAddressBookViewController.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
 		06DAB76420A34C880055FA60 /* DDFoundViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDFoundViewController.m; sourceTree = "<group>"; };
 		06DAB76620A3539A0055FA60 /* DDMailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMailViewController.h; sourceTree = "<group>"; };
@@ -1394,6 +1407,8 @@
 				061ADC26212D4CE1005A5438 /* AlertSettingViewController.m */,
 				060CF1D5213035BF0038CC5D /* OnlyTextViewController.h */,
 				060CF1D6213035BF0038CC5D /* OnlyTextViewController.m */,
+				06DA975E2192EE3000B16037 /* DDAddressBookViewController.h */,
+				06DA975F2192EE3000B16037 /* DDAddressBookViewController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -1514,6 +1529,7 @@
 				06733F6C20A29343007875A7 /* Resource */,
 				06733F3B20A28BDA007875A7 /* Assets.xcassets */,
 				06733F4020A28BDA007875A7 /* Info.plist */,
+				067FFDFA21705EE90021E57F /* Localizable.strings */,
 				06733F4120A28BDA007875A7 /* main.m */,
 			);
 			path = DeeDao;
@@ -1620,6 +1636,8 @@
 		06733F6C20A29343007875A7 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				065E7923217DCC030001DABA /* defaultRemark.jpg */,
+				065E7924217DCC030001DABA /* defaultRemarkFirst.jpg */,
 				060CF1C7212FDD530038CC5D /* markDefault.jpg */,
 				064BA8AD212EB98B00E96CF4 /* five.caf */,
 				064BA8AB212EB98A00E96CF4 /* ten.caf */,
@@ -1722,9 +1740,9 @@
 		06733F8720A2C423007875A7 /* DesUtil */ = {
 			isa = PBXGroup;
 			children = (
-				06733F8820A2C423007875A7 /* DesUtil.h */,
-				06733F8920A2C423007875A7 /* ConverUtil.m */,
 				06733F8A20A2C423007875A7 /* ConverUtil.h */,
+				06733F8920A2C423007875A7 /* ConverUtil.m */,
+				06733F8820A2C423007875A7 /* DesUtil.h */,
 				06733F8B20A2C423007875A7 /* DesUtil.m */,
 			);
 			path = DesUtil;
@@ -1998,6 +2016,8 @@
 				064F0B5020A49ADC007C0A4F /* DDEditTextField.m */,
 				06301B4620A6E07E003580CA /* DTieEditFooterView.h */,
 				06301B4720A6E07E003580CA /* DTieEditFooterView.m */,
+				0679C436218197400069E0D8 /* DTieWatchPhotoTableViewCell.h */,
+				0679C437218197400069E0D8 /* DTieWatchPhotoTableViewCell.m */,
 				0650A9FA20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.h */,
 				0650A9FB20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.m */,
 				0650A9FD20AD6E00005A5E76 /* DTieDetailTextTableViewCell.h */,
@@ -2254,6 +2274,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 06733F2620A28BD9007875A7;
 			productRefGroup = 06733F3020A28BD9007875A7 /* Products */;
@@ -2276,8 +2297,10 @@
 				064CA6EE2136A6F50084E30D /* default3.jpg in Resources */,
 				063E7D1A20BE601E004AFF63 /* custom_config_0323 in Resources */,
 				065FE61F21353BE6005DAB06 /* paopao.png in Resources */,
+				065E7926217DCC030001DABA /* defaultRemarkFirst.jpg in Resources */,
 				064BA8B0212EB98B00E96CF4 /* five.caf in Resources */,
 				064CA6ED2136A6F50084E30D /* default4.jpg in Resources */,
+				065E7925217DCC030001DABA /* defaultRemark.jpg in Resources */,
 				064BA8AF212EB98B00E96CF4 /* two.caf in Resources */,
 				06286AA920BFC8E600434068 /* mapChooseBG.jpeg in Resources */,
 				06733F3C20A28BDA007875A7 /* Assets.xcassets in Resources */,
@@ -2285,6 +2308,7 @@
 				064B349D20A92C5500B7D0E4 /* chengjiuBG.png in Resources */,
 				06301B4420A6D309003580CA /* XFCameraController.xib in Resources */,
 				062EFCC520CE5B5E0019FF68 /* miniProgramBG.png in Resources */,
+				067FFDF821705EE90021E57F /* Localizable.strings in Resources */,
 				06733F7020A29379007875A7 /* BG.png in Resources */,
 				060CF1C8212FDD530038CC5D /* markDefault.jpg in Resources */,
 				064BA8AE212EB98B00E96CF4 /* ten.caf in Resources */,
@@ -2378,6 +2402,7 @@
 				0641497A20AAED1E00460CB3 /* NSArray+json.m in Sources */,
 				06790B3720A3ECEE00929228 /* DTieCollectionViewCell.m in Sources */,
 				06180B412109A868007D402C /* SelectMapYaoyueDetailRequest.m in Sources */,
+				0679C438218197400069E0D8 /* DTieWatchPhotoTableViewCell.m in Sources */,
 				060CF1C6212FDA590038CC5D /* MarkViewController.m in Sources */,
 				0689251A212C2F4A006E2031 /* ChooseImageViewController.m in Sources */,
 				0658C7FF212A717800800D7A /* DDShouCangViewController.m in Sources */,
@@ -2592,6 +2617,7 @@
 				06BB78F720A9C9100049F28F /* MailShareTableViewCell.m in Sources */,
 				060CF1DA21303C700038CC5D /* AchievementShareView.m in Sources */,
 				0614E7A021085A64002F8FC5 /* DTieNewEditPostCell.m in Sources */,
+				06DA97602192EE3000B16037 /* DDAddressBookViewController.m in Sources */,
 				06733F9420A2D042007875A7 /* MBProgressHUD+DDHUD.m in Sources */,
 				06301B4220A6D309003580CA /* XFCameraButton.m in Sources */,
 				0623471720BBE05200B1894E /* XRWaterfallLayout.m in Sources */,
@@ -2693,11 +2719,24 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		067FFDFA21705EE90021E57F /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				067FFDF921705EE90021E57F /* en */,
+				067FFDFB21705EFD0021E57F /* zh-Hans */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		06733F5920A28BDB007875A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2745,7 +2784,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -2756,6 +2795,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2797,7 +2837,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -2860,7 +2900,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "824375db-9d7b-4a68-b78d-792970ca28c8";
-				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDistribution;
+				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreADHoc;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

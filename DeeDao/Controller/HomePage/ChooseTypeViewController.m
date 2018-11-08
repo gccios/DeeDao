@@ -40,191 +40,149 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.view.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
+    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    gradientLayer.startPoint = CGPointMake(0, 1);
+    gradientLayer.endPoint = CGPointMake(1, 0);
+    gradientLayer.locations = @[@0, @1.0];
+    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, kMainBoundsHeight);
+    [self.view.layer addSublayer:gradientLayer];
     
-    UIView * buzhuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400 * scale, 400 * scale)];
-    buzhuView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * buzhuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 500 * scale, 500 * scale)];
     [self.view addSubview:buzhuView];
     [buzhuView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(100 * scale);
-        make.centerY.mas_equalTo(-300 * scale);
+        make.left.mas_equalTo(50 * scale);
+        make.centerY.mas_equalTo(-350 * scale);
         make.width.height.mas_equalTo(buzhuView.frame.size.width);
     }];
-    buzhuView.layer.cornerRadius = 200 * scale;
-    buzhuView.layer.shadowColor = UIColorFromRGB(0xDB6283).CGColor;
-    buzhuView.layer.shadowOpacity = .3f;
-    buzhuView.layer.shadowRadius = 18 * scale;
-    buzhuView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * buzhuButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    buzhuButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    buzhuButton.layer.borderWidth = 3 * scale;
     buzhuButton.tag = 12;
-    [buzhuButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [buzhuButton setTitle:@"博主" forState:UIControlStateNormal];
-    [buzhuButton setBackgroundColor:[UIColorFromRGB(0xdb6283) colorWithAlphaComponent:.1f]];
-    buzhuButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
-    [DDViewFactoryTool cornerRadius:200 * scale withView:buzhuButton];
+    [buzhuButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [buzhuButton setTitle:DDLocalizedString(@"Blogger") forState:UIControlStateNormal];
+    [buzhuButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [buzhuButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
+    buzhuButton.frame = CGRectMake(0, 0, 500 * scale, 500 * scale);
     [self.view addSubview:buzhuButton];
     [buzhuButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(100 * scale);
-        make.centerY.mas_equalTo(-300 * scale);
+        make.left.mas_equalTo(50 * scale);
+        make.centerY.mas_equalTo(-350 * scale);
         make.width.height.mas_equalTo(buzhuButton.frame.size.width);
     }];
     [buzhuButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220 * scale, 220 * scale)];
-    myView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * myView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 350 * scale, 350 * scale)];
     [self.view addSubview:myView];
     [myView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(buzhuButton.mas_right).offset(60 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_top).offset(30 * scale);
+        make.left.mas_equalTo(buzhuButton.mas_right).offset(-30 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_top).offset(0 * scale);
         make.width.height.mas_equalTo(myView.frame.size.width);
     }];
-    myView.layer.cornerRadius = 110 * scale;
-    myView.layer.shadowColor = UIColorFromRGB(0xF38364).CGColor;
-    myView.layer.shadowOpacity = .3f;
-    myView.layer.shadowRadius = 18 * scale;
-    myView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * myButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    myButton.layer.borderColor = UIColorFromRGB(0xF38364).CGColor;
-    myButton.layer.borderWidth = 3 * scale;
     myButton.tag = 11;
-    [myButton setTitleColor:UIColorFromRGB(0xF38364) forState:UIControlStateNormal];
-    [myButton setTitle:@"好友" forState:UIControlStateNormal];
-    [myButton setBackgroundColor:[UIColorFromRGB(0xF29B83) colorWithAlphaComponent:.1f]];
-    myButton.frame = CGRectMake(0, 0, 220 * scale, 220 * scale);
-    [DDViewFactoryTool cornerRadius:110 * scale withView:myButton];
+    [myButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [myButton setTitle:DDLocalizedString(@"Friend") forState:UIControlStateNormal];
+    [myButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [myButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
+    myButton.frame = CGRectMake(0, 0, 350 * scale, 350 * scale);
     [self.view addSubview:myButton];
     [myButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(buzhuButton.mas_right).offset(60 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_top).offset(30 * scale);
+        make.left.mas_equalTo(buzhuButton.mas_right).offset(-30 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_top).offset(0 * scale);
         make.width.height.mas_equalTo(myButton.frame.size.width);
     }];
     [myButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * alertView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300 * scale, 300 * scale)];
-    alertView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * alertView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400 * scale, 400 * scale)];
     [self.view addSubview:alertView];
     [alertView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-60 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_top).offset(200 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_top).offset(250 * scale);
         make.width.height.mas_equalTo(alertView.frame.size.width);
     }];
-    alertView.layer.cornerRadius = 150 * scale;
-    alertView.layer.shadowColor = UIColorFromRGB(0xF38364).CGColor;
-    alertView.layer.shadowOpacity = .3f;
-    alertView.layer.shadowRadius = 18 * scale;
-    alertView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * alertButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    alertButton.layer.borderColor = UIColorFromRGB(0xF38364).CGColor;
-    alertButton.layer.borderWidth = 3 * scale;
     alertButton.tag = 14;
-    [alertButton setTitleColor:UIColorFromRGB(0xF38364) forState:UIControlStateNormal];
-    [alertButton setTitle:@"提醒" forState:UIControlStateNormal];
-    [alertButton setBackgroundColor:[UIColorFromRGB(0xF29B83) colorWithAlphaComponent:.1f]];
-    alertButton.frame = CGRectMake(0, 0, 300 * scale, 300 * scale);
-    [DDViewFactoryTool cornerRadius:150 * scale withView:alertButton];
+    [alertButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [alertButton setTitle:DDLocalizedString(@"Reminder") forState:UIControlStateNormal];
+    alertButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
+    [alertButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [alertButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
     [self.view addSubview:alertButton];
     [alertButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-60 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_top).offset(200 * scale);
+        make.right.mas_equalTo(0 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_top).offset(250 * scale);
         make.width.height.mas_equalTo(alertButton.frame.size.width);
     }];
     [alertButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * ziwoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300 * scale, 300 * scale)];
-    ziwoView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * ziwoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400 * scale, 400 * scale)];
     [self.view addSubview:ziwoView];
     [ziwoView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(200 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(120 * scale);
+        make.left.mas_equalTo(100 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(60 * scale);
         make.width.height.mas_equalTo(ziwoView.frame.size.width);
     }];
-    ziwoView.layer.cornerRadius = 150 * scale;
-    ziwoView.layer.shadowColor = UIColorFromRGB(0xDB6283).CGColor;
-    ziwoView.layer.shadowOpacity = .3f;
-    ziwoView.layer.shadowRadius = 18 * scale;
-    ziwoView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * ziwoButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    ziwoButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    ziwoButton.layer.borderWidth = 3 * scale;
     ziwoButton.tag = 15;
-    [ziwoButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [ziwoButton setTitle:@"我的" forState:UIControlStateNormal];
-    [ziwoButton setBackgroundColor:[UIColorFromRGB(0xdb6283) colorWithAlphaComponent:.1f]];
-    ziwoButton.frame = CGRectMake(0, 0, 300 * scale, 300 * scale);
-    [DDViewFactoryTool cornerRadius:150 * scale withView:ziwoButton];
+    [ziwoButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [ziwoButton setTitle:DDLocalizedString(@"My") forState:UIControlStateNormal];
+    [ziwoButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [ziwoButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
+    ziwoButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
     [self.view addSubview:ziwoButton];
     [ziwoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(200 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(120 * scale);
+        make.left.mas_equalTo(100 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(60 * scale);
         make.width.height.mas_equalTo(ziwoButton.frame.size.width);
     }];
     [ziwoButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * otherView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 220 * scale, 220 * scale)];
-    otherView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * otherView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300 * scale, 300 * scale)];
     [self.view addSubview:otherView];
     [otherView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(450 * scale);
-        make.top.mas_equalTo(myButton.mas_bottom).offset(100 * scale);
+        make.left.mas_equalTo(410 * scale);
+        make.top.mas_equalTo(myButton.mas_bottom).offset(60 * scale);
         make.width.height.mas_equalTo(otherView.frame.size.width);
     }];
-    otherView.layer.cornerRadius = 110 * scale;
-    otherView.layer.shadowColor = UIColorFromRGB(0x999999).CGColor;
-    otherView.layer.shadowOpacity = .3f;
-    otherView.layer.shadowRadius = 18 * scale;
-    otherView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * otherButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    otherButton.layer.borderColor = UIColorFromRGB(0xCCCCCC).CGColor;
-    otherButton.layer.borderWidth = 3 * scale;
     otherButton.tag = 13;
-    [otherButton setTitleColor:UIColorFromRGB(0x999999) forState:UIControlStateNormal];
-    [otherButton setTitle:@"其他" forState:UIControlStateNormal];
-    [otherButton setBackgroundColor:[UIColorFromRGB(0x999999) colorWithAlphaComponent:.1f]];
-    otherButton.frame = CGRectMake(0, 0, 220 * scale, 220 * scale);
-    [DDViewFactoryTool cornerRadius:110 * scale withView:otherButton];
+    [otherButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [otherButton setTitle:DDLocalizedString(@"Other") forState:UIControlStateNormal];
+    [otherButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [otherButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
+    otherButton.frame = CGRectMake(0, 0, 300 * scale, 300 * scale);
     [self.view addSubview:otherButton];
     [otherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(450 * scale);
-        make.top.mas_equalTo(myButton.mas_bottom).offset(100 * scale);
+        make.left.mas_equalTo(410 * scale);
+        make.top.mas_equalTo(myButton.mas_bottom).offset(60 * scale);
         make.width.height.mas_equalTo(otherButton.frame.size.width);
     }];
     [otherButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIView * wyyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300 * scale, 300 * scale)];
-    wyyView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    UIView * wyyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400 * scale, 400 * scale)];
     [self.view addSubview:wyyView];
     [wyyView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-200 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(170 * scale);
+        make.right.mas_equalTo(-150 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(130 * scale);
         make.width.height.mas_equalTo(wyyView.frame.size.width);
     }];
-    wyyView.layer.cornerRadius = 150 * scale;
-    wyyView.layer.shadowColor = UIColorFromRGB(0xDB6283).CGColor;
-    wyyView.layer.shadowOpacity = .3f;
-    wyyView.layer.shadowRadius = 18 * scale;
-    wyyView.layer.shadowOffset = CGSizeMake(0, 9 * scale);
     
     ChooseTypeButton * wyyButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    wyyButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    wyyButton.layer.borderWidth = 3 * scale;
     wyyButton.tag = 16;
-    [wyyButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [wyyButton setTitle:@"约这" forState:UIControlStateNormal];
-    [wyyButton setBackgroundColor:[UIColorFromRGB(0xdb6283) colorWithAlphaComponent:.1f]];
-    wyyButton.frame = CGRectMake(0, 0, 300 * scale, 300 * scale);
-    [DDViewFactoryTool cornerRadius:150 * scale withView:wyyButton];
+    [wyyButton setTitleColor:[UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.5f] forState:UIControlStateNormal];
+    [wyyButton setTitle:DDLocalizedString(@"D") forState:UIControlStateNormal];
+    [wyyButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
+    [wyyButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
+    wyyButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
     [self.view addSubview:wyyButton];
     [wyyButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-200 * scale);
-        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(170 * scale);
-        make.width.height.mas_equalTo(wyyButton.frame.size.width);
+        make.right.mas_equalTo(-150 * scale);
+        make.top.mas_equalTo(buzhuButton.mas_bottom).offset(130 * scale);
+        make.width.height.mas_equalTo(wyyView.frame.size.width);
     }];
     [wyyButton addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -232,7 +190,8 @@
     [self.view addSubview:self.currentImageView];
     
     if (self.sourceType == 6) {
-        [otherButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [otherButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [otherButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(otherButton);
             make.bottom.mas_equalTo(otherButton.mas_top);
@@ -240,46 +199,63 @@
             make.height.mas_equalTo(100 * scale);
         }];
     }else if (self.sourceType == 7){
-        [myButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [myButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [myButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(myButton);
-            make.bottom.mas_equalTo(myButton.mas_top);
+            make.bottom.mas_equalTo(myButton.mas_top).offset(40 * scale);
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
     }else if (self.sourceType == 8){
-        [buzhuButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [buzhuButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [buzhuButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(buzhuButton);
-            make.bottom.mas_equalTo(buzhuButton.mas_top);
+            make.bottom.mas_equalTo(buzhuButton.mas_top).offset(40 * scale);
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
     }else if (self.sourceType == 10){
-        [alertButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [alertButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [alertButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(alertButton);
-            make.bottom.mas_equalTo(alertButton.mas_top);
+            make.bottom.mas_equalTo(alertButton.mas_top).offset(40 * scale);
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
     }else if (self.sourceType == 1) {
-        [ziwoButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [ziwoButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [ziwoButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(ziwoButton);
-            make.bottom.mas_equalTo(ziwoButton.mas_top);
+            make.bottom.mas_equalTo(ziwoButton.mas_top).offset(40 * scale);
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
     }else if (self.sourceType == 666) {
-        [wyyButton setBackgroundColor:UIColorFromRGB(0xFFFFFF)];
+        [wyyButton setBackgroundImage:[UIImage imageNamed:@"PDButtonSelect"] forState:UIControlStateNormal];
+        [wyyButton setTitleColor:UIColorFromRGB(0xFFFFFF) forState:UIControlStateNormal];
         [self.currentImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(wyyButton);
-            make.bottom.mas_equalTo(wyyButton.mas_top);
+            make.bottom.mas_equalTo(wyyButton.mas_top).offset(40 * scale);
             make.width.mas_equalTo(270 * scale);
             make.height.mas_equalTo(100 * scale);
         }];
     }
+    
+    UILabel * tipLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    tipLabel.textColor = [UIColorFromRGB(0xffffff) colorWithAlphaComponent:.5f];
+    tipLabel.textAlignment = NSTextAlignmentCenter;
+    tipLabel.text = DDLocalizedString(@"Go to a channel");
+    tipLabel.font = kPingFangRegular(36 * scale);
+    [self.view addSubview:tipLabel];
+    [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(-150 * scale);
+        make.height.mas_equalTo(50 * scale);
+    }];
 }
 
 - (void)buttonDidClicked:(UIButton *)button

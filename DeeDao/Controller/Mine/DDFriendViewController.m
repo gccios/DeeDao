@@ -15,6 +15,7 @@
 #import "UserInfoViewController.h"
 #import "UserManager.h"
 #import <MJRefresh.h>
+#import "DDAddressBookViewController.h"
 
 @interface DDFriendViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -72,6 +73,12 @@
     [self requestFriendList];
     [self requestAttentionList];
     [self requestAttentionMeList];
+}
+
+- (void)rightBarButtonItemDidClicked
+{
+    DDAddressBookViewController * addressBook = [[DDAddressBookViewController alloc] init];
+    [self.navigationController pushViewController:addressBook animated:YES];
 }
 
 - (void)refreshData
@@ -322,7 +329,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"关系列表";
+    titleLabel.text = DDLocalizedString(@"ConnectionsList");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -331,7 +338,7 @@
     }];
     
     CGFloat buttonWidth = kMainBoundsWidth / 3.f;
-    self.attentionMyButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"3.关注我的"];
+    self.attentionMyButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:[NSString stringWithFormat:@"3.%@", DDLocalizedString(@"My Fans")]];
     self.attentionMyButton.alpha = .5f;
     [self.topView addSubview:self.attentionMyButton];
     [self.attentionMyButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -341,7 +348,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.myAttentionButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"2.我的关注"];
+    self.myAttentionButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:[NSString stringWithFormat:@"2.%@", DDLocalizedString(@"Follow")]];
     self.myAttentionButton.alpha = .5f;
     [self.topView addSubview:self.myAttentionButton];
     [self.myAttentionButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -351,7 +358,7 @@
         make.height.mas_equalTo(144 * scale);
     }];
     
-    self.myFriendButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"1.好友列表"];
+    self.myFriendButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:[NSString stringWithFormat:@"1.%@", DDLocalizedString(@"FriendsList")]];
     [self.topView addSubview:self.myFriendButton];
     [self.myFriendButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
@@ -364,6 +371,18 @@
     [self.attentionMyButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     self.selectButton = self.myFriendButton;
+    
+    UIButton * addressBookButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xffffff) title:@"通讯录"];
+    [self.topView addSubview:addressBookButton];
+    [addressBookButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(titleLabel);
+        make.right.mas_equalTo(-30 * scale);
+        make.width.mas_equalTo(240 * scale);
+        make.height.mas_equalTo(80 * scale);
+    }];
+    [addressBookButton addTarget:self action:@selector(rightBarButtonItemDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    
 //    
 //    UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
 //    [searchButton setImage:[UIImage imageNamed:@"search"] forState:UIControlStateNormal];

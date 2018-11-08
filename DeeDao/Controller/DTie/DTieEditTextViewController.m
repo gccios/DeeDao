@@ -95,7 +95,7 @@
         make.bottom.mas_equalTo(-37 * scale);
     }];
     
-    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:@"保存"];
+    self.saveButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] title:DDLocalizedString(@"Create")];
     [DDViewFactoryTool cornerRadius:12 * scale withView:self.saveButton];
     self.saveButton.layer.borderWidth = .5f;
     self.saveButton.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;

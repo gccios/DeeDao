@@ -130,12 +130,12 @@
     }];
     
     UILabel * tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentCenter];
-    tipLabel.text = @"所有约这的好友";
+    tipLabel.text = DDLocalizedString(@"Friends who are interested");
     tipLabel.backgroundColor = UIColorFromRGB(0xFFFFFF);
     [self addSubview:tipLabel];
     [tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.center.mas_equalTo(lineView);
-        make.width.mas_equalTo(400 * scale);
+        make.width.mas_equalTo(500 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
     

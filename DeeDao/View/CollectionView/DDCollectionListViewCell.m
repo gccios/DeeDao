@@ -372,6 +372,10 @@
     self.isFirstRead = YES;
     
     [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
+    if (isEmptyString(model.portraituri)) {
+        [self.logoImageView setImage:[UIImage imageNamed:@"defaultRemark"]];
+    }
+    
     self.nameLabel.text = model.nickname;
     [self reloadStatus];
 //

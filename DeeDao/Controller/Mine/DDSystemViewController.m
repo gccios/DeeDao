@@ -32,7 +32,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"帮助与反馈", @"切换账号/退出登录"]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[@"帮助与反馈", DDLocalizedString(@"Sign off")]];
     [self createViews];
 }
 
@@ -93,7 +93,7 @@
     UIView * tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 200 * scale)];
     UILabel * CopyLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentCenter];
     CopyLabel.numberOfLines = 0;
-    CopyLabel.text = @"Copyright © 2018\n图籍数据科技(上海)有限公司";
+    CopyLabel.text = [NSString stringWithFormat:@"Copyright © 2018\n%@", DDLocalizedString(@"Tuji Data")];
     [tableFooterView addSubview:CopyLabel];
     [CopyLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(90 * scale);
@@ -137,14 +137,14 @@
         [self.navigationController pushViewController:help animated:YES];
         
     }else if (indexPath.row == 1){
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"提示" message:@"确定退出当前登录账号" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:DDLocalizedString(@"BackAlert") preferredStyle:UIAlertControllerStyleAlert];
         
-        UIAlertAction * action1 = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             [[DDBackWidow shareWindow] show];
         }];
         [alert addAction:action1];
         
-        UIAlertAction * action2 = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertAction * action2 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Yes") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [self logoutUser];
         }];
@@ -211,7 +211,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"系统设置";
+    titleLabel.text = DDLocalizedString(@"Settings");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
