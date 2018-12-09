@@ -72,7 +72,7 @@
                 SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
                 model2.cid = -2;
                 model2.securitygroupName = DDLocalizedString(@"My Fans");
-                model2.isChoose = YES;
+                model2.isChoose = NO;
                 model2.isNotification = YES;
                 [self.dataSource addObject:model2];
                 
@@ -85,7 +85,6 @@
                 }
                 
                 [self.selectSource addObject:model1];
-                [self.selectSource addObject:model2];
                 
                 [self.tableView reloadData];
             }
@@ -104,23 +103,23 @@
         [self yinsiButtonDidClicked:self.yinsiButton];
     }else if (type == 4) {
         [self miquanButtonDidClicked:self.miquanButton];
+    }else if (type == 1) {
+        [self gongkaiButtonDidClicked:self.gongkaiButton];
     }
 }
 
 #pragma mark - 选择不同的选项
 - (void)gongkaiButtonDidClicked:(UIButton *)button
 {
-    if (self.currentQuanxianButton != button) {
-        [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
-        [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-        self.landAccountFlg = 1;
-        self.currentQuanxianButton = button;
-        
-        self.tableView.tableFooterView.frame = CGRectMake(0, 0, kMainBoundsWidth, 220 * kMainBoundsWidth / 1080.f);
-        self.alertLabel.text = @"选择公开，意味着您的所有好友以及关注您的人（包括陌生人）均可看见您当前发布的D帖，并会收到相应提示。精华公开帖有机会被地到官方选中推广。";
-        
-        [self.tableView reloadData];
-    }
+    [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
+    [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
+    self.landAccountFlg = 1;
+    self.currentQuanxianButton = button;
+    
+    self.tableView.tableFooterView.frame = CGRectMake(0, 0, kMainBoundsWidth, 220 * kMainBoundsWidth / 1080.f);
+    self.alertLabel.text = @"选择公开，意味着您的所有好友以及关注您的人（包括陌生人）均可看见您当前发布的D帖，并会收到相应提示。精华公开帖有机会被地到官方选中推广。";
+    
+    [self.tableView reloadData];
 }
 
 - (void)yinsiButtonDidClicked:(UIButton *)button
@@ -276,13 +275,14 @@
     SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
     model2.cid = -2;
     model2.securitygroupName = DDLocalizedString(@"My Fans");
-    model2.isChoose = YES;
+    model2.isChoose = NO;
     model2.isNotification = YES;
+    
     [self.dataSource addObject:model2];
     [self.selectSource addObject:model1];
-    [self.selectSource addObject:model2];
+    
     [self.gongkaiButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-    self.landAccountFlg = 4;
+    self.landAccountFlg = 3;
     self.currentQuanxianButton = self.gongkaiButton;
     
     [self.tableView reloadData];

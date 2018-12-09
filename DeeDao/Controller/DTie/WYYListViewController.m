@@ -24,8 +24,10 @@
 #import <TZImagePickerController.h>
 #import "QNDDUploadManager.h"
 #import "CreateDTieRequest.h"
+#import "DTieNewTableViewCell.h"
+#import "DDCollectionViewController.h"
 
-@interface WYYListViewController () <UITableViewDelegate, UITableViewDataSource, TZImagePickerControllerDelegate>
+@interface WYYListViewController () <UITableViewDelegate, UITableViewDataSource, TZImagePickerControllerDelegate, CAAnimationDelegate>
 
 @property (nonatomic, strong) DTieModel * uploadModel;
 
@@ -44,6 +46,7 @@
 @property (nonatomic, assign) NSInteger zujuSize;
 @property (nonatomic, assign) NSInteger ganxingquStart;
 @property (nonatomic, assign) NSInteger ganxingquSize;
+@property (nonatomic, strong) CAGradientLayer *gradientLayer;
 
 @end
 
@@ -63,6 +66,10 @@
     
     [self requestZujuMessage];
     [self requestGanxingquMessage];
+    
+    if (self.isZuju) {
+        [self tabButtonDidClicked:self.zujuButton];
+    }
 }
 
 - (void)requestZujuMessage
@@ -157,7 +164,7 @@
     [DTieSearchRequest cancelRequest];
     self.ganxingquStart = 0;
     self.ganxingquSize = 20;
-    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:9 type:2 pageStart:self.ganxingquStart pageSize:self.ganxingquSize];
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:9 type:2 pageStart:self.ganxingquStart pageSize:self.ganxingquSize];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
@@ -259,7 +266,7 @@
     }else if (tableView == self.ganxingquTableView) {
         DTieModel * model = [self.ganxingquSource objectAtIndex:indexPath.row];
         
-        WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WXHistoryTableViewCell" forIndexPath:indexPath];
+        WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
         
         [cell configWithModel:model];
         
@@ -436,26 +443,22 @@
     }];
 }
 
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    if (tableView == self.zujuTableView) {
-        return 620 * scale;
-    }
-    
-    return 700 * scale;
+    return 620 * scale;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    DTieModel * model;
-    if (tableView == self.zujuTableView) {
-        model = [self.zujuSource objectAtIndex:indexPath.row];
-    }else if (tableView == self.ganxingquTableView) {
-        model = [self.ganxingquSource objectAtIndex:indexPath.row];
+    if (tableView == self.ganxingquTableView) {
+        DDCollectionViewController * collectionVC = [[DDCollectionViewController alloc] initWithDataSource:self.ganxingquSource index:indexPath.row];
+        [self.navigationController pushViewController:collectionVC animated:YES];
+        return;
     }
+    
+    DTieModel * model = [self.zujuSource objectAtIndex:indexPath.row];
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
     
     NSInteger postID = model.postId;
@@ -558,11 +561,12 @@
     }];
     self.zujuTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestZujuMessage)];
     self.zujuTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreZujuMessage)];
+    self.zujuTableView.hidden = YES;
     
     self.ganxingquTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.ganxingquTableView.backgroundColor = self.view.backgroundColor;
     self.ganxingquTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    [self.ganxingquTableView registerClass:[WXHistoryTableViewCell class] forCellReuseIdentifier:@"WXHistoryTableViewCell"];
+    [self.ganxingquTableView registerClass:[DTieNewTableViewCell class] forCellReuseIdentifier:@"DTieNewTableViewCell"];
     self.ganxingquTableView.delegate = self;
     self.ganxingquTableView.dataSource = self;
     [self.view addSubview:self.ganxingquTableView];
@@ -572,7 +576,6 @@
     }];
     self.ganxingquTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestGanxingquMessage)];
     self.ganxingquTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreGanxingquMessage)];
-    self.ganxingquTableView.hidden = YES;
 }
 
 - (void)creatTopView
@@ -587,25 +590,25 @@
         make.height.mas_equalTo((364 + kStatusBarHeight) * scale);
     }];
     
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-    gradientLayer.startPoint = CGPointMake(0, 1);
-    gradientLayer.endPoint = CGPointMake(1, 0);
-    gradientLayer.locations = @[@0, @1.0];
-    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
-    [self.topView.layer addSublayer:gradientLayer];
+    self.gradientLayer = [CAGradientLayer layer];
+    self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+    self.gradientLayer.startPoint = CGPointMake(0, 1);
+    self.gradientLayer.endPoint = CGPointMake(1, 0);
+    self.gradientLayer.locations = @[@0, @1.0];
+    self.gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
+    [self.topView.layer addSublayer:self.gradientLayer];
     
     self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"close"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(-159 * scale);
+        make.left.mas_equalTo(25 * scale);
+        make.bottom.mas_equalTo(-160 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];
     
@@ -620,19 +623,19 @@
     
     CGFloat buttonWidth = kMainBoundsWidth / 2.f;
     self.zujuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Appointments")];
+    self.zujuButton.alpha = .5f;
     [self.topView addSubview:self.zujuButton];
     [self.zujuButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
+        make.right.mas_equalTo(0);
         make.bottom.mas_equalTo(0);
         make.width.mas_equalTo(buttonWidth);
         make.height.mas_equalTo(144 * scale);
     }];
     
     self.ganxingquButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Interested")];
-    self.ganxingquButton.alpha = .5f;
     [self.topView addSubview:self.ganxingquButton];
     [self.ganxingquButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(0);
+        make.left.mas_equalTo(0);
         make.bottom.mas_equalTo(0);
         make.width.mas_equalTo(buttonWidth);
         make.height.mas_equalTo(144 * scale);
@@ -641,7 +644,7 @@
     UIView * lineView1 = [[UIView alloc] initWithFrame:CGRectZero];
     lineView1.alpha = .5f;
     lineView1.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    [self.zujuButton addSubview:lineView1];
+    [self.ganxingquButton addSubview:lineView1];
     [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(0);
         make.centerY.mas_equalTo(0);
@@ -673,7 +676,21 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = 0.35;
+    
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+    
+    transition.type = kCATransitionPush;
+    
+    transition.subtype = kCATransitionFromBottom;
+    
+    transition.delegate = self;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)tabButtonDidClicked:(UIButton *)button
@@ -700,6 +717,11 @@
             [self requestZujuMessage];
         }
         
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDF6288).CGColor, (__bridge id)UIColorFromRGB(0XFF117E).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0XFF117E).CGColor;
+        self.topView.layer.shadowOpacity = .24;
+        self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+        
     }else if (self.pageIndex == 2) {
         
         self.zujuButton.alpha = .5f;
@@ -711,6 +733,10 @@
         if (self.ganxingquSource.count == 0) {
             [self requestGanxingquMessage];
         }
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0XB721FF).CGColor;
+        self.topView.layer.shadowOpacity = .24;
+        self.topView.layer.shadowOffset = CGSizeMake(0, 4);
         
     }
 }

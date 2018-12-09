@@ -29,8 +29,9 @@
 #import "ShowSeriesViewController.h"
 #import "DTieSearchRequest.h"
 #import "DDBackWidow.h"
+#import "DTieNewTableViewCell.h"
 
-@interface DTieNewViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface DTieNewViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UITableViewDelegate, UITableViewDataSource, CAAnimationDelegate>
 
 @property (nonatomic, strong) UIButton * searchButton;
 @property (nonatomic, strong) UIButton * mapButton;
@@ -42,7 +43,7 @@
 @property (nonatomic, strong) UIView * topView;
 
 @property (nonatomic, strong) UIView * DTieView;
-@property (nonatomic, strong) UICollectionView * DtieCollectionView;
+@property (nonatomic, strong) UITableView * DtieTableView;
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, assign) NSInteger start;
 @property (nonatomic, assign) NSInteger length;
@@ -58,6 +59,8 @@
 @property (nonatomic, strong) NSIndexPath * handleIndex;
 @property (nonatomic, assign) BOOL isEdit;
 
+@property (nonatomic, strong) CAGradientLayer *gradientLayer;
+
 @end
 
 @implementation DTieNewViewController
@@ -70,6 +73,8 @@
     self.length = 20;
     
     [self createViews];
+    
+    self.dataSource = [[NSMutableArray alloc] init];
     
     [self refreshData];
     [self getSeriesData];
@@ -139,23 +144,23 @@
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
                 }
-                [self.DtieCollectionView reloadData];
+                [self.DtieTableView reloadData];
                 
                 self.start = self.length;
                 
             }
         }
-        [self.DtieCollectionView.mj_header endRefreshing];
+        [self.DtieTableView.mj_header endRefreshing];
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
 //        [hud hideAnimated:YES];
 //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
-        [self.DtieCollectionView.mj_header endRefreshing];
+        [self.DtieTableView.mj_header endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
 //        [hud hideAnimated:YES];
 //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
-        [self.DtieCollectionView.mj_header endRefreshing];
+        [self.DtieTableView.mj_header endRefreshing];
     }];
 }
 
@@ -174,23 +179,23 @@
                     DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
                     [self.dataSource addObject:model];
                 }
-                [self.DtieCollectionView reloadData];
+                [self.DtieTableView reloadData];
                 
                 self.start += self.length;
                 
             }
         }
-        [self.DtieCollectionView.mj_footer endRefreshing];
+        [self.DtieTableView.mj_footer endRefreshing];
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         //        [hud hideAnimated:YES];
         //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
-        [self.DtieCollectionView.mj_footer endRefreshing];
+        [self.DtieTableView.mj_footer endRefreshing];
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
         //        [hud hideAnimated:YES];
         //        [MBProgressHUD showTextHUDWithText:@"获取D帖失败" inView:self.view];
-        [self.DtieCollectionView.mj_footer endRefreshing];
+        [self.DtieTableView.mj_footer endRefreshing];
     }];
 }
 
@@ -213,7 +218,7 @@
     }];
     
     [self.dataSource removeObject:model];
-    [self.DtieCollectionView deleteItemsAtIndexPaths:@[indexPath]];
+    [self.DtieTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationLeft];
 }
 
 - (void)createViews
@@ -227,22 +232,22 @@
     layout.minimumLineSpacing = 30 * scale;
     layout.minimumInteritemSpacing = 0;
     
-    self.DtieCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.DtieCollectionView registerClass:[DTieHeaderLogoCell class] forCellWithReuseIdentifier:@"DTieHeaderLogoCell"];
-    self.DtieCollectionView.backgroundColor = self.view.backgroundColor;
-    self.DtieCollectionView.delegate = self;
-    self.DtieCollectionView.dataSource = self;
-    self.DtieCollectionView.alwaysBounceVertical = YES;
-    [self.DTieView addSubview:self.DtieCollectionView];
-    [self.DtieCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.DtieTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.DtieTableView.backgroundColor = self.view.backgroundColor;
+    self.DtieTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.DtieTableView registerClass:[DTieNewTableViewCell class] forCellReuseIdentifier:@"DTieNewTableViewCell"];
+    self.DtieTableView.delegate = self;
+    self.DtieTableView.dataSource = self;
+    [self.DTieView addSubview:self.DtieTableView];
+    [self.DtieTableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
     
-    self.DtieCollectionView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshData)];
-    self.DtieCollectionView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(getMoreList)];
+    self.DtieTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refreshData)];
+    self.DtieTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(getMoreList)];
     
-    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidChange:)];
-    [self.DtieCollectionView addGestureRecognizer:longPress];
+//    UILongPressGestureRecognizer * longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressDidChange:)];
+//    [self.DtieTableView addGestureRecognizer:longPress];
     
     self.seriesView = [[UIView alloc] initWithFrame:CGRectZero];
     
@@ -417,11 +422,11 @@
 {
     if (longPress.state == UIGestureRecognizerStateBegan) {
         if (self.pageType == 1) {
-            CGPoint point = [longPress locationInView:self.DtieCollectionView];
-            NSIndexPath * index = [self.DtieCollectionView indexPathForItemAtPoint:point];
-            if (index) {
-                [self showChooseViewWithCenter:[longPress locationInView:self.view] handleIndex:index];
-            }
+//            CGPoint point = [longPress locationInView:self.DtieCollectionView];
+//            NSIndexPath * index = [self.DtieCollectionView indexPathForItemAtPoint:point];
+//            if (index) {
+//                [self showChooseViewWithCenter:[longPress locationInView:self.view] handleIndex:index];
+//            }
         }else{
             CGPoint point = [longPress locationInView:self.seriesCollectionView];
             NSIndexPath * index = [self.seriesCollectionView indexPathForItemAtPoint:point];
@@ -496,30 +501,30 @@
         make.height.mas_equalTo((364 + kStatusBarHeight) * scale);
     }];
     
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-    gradientLayer.startPoint = CGPointMake(0, 1);
-    gradientLayer.endPoint = CGPointMake(1, 0);
-    gradientLayer.locations = @[@0, @1.0];
-    gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
-    [self.topView.layer addSublayer:gradientLayer];
+    self.gradientLayer = [CAGradientLayer layer];
+    self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0x3023AE).CGColor, (__bridge id)UIColorFromRGB(0X539FFD).CGColor];
+    self.gradientLayer.startPoint = CGPointMake(0, 0);
+    self.gradientLayer.endPoint = CGPointMake(1, 1);
+    self.gradientLayer.locations = @[@0, @1.0];
+    self.gradientLayer.frame = CGRectMake(0, 0, kMainBoundsWidth, (364 + kStatusBarHeight) * scale);
+    [self.topView.layer addSublayer:self.gradientLayer];
     
     self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
     self.topView.layer.shadowOpacity = .24;
     self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     
     UIButton * backButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [backButton setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backButton setImage:[UIImage imageNamed:@"close"] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(backButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:backButton];
     [backButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(30 * scale);
-        make.bottom.mas_equalTo(-159 * scale);
+        make.left.mas_equalTo(25 * scale);
+        make.bottom.mas_equalTo(-160 * scale);
         make.width.height.mas_equalTo(100 * scale);
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = DDLocalizedString(@"My");
+    titleLabel.text = DDLocalizedString(@"My D Page");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -582,7 +587,21 @@
 
 - (void)backButtonDidClicked
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = 0.35;
+    
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+    
+    transition.type = kCATransitionPush;
+    
+    transition.subtype = kCATransitionFromBottom;
+    
+    transition.delegate = self;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)reloadWithPageType
@@ -593,12 +612,23 @@
         
         self.seriesView.hidden = YES;
         self.DTieView.hidden = NO;
+        
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0x3023AE).CGColor, (__bridge id)UIColorFromRGB(0X539FFD).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0x3023AE).CGColor;
+        self.topView.layer.shadowOpacity = .24;
+        self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+        
     }else{
         self.DTieButton.alpha = .5f;
         self.seriesButton.alpha = 1.f;
         
         self.seriesView.hidden = NO;
         self.DTieView.hidden = YES;
+        
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xFAD961).CGColor, (__bridge id)UIColorFromRGB(0XF76B1C).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0XF76B1C).CGColor;
+        self.topView.layer.shadowOpacity = .24;
+        self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     }
 }
 
@@ -632,60 +662,89 @@
     [[DDBackWidow shareWindow] hidden];
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.dataSource.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DTieNewTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
+    
+    DTieModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    [cell configWithModel:model];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
+    
+    [self.navigationController pushViewController:collection animated:YES];
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    return 620 * scale;
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (collectionView == self.DtieCollectionView) {
-        DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
-        
-        NSInteger postID = model.postId;
-        if (postID == 0) {
-            postID = model.cid;
-        }
-        
-        if (model.status == 0) {
-            if (model.authorId != [UserManager shareManager].user.cid) {
-                
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
-                
-                return;
-            }
-            
-            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-            
-            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
-            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                [hud hideAnimated:YES];
-                
-                if (KIsDictionary(response)) {
-                    
-                    NSInteger code = [[response objectForKey:@"status"] integerValue];
-                    if (code == 4002) {
-                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
-                        [self.dataSource removeObject:model];
-                        [self.DtieCollectionView reloadData];
-                        
-                        return;
-                    }
-                    
-                    NSDictionary * data = [response objectForKey:@"data"];
-                    if (KIsDictionary(data)) {
-                        DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                        dtieModel.postId = model.postId;
-                        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                        [self.navigationController pushViewController:edit animated:YES];
-                    }
-                }
-            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                [hud hideAnimated:YES];
-            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-                [hud hideAnimated:YES];
-            }];
-        }else{
-            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
-            [self.navigationController pushViewController:collection animated:YES];
-        }
-    }else{
-        
+//    if (collectionView == self.DtieCollectionView) {
+//        DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
+//
+//        NSInteger postID = model.postId;
+//        if (postID == 0) {
+//            postID = model.cid;
+//        }
+//
+//        if (model.status == 0) {
+//            if (model.authorId != [UserManager shareManager].user.cid) {
+//
+//                [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
+//
+//                return;
+//            }
+//
+//            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+//
+//            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+//            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//                [hud hideAnimated:YES];
+//
+//                if (KIsDictionary(response)) {
+//
+//                    NSInteger code = [[response objectForKey:@"status"] integerValue];
+//                    if (code == 4002) {
+//                        [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self.view];
+//                        [self.dataSource removeObject:model];
+//                        [self.DtieCollectionView reloadData];
+//
+//                        return;
+//                    }
+//
+//                    NSDictionary * data = [response objectForKey:@"data"];
+//                    if (KIsDictionary(data)) {
+//                        DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+//                        dtieModel.postId = model.postId;
+//                        DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+//                        [self.navigationController pushViewController:edit animated:YES];
+//                    }
+//                }
+//            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//                [hud hideAnimated:YES];
+//            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//                [hud hideAnimated:YES];
+//            }];
+//        }else{
+//            DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
+//            [self.navigationController pushViewController:collection animated:YES];
+//        }
+//    }else{
+    
         SeriesModel * model = [self.seriesDataSource objectAtIndex:indexPath.item];
         
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"获取系列" inView:self.view];
@@ -709,48 +768,39 @@
             [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:self.view];
             [hud hideAnimated:YES];
         }];
-    }
+//    }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    if (collectionView == self.DtieCollectionView) {
-        return self.dataSource.count;
-    }else{
+//    if (collectionView == self.DtieCollectionView) {
+//        return self.dataSource.count;
+//    }else{
         return self.seriesDataSource.count;
-    }
+//    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (collectionView == self.DtieCollectionView) {
-        DTieHeaderLogoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieHeaderLogoCell" forIndexPath:indexPath];
-        
-        DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
-        
-        cell.indexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:indexPath.section];
-        
-        [cell configWithDTieModel:model];
-        [cell confiEditEnable:self.isEdit];
-        
-        return cell;
-    }else{
+//    if (collectionView == self.DtieCollectionView) {
+//        DTieHeaderLogoCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DTieHeaderLogoCell" forIndexPath:indexPath];
+//
+//        DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
+//
+//        cell.indexPath = [NSIndexPath indexPathForItem:indexPath.item inSection:indexPath.section];
+//
+//        [cell configWithDTieModel:model];
+//        [cell confiEditEnable:self.isEdit];
+//
+//        return cell;
+//    }else{
         NewSeriesCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"NewSeriesCollectionViewCell" forIndexPath:indexPath];
         
         SeriesModel * model = [self.seriesDataSource objectAtIndex:indexPath.item];
         [cell configWithModel:model];
         
         return cell;
-    }
-}
-
-- (NSMutableArray *)dataSource
-{
-    if (!_dataSource) {
-        _dataSource = [[NSMutableArray alloc] init];
-    }
-    
-    return _dataSource;
+//    }
 }
 
 - (NSMutableArray *)seriesDataSource

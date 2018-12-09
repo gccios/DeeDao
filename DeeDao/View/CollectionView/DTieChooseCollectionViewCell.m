@@ -48,4 +48,9 @@
     }];
 }
 
+- (void)configSingle
+{
+    self.chooseIcon.hidden = YES;
+}
+
 @end

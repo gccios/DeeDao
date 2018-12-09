@@ -43,7 +43,7 @@
     self.window.backgroundColor = [UIColor whiteColor];
     
     [DDTool configApplication];
-
+    
     //百度地图
     self.mapManager = [[BMKMapManager alloc] init];
     BOOL temp = [self.mapManager start:BMK_KEY generalDelegate:nil];
@@ -55,7 +55,7 @@
     temp = [BMKMapManager setCoordinateTypeUsedInBaiduMapSDK:BMK_COORDTYPE_COMMON];
     
 //    //个性化地图模板文件路径
-//    NSString* path = [[NSBundle mainBundle] pathForResource:@"custom_config_0323" ofType:@""];
+//    NSString* path = [[NSBundle mainBundle] pathForResource:@"custom_config_0323(黑夜)" ofType:@""];
 //    //设置个性化地图样式
 //    [BMKMapView customMapStyle:path];
 //    [BMKMapView enableCustomMapStyle:YES];//打开个性化地图

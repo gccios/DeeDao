@@ -65,4 +65,6 @@ typedef enum : NSUInteger {
 
 - (void)changeNoSelect;
 
+- (void)configPostID:(NSInteger)postID;
+
 @end

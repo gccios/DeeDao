@@ -10,7 +10,8 @@
 
 typedef enum : NSUInteger {
     DDTelLoginPageType_Register,
-    DDTelLoginPageType_Login
+    DDTelLoginPageType_Login,
+    DDTelLoginPageType_BindMobile
 } DDTelLoginPageType;
 
 @interface DDTelLoginViewController : DDViewController

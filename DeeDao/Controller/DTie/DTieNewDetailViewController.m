@@ -27,6 +27,8 @@
 #import "DDBackWidow.h"
 #import "DTieDeleteRequest.h"
 #import "RDAlertView.h"
+#import "ConverUtil.h"
+#import "DDShareManager.h"
 
 @interface DTieNewDetailViewController ()<SecurityFriendDelegate, DTieShareDelegate>
 
@@ -212,171 +214,231 @@
     
     if (index == 0) {
         
-        BOOL pflg = NO;
-        NSMutableArray * shareSource = [[NSMutableArray alloc] init];
-        NSMutableArray * urlSource = [[NSMutableArray alloc] init];
-        NSMutableArray * pflgSource = [[NSMutableArray alloc] init];
+//        BOOL pflg = NO;
+//        NSMutableArray * shareSource = [[NSMutableArray alloc] init];
+//        NSMutableArray * urlSource = [[NSMutableArray alloc] init];
+//        NSMutableArray * pflgSource = [[NSMutableArray alloc] init];
+//        for (NSInteger i = 0; i < self.model.details.count; i++) {
+//            DTieEditModel * model = [self.model.details objectAtIndex:i];
+//            if (model.type == DTieEditType_Image) {
+//                if (model.image) {
+//
+//                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
+//                    shareModel.postId = postID;
+//                    shareModel.image = model.image;
+//                    shareModel.title = self.model.postSummary;
+//                    shareModel.PFlag = model.pFlag;
+//                    if (shareModel.PFlag == 1) {
+//                        [shareModel changeToDeedao];
+//                    }
+//
+//                    [shareSource addObject:shareModel];
+//
+//                }else if (!isEmptyString(model.detailContent)) {
+//                    [urlSource addObject:model.detailContent];
+//                    [pflgSource addObject:@(model.pFlag)];
+//                }
+//            }
+//            if (model.pFlag == 1) {
+//                pflg = YES;
+//            }
+//        }
+//
+//        if (urlSource.count > 0) {
+//
+//            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取图片" inView:self.view];
+//            __block NSUInteger count = 0;
+//            for (NSInteger i = 0; i < urlSource.count; i++)  {
+//
+//                NSString * path = [urlSource objectAtIndex:i];
+//                NSInteger tempPflg = [[pflgSource objectAtIndex:i] integerValue];
+//
+//                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:path] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+//
+//                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+//
+//                    if (nil == image) {
+//                        count++;
+//                        if (count == urlSource.count) {
+//                            [hud hideAnimated:YES];
+//
+//                            NSInteger postId = self.model.cid;
+//                            if (postId == 0) {
+//                                postId = self.model.postId;
+//                            }
+//
+//                            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
+//                            [self presentViewController:share animated:YES completion:nil];
+//                            [[DDBackWidow shareWindow] hidden];
+//                        }
+//                        return;
+//                    }
+//
+//                    [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
+//
+//                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
+//                    shareModel.postId = postID;
+//                    shareModel.image = image;
+//                    shareModel.title = self.model.postSummary;
+//                    shareModel.PFlag = tempPflg;
+//                    if (shareModel.PFlag == 1) {
+//                        [shareModel changeToDeedao];
+//                    }
+//
+//                    [shareSource addObject:shareModel];
+//
+//                    count++;
+//                    if (count == urlSource.count) {
+//                        [hud hideAnimated:YES];
+//
+//                        NSInteger postId = self.model.cid;
+//                        if (postId == 0) {
+//                            postId = self.model.postId;
+//                        }
+//
+//                        DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
+//                        [self presentViewController:share animated:YES completion:nil];
+//                        [[DDBackWidow shareWindow] hidden];
+//                    }
+//                }];
+//            }
+//        }else{
+//            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
+//            [self presentViewController:share animated:YES completion:nil];
+//            [[DDBackWidow shareWindow] hidden];
+//        }
+        
+        [[DDBackWidow shareWindow] show];
+        
+        DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+        [self.view insertSubview:share atIndex:0];
+        [share startShare];
+        
+    }else if (index == 1) {
+        
+//        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"分享到" message:DDLocalizedString(@"To Share") preferredStyle:UIAlertControllerStyleActionSheet];
+//
+//        UIAlertAction * friendAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Groups") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//
+//            [[DDBackWidow shareWindow] show];
+//
+//            DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+//            [self.view insertSubview:share atIndex:0];
+//            [share startShare];
+//
+//        }];
+        
+//        UIAlertAction * quanAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Connections") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        
+//            [[DDBackWidow shareWindow] show];
+//
+//            NSString * urlPath = self.model.postFirstPicture;
+//
+//            for (NSInteger i = 0; i < self.model.details.count; i++) {
+//                DTieEditModel * model = [self.model.details objectAtIndex:i];
+//                if (model.type == DTieEditType_Image) {
+//                    if (isEmptyString(urlPath)) {
+//                        urlPath = model.detailContent;
+//                    }
+//                    break;
+//                }
+//            }
+//
+//            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
+//            [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+//
+//            } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+//                [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
+//
+//                if (image) {
+//                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
+//                }else{
+//                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:self.view];
+//                }
+//
+//                [hud hideAnimated:YES];
+//            }];
+//        }];
+        
+        
+        [[DDBackWidow shareWindow] show];
+        
+        NSString * urlPath = self.model.postFirstPicture;
+        
         for (NSInteger i = 0; i < self.model.details.count; i++) {
             DTieEditModel * model = [self.model.details objectAtIndex:i];
             if (model.type == DTieEditType_Image) {
-                if (model.image) {
-                    
-                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
-                    shareModel.postId = postID;
-                    shareModel.image = model.image;
-                    shareModel.title = self.model.postSummary;
-                    shareModel.PFlag = model.pFlag;
-                    if (shareModel.PFlag == 1) {
-                        [shareModel changeToDeedao];
-                    }
-                    
-                    [shareSource addObject:shareModel];
-                    
-                }else if (!isEmptyString(model.detailContent)) {
-                    [urlSource addObject:model.detailContent];
-                    [pflgSource addObject:@(model.pFlag)];
+                if (isEmptyString(urlPath)) {
+                    urlPath = model.detailContent;
                 }
-            }
-            if (model.pFlag == 1) {
-                pflg = YES;
+                break;
             }
         }
-
-        if (urlSource.count > 0) {
-
-            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取图片" inView:self.view];
-            __block NSUInteger count = 0;
-            for (NSInteger i = 0; i < urlSource.count; i++)  {
-                
-                NSString * path = [urlSource objectAtIndex:i];
-                NSInteger tempPflg = [[pflgSource objectAtIndex:i] integerValue];
-                
-                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:path] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
-
-                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-                    
-                    if (nil == image) {
-                        count++;
-                        if (count == urlSource.count) {
-                            [hud hideAnimated:YES];
-                            
-                            NSInteger postId = self.model.cid;
-                            if (postId == 0) {
-                                postId = self.model.postId;
-                            }
-                            
-                            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
-                            [self presentViewController:share animated:YES completion:nil];
-                            [[DDBackWidow shareWindow] hidden];
-                        }
-                        return;
-                    }
-                    
-                    [[SDImageCache sharedImageCache] storeImage:image forKey:path toDisk:YES completion:nil];
-                    
-                    ShareImageModel * shareModel = [[ShareImageModel alloc] init];
-                    shareModel.postId = postID;
-                    shareModel.image = image;
-                    shareModel.title = self.model.postSummary;
-                    shareModel.PFlag = tempPflg;
-                    if (shareModel.PFlag == 1) {
-                        [shareModel changeToDeedao];
-                    }
-                    
-                    [shareSource addObject:shareModel];
-                    
-                    count++;
-                    if (count == urlSource.count) {
-                        [hud hideAnimated:YES];
-
-                        NSInteger postId = self.model.cid;
-                        if (postId == 0) {
-                            postId = self.model.postId;
-                        }
-
-                        DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
-                        [self presentViewController:share animated:YES completion:nil];
-                        [[DDBackWidow shareWindow] hidden];
-                    }
-                }];
-            }
-        }else{
-            DTieShareViewController * share = [[DTieShareViewController sharedViewController] insertShareList:shareSource title:self.model.postSummary pflg:pflg postId:postID];
-            [self presentViewController:share animated:YES completion:nil];
-            [[DDBackWidow shareWindow] hidden];
-        }
-    }else if (index == 1) {
         
-        UIAlertController * alert = [UIAlertController alertControllerWithTitle:@"分享到" message:DDLocalizedString(@"To Share") preferredStyle:UIAlertControllerStyleActionSheet];
-        
-        UIAlertAction * friendAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Groups") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
+        [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
             
-            [[DDBackWidow shareWindow] show];
+        } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+            [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
             
-            DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
-            [self.view insertSubview:share atIndex:0];
-            [share startShare];
-            
-        }];
-        
-        UIAlertAction * quanAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Wechat Connections") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-            [[DDBackWidow shareWindow] show];
-            
-            NSString * urlPath = self.model.postFirstPicture;
-            
-            for (NSInteger i = 0; i < self.model.details.count; i++) {
-                DTieEditModel * model = [self.model.details objectAtIndex:i];
-                if (model.type == DTieEditType_Image) {
-                    if (isEmptyString(urlPath)) {
-                        urlPath = model.detailContent;
-                    }
-                    break;
-                }
+            if (image) {
+                [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
+            }else{
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:self.view];
             }
             
-            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
-            [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:urlPath] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
-                
-            } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-                [[SDImageCache sharedImageCache] storeImage:image forKey:urlPath toDisk:YES completion:nil];
-                
-                if (image) {
-                    [[WeChatManager shareManager] shareMiniProgramWithPostID:postID image:image isShare:NO title:self.model.postSummary];
-                }else{
-                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"SharingFailed") inView:self.view];
-                }
-                
-                [hud hideAnimated:YES];
-            }];
+            [hud hideAnimated:YES];
         }];
         
-        UIAlertAction * saveAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"StampSave") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-            [[DDBackWidow shareWindow] show];
-            
-            DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
-            [self.view insertSubview:share atIndex:0];
-            [share saveToAlbum];
-            
-        }];
-        
-        UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            [[DDBackWidow shareWindow] show];
-        }];
-        
-        [alert addAction:friendAction];
-        [alert addAction:quanAction];
-        [alert addAction:saveAction];
-        [alert addAction:cancleAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        [[DDBackWidow shareWindow] hidden];
+//        UIAlertAction * saveAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"StampSave") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//
+//            [[DDBackWidow shareWindow] show];
+//
+//            DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+//            [self.view insertSubview:share atIndex:0];
+//            [share saveToAlbum];
+//
+//        }];
+//
+//        UIAlertAction * cancleAction = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+//            [[DDBackWidow shareWindow] show];
+//        }];
+//
+//        [alert addAction:friendAction];
+//        [alert addAction:quanAction];
+//        [alert addAction:saveAction];
+//        [alert addAction:cancleAction];
+//        [self presentViewController:alert animated:YES completion:nil];
+//        [[DDBackWidow shareWindow] hidden];
         
     }else if (index == 2) {
-        SecurityFriendController * friend = [[SecurityFriendController alloc] initMulSelectWithDataDict:[NSDictionary new] nameKeys:[NSArray new] selectModels:[NSMutableArray new]];
-        friend.delegate = self;
-        [self.navigationController pushViewController:friend animated:YES];
+        
+        [[DDBackWidow shareWindow] show];
+        
+        DTiePostShareView * share = [[DTiePostShareView alloc] initWithModel:self.model];
+        [self.view insertSubview:share atIndex:0];
+        [share saveToAlbum];
+        
+//        SecurityFriendController * friend = [[SecurityFriendController alloc] initMulSelectWithDataDict:[NSDictionary new] nameKeys:[NSArray new] selectModels:[NSMutableArray new]];
+//        friend.delegate = self;
+//        [self.navigationController pushViewController:friend animated:YES];
     }else if (index == 3) {
+        
+        NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+        NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+        
+        NSString * userID = [NSString stringWithFormat:@"%ld", self.model.cid];
+        
+        NSString * string = [NSString stringWithFormat:@"post:%@+%@", timeString, userID];
+        NSString * result = [ConverUtil base64EncodeString:string];
+        
+        NSString * pasteString = [NSString stringWithFormat:@"【DeeDao地到】%@#复制此消息，打开DeeDao地到查看帖子详情", result];
+        
+        UIPasteboard * pasteBoard = [UIPasteboard generalPasteboard];
+        pasteBoard.string = pasteString;
+        [MBProgressHUD showTextHUDWithText:@"已拷贝口令。在微博或电邮粘贴口令并发出。对方拷贝，并打开Deedao, 便可打开帖子" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }else if (index == 4) {
         
 //        if ([UserManager shareManager].user.bloggerFlg != 1) {
 //            [MBProgressHUD showTextHUDWithText:@"该功能只支持博主使用" inView:self.view];
@@ -600,18 +662,33 @@
             make.width.height.mas_equalTo(100 * scale);
         }];
         
-        if (self.model.authorId == [UserManager shareManager].user.cid) {
-            UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-            [editButton setImage:[UIImage imageNamed:@"contentEdit"] forState:UIControlStateNormal];
-            [editButton addTarget:self action:@selector(bianjiButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-            [self.topView addSubview:editButton];
-            [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
-                make.bottom.mas_equalTo(-20 * scale);
-                make.width.height.mas_equalTo(100 * scale);
-            }];
-        }
+        UIButton * shareMultButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+        [shareMultButton setImage:[UIImage imageNamed:@"shareMult"] forState:UIControlStateNormal];
+        [shareMultButton addTarget:self action:@selector(shareMultButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.topView addSubview:shareMultButton];
+        [shareMultButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-150 * scale);
+            make.centerY.mas_equalTo(shareButton).offset(-4 * scale);
+            make.width.height.mas_equalTo(60 * scale);
+        }];
+        
+//        if (self.model.authorId == [UserManager shareManager].user.cid) {
+//            UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
+//            [editButton setImage:[UIImage imageNamed:@"contentEdit"] forState:UIControlStateNormal];
+//            [editButton addTarget:self action:@selector(bianjiButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//            [self.topView addSubview:editButton];
+//            [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//                make.right.mas_equalTo(shareButton.mas_left).offset(-20 * scale);
+//                make.bottom.mas_equalTo(-20 * scale);
+//                make.width.height.mas_equalTo(100 * scale);
+//            }];
+//        }
     }
+}
+
+- (void)shareMultButtonDidClicked
+{
+    [[DDShareManager shareManager] showShareList];
 }
 
 - (void)bianjiButtonDidClicked

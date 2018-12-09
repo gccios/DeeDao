@@ -74,7 +74,7 @@
         make.height.mas_equalTo(72 * scale);
     }];
     
-    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@""];
     [self addSubview:self.handleButton];
     [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(-60 * scale);

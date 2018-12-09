@@ -30,7 +30,7 @@
 #import <WXApi.h>
 #import "DTieChooseDTieController.h"
 
-@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate, DTieQuanXianViewControllerDelegate, DTieChooseDTieControllerDelegate>
+@interface DTieContentView() <RTDragCellTableViewDelegate, RTDragCellTableViewDataSource, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, ChooseLocationDelegate, DatePickerViewDelegate, DTieQuanXianViewControllerDelegate, DTieChooseDTieControllerDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) RTDragCellTableView * tableView;
 
@@ -392,6 +392,8 @@
     UILabel * titleLeftView = [DDViewFactoryTool createLabelWithFrame:CGRectMake(0, 0, 186 * scale, 144 * scale) font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentRight];
     titleLeftView.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Theme")];
     self.titleTextField = [[UITextField alloc] initWithFrame:CGRectZero];
+    self.titleTextField.returnKeyType = UIReturnKeyDone;
+    self.titleTextField.delegate = self;
     self.titleTextField.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.titleTextField.leftView = titleLeftView;
     self.titleTextField.leftViewMode = UITextFieldViewModeAlways;
@@ -554,6 +556,14 @@
     
     [self createChooseView];
     [self quanxian];
+}
+
+#pragma mark - UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self endEdit];
+    
+    return YES;
 }
 
 - (void)quanxianButtonDidClicked

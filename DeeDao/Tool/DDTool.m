@@ -426,24 +426,64 @@
                     
                     NSArray * koulingArray = [result componentsSeparatedByString:@"+"];
                     if (koulingArray.count == 2) {
-                        NSString * userIDString = [koulingArray lastObject];
-                        NSInteger userID = [userIDString integerValue];
-                        
-                        pasteBoard.string = @"";
-                        
-                        if (userID != [UserManager shareManager].user.cid) {
-                            DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                        if ([result hasPrefix:@"post"]) {
                             
-                            if (lg.isLeftViewShowing) {
-                                [lg hideLeftViewAnimated];
+                            NSString * postIDString = [koulingArray lastObject];
+                            NSInteger postID = [postIDString integerValue];
+                            
+                            pasteBoard.string = @"";
+                            
+                            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+                            
+                            DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+                            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                                [hud hideAnimated:YES];
+                                
+                                if (KIsDictionary(response)) {
+                                    NSDictionary * data = [response objectForKey:@"data"];
+                                    if (KIsDictionary(data)) {
+                                        DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                                        
+                                        DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
+                                        
+                                        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                                        
+                                        if (lg.isLeftViewShowing) {
+                                            [lg hideLeftViewAnimated];
+                                        }
+                                        
+                                        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                                        
+                                        [MBProgressHUD showTextHUDWithText:@"通过口令打开帖子" inView:[UIApplication sharedApplication].keyWindow];
+                                        [na pushViewController:detail animated:YES];
+                                    }
+                                }
+                            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                                [hud hideAnimated:YES];
+                            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                                [hud hideAnimated:YES];
+                            }];
+                            
+                        }else{
+                            NSString * userIDString = [koulingArray lastObject];
+                            NSInteger userID = [userIDString integerValue];
+                            
+                            pasteBoard.string = @"";
+                            
+                            if (userID != [UserManager shareManager].user.cid) {
+                                DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                                
+                                if (lg.isLeftViewShowing) {
+                                    [lg hideLeftViewAnimated];
+                                }
+                                
+                                UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                                
+                                [MBProgressHUD showTextHUDWithText:@"通过口令打开好友名片" inView:[UIApplication sharedApplication].keyWindow];
+                                
+                                UserInfoViewController * userInfo = [[UserInfoViewController alloc] initWithUserId:userID];
+                                [na pushViewController:userInfo animated:YES];
                             }
-                            
-                            UINavigationController * na = (UINavigationController *)lg.rootViewController;
-                            
-                            [MBProgressHUD showTextHUDWithText:@"通过口令打开好友名片" inView:[UIApplication sharedApplication].keyWindow];
-                            
-                            UserInfoViewController * userInfo = [[UserInfoViewController alloc] initWithUserId:userID];
-                            [na pushViewController:userInfo animated:YES];
                         }
                     }
                 }

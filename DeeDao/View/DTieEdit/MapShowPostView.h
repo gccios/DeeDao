@@ -11,6 +11,8 @@
 
 @interface MapShowPostView : UIView
 
+@property (nonatomic, copy) void (^uploadHandle)(DTieModel * dtieModel);
+
 - (instancetype)initWithModel:(DTieModel *)model source:(NSArray *)source index:(NSInteger)index;
 
 - (void)show;

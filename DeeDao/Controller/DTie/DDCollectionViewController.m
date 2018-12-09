@@ -17,6 +17,7 @@
 #import "DDDTieViewController.h"
 #import "DDCollectionSlider.h"
 #import "UserManager.h"
+#import "DTieDeleteRequest.h"
 
 @interface DDCollectionViewController ()<TYCyclePagerViewDataSource, TYCyclePagerViewDelegate>
 
@@ -160,15 +161,8 @@
             
             [MBProgressHUD showTextHUDWithText:@"帖子已被作者删除" inView:self.view];
             
-            [self.dataSource removeObjectAtIndex:index];
-            [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:index inSection:0]]];
+            [self deleteDtieWithIndexPath:model];
             
-            NSArray * vcs = self.navigationController.viewControllers;
-            UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
-            if ([vc isKindOfClass:[DDDTieViewController class]]) {
-                DDDTieViewController * tie = (DDDTieViewController *)vc;
-                [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
-            }
             if (self.dataSource.count == 0) {
                 [self.navigationController popViewControllerAnimated:YES];
             }
@@ -201,6 +195,23 @@
     }
 }
 
+- (void)deleteDtieWithIndexPath:(DTieModel *)model
+{
+    NSInteger row = [self.dataSource indexOfObject:model];
+    
+    [self.dataSource removeObjectAtIndex:row];
+    [self.pagerView.collectionView deleteItemsAtIndexPaths:@[[NSIndexPath indexPathForRow:row inSection:0]]];
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
 - (NSInteger)numberOfItemsInPagerView:(TYCyclePagerView *)pageView {
     return self.dataSource.count;
 }
@@ -214,7 +225,14 @@
     __weak typeof(self) weakSelf = self;
     __weak typeof(cell) weakCell = cell;
     cell.tableViewClickHandle = ^(NSIndexPath *cellIndex) {
-        [weakSelf.pagerView.delegate pagerView:weakSelf.pagerView didSelectedItemCell:weakCell atIndex:cellIndex.item];
+        
+        NSInteger currentIndex = [self.dataSource indexOfObject:model];
+        
+        [weakSelf.pagerView.delegate pagerView:weakSelf.pagerView didSelectedItemCell:weakCell atIndex:currentIndex];
+    };
+    
+    cell.deleteClickHandle = ^{
+        [weakSelf deleteDtieWithIndexPath:model];
     };
     
     return cell;
@@ -252,7 +270,7 @@
         UIViewController * vc = [vcs objectAtIndex:vcs.count - 2];
         if ([vc isKindOfClass:[DDDTieViewController class]]) {
             DDDTieViewController * tie = (DDDTieViewController *)vc;
-            [tie deleteDtieWithIndexPath:[NSIndexPath indexPathForItem:index inSection:0]];
+            [tie deleteDtieWithIndexPath:model];
         }
         if (self.dataSource.count == 0) {
             [self.navigationController popViewControllerAnimated:YES];
@@ -270,32 +288,11 @@
         
         if (model.authorId != [UserManager shareManager].user.cid) {
             
-            [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"该帖已经下线~" inView:self.view];
             
             return;
         }
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-        
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    dtieModel.postId = model.postId;
-                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                    [self.navigationController pushViewController:edit animated:YES];
-                }
-            }
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-        }];
-        return;
     }
     
 //    if (model.details) {
@@ -351,7 +348,7 @@
     }];
     
     UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
-    [shareButton setImage:[UIImage imageNamed:@"share"] forState:UIControlStateNormal];
+    [shareButton setImage:[UIImage imageNamed:@"shareMult"] forState:UIControlStateNormal];
     [shareButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:shareButton];
     [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -365,48 +362,49 @@
 
 - (void)shareButtonDidClicked
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    
-    UIView * shareView = [[UIView alloc] initWithFrame:CGRectZero];
-    shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
-    [self.view addSubview:shareView];
-    [shareView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(0);
-    }];
-    
-    CGFloat height = kMainBoundsWidth / 4.f;
-    if (KIsiPhoneX) {
-        height += 38.f;
-    }
-    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.backgroundColor = [UIColor whiteColor];
-    [button addTarget:self action:@selector(bottomButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [shareView addSubview:button];
-    [button mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(height);
-        make.bottom.mas_equalTo(0);
-    }];
-    
-    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"homeTP"]];
-    [button addSubview:imageView];
-    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(0);
-        make.top.mas_equalTo(50 * scale);
-        make.width.height.mas_equalTo(96 * scale);
-    }];
-    
-    UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
-    label.text = DDLocalizedString(@"Share Basket");
-    [button addSubview:label];
-    [label mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(45 * scale);
-        make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
-    }];
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:shareView action:@selector(removeFromSuperview)];
-    [shareView addGestureRecognizer:tap];
+    [[DDShareManager shareManager] showShareList];
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
+//
+//    UIView * shareView = [[UIView alloc] initWithFrame:CGRectZero];
+//    shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+//    [self.view addSubview:shareView];
+//    [shareView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.mas_equalTo(0);
+//    }];
+//
+//    CGFloat height = kMainBoundsWidth / 4.f;
+//    if (KIsiPhoneX) {
+//        height += 38.f;
+//    }
+//    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+//    button.backgroundColor = [UIColor whiteColor];
+//    [button addTarget:self action:@selector(bottomButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [shareView addSubview:button];
+//    [button mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.mas_equalTo(0);
+//        make.height.mas_equalTo(height);
+//        make.bottom.mas_equalTo(0);
+//    }];
+//
+//    UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"homeTP"]];
+//    [button addSubview:imageView];
+//    [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerX.mas_equalTo(0);
+//        make.top.mas_equalTo(50 * scale);
+//        make.width.height.mas_equalTo(96 * scale);
+//    }];
+//
+//    UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
+//    label.text = DDLocalizedString(@"Share Basket");
+//    [button addSubview:label];
+//    [label mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.mas_equalTo(0);
+//        make.height.mas_equalTo(45 * scale);
+//        make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
+//    }];
+//
+//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:shareView action:@selector(removeFromSuperview)];
+//    [shareView addGestureRecognizer:tap];
 }
 
 - (void)bottomButtonDidClicked:(UIButton *)button

@@ -15,6 +15,7 @@
 #import "UserManager.h"
 #import "WeChatManager.h"
 #import "AgreementViewController.h"
+#import <AFHTTPSessionManager.h>
 
 @interface DDTelLoginViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -105,6 +106,58 @@
         [MBProgressHUD showTextHUDWithText:@"请输入有效验证码" inView:self.view];
         return;
     }
+    
+    if (self.type == DDTelLoginPageType_BindMobile) {
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在绑定" inView:self.view];
+        
+        UserLoginWXRequest * request = [[UserLoginWXRequest alloc] initCheckMobile:telNumber code:code];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            NSInteger status = [[response objectForKey:@"status"] integerValue];
+            if (status != 1100) {
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"验证码无效" inView:self.view];
+                return;
+            }
+            
+            AFHTTPSessionManager * manager = [AFHTTPSessionManager manager];
+            manager.requestSerializer = [AFJSONRequestSerializer serializer];
+            manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+            
+            NSString * url = [NSString stringWithFormat:@"%@/api/open/completingPhoneNum", HOSTURL];
+            
+            [manager POST:url parameters:@{@"phoneNum":telNumber} constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+                
+            } progress:^(NSProgress * _Nonnull uploadProgress) {
+                
+            } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"绑定成功" inView:self.view];
+                
+                [UserManager shareManager].user.phone = telNumber;
+                [[UserManager shareManager] saveUserInfo];
+                
+                [self sureBtnClicked];
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"绑定失败" inView:self.view];
+            }];
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"绑定失败" inView:self.view];
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"绑定失败" inView:self.view];
+            
+        }];
+        
+        return;
+    }
+    
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在登录" inView:self.view];
     UserLoginWXRequest * request = [[UserLoginWXRequest alloc] initWithTelNumber:telNumber code:code];
@@ -225,6 +278,9 @@
     
     self.tipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xCCCCCC) alignment:NSTextAlignmentCenter];
     self.tipLabel.text = @"短信验证即登录，未注册将自动创建账号";
+    if (self.type == DDTelLoginPageType_BindMobile) {
+        self.tipLabel.text = @"微信绑定手机后将只能用微信账号登录";
+    }
     
     //手机号输入
     self.telNumberField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -347,6 +403,10 @@
         self.rightHandleButton.hidden = YES;
     }
     
+    if (self.type == DDTelLoginPageType_BindMobile) {
+        self.rightHandleButton.hidden = YES;
+    }
+    
     self.forgetButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"忘记密码?"];
     
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
@@ -372,6 +432,35 @@
     [self.passwordField addTarget:self action:@selector(textFieldValueDidChange) forControlEvents:UIControlEventEditingChanged];
     
     [self agreementButtonDidClicked];
+    
+    UIButton* sureBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    sureBtn.backgroundColor = [UIColor clearColor];
+    sureBtn.frame = CGRectZero;
+    sureBtn.layer.cornerRadius = 12.0;
+    sureBtn.layer.borderColor = UIColorFromRGB(0xffffff).CGColor;
+    sureBtn.layer.borderWidth = 1.0f;
+    [sureBtn setTitle:@"跳过" forState:UIControlStateNormal];
+    [sureBtn setTitleColor:UIColorFromRGB(0xffffff) forState:UIControlStateNormal];
+    [sureBtn.titleLabel setFont:kPingFangLight(13)];
+    [sureBtn addTarget:self action:@selector(sureBtnClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:sureBtn];
+    
+    [sureBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(50,24));
+        make.top.mas_equalTo(40);
+        make.right.mas_equalTo(-30);
+    }];
+}
+
+- (void)sureBtnClicked
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+    
+    if (self.loginSucess) {
+        self.loginSucess();
+    }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:DDUserDidLoginWithTelNumberNotification object:nil];
 }
 
 - (void)readButtonDidClicked
@@ -432,6 +521,30 @@
             self.loginButton.enabled = NO;
         }
         
+    }else if (self.type == DDTelLoginPageType_BindMobile) {
+        NSString * telNumber = self.telNumberField.text;
+        NSString * code = self.codeField.text;
+        
+        telNumber = [telNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
+        code = [code stringByReplacingOccurrencesOfString:@" " withString:@""];
+        
+        if (telNumber.length > 20) {
+            telNumber = [telNumber substringToIndex:20];
+        }
+        if (code.length > 8) {
+            code = [code substringToIndex:8];
+        }
+        
+        self.telNumberField.text = telNumber;
+        self.codeField.text = code;
+        
+        if (self.telNumberField.text.length >= 11 && self.codeField.text.length >= 4) {
+            self.loginButton.alpha = 1;
+            self.loginButton.enabled = YES;
+        }else{
+            self.loginButton.alpha = .5f;
+            self.loginButton.enabled = NO;
+        }
     }
 }
 
@@ -472,6 +585,43 @@
     }else if (self.type == DDTelLoginPageType_Register) {
         
         [self.leftHandleButton setTitle:@"账号密码登录" forState:UIControlStateNormal];
+        
+        [self.passwordField removeFromSuperview];
+        [self.forgetButton removeFromSuperview];
+        
+        [self.baseView addSubview:self.tipLabel];
+        [self.tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.titleLabel.mas_bottom);
+            make.left.right.mas_equalTo(0);
+            make.height.mas_equalTo(50 * scale);
+        }];
+        
+        [self.telNumberField mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(612 * scale);
+        }];
+        
+        [self.baseView addSubview:self.codeField];
+        [self.codeField mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(self.telNumberField.mas_bottom).offset(40 * scale);
+            make.left.mas_equalTo(60 * scale);
+            make.right.mas_equalTo(-60 * scale);
+            make.height.mas_equalTo(144 * scale);
+        }];
+        
+        [self.baseView addSubview:self.agreementButton];
+        [self.agreementButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(72 * scale);
+            make.left.mas_equalTo(120 * scale);
+            make.right.mas_equalTo(-120 * scale);
+            make.top.mas_equalTo(self.codeField.mas_bottom).offset(50 * scale);
+        }];
+        
+        [self.loginButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(1188 * scale);
+        }];
+    }else if (self.type == DDTelLoginPageType_BindMobile) {
+        [self.leftHandleButton setTitle:@"短信验证码登录(密码)" forState:UIControlStateNormal];
+        [self.loginButton setTitle:@"确定并绑定" forState:UIControlStateNormal];
         
         [self.passwordField removeFromSuperview];
         [self.forgetButton removeFromSuperview];

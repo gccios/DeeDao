@@ -83,10 +83,14 @@
     
     [cell configWithDTieModel:model];
     
-    if ([self.chooseSource containsObject:model]) {
-        [cell configSelectStatus:YES];
+    if (self.isSingle) {
+        [cell configSingle];
     }else{
-        [cell configSelectStatus:NO];
+        if ([self.chooseSource containsObject:model]) {
+            [cell configSelectStatus:YES];
+        }else{
+            [cell configSelectStatus:NO];
+        }
     }
     
     return cell;
@@ -96,13 +100,20 @@
 {
     DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     
-    if ([self.chooseSource containsObject:model]) {
-        [self.chooseSource removeObject:model];
+    if (self.isSingle) {
+        if (self.delegate && [self.delegate respondsToSelector:@selector(didSingleChooseDtie:)]) {
+            [self.delegate didSingleChooseDtie:@[model]];
+        }
+        [self.navigationController popViewControllerAnimated:YES];
     }else{
-        [self.chooseSource addObject:model];
+        if ([self.chooseSource containsObject:model]) {
+            [self.chooseSource removeObject:model];
+        }else{
+            [self.chooseSource addObject:model];
+        }
+        
+        [collectionView reloadData];
     }
-    
-    [collectionView reloadData];
 }
 
 - (void)refreshData

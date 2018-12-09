@@ -23,9 +23,9 @@
 #import <AFHTTPSessionManager.h>
 #import "SelectWXHistoryRequest.h"
 #import "DTieModel.h"
-#import "WXHistoryTableViewCell.h"
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
+#import "DTieNewTableViewCell.h"
 
 @interface DDMailViewController () <UITableViewDelegate, UITableViewDataSource, DTieMailDelegate, UserFriendInfoDelegate>
 
@@ -74,7 +74,7 @@
         [self requestHistoryMessage];
         [self requestNotificationMailMessage];
         [self requestExchangeMailMessage];
-        [self requestUserCardMessage];
+//        [self requestUserCardMessage];
     }
     return self;
 }
@@ -98,7 +98,7 @@
     self.historyTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.historyTableView.rowHeight = 540 * scale;
     //    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
-    [self.historyTableView registerClass:[WXHistoryTableViewCell class] forCellReuseIdentifier:@"WXHistoryTableViewCell"];
+    [self.historyTableView registerClass:[DTieNewTableViewCell class] forCellReuseIdentifier:@"DTieNewTableViewCell"];
     //    [self.historyTableView registerClass:[MailBigTableViewCell class] forCellReuseIdentifier:@"MailBigTableViewCell"];
     self.historyTableView.delegate = self;
     self.historyTableView.dataSource = self;
@@ -157,26 +157,26 @@
     [self.exchangeTableView addGestureRecognizer:swipe2];
 
     
-    self.userCardTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.userCardTableView.backgroundColor = self.view.backgroundColor;
-    self.userCardTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.userCardTableView.rowHeight = 540 * scale;
-    //    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
-    [self.userCardTableView registerClass:[MailUserCardTableViewCell class] forCellReuseIdentifier:@"MailUserCardTableViewCell"];
-    //    [self.notificationTableView registerClass:[MailBigTableViewCell class] forCellReuseIdentifier:@"MailBigTableViewCell"];
-    self.userCardTableView.delegate = self;
-    self.userCardTableView.dataSource = self;
-    [self.view addSubview:self.userCardTableView];
-    [self.userCardTableView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
-        make.left.bottom.right.mas_equalTo(0);
-    }];
-    self.userCardTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestUserCardMessage)];
-    self.userCardTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreUserCardMessage)];
-    
-    UISwipeGestureRecognizer * swipe3 = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
-    swipe3.direction = UISwipeGestureRecognizerDirectionLeft;
-    [self.userCardTableView addGestureRecognizer:swipe3];
+//    self.userCardTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+//    self.userCardTableView.backgroundColor = self.view.backgroundColor;
+//    self.userCardTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.userCardTableView.rowHeight = 540 * scale;
+//    //    [self.tableView registerClass:[MailShareTableViewCell class] forCellReuseIdentifier:@"MailShareTableViewCell"];
+//    [self.userCardTableView registerClass:[MailUserCardTableViewCell class] forCellReuseIdentifier:@"MailUserCardTableViewCell"];
+//    //    [self.notificationTableView registerClass:[MailBigTableViewCell class] forCellReuseIdentifier:@"MailBigTableViewCell"];
+//    self.userCardTableView.delegate = self;
+//    self.userCardTableView.dataSource = self;
+//    [self.view addSubview:self.userCardTableView];
+//    [self.userCardTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
+//        make.left.bottom.right.mas_equalTo(0);
+//    }];
+//    self.userCardTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestUserCardMessage)];
+//    self.userCardTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreUserCardMessage)];
+//
+//    UISwipeGestureRecognizer * swipe3 = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(tableViewDidSwipe:)];
+//    swipe3.direction = UISwipeGestureRecognizerDirectionLeft;
+//    [self.userCardTableView addGestureRecognizer:swipe3];
 }
 
 - (void)tableViewDidSwipe:(UISwipeGestureRecognizer *)swipe
@@ -790,7 +790,7 @@
     
     DTieModel * model = [self.historySource objectAtIndex:indexPath.row];
     
-    WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WXHistoryTableViewCell" forIndexPath:indexPath];
+    DTieNewTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
     
     [cell configWithModel:model];
     
@@ -802,7 +802,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
     if (tableView == self.historyTableView) {
-        return 700 * scale;
+        return 620 * scale;
     }
     
     return 330 * scale;
@@ -843,7 +843,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"邮筒";
+    titleLabel.text = DDLocalizedString(@"HudongMessage");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -851,22 +851,22 @@
         make.bottom.mas_equalTo(-37 * scale - 144 * scale);
     }];
     
-    CGFloat buttonWidth = kMainBoundsWidth / 4.f;
-    self.userCardButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Name card")];
-    self.userCardButton.alpha = .5f;
-    [self.topView addSubview:self.userCardButton];
-    [self.userCardButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(0);
-        make.bottom.mas_equalTo(0);
-        make.width.mas_equalTo(buttonWidth);
-        make.height.mas_equalTo(144 * scale);
-    }];
+    CGFloat buttonWidth = kMainBoundsWidth / 3.f;
+//    self.userCardButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Name card")];
+//    self.userCardButton.alpha = .5f;
+//    [self.topView addSubview:self.userCardButton];
+//    [self.userCardButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.right.mas_equalTo(0);
+//        make.bottom.mas_equalTo(0);
+//        make.width.mas_equalTo(buttonWidth);
+//        make.height.mas_equalTo(144 * scale);
+//    }];
     
     self.exchangeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Connecting")];
     self.exchangeButton.alpha = .5f;
     [self.topView addSubview:self.exchangeButton];
     [self.exchangeButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-buttonWidth);
+        make.right.mas_equalTo(0);
         make.bottom.mas_equalTo(0);
         make.width.mas_equalTo(buttonWidth);
         make.height.mas_equalTo(144 * scale);
@@ -913,20 +913,20 @@
         make.height.mas_equalTo(72 * scale);
     }];
     
-    UIView * lineView3 = [[UIView alloc] initWithFrame:CGRectZero];
-    lineView3.alpha = .5f;
-    lineView3.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    [self.userCardButton addSubview:lineView3];
-    [lineView3 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0);
-        make.centerY.mas_equalTo(0);
-        make.width.mas_equalTo(3 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
+//    UIView * lineView3 = [[UIView alloc] initWithFrame:CGRectZero];
+//    lineView3.alpha = .5f;
+//    lineView3.backgroundColor = UIColorFromRGB(0xFFFFFF);
+//    [self.userCardButton addSubview:lineView3];
+//    [lineView3 mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(0);
+//        make.centerY.mas_equalTo(0);
+//        make.width.mas_equalTo(3 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//    }];
     
     [self.notificationButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.exchangeButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
-    [self.userCardButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+//    [self.userCardButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.historyButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
 }
 

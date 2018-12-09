@@ -86,7 +86,7 @@
         }
         
         if (self.WYYSelectType == 2) {
-            
+            self.firstSelectView.hidden = NO;
         }else if (self.WYYSelectType > 0) {
             self.firstModel.isChoose = !self.firstModel.isChoose;
             self.firstSelectView.hidden = !self.firstModel.isChoose;
@@ -105,7 +105,7 @@
         }
         
         if (self.WYYSelectType == 2) {
-            
+            self.secondSelectView.hidden = NO;
         }else if (self.WYYSelectType > 0) {
             self.secondModel.isChoose = !self.secondModel.isChoose;
             self.secondSelectView.hidden = !self.secondModel.isChoose;
@@ -124,7 +124,7 @@
         }
         
         if (self.WYYSelectType == 2) {
-            
+            self.thirdSelectView.hidden = NO;
         }else if (self.WYYSelectType > 0) {
             self.thirdModel.isChoose = !self.thirdModel.isChoose;
             self.thirdSelectView.hidden = !self.thirdModel.isChoose;

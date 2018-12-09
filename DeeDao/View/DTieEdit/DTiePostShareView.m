@@ -30,6 +30,8 @@
 @property (nonatomic, assign) BOOL isFinishMap;
 @property (nonatomic, assign) BOOL isFinishCode;
 
+@property (nonatomic, assign) NSInteger shareType;
+
 @end
 
 @implementation DTiePostShareView
@@ -45,6 +47,8 @@
 
 - (void)startShare
 {
+    self.shareType = 1;
+    
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
     
     GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
@@ -97,15 +101,65 @@
 - (void)share
 {
     UIImage * shareImage = [GCCScreenImage screenView:self];
-    [[WeChatManager shareManager] shareImage:shareImage];
+    if (self.shareType == 1) {
+        [[WeChatManager shareManager] shareImage:shareImage];
+    }else if (self.shareType == 2) {
+        [DDTool saveImageInSystemPhoto:shareImage];
+    }
     [self removeFromSuperview];
 }
 
 - (void)saveToAlbum
 {
-    UIImage * shareImage = [GCCScreenImage screenView:self];
-    [DDTool saveImageInSystemPhoto:shareImage];
-    [self removeFromSuperview];
+    self.shareType = 2;
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+    
+    GetWXAccessTokenRequest * request = [[GetWXAccessTokenRequest alloc] init];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSDictionary *dict = [response objectForKey:@"data"];
+            if (KIsDictionary(dict)) {
+                [WeChatManager shareManager].miniProgramToken = [dict objectForKey:@"access_token"];
+            }
+        }
+        
+        NSInteger postID = self.model.cid;
+        if (postID == 0) {
+            postID = self.model.postId;
+        }
+        
+        [[WeChatManager shareManager] getMiniProgromCodeWithPostID:postID handle:^(UIImage *image) {
+            
+            if (image) {
+                [self.logoImageView setImage:image];
+            }else{
+                [self.logoImageView setImage:[UIImage imageNamed:@"gongzhongCode"]];
+            }
+            
+            if (self.isFinishMap) {
+                [self share];
+                [hud hideAnimated:YES];
+            }
+            self.isFinishCode = YES;
+        }];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (self.isFinishMap) {
+            [hud hideAnimated:YES];
+        }
+        self.isFinishCode = YES;
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        if (self.isFinishMap) {
+            [hud hideAnimated:YES];
+        }
+        self.isFinishCode = YES;
+        
+    }];
 }
 
 - (void)configShareView

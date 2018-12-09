@@ -29,6 +29,12 @@
 
 @property (nonatomic, strong) DTieEditModel * model;
 
+@property (nonatomic, strong) UIImageView * deedaoImageView;
+@property (nonatomic, strong) UIImageView * shareImageView;
+
+@property (nonatomic, strong) UIView * baseCornerView;
+@property (nonatomic, strong) UIView * authorHandleView;
+
 @end
 
 @implementation DTieDetailPostTableViewCell
@@ -66,16 +72,16 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showPostDetail)];
     [self.baseView addGestureRecognizer:tap];
     
-    UIView * baseCornerView = [[UIView alloc] initWithFrame:CGRectZero];
-    [self.baseView addSubview:baseCornerView];
-    baseCornerView.layer.cornerRadius = 24 * scale;
-    baseCornerView.layer.masksToBounds = YES;
-    [baseCornerView mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.baseCornerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.baseView addSubview:self.baseCornerView];
+    self.baseCornerView.layer.cornerRadius = 24 * scale;
+    self.baseCornerView.layer.masksToBounds = YES;
+    [self.baseCornerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.mas_equalTo(0);
     }];
     
     self.postImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
-    [baseCornerView addSubview:self.postImageView];
+    [self.baseCornerView addSubview:self.postImageView];
     [self.postImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
         make.bottom.mas_equalTo(-144 * scale);
@@ -99,11 +105,11 @@
     
     UIView * infoView = [[UIView alloc] initWithFrame:CGRectZero];
     infoView.backgroundColor = UIColorFromRGB(0xEFEFF4);
-    [baseCornerView addSubview:infoView];
+    [self.baseCornerView addSubview:infoView];
     [infoView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.postImageView.mas_bottom);
-        make.left.bottom.right.mas_equalTo(0);
-        
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(144 * scale);
     }];
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
@@ -148,6 +154,131 @@
         make.height.mas_equalTo(34 * scale);
         make.centerX.mas_equalTo(self.logoImageView);
     }];
+    
+    self.authorHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.authorHandleView.backgroundColor = UIColorFromRGB(0xf5f5f5);
+    [self.baseCornerView addSubview:self.authorHandleView];
+    [self.authorHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
+    UIButton * upButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [upButton setImage:[UIImage imageNamed:@"readUp"] forState:UIControlStateNormal];
+    [self.authorHandleView addSubview:upButton];
+    [upButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(60 * scale);
+        make.width.height.mas_equalTo(80 * scale);
+    }];
+    
+    UIButton * downButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [downButton setImage:[UIImage imageNamed:@"readDown"] forState:UIControlStateNormal];
+    [self.authorHandleView addSubview:downButton];
+    [downButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(-60 * scale);
+        make.width.height.mas_equalTo(80 * scale);
+    }];
+    
+    UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView.backgroundColor = UIColorFromRGB(0xDB6283);
+    [self.authorHandleView addSubview:lineView];
+    [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.center.mas_equalTo(0);
+        make.width.mas_equalTo(2 * scale);
+        make.height.mas_equalTo(40 * scale);
+    }];
+    
+    UIButton * deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"删除模块"];
+    [self.authorHandleView addSubview:deleteButton];
+    [deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.height.mas_equalTo(120 * scale);
+        make.right.mas_equalTo(lineView.mas_left).offset(-80 * scale);
+    }];
+    
+    UIButton * editButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"编辑修改"];
+    [self.authorHandleView addSubview:editButton];
+    [editButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.height.mas_equalTo(120 * scale);
+        make.left.mas_equalTo(lineView.mas_right).offset(80 * scale);
+    }];
+    
+    self.addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.addButton setImage:[UIImage imageNamed:@"addEdit"] forState:UIControlStateNormal];
+    [self.contentView addSubview:self.addButton];
+    [self.addButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.baseView.mas_bottom).offset(60 * scale);
+        make.centerX.mas_equalTo(0);
+        make.width.height.mas_equalTo(72 * scale);
+    }];
+    
+    [self.addButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [upButton addTarget:self action:@selector(upButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [downButton addTarget:self action:@selector(downButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [deleteButton addTarget:self action:@selector(deleteButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [editButton addTarget:self action:@selector(editButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)addButtonDidClicked
+{
+    if (self.addButtonHandle) {
+        self.addButtonHandle();
+    }
+}
+
+- (void)deedaoButtonDidClicked
+{
+    if (self.model.pFlag == 1) {
+        self.model.pFlag = 0;
+        [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseno"]];
+    }else{
+        self.model.pFlag = 1;
+        [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseyes"]];
+    }
+}
+
+- (void)shareButtonDidClicked
+{
+    if (self.model.shareEnable == 1) {
+        self.model.shareEnable = 0;
+        self.model.wxCanSee = 0;
+        [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
+    }else{
+        self.model.shareEnable = 1;
+        self.model.wxCanSee = 1;
+        [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
+    }
+}
+
+- (void)upButtonDidClicked
+{
+    if (self.upButtonHandle) {
+        self.upButtonHandle();
+    }
+}
+
+- (void)downButtonDidClicked
+{
+    if (self.downButtonHandle) {
+        self.downButtonHandle();
+    }
+}
+
+- (void)deleteButtonDidClicked
+{
+    if (self.deleteButtonHandle) {
+        self.deleteButtonHandle();
+    }
+}
+
+- (void)editButtonDidClicked
+{
+    if (self.editButtonHandle) {
+        self.editButtonHandle();
+    }
 }
 
 - (void)configWithModel:(DTieEditModel *)model Dtie:(DTieModel *)dtieModel
@@ -163,6 +294,39 @@
         self.bozhuImageView.hidden = NO;
     }else{
         self.bozhuImageView.hidden = YES;
+    }
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    if ([UserManager shareManager].user.cid == dtieModel.authorId) {
+        self.authorHandleView.hidden = NO;
+        self.addButton.hidden = NO;
+        [self.postImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-288 * scale);
+        }];
+        [self.baseView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-45 * scale - 120 * scale);
+        }];
+        
+        if (self.model.shareEnable == 1) {
+            [self.shareImageView setImage:[UIImage imageNamed:@"chooseyes"]];
+        }else{
+            [self.shareImageView setImage:[UIImage imageNamed:@"chooseno"]];
+        }
+        
+        if (self.model.pFlag == 1) {
+            [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseyes"]];
+        }else{
+            [self.deedaoImageView setImage:[UIImage imageNamed:@"chooseno"]];
+        }
+    }else{
+        self.authorHandleView.hidden = YES;
+        self.addButton.hidden = YES;
+        [self.postImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-144 * scale);
+        }];
+        [self.baseView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-45 * scale);
+        }];
     }
 }
 

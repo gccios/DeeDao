@@ -28,7 +28,7 @@
 #import "RDAlertView.h"
 #import "DTieCollectionRequest.h"
 
-@interface YueFanViewController () <UICollectionViewDelegate, UICollectionViewDataSource, DTieQuanXianViewControllerDelegate, ChooseLocationDelegate, PGDatePickerDelegate, SecurityFriendDelegate>
+@interface YueFanViewController () <UICollectionViewDelegate, UICollectionViewDataSource, DTieQuanXianViewControllerDelegate, ChooseLocationDelegate, PGDatePickerDelegate, SecurityFriendDelegate, UITextFieldDelegate>
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -237,7 +237,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1600 * scale)];
+    UIView * baseView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 1600 * scale - 160 * scale)];
     baseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     self.topImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
@@ -320,6 +320,8 @@
     
     self.linkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
     self.linkTextField.placeholder = @"";
+    self.linkTextField.returnKeyType = UIReturnKeyDone;
+    self.linkTextField.delegate = self;
     self.linkTextField.font = kPingFangRegular(36 * scale);
     self.linkTextField.textColor = UIColorFromRGB(0x999999);
     [linkView addSubview:self.linkTextField];
@@ -403,6 +405,8 @@
     
     self.titleTextField = [[UITextField alloc] initWithFrame:CGRectZero];
     self.titleTextField.placeholder = @"";
+    self.titleTextField.returnKeyType = UIReturnKeyDone;
+    self.titleTextField.delegate = self;
     self.titleTextField.font = kPingFangRegular(36 * scale);
     self.titleTextField.textColor = UIColorFromRGB(0x333333);
     [titleView addSubview:self.titleTextField];
@@ -461,7 +465,7 @@
         make.right.mas_equalTo(-180 * scale);
     }];
     
-    UIImageView * friendImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"friendEdit"]];
+    UIImageView * friendImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"addFriendColor"]];
     [friendView addSubview:friendImageView];
     [friendImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
@@ -498,6 +502,8 @@
     
     self.remarkTextField = [[UITextField alloc] initWithFrame:CGRectZero];
     self.remarkTextField.placeholder = @"";
+    self.remarkTextField.returnKeyType = UIReturnKeyDone;
+    self.remarkTextField.delegate = self;
     self.remarkTextField.font = kPingFangRegular(36 * scale);
     self.remarkTextField.textColor = UIColorFromRGB(0x999999);
     [remarkView addSubview:self.remarkTextField];
@@ -525,6 +531,7 @@
     }];
     UITapGestureRecognizer * quanxianTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(quanxianButtonDidClicked)];
     [quanxianView addGestureRecognizer:quanxianTap];
+    quanxianView.hidden = YES;
     
     UILabel * quanxianTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     quanxianTitleLabel.text = DDLocalizedString(@"Security");
@@ -544,13 +551,13 @@
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(144 * scale);
     }];
-    self.landAccountFlg = 4;
+    self.landAccountFlg = 1;
     
     UIView * tipView = [[UIView alloc] initWithFrame:CGRectZero];
     tipView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     [baseView addSubview:tipView];
     [tipView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(quanxianView.mas_bottom);
+        make.top.mas_equalTo(remarkView.mas_bottom);
         make.left.bottom.right.mas_equalTo(0);
     }];
     
@@ -611,6 +618,14 @@
     [rightHandleButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
+#pragma mark - UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self endEditText];
+    
+    return YES;
+}
+
 - (void)leftButtonDidClicked
 {
     [self createPostWithShare:NO];
@@ -623,25 +638,25 @@
         return;
     }
     
-    NSInteger timeDistance = self.createTime / 1000 - [[NSDate date] timeIntervalSince1970];
-    NSInteger totalTime = 24 * 60 * 60 * 3;
-    
-    if (timeDistance < totalTime) {
-        
-        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"约这" message:DDLocalizedString(@"ThreeDayAlert")];
-        RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
-            
-        } bold:NO];
-        
-        RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
-            [self createPostWithShare:YES];
-        } bold:NO];
-        [alertView addActions:@[leftAction, rightAction]];
-        [alertView show];
-        
-        return;
-        
-    }
+//    NSInteger timeDistance = self.createTime / 1000 - [[NSDate date] timeIntervalSince1970];
+//    NSInteger totalTime = 24 * 60 * 60 * 3;
+//
+//    if (timeDistance < totalTime) {
+//
+//        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"约这" message:DDLocalizedString(@"ThreeDayAlert")];
+//        RDAlertAction * leftAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Cancel") handler:^{
+//
+//        } bold:NO];
+//
+//        RDAlertAction * rightAction = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
+//            [self createPostWithShare:YES];
+//        } bold:NO];
+//        [alertView addActions:@[leftAction, rightAction]];
+//        [alertView show];
+//
+//        return;
+//
+//    }
     
     [self createPostWithShare:YES];
 }
@@ -922,7 +937,7 @@
     }];
     
     UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(60 * scale) textColor:UIColorFromRGB(0xFFFFFF) backgroundColor:[UIColor clearColor] alignment:NSTextAlignmentLeft];
-    titleLabel.text = @"约这";
+    titleLabel.text = DDLocalizedString(@"YueZhe");
     [self.topView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(backButton.mas_right).mas_equalTo(5 * scale);
@@ -976,7 +991,7 @@
 {
     if (!_quanxian) {
         _quanxian = [[DTieQuanXianViewController alloc] init];
-        [_quanxian configWithType:4];
+        [_quanxian configWithType:1];
         _quanxian.delegate = self;
         [_quanxian delegateShouldBlock];
     }

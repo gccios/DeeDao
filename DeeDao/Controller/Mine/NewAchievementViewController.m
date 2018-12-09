@@ -275,7 +275,7 @@
         
         if (isInstallWX) {
             imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone"];
-            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"保存到手机"];
+            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友", @"保存到手机"];
             startTag = 10;
         }else {
             imageNames = @[@"saveToPhone"];

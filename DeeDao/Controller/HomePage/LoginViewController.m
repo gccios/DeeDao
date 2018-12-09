@@ -142,6 +142,12 @@
     [self presentViewController:telLogin animated:YES completion:nil];
 }
 
+- (void)bindMobile
+{
+    DDTelLoginViewController * telLogin = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_BindMobile];
+    [self presentViewController:telLogin animated:YES completion:nil];
+}
+
 - (void)DDTelLoginDidSuccess
 {
     [self loginSuccess];
@@ -172,7 +178,13 @@
             if (data && [data isKindOfClass:[NSDictionary class]]) {
                 [[UserManager shareManager] loginWithDictionary:data];
                 [[UserManager shareManager] saveUserInfo];
-                [self loginSuccess];
+                
+                if (isEmptyString([UserManager shareManager].user.phone)) {
+                    [self bindMobile];
+                }else{
+                    [self loginSuccess];
+                }
+                
                 [MBProgressHUD showTextHUDWithText:@"登录成功" inView:[UIApplication sharedApplication].keyWindow];
             }else{
                 [MBProgressHUD showTextHUDWithText:@"登录失败" inView:self.view];

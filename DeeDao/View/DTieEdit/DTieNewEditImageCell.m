@@ -148,6 +148,23 @@
         make.height.mas_equalTo(120 * scale);
     }];
     
+    self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
+    self.shareLabel.text = @"微信通行";
+    [self.shareButton addSubview:self.shareLabel];
+    [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(0);
+        make.height.mas_equalTo(60 * scale);
+    }];
+    
+    self.shareImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
+    [self.shareButton addSubview:self.shareImageView];
+    [self.shareImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(self.shareLabel.mas_right).offset(5 * scale);
+        make.width.height.mas_equalTo(60 * scale);
+    }];
+    
     self.preLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentRight];
     self.preLabel.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.preLabel.userInteractionEnabled = YES;
@@ -165,23 +182,6 @@
     if (![WXApi isWXAppInstalled]) {
         self.shareButton.hidden = YES;
     }
-    
-    self.shareLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    self.shareLabel.text = @"微信通行";
-    [self.shareButton addSubview:self.shareLabel];
-    [self.shareLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(0);
-        make.height.mas_equalTo(60 * scale);
-    }];
-    
-    self.shareImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"chooseno"]];
-    [self.shareButton addSubview:self.shareImageView];
-    [self.shareImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(self.shareLabel.mas_right).offset(5 * scale);
-        make.width.height.mas_equalTo(60 * scale);
-    }];
     
 //    UIButton * alertButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [alertButton setImage:[UIImage imageNamed:@"alertEdit"] forState:UIControlStateNormal];

@@ -208,7 +208,7 @@
     }
     
     if (model.status == 0 && [UserManager shareManager].user.cid == model.authorId ) {
-        self.editButton.hidden = NO;
+        self.editButton.hidden = YES;
         self.markImageView.hidden = YES;
         self.titleView.hidden = YES;
         self.editLabel.text = self.DTieTitleLabel.text;

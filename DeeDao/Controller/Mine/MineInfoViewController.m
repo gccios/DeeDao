@@ -11,6 +11,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "DDTool.h"
 #import "DDBackWidow.h"
+#import "DDTelLoginViewController.h"
 
 @interface MineInfoViewController ()<UITableViewDelegate, UITableViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
@@ -56,8 +57,8 @@
     
     [self createTopViews];
     
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(endEdit)];
-    [self.tableView addGestureRecognizer:tap];
+//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(endEdit)];
+//    [self.tableView addGestureRecognizer:tap];
 }
 
 - (void)createTopViews
@@ -119,7 +120,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -150,6 +151,9 @@
 {
     if (indexPath.row == 0) {
         [self selectImageFromAlbum];
+    }else if (indexPath.row == 2) {
+        DDTelLoginViewController * login = [[DDTelLoginViewController alloc] initWithDDTelLoginType:DDTelLoginPageType_BindMobile];
+        [self presentViewController:login animated:YES completion:nil];
     }
     [self endEdit];
 }

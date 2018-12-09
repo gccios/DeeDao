@@ -12,6 +12,8 @@
 
 - (void)didChooseDtie:(NSArray *)array;
 
+- (void)didSingleChooseDtie:(NSArray *)array;
+
 @end
 
 @interface DTieChooseDTieController : DDViewController
@@ -19,5 +21,7 @@
 @property (nonatomic, weak) id<DTieChooseDTieControllerDelegate> delegate;
 
 @property (nonatomic, strong) NSMutableArray * chooseSource;
+
+@property (nonatomic, assign) BOOL isSingle;
 
 @end

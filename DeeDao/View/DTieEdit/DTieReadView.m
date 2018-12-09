@@ -49,6 +49,7 @@
 #import "NewAchievementViewController.h"
 #import "DDLGSideViewController.h"
 #import <TZImagePickerController.h>
+#import <TZPhotoPickerController.h>
 #import "QNDDUploadManager.h"
 #import "CreateDTieRequest.h"
 #import "WeChatManager.h"
@@ -56,18 +57,36 @@
 #import "DTieDetailRequest.h"
 #import "DTieNewDetailViewController.h"
 #import "RDAlertView.h"
+#import "DTieDeleteRequest.h"
+#import "RDAlertView.h"
+#import "DTieCancleWYYRequest.h"
+#import "YueFanViewController.h"
+#import <BaiduMapAPI_Map/BMKMapView.h>
+#import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+#import "DTieEditTextViewController.h"
+#import <PGDatePickManager.h>
+#import "DDBackWidow.h"
+#import "DTieChooseLocationController.h"
+#import "DTieChooseDTieController.h"
+#import "DTieEditRequest.h"
 
-@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete, TZImagePickerControllerDelegate>
+@interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, BMKMapViewDelegate, PGDatePickerDelegate, ChooseLocationDelegate, DTieChooseDTieControllerDelegate>
 
 @property (nonatomic, strong) UIView * headerView;
 @property (nonatomic, strong) UIImageView * firstImageView;
 @property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * nameLabel;
-@property (nonatomic, strong) UIButton * dazhaohuButton;
 @property (nonatomic, strong) UIButton * locationButton;
 @property (nonatomic, strong) UILabel * locationLabel;
 @property (nonatomic, strong) UILabel * senceTimelabel;
 @property (nonatomic, strong) UILabel * titleLabel;
+
+@property (nonatomic, strong) UIButton * mygxqButton;
+@property (nonatomic, strong) UIButton * mydzhButton;
+@property (nonatomic, strong) UIButton * leftButton;
+@property (nonatomic, strong) UIButton * centerButton;
+@property (nonatomic, strong) UIButton * rightButton;
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, strong) NSMutableArray * modelSources;
@@ -98,6 +117,24 @@
 @property (nonatomic, strong) UIButton * leftWYYButton;
 @property (nonatomic, strong) UIButton * rightWYYButton;
 @property (nonatomic, strong) UISwitch * WYYAddPhotoSwitch;
+@property (nonatomic, strong) UILabel * addPhotonTipLabel;
+
+@property (nonatomic, strong) UIView * mapBaseView;
+@property (nonatomic, strong) BMKMapView * mapView;
+
+//添加新的内容
+@property (nonatomic, strong) UIView * addChooseView;
+@property (nonatomic, strong) UIButton * addButton;
+@property (nonatomic, strong) UIButton * tempAddButton;
+@property (nonatomic, strong) UIButton * imageButton;
+@property (nonatomic, strong) UIButton * videoButton;
+@property (nonatomic, strong) UIButton * textButton;
+@property (nonatomic, strong) UIButton * dtieButton;
+@property (nonatomic, strong) UIButton * chooseButton;
+@property (nonatomic, assign) NSInteger insertIndex;
+@property (nonatomic, strong) DTieEditModel * currentModel;
+@property (nonatomic, assign) BOOL isEditTitle;
+@property (nonatomic, assign) BOOL isContentImagePicker;
 
 @end
 
@@ -109,6 +146,7 @@
         
         self.isPreRead = NO;
         self.isRemark = remark;
+        model.readTimes += 1;
         self.model = model;
         self.WYYTab = 1;
         self.isInsatllWX = [WXApi isWXAppInstalled];
@@ -151,10 +189,354 @@
         [self createDTieReadView];
         [self createHeaderView];
         [self createfooterView];
+        [self createChooseView];
         
         [self checkWYYBlock];
     }
     return self;
+}
+
+- (void)createChooseView
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hiddenChooseView)];
+    self.addChooseView = [[UIView alloc] initWithFrame:self.bounds];
+    self.addChooseView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.3f];
+    [self.addChooseView addGestureRecognizer:tap];
+    
+    self.imageButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.imageButton setImage:[UIImage imageNamed:@"imageChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.imageButton];
+    self.imageButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.imageButton.center = self.addChooseView.center;
+    [self.imageButton addTarget:self action:@selector(imageButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.videoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.videoButton setImage:[UIImage imageNamed:@"videoChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.videoButton];
+    self.videoButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.videoButton.center = self.addChooseView.center;
+    [self.videoButton addTarget:self action:@selector(videoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.textButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.textButton setImage:[UIImage imageNamed:@"textChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.textButton];
+    self.textButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.textButton.center = self.addChooseView.center;
+    [self.textButton addTarget:self action:@selector(textButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.tempAddButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.tempAddButton setImage:[UIImage imageNamed:@"addEdit"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.tempAddButton];
+    self.tempAddButton.frame = CGRectMake(0, 0, 72 * scale, 72 * scale);
+    self.tempAddButton.center = self.addChooseView.center;
+    [self.tempAddButton addTarget:self action:@selector(hiddenChooseView) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.dtieButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.dtieButton setImage:[UIImage imageNamed:@"dtieChoose"] forState:UIControlStateNormal];
+    [self.addChooseView addSubview:self.dtieButton];
+    self.dtieButton.frame = CGRectMake(0, 0, 120 * scale, 120 * scale);
+    self.dtieButton.center = self.addChooseView.center;
+    [self.dtieButton addTarget:self action:@selector(dtieButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)imageButtonDidClicked
+{
+    [self showChoosePhotoPicker];
+    [self hiddenChooseView];
+}
+
+- (void)showChoosePhotoPicker
+{
+    self.isContentImagePicker = YES;
+    
+    TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:100 delegate:self];
+    picker.allowPickingOriginalPhoto = NO;
+    picker.allowPickingVideo = NO;
+    picker.allowTakeVideo = NO;
+    picker.showSelectedIndex = YES;
+    picker.allowCrop = NO;
+    
+    [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)videoButtonDidClicked
+{
+    [self takeVideo];
+    [self hiddenChooseView];
+}
+
+#pragma mark - 录制小视频
+- (void)takeVideo
+{
+    self.isContentImagePicker = YES;
+    
+    TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:100 delegate:self];
+    picker.allowPickingOriginalPhoto = NO;
+    picker.videoMaximumDuration = 30.f;
+    picker.allowPickingMultipleVideo = YES;
+    picker.allowPickingVideo = YES;
+    picker.allowPickingImage = NO;
+    picker.allowTakeVideo = YES;
+    picker.showSelectedIndex = YES;
+    picker.allowPreview = YES;
+    
+    [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)textButtonDidClicked
+{
+    [self showTextEditController];
+    [self hiddenChooseView];
+}
+
+#pragma mark - 编辑文字
+- (void)showTextEditController
+{
+    DTieEditTextViewController * edit = [[DTieEditTextViewController alloc] initWithText:@"" placeholder:@"请输入文字"];
+    edit.delegate = self;
+    [self.parentDDViewController presentViewController:edit animated:YES completion:nil];
+}
+
+- (void)DTEditTextDidFinished:(NSString *)text
+{
+    if (self.currentModel) {
+        
+        NSInteger index = [self.modelSources indexOfObject:self.currentModel];
+        
+        if (isEmptyString(text)) {
+            
+            [self.dataSource removeObject:self.currentModel];
+            [self.tableView beginUpdates];
+            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+            
+        }else{
+            self.currentModel.detailContent = text;
+            
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+        }
+        
+    }else{
+        
+        if (self.isEditTitle) {
+            self.model.postSummary = text;
+            [self configHeaderView];
+            
+            DTieEditRequest * request = [[DTieEditRequest alloc] initWithTitle:text postID:self.model.cid];
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                
+            }];
+            
+        }else{
+            DTieEditModel * model = [[DTieEditModel alloc] init];
+            model.type = DTieEditType_Text;
+            model.datadictionaryType = @"CONTENT_TEXT";
+            model.detailContent = text;
+            model.pFlag = 0;
+            model.wxCanSee = 1;
+            model.textInformation = @"";
+            model.authorID = [UserManager shareManager].user.cid;
+
+            [self.modelSources insertObject:model atIndex:self.insertIndex];
+            [self.tableView beginUpdates];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.insertIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView endUpdates];
+        }
+    }
+    
+    [self sortCurrentDetails];
+    
+    self.currentModel = nil;
+    self.isEditTitle = NO;
+}
+
+- (void)DTEditTextDidCancle
+{
+    self.isEditTitle = NO;
+    self.currentModel = nil;
+}
+
+- (void)dtieButtonDidClicked
+{
+    if (self.parentDDViewController) {
+        DTieChooseDTieController * dtie = [[DTieChooseDTieController alloc] init];
+        dtie.delegate = self;
+        [self.parentDDViewController pushViewController:dtie animated:YES];
+    }
+    [self hiddenChooseView];
+}
+
+#pragma mark - DTieChooseDTieControllerDelegate选择D帖
+- (void)didChooseDtie:(NSArray *)array
+{
+    for (NSInteger i = 0; i < array.count; i++) {
+
+        DTieModel * dtieModel = [array objectAtIndex:i];
+
+        DTieEditModel * model = [[DTieEditModel alloc] init];
+        model.type = DTieEditType_Post;
+        model.shareEnable = 0;
+        model.datadictionaryType = @"CONTENT_POST";
+        model.postFirstPicture = dtieModel.postFirstPicture;
+        model.portraituri = dtieModel.portraituri;
+        model.postSummary = dtieModel.postSummary;
+        model.nickname = dtieModel.nickname;
+        model.sceneBuilding = dtieModel.sceneBuilding;
+        model.sceneAddress = dtieModel.sceneAddress;
+        model.updateTime = dtieModel.updateTime;
+        model.postId = dtieModel.postId;
+        model.authorID = dtieModel.authorId;
+        model.bloggerFlg = dtieModel.bloggerFlg;
+        model.textInformation = @"";
+        
+        [self.modelSources insertObject:model atIndex:self.insertIndex];
+        [self.tableView beginUpdates];
+        [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:self.insertIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+    }
+    
+    [self sortCurrentDetails];
+}
+
+- (void)didSingleChooseDtie:(NSArray *)array
+{
+    NSInteger index = [self.modelSources indexOfObject:self.currentModel];
+    
+    DTieModel * model = array.firstObject;
+    self.currentModel.postFirstPicture = model.postFirstPicture;
+    self.currentModel.portraituri = model.portraituri;
+    self.currentModel.postSummary = model.postSummary;
+    self.currentModel.nickname = model.nickname;
+    self.currentModel.sceneBuilding = model.sceneBuilding;
+    self.currentModel.sceneAddress = model.sceneAddress;
+    self.currentModel.updateTime = model.updateTime;
+    [self.currentModel configPostID:model.postId];
+    self.currentModel.authorID = model.authorId;
+    self.currentModel.bloggerFlg = model.bloggerFlg;
+    self.currentModel.textInformation = @"";
+    
+    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    
+    [self sortCurrentDetails];
+}
+
+#pragma mark - 对现有的details的detailNumber进行排序
+- (void)sortCurrentDetails
+{
+    NSMutableArray * details = [[NSMutableArray alloc] init];
+    NSMutableArray * models = [[NSMutableArray alloc] init];
+    for (NSInteger i = 0; i < self.modelSources.count; i++) {
+        DTieEditModel * model = [self.modelSources objectAtIndex:i];
+        
+        NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                @"datadictionaryType":model.datadictionaryType,
+                                @"detailsContent":model.detailsContent,
+                                @"textInformation":model.textInformation,
+                                @"pFlag":@(model.pFlag),
+                                @"wxCansee":@(model.wxCanSee),
+                                @"authorID":@(model.authorID)};
+        model.detailNumber = i+1;
+        [models addObject:model];
+        [details addObject:dict];
+    }
+    self.model.details = [NSArray arrayWithArray:models];
+    self.modelSources = [NSMutableArray arrayWithArray:self.model.details];
+    
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"type == 2"];
+    NSArray * tempArray = [self.modelSources filteredArrayUsingPredicate:predicate];
+    [self.photoSource removeAllObjects];
+    [self.photoSource addObjectsFromArray:tempArray];
+    
+    [CreateDTieRequest cancelRequest];
+    
+    CreateDTieRequest * request = [[CreateDTieRequest alloc] initRepelaceWithPostID:self.model.cid details:details];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+#pragma mark - 对details进行排序
+- (NSMutableArray *)sortDetails:(NSMutableArray *)details
+{
+    [details sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        DTieEditModel * model1 = (DTieEditModel *)obj1;
+        DTieEditModel * model2 = (DTieEditModel *)obj2;
+        NSInteger detailNumber1 = model1.detailNumber;
+        NSInteger detailNumber2 = model2.detailNumber;
+        if (detailNumber1 > detailNumber2) {
+            return NSOrderedAscending;
+        }else if (detailNumber1 < detailNumber2) {
+            return NSOrderedDescending;
+        }else{
+            return NSOrderedSame;
+        }
+    }];
+    return details;
+}
+
+#pragma mark - 添加新的元素
+//添加按钮被点击
+- (void)addButtonDidClicked:(UIButton *)button
+{
+    [self showChooseViewWithButton:button insertIndex:0];
+}
+
+//展示进行选择添加项
+- (void)showChooseViewWithButton:(UIButton *)button insertIndex:(NSInteger)insertIndex;
+{
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.chooseButton = button;
+    self.insertIndex = insertIndex;
+    self.chooseButton.hidden = YES;
+    
+    CGRect frame = [button convertRect:button.bounds toView:self];
+    CGPoint center = CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
+    
+    [self addSubview:self.addChooseView];
+    [self.addChooseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    self.imageButton.center = center;
+    self.videoButton.center = center;
+    self.textButton.center = center;
+    self.dtieButton.center = center;
+    self.tempAddButton.center = center;
+    
+    CGPoint leftCenter = CGPointMake(center.x - 150 * scale, center.y - 20 * scale);
+    CGPoint leftCenter2 = CGPointMake(center.x - 70 * scale, center.y - 130 * scale);
+    CGPoint rightCenter = CGPointMake(center.x + 70 * scale, center.y - 130 * scale);
+    CGPoint rightCenter2 = CGPointMake(center.x + 150 * scale, center.y - 20 * scale);
+    
+    [UIView animateWithDuration:.5f delay:0.f usingSpringWithDamping:.5f initialSpringVelocity:15.f options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.imageButton.center = leftCenter;
+        self.videoButton.center = leftCenter2;
+        self.textButton.center = rightCenter;
+        self.dtieButton.center = rightCenter2;
+        self.addChooseView.alpha = 1;
+        self.tempAddButton.transform = CGAffineTransformMakeRotation(M_PI/4.f);
+    } completion:^(BOOL finished) {
+        
+    }];
+}
+
+- (void)hiddenChooseView
+{
+    [self.addChooseView removeFromSuperview];
+    self.chooseButton.hidden = NO;
+    self.tempAddButton.transform = CGAffineTransformMakeRotation(0);
+    self.chooseButton = nil;
 }
 
 - (void)checkWYYBlock
@@ -247,7 +629,17 @@
     [self.photoSource addObjectsFromArray:tempArray];
     
     NSString * imageURL = self.model.postFirstPicture;
+    
+    if (isEmptyString(imageURL)) {
+        if (self.photoSource.count > 0) {
+            DTieEditModel * model = self.photoSource.firstObject;
+            self.model.postFirstPicture = model.detailsContent;
+            imageURL = model.detailsContent;
+        }
+    }
+    
     if (!isEmptyString(imageURL)) {
+        
         [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:imageURL] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
             
         } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
@@ -258,29 +650,6 @@
             }
         }];
     }
-    
-//    for (NSInteger i = 0; i < details.count; i++) {
-//        DTieEditModel * model = [details objectAtIndex:i];
-//        if (model.type == DTieEditType_Image) {
-//            if (model.image) {
-//                self.firstImage = model.image;
-//            }else{
-//                if (isEmptyString(imageURL)) {
-//                    imageURL = model.detailContent;
-//                }
-//            }
-//            [self.modelSources removeObject:model];
-//            break;
-//        }
-//    }
-//
-//    [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:imageURL] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
-//
-//    } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-//        [[SDImageCache sharedImageCache] storeImage:image forKey:imageURL toDisk:YES completion:nil];
-//        self.firstImage = image;
-//        [self configHeaderView];
-//    }];
 }
 
 - (void)configUserInteractionEnabled
@@ -300,9 +669,6 @@
         [self.firstImageView addGestureRecognizer:tap];
     }
     
-    if (!self.isSelfFlg) {
-        [self.dazhaohuButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    }
     [self.jubaoButton addTarget:self action:@selector(jubaoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
@@ -331,6 +697,98 @@
         model.title = self.model.postSummary;
         [[DDShareManager shareManager] showHandleViewWithImage:model];
     }
+}
+
+- (void)editTitleButtonDidClicked
+{
+    self.isEditTitle = YES;
+    DTieEditTextViewController * edit = [[DTieEditTextViewController alloc] initWithText:self.model.postSummary placeholder:@"请输入D帖标题"];
+    edit.delegate = self;
+    [self.parentDDViewController presentViewController:edit animated:YES completion:nil];
+}
+
+- (void)editTimeButtonDidClicked
+{
+    PGDatePickManager *datePickManager = [[PGDatePickManager alloc]init];
+    datePickManager.view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+    datePickManager.confirmButtonTextColor = UIColorFromRGB(0xDB6283);
+    
+    PGDatePicker *datePicker = datePickManager.datePicker;
+    
+    datePicker.delegate = self;
+    datePicker.datePickerMode = PGDatePickerModeDateHourMinute;
+    datePicker.textColorOfSelectedRow = UIColorFromRGB(0xDB6283);
+    datePicker.lineBackgroundColor = UIColorFromRGB(0xDB6283);
+    datePicker.middleTextColor = UIColorFromRGB(0xDB6283);
+    
+    NSInteger dateSecond = self.model.sceneTime / 1000;
+    NSDate * date = [NSDate dateWithTimeIntervalSince1970:dateSecond];
+    [datePicker setDate:date];
+    
+    [self.parentDDViewController presentViewController:datePickManager animated:false completion:nil];
+    [[DDBackWidow shareWindow] hidden];
+}
+
+- (void)datePicker:(PGDatePicker *)datePicker didSelectDate:(NSDateComponents *)dateComponents {
+    
+    NSDate * date = [NSDate setYear:dateComponents.year month:dateComponents.month day:dateComponents.day hour:dateComponents.hour minute:dateComponents.minute];
+    self.model.sceneTime = [date timeIntervalSince1970] * 1000;
+    NSString * str = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime];
+    self.senceTimelabel.text = str;
+    
+    DTieEditRequest * request = [[DTieEditRequest alloc] initWithTime:self.model.sceneTime postID:self.model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+}
+
+- (void)editLocationButtonDidClicked
+{
+    DTieChooseLocationController * chosse = [[DTieChooseLocationController alloc] init];
+    
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    poi.pt = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    poi.address = self.model.sceneAddress;
+    poi.name = self.model.sceneBuilding;
+    chosse.startPoi = poi;
+    
+    chosse.delegate = self;
+    [self.parentDDViewController pushViewController:chosse animated:YES];
+}
+
+- (void)chooseLocationDidChoose:(BMKPoiInfo *)poi
+{
+    self.model.sceneAddressLat = poi.pt.latitude;
+    self.model.sceneAddressLng = poi.pt.longitude;
+    self.model.sceneAddress = poi.address;
+    self.model.sceneBuilding = poi.name;
+    
+    self.locationLabel.text = [NSString stringWithFormat:@"%@", self.model.sceneBuilding];
+    
+    DTieEditRequest * request = [[DTieEditRequest alloc] initWithAddress:self.model.sceneAddress building:self.model.sceneBuilding lat:self.model.sceneAddressLat lng:self.model.sceneAddressLng postID:self.model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
+    
+    [self configMapRegion];
+}
+
+- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+{
+    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+    view.annotation = annotation;
+    view.image = [UIImage imageNamed:@"location"];
+    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+    
+    return view;
 }
 
 - (void)locationButtonDidClicked
@@ -378,8 +836,7 @@
     
     DDDazhaohuView * view = [[DDDazhaohuView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     view.block = ^(NSString *text) {
-        self.dazhaohuButton.enabled = NO;
-        
+        [DTieCollectionRequest cancelRequest];
         DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:2 subType:1 remark:text];
         
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -387,12 +844,11 @@
             self.model.dzfFlg = 1;
             self.model.dzfCount++;
             
-            self.dazhaohuButton.enabled = YES;
             [MBProgressHUD showTextHUDWithText:@"对方已收到您的信息" inView:[UIApplication sharedApplication].keyWindow];
         } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            self.dazhaohuButton.enabled = YES;
+            
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            self.dazhaohuButton.enabled = YES;
+            
         }];
     };
     [view show];
@@ -531,11 +987,75 @@
             
             [cell configWithModel:model Dtie:self.model];
             
+            __weak typeof(self) weakSelf = self;
+            __weak typeof(cell) weakCell = cell;
+            cell.addButtonHandle = ^{
+                
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+            };
+            
+            cell.upButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf upButtonDidClickedWith:indexPath];
+            };
+            
+            cell.downButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf downButtonDidClickedWith:indexPath];
+            };
+            
+            cell.deleteButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf deleteButtonDidClickedWith:indexPath];
+            };
+            
+            cell.editButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf editButtonDidClickedWith:indexPath];
+            };
+            
+            cell.shouldUpdateHandle = ^{
+                [weakSelf sortCurrentDetails];
+            };
+            
             return cell;
         }else if (model.type == DTieEditType_Video) {
             DTieDetailVideoTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailVideoTableViewCell" forIndexPath:indexPath];
             
             [cell configWithModel:model Dtie:self.model];
+            
+            __weak typeof(self) weakSelf = self;
+            __weak typeof(cell) weakCell = cell;
+            cell.addButtonHandle = ^{
+                
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+            };
+            
+            cell.upButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf upButtonDidClickedWith:indexPath];
+            };
+            
+            cell.downButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf downButtonDidClickedWith:indexPath];
+            };
+            
+            cell.deleteButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf deleteButtonDidClickedWith:indexPath];
+            };
+            
+            cell.editButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf editButtonDidClickedWith:indexPath];
+            };
+            
+            cell.shouldUpdateHandle = ^{
+                [weakSelf sortCurrentDetails];
+            };
             
             return cell;
         }else if (model.type == DTieEditType_Post) {
@@ -544,12 +1064,72 @@
             
             [cell configWithModel:model Dtie:self.model];
             
+            __weak typeof(self) weakSelf = self;
+            __weak typeof(cell) weakCell = cell;
+            cell.addButtonHandle = ^{
+                
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+            };
+            
+            cell.upButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf upButtonDidClickedWith:indexPath];
+            };
+            
+            cell.downButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf downButtonDidClickedWith:indexPath];
+            };
+            
+            cell.deleteButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf deleteButtonDidClickedWith:indexPath];
+            };
+            
+            cell.editButtonHandle = ^{
+                NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+                [weakSelf editButtonDidClickedWith:indexPath];
+            };
+            
             return cell;
         }
         
         DTieDetailTextTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieDetailTextTableViewCell" forIndexPath:indexPath];
         
         [cell configWithModel:model Dtie:self.model];
+        
+        __weak typeof(self) weakSelf = self;
+        __weak typeof(cell) weakCell = cell;
+        cell.addButtonHandle = ^{
+            
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf showChooseViewWithButton:weakCell.addButton insertIndex:indexPath.row+1];
+        };
+        
+        cell.upButtonHandle = ^{
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf upButtonDidClickedWith:indexPath];
+        };
+        
+        cell.downButtonHandle = ^{
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf downButtonDidClickedWith:indexPath];
+        };
+        
+        cell.deleteButtonHandle = ^{
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf deleteButtonDidClickedWith:indexPath];
+        };
+        
+        cell.editButtonHandle = ^{
+            NSIndexPath * indexPath = [weakSelf.tableView indexPathForCell:weakCell];
+            [weakSelf editButtonDidClickedWith:indexPath];
+        };
+        
+        cell.shouldUpdateHandle = ^{
+            [weakSelf sortCurrentDetails];
+        };
         
         return cell;
     }
@@ -562,6 +1142,143 @@
     return cell;
 }
 
+- (void)editButtonDidClickedWith:(NSIndexPath *)indexPath
+{
+    DTieEditModel * model = [self.modelSources objectAtIndex:indexPath.row];
+    self.currentModel = model;
+    self.insertIndex = indexPath.row;
+    
+    if (model.type == DTieEditType_Text) {
+        
+        DTieEditTextViewController * edit = [[DTieEditTextViewController alloc] initWithText:model.detailContent placeholder:@"请输入文字"];
+        edit.delegate = self;
+        [self.parentDDViewController presentViewController:edit animated:YES completion:nil];
+        
+    }else if (model.type == DTieEditType_Image) {
+        
+        RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"设置封面" message:@"确定使用当前图片作为封面 吗？"];
+        RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+            
+        } bold:NO];
+        RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+            
+            CreateDTieRequest * request = [[CreateDTieRequest alloc] initChangeFirstPicWithPostID:model.postId image:model.detailsContent];
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                [MBProgressHUD showTextHUDWithText:@"设为封面成功" inView:self];
+                self.model.postFirstPicture = model.detailsContent;
+                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:self.model.postFirstPicture] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
+                    
+                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
+                    if (image) {
+                        [[SDImageCache sharedImageCache] storeImage:image forKey:self.model.postFirstPicture toDisk:YES completion:nil];
+                        self.firstImage = image;
+                        [self configHeaderView];
+                    }
+                }];
+                
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                [MBProgressHUD showTextHUDWithText:@"设为封面失败" inView:self];
+                
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                
+                [MBProgressHUD showTextHUDWithText:@"设为封面失败" inView:self];
+                
+            }];
+            
+        } bold:YES];
+        [alertView addActions:@[action1, action2]];
+        [alertView show];
+        
+        
+//        TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
+//        picker.allowPickingOriginalPhoto = NO;
+//        picker.allowPickingVideo = NO;
+//        picker.allowTakeVideo = NO;
+//        picker.showSelectedIndex = NO;
+//        picker.allowCrop = NO;
+//
+//        self.isContentImagePicker = YES;
+//
+//        [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+        
+    }else if (model.type == DTieEditType_Video) {
+        TZImagePickerController * picker = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
+        picker.allowPickingOriginalPhoto = NO;
+        picker.videoMaximumDuration = 30.f;
+        picker.allowPickingMultipleVideo = NO;
+        picker.allowPickingVideo = YES;
+        picker.allowPickingImage = NO;
+        picker.allowTakeVideo = YES;
+        picker.showSelectedIndex = NO;
+        picker.allowPreview = YES;
+        
+        self.isContentImagePicker = YES;
+        
+        [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+    }else if (model.type == DTieEditType_Post) {
+        DTieChooseDTieController * dtie = [[DTieChooseDTieController alloc] init];
+        dtie.isSingle = YES;
+        dtie.delegate = self;
+        [self.parentDDViewController pushViewController:dtie animated:YES];
+    }
+}
+
+- (void)deleteButtonDidClickedWith:(NSIndexPath *)indexPath
+{
+    RDAlertView * alertView = [[RDAlertView alloc] initWithTitle:@"删除提示" message:@"确定删除当前模块吗？"];
+    RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+        
+    } bold:NO];
+    RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+        
+        [self.modelSources removeObjectAtIndex:indexPath.row];
+        [self.tableView beginUpdates];
+        [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView endUpdates];
+        
+        [self sortCurrentDetails];
+        
+    } bold:YES];
+    [alertView addActions:@[action1, action2]];
+    [alertView show];
+}
+
+- (void)upButtonDidClickedWith:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        [MBProgressHUD showTextHUDWithText:@"已经到达最顶了哦~" inView:self.parentDDViewController.view];
+    }else{
+        
+        [self.modelSources exchangeObjectAtIndex:indexPath.row withObjectAtIndex:indexPath.row-1];
+        [self.tableView beginUpdates];
+        NSIndexPath * exchangeIndexPath = [NSIndexPath indexPathForRow:indexPath.row-1 inSection:0];
+        [self.tableView moveRowAtIndexPath:indexPath toIndexPath:exchangeIndexPath];
+        [self.tableView endUpdates];
+        
+        [self sortCurrentDetails];
+        
+    }
+}
+
+- (void)downButtonDidClickedWith:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == self.modelSources.count-1) {
+        [MBProgressHUD showTextHUDWithText:@"已经到达最底了哦~" inView:self.parentDDViewController.view];
+    }else{
+        
+        [self.modelSources exchangeObjectAtIndex:indexPath.row withObjectAtIndex:indexPath.row+1];
+        [self.tableView beginUpdates];
+        NSIndexPath * exchangeIndexPath = [NSIndexPath indexPathForRow:indexPath.row+1 inSection:0];
+        [self.tableView moveRowAtIndexPath:indexPath toIndexPath:exchangeIndexPath];
+        [self.tableView endUpdates];
+        
+        [self sortCurrentDetails];
+        
+    }
+}
+
 - (void)watchPhotoDidClicked:(DTieEditModel *)model
 {
     if (self.WYYSelectType == 0) {
@@ -571,13 +1288,15 @@
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:@"确定使用该图片作为封面吗？" preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-            
+            [self.tableView reloadData];
         }];
         
         UIAlertAction * action2 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Yes") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             CreateDTieRequest * request = [[CreateDTieRequest alloc] initChangeFirstPicWithPostID:self.model.cid image:model.detailContent];
             
-            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self];
+            [self.tableView reloadData];
+            
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self];
             [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
                 
                 [hud hideAnimated:YES];
@@ -663,6 +1382,10 @@
     if (section == 1) {
         DTieReadCommentHeaderView * header = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"DTieReadCommentHeaderView"];
         
+        if (self.isRemark) {
+            [header hiddenWithRemark];
+        }
+        
         return header;
     }
     
@@ -686,29 +1409,42 @@
         footer.WYYSelectType = self.WYYSelectType;
         [footer configWithModel:self.model];
         
+        if (self.isRemark) {
+            [footer hiddenWithRemark];
+        }
+        
         __weak typeof(self) weakSelf = self;
         
         footer.locationButtonDidClicked = ^{
             [weakSelf locationButtonDidClicked];
         };
         
-        if (self.model.authorId == [UserManager shareManager].user.cid) {
-            footer.handleButtonDidClicked = ^{
-                [weakSelf seeButtonDidClicked];
-            };
-        }else{
-            footer.handleButtonDidClicked = ^{
-                [weakSelf jubaoButtonDidClicked];
-            };
-        }
+        footer.handleButtonDidClicked = ^{
+            weakSelf.secondNumberLabel.hidden = YES;
+            [NSObject cancelPreviousPerformRequestsWithTarget:weakSelf selector:@selector(secondNumberChange) object:nil];
+        };
+        
+//        if (self.model.authorId == [UserManager shareManager].user.cid) {
+//            footer.handleButtonDidClicked = ^{
+//                [weakSelf seeButtonDidClicked];
+//            };
+//        }else{
+//            footer.handleButtonDidClicked = ^{
+//                [weakSelf jubaoButtonDidClicked];
+//            };
+//        }
         
         if (!self.isPreRead) {
-            footer.backButtonDidClicked = ^{
+            footer.leftHandleButtonBlock = ^{
+                [weakSelf leftButtonDidClicked];
+            };
+            
+            footer.backHandleButtonBlock = ^{
                 [weakSelf backHomeDidClicked];
             };
         }
         
-        footer.shareButtonDidClicked = ^{
+        footer.rightHandleButtonBlock = ^{
             [weakSelf shareButtonDidClicked];
         };
         
@@ -919,10 +1655,10 @@
                 height = height + 144 * scale;
                 
                 if ([UserManager shareManager].user.cid == self.model.authorId) {
-                    height = height + 144 * scale;
+                    height = height + 144 * scale + 150 * scale;
                 }
                 
-                return 1100 * scale + height;
+                return 450 * scale + height;
             }else if (self.WYYTab == 2){
                 
                 NSPredicate* predicate = [NSPredicate predicateWithFormat:@"userId == %d", [UserManager shareManager].user.cid];
@@ -930,31 +1666,38 @@
                 
                 if (tempArray.count > 0) {
                     if ([UserManager shareManager].user.cid == self.model.authorId) {
-                        return 1000 * scale;
+                        return 900 * scale + 150 * scale;
                     }else{
-                        return 840 * scale;
+                        return 740 * scale;
                     }
                 }else{
-                    return 700 * scale;
+                    if ([UserManager shareManager].user.cid == self.model.authorId) {
+                        return 900 * scale + 150 * scale;
+                    }else{
+                        return 600 * scale;
+                    }
                 }
             }
         }else if (self.yaoyueList) {
             
             if (self.WYYTab == 1) {
                 if ([UserManager shareManager].user.cid == self.model.authorId) {
-                    return 1100 * scale + 3 * 144 * scale + 60 * scale + 144 * scale;
+                    return 450 * scale + 3 * 144 * scale + 60 * scale + 144 * scale + 150 * scale;
                 }
-                return 1100 * scale + 3 * 144 * scale + 60 * scale;
+                return 450 * scale + 3 * 144 * scale + 60 * scale;
             }else if (self.WYYTab == 2){
                 if ([UserManager shareManager].user.cid == self.model.authorId) {
-                    return 1000 * scale;
+                    return 900 * scale + 150 * scale;
                 }else{
-                    return 700 * scale;
+                    return 600 * scale;
                 }
             }
             
         }else{
-            return 1100 * scale;
+            if ([UserManager shareManager].user.cid == self.model.authorId) {
+                return 350 * scale + 150 * scale;
+            }
+            return 350 * scale;
         }
     }
     return .1f;
@@ -1004,21 +1747,39 @@
                 }
             }
             
+            if (height == 0.1f) {
+                height = 100 * scale;
+            }
+            
+            if (self.isSelfFlg) {
+                height += 300 * scale;
+                height += 120 * scale;
+            }
+            
         }else if (model.type == DTieEditType_Video){
             
             height = (kMainBoundsWidth - 120 * scale) / 4.f * 3.f + 90 * scale;
+            
+            if (self.isSelfFlg) {
+                height += 300 * scale;
+                height += 120 * scale;
+            }
             
             
         }else if (model.type == DTieEditType_Text) {
             
             height = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale - 120 * scale title:model.detailsContent font:kPingFangRegular(42 * scale)] + 100 * scale + 120 * scale;
+            
+            if (self.isSelfFlg) {
+                height += 300 * scale;
+                height += 120 * scale;
+            }
+            
         }else if (model.type == DTieEditType_Post) {
              height = 800 * scale + 90 * scale;
-        }
-        
-        if (self.isSelfFlg && self.isInsatllWX) {
-            if (model.wxCanSee == 1 || model.pFlag == 1 || model.shareEnable == 1) {
-                height += 72 * scale;
+            if (self.isSelfFlg) {
+                height += 144 * scale;
+                height += 120 * scale;
             }
         }
         
@@ -1063,98 +1824,103 @@
 #pragma mark - 创建tableView脚视图
 - (void)createfooterView
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    
-    UIView * footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
-    footerView.backgroundColor = [UIColor whiteColor];
-    
-    UIButton * commentButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"More")];
-    [footerView addSubview:commentButton];
-    [commentButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
-    [commentButton addTarget:self action:@selector(liuyanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.tableView.tableFooterView = footerView;
+    if (self.isRemark) {
+        
+    }else{
+        CGFloat scale = kMainBoundsWidth / 1080.f;
+        
+        UIView * footerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
+        footerView.backgroundColor = [UIColor whiteColor];
+        
+        UIButton * commentButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"More")];
+        [footerView addSubview:commentButton];
+        [commentButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(0);
+            make.right.mas_equalTo(-60 * scale);
+            make.height.mas_equalTo(72 * scale);
+        }];
+        [commentButton addTarget:self action:@selector(liuyanButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        self.tableView.tableFooterView = footerView;
+    }
 }
 
 - (void)seeButtonDidClicked
 {
-    if (self.isPreRead) {
-        [MBProgressHUD showTextHUDWithText:@"预览状态无法进行查看~" inView:self];
-        return;
-    }
     
-    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
-    GetDtieSecurityRequest * request = [[GetDtieSecurityRequest alloc] initWithModel:self.model];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-        [hud hideAnimated:YES];
-        
-        NSMutableArray * modelList =  [[NSMutableArray alloc] init];
-        NSInteger accountFlg = self.model.landAccountFlg;
-        
-        SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
-        model1.cid = -1;
-        model1.securitygroupName = @"所有朋友";
-        model1.securitygroupPropName = @"所有朋友可见";
-        model1.isChoose = YES;
-        model1.isNotification = YES;
-        
-        SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
-        model2.cid = -2;
-        model2.securitygroupName = DDLocalizedString(@"My Fans");
-        model2.securitygroupPropName = @"关注我的人可见";
-        model2.isChoose = YES;
-        model2.isNotification = YES;
-        if (accountFlg == 3) {
-            [modelList addObject:model1];
-        }else if (accountFlg == 5) {
-            [modelList addObject:model2];
-        }else if (accountFlg == 6) {
-            [modelList addObject:model1];
-            [modelList addObject:model2];
-        }else if (accountFlg == 7) {
-            [modelList addObject:model2];
-        }
-        
-        if (KIsDictionary(response)) {
-            NSArray * data = [response objectForKey:@"data"];
-            for (NSDictionary * dict in data) {
-                SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:dict];
-                [modelList addObject:model];
-            }
-        }
-        
-        if (modelList.count > 0) {
-            if (self.isRemark) {
-                self.secondNumberLabel.hidden = YES;
-                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
-            }
-            
-            DTieSecurityViewController * vc = [[DTieSecurityViewController alloc] initWithSecurityList:modelList];
-            [self.parentDDViewController pushViewController:vc animated:YES];
-        }else{
-            if (accountFlg == 1) {
-                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"CurrentOpen") inView:self.parentDDViewController.view];
-            }else if (accountFlg == 2) {
-                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"CurrentPrivate") inView:self.parentDDViewController.view];
-            }else{
-                [MBProgressHUD showTextHUDWithText:@"没有权限设置" inView:self.parentDDViewController.view];
-            }
-        }
-        
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-        [hud hideAnimated:YES];
-        
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
-        [hud hideAnimated:YES];
-        
-    }];
+//    if (self.isPreRead) {
+//        [MBProgressHUD showTextHUDWithText:@"预览状态无法进行查看~" inView:self];
+//        return;
+//    }
+//
+//    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+//    GetDtieSecurityRequest * request = [[GetDtieSecurityRequest alloc] initWithModel:self.model];
+//    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        [hud hideAnimated:YES];
+//
+//        NSMutableArray * modelList =  [[NSMutableArray alloc] init];
+//        NSInteger accountFlg = self.model.landAccountFlg;
+//
+//        SecurityGroupModel * model1 = [[SecurityGroupModel alloc] init];
+//        model1.cid = -1;
+//        model1.securitygroupName = @"所有朋友";
+//        model1.securitygroupPropName = @"所有朋友可见";
+//        model1.isChoose = YES;
+//        model1.isNotification = YES;
+//
+//        SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
+//        model2.cid = -2;
+//        model2.securitygroupName = DDLocalizedString(@"My Fans");
+//        model2.securitygroupPropName = @"关注我的人可见";
+//        model2.isChoose = YES;
+//        model2.isNotification = YES;
+//        if (accountFlg == 3) {
+//            [modelList addObject:model1];
+//        }else if (accountFlg == 5) {
+//            [modelList addObject:model2];
+//        }else if (accountFlg == 6) {
+//            [modelList addObject:model1];
+//            [modelList addObject:model2];
+//        }else if (accountFlg == 7) {
+//            [modelList addObject:model2];
+//        }
+//
+//        if (KIsDictionary(response)) {
+//            NSArray * data = [response objectForKey:@"data"];
+//            for (NSDictionary * dict in data) {
+//                SecurityGroupModel * model = [SecurityGroupModel mj_objectWithKeyValues:dict];
+//                [modelList addObject:model];
+//            }
+//        }
+//
+//        if (modelList.count > 0) {
+//            if (self.isRemark) {
+//                self.secondNumberLabel.hidden = YES;
+//                [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+//            }
+//
+//            DTieSecurityViewController * vc = [[DTieSecurityViewController alloc] initWithSecurityList:modelList];
+//            [self.parentDDViewController pushViewController:vc animated:YES];
+//        }else{
+//            if (accountFlg == 1) {
+//                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"CurrentOpen") inView:self.parentDDViewController.view];
+//            }else if (accountFlg == 2) {
+//                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"CurrentPrivate") inView:self.parentDDViewController.view];
+//            }else{
+//                [MBProgressHUD showTextHUDWithText:@"没有权限设置" inView:self.parentDDViewController.view];
+//            }
+//        }
+//
+//    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        [hud hideAnimated:YES];
+//
+//    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//
+//        [hud hideAnimated:YES];
+//
+//    }];
 }
 
 - (void)secondNumberChange
@@ -1182,100 +1948,324 @@
     picker.allowCrop = NO;
     
     [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(.5f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        TZPhotoPickerController * preview = (TZPhotoPickerController *)picker.topViewController;
+        if ([preview isKindOfClass:[TZPhotoPickerController class]]) {
+            [preview performSelector:@selector(takePhoto)];
+        }
+    });
 }
 
 #pragma mark - 选取照片
 - (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingPhotos:(NSArray<UIImage *> *)photos sourceAssets:(NSArray *)assets isSelectOriginalPhoto:(BOOL)isSelectOriginalPhoto infos:(NSArray<NSDictionary *> *)infos
 {
-    if (picker.showSelectedIndex) {
+    if (self.isContentImagePicker) {
         
-        NSMutableArray * details = [[NSMutableArray alloc] init];
+        NSInteger editIndex = [self.modelSources indexOfObject:self.currentModel];
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传" inView:self];
-        QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
-        
-        if (photos.count > 0 && isEmptyString(self.model.postFirstPicture)) {
-            self.firstImage = photos.firstObject;
+        if (picker.allowPickingImage) {
+            
+            if (self.currentModel) {
+                
+                MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传图片" inView:self.parentDDViewController.view];
+                QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                [manager uploadImage:photos.firstObject progress:^(NSString *key, float percent) {
+                    
+                } success:^(NSString *url) {
+                    
+                    DTieEditModel * editModel = [self.modelSources objectAtIndex:editIndex];
+                    
+                    editModel.detailContent = url;
+                    editModel.image = photos.firstObject;
+                    [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:editIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                    
+                    [self sortCurrentDetails];
+                    
+                    [hud hideAnimated:YES];
+                    
+                } failed:^(NSError *error) {
+                    
+                    [hud hideAnimated:YES];
+                    [MBProgressHUD showTextHUDWithText:@"上传图片失败" inView:self.parentDDViewController.view];
+                    
+                }];
+                
+            }else{
+                MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传图片" inView:self.parentDDViewController.view];
+                
+                NSMutableArray * tempDetails = [[NSMutableArray alloc] init];
+                QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                
+                if (photos.count > 0 && isEmptyString(self.model.postFirstPicture)) {
+                    self.firstImage = photos.firstObject;
+                }
+                
+                __block NSInteger count = 0;
+                
+                for (NSInteger i = 0; i < photos.count; i++) {
+                    UIImage * image = [photos objectAtIndex:i];
+                    
+                    [manager uploadImage:image progress:^(NSString *key, float percent) {
+                        
+                    } success:^(NSString *url) {
+                        
+                        DTieEditModel * model = [[DTieEditModel alloc] init];
+                        model.type = DTieEditType_Image;
+                        model.datadictionaryType = @"CONTENT_IMG";
+                        model.detailContent = url;
+                        model.pFlag = 0;
+                        model.wxCanSee = 1;
+                        model.textInformation = @"";
+                        model.authorID = [UserManager shareManager].user.cid;
+                        model.detailNumber = i+1;
+                        [tempDetails addObject:model];
+                        count++;
+                        
+                        if (count == photos.count) {
+                            
+                            [self sortDetails:tempDetails];
+                            [self.modelSources insertObjects:tempDetails atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, tempDetails.count)]];
+                            [self.tableView reloadData];
+                            [self sortCurrentDetails];
+                            
+                            [hud hideAnimated:YES];
+                        }
+                        
+                    } failed:^(NSError *error) {
+                        count++;
+                        if (count == photos.count) {
+                            
+                            [self sortDetails:tempDetails];
+                            [self.modelSources insertObjects:tempDetails atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, tempDetails.count)]];
+                            [self.tableView reloadData];
+                            [self sortCurrentDetails];
+                            
+                            [hud hideAnimated:YES];
+                        }
+                        
+                    }];
+                }
+            }
+            
+        }else{
+            
+            if (self.currentModel) {
+                
+                
+            }else{
+                
+                MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传视频" inView:self.parentDDViewController.view];
+                
+                NSMutableArray * tempDetails = [[NSMutableArray alloc] init];
+                QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+                
+                if (photos.count > 0 && isEmptyString(self.model.postFirstPicture)) {
+                    self.firstImage = photos.firstObject;
+                }
+                
+                __block NSInteger count = 0;
+                
+                for (NSInteger i = 0; i < photos.count; i++) {
+                    
+                    UIImage * image = [photos objectAtIndex:i];
+                    PHAsset * asset = [assets objectAtIndex:i];
+                    
+                    [manager uploadImage:image progress:^(NSString *key, float percent) {
+                        
+                    } success:^(NSString *url) {
+                        
+                        DTieEditModel * model = [[DTieEditModel alloc] init];
+                        model.detailContent = url;
+                        model.type = DTieEditType_Video;
+                        model.datadictionaryType = @"CONTENT_VIDEO";
+                        model.wxCanSee = 1;
+                        model.authorID = [UserManager shareManager].user.cid;
+                        model.detailNumber = i+1;
+                        model.pFlag = 0;
+                        
+                        [manager uploadPHAsset:asset progress:^(NSString *key, float percent) {
+                            
+                        } success:^(NSString *url) {
+                            
+                            model.textInformation = url;
+                            [tempDetails addObject:model];
+                            count++;
+                            
+                            if (count == photos.count) {
+                                
+                                [self sortDetails:tempDetails];
+                                [self.modelSources insertObjects:tempDetails atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, tempDetails.count)]];
+                                [self.tableView reloadData];
+                                [self sortCurrentDetails];
+                                
+                                [hud hideAnimated:YES];
+                            }
+                            
+                        } failed:^(NSError *error) {
+                            count++;
+                            if (count == photos.count) {
+                                
+                                [self sortDetails:tempDetails];
+                                [self.modelSources insertObjects:tempDetails atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(self.insertIndex, tempDetails.count)]];
+                                [self.tableView reloadData];
+                                [self sortCurrentDetails];
+                                
+                                [hud hideAnimated:YES];
+                            }
+                            
+                        }];
+                        
+                    } failed:^(NSError *error) {
+                        [hud hideAnimated:YES];
+                    }];
+                }
+                
+            }
+            
         }
         
-        __block NSInteger count = 0;
-        NSInteger totalCount = photos.count+self.model.details.count;
-        for (NSInteger i = self.model.details.count; i < totalCount; i++) {
+    }else{
+        if (picker.showSelectedIndex) {
             
-            UIImage * image = [photos objectAtIndex:i-self.model.details.count];
+            NSMutableArray * details = [[NSMutableArray alloc] init];
             
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传" inView:self];
+            QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
+            
+            if (photos.count > 0 && isEmptyString(self.model.postFirstPicture)) {
+                self.firstImage = photos.firstObject;
+            }
+            
+            __block NSInteger count = 0;
+            NSInteger totalCount = photos.count+self.model.details.count;
+            for (NSInteger i = self.model.details.count; i < totalCount; i++) {
+                
+                UIImage * image = [photos objectAtIndex:i-self.model.details.count];
+                
+                [manager uploadImage:image progress:^(NSString *key, float percent) {
+                    
+                } success:^(NSString *url) {
+                    
+                    NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
+                                            @"datadictionaryType":@"CONTENT_IMG",
+                                            @"detailsContent":url,
+                                            @"textInformation":@"",
+                                            @"pFlag":@(0),
+                                            @"wxCansee":@(1),
+                                            @"authorID":@([UserManager shareManager].user.cid)
+                                            };
+                    [details addObject:dict];
+                    count++;
+                    if (count == photos.count) {
+                        [hud hideAnimated:YES];
+                        [self uploadWithPhotos:details];
+                    }
+                    
+                } failed:^(NSError *error) {
+                    if (count == photos.count) {
+                        [hud hideAnimated:YES];
+                        [self uploadWithPhotos:details];
+                    }
+                }];
+            }
+            
+            
+        }else{
+            UIImage * image = [photos firstObject];
+            
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传" inView:self];
+            QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
             [manager uploadImage:image progress:^(NSString *key, float percent) {
                 
             } success:^(NSString *url) {
                 
-                NSDictionary * dict = @{@"detailNumber":[NSString stringWithFormat:@"%ld", i+1],
-                                        @"datadictionaryType":@"CONTENT_IMG",
-                                        @"detailsContent":url,
-                                        @"textInformation":@"",
-                                        @"pFlag":@(0),
-                                        @"wxCansee":@(1),
-                                        @"authorID":@([UserManager shareManager].user.cid)
-                                        };
-                [details addObject:dict];
-                count++;
-                if (count == photos.count) {
+                CreateDTieRequest * request = [[CreateDTieRequest alloc] initChangeFirstPicWithPostID:self.model.cid image:url];
+                [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                    
                     [hud hideAnimated:YES];
-                    [self uploadWithPhotos:details];
-                }
+                    [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
+                    self.model.postFirstPicture = url;
+                    self.firstImage = image;
+                    
+                    NSDictionary * data = [response objectForKey:@"data"];
+                    if (KIsArray(data)) {
+                        self.model.details = [NSArray arrayWithArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:data]];
+                    }
+                    
+                    [self configHeaderView];
+                    [self.tableView reloadData];
+                    
+                } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                    
+                    [hud hideAnimated:YES];
+                    [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
+                    
+                } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                    
+                    [hud hideAnimated:YES];
+                    [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
+                    
+                }];
                 
             } failed:^(NSError *error) {
-                if (count == photos.count) {
-                    [hud hideAnimated:YES];
-                    [self uploadWithPhotos:details];
-                }
+                
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
+                
             }];
         }
-        
-        
-    }else{
-        UIImage * image = [photos firstObject];
-        
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传" inView:self];
+    }
+    
+    self.currentModel = nil;
+    self.isContentImagePicker = NO;
+}
+
+- (void)imagePickerController:(TZImagePickerController *)picker didFinishPickingVideo:(UIImage *)coverImage sourceAssets:(id)asset
+{
+    NSInteger editIndex = [self.modelSources indexOfObject:self.currentModel];
+    
+    if (self.currentModel) {
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在上传视频" inView:self.parentDDViewController.view];
         QNDDUploadManager * manager = [[QNDDUploadManager alloc] init];
-        [manager uploadImage:image progress:^(NSString *key, float percent) {
+        [manager uploadImage:coverImage progress:^(NSString *key, float percent) {
             
         } success:^(NSString *url) {
             
-            CreateDTieRequest * request = [[CreateDTieRequest alloc] initChangeFirstPicWithPostID:self.model.cid image:url];
-            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            DTieEditModel * editModel = [self.modelSources objectAtIndex:editIndex];
+            editModel.detailContent = url;
+            editModel.image = coverImage;
+            
+            [manager uploadPHAsset:asset progress:^(NSString *key, float percent) {
+                
+            } success:^(NSString *url) {
+                
+                editModel.textInformation = url;
+                [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:editIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                
+                [self sortCurrentDetails];
                 
                 [hud hideAnimated:YES];
-                [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
-                self.model.postFirstPicture = url;
-                self.firstImage = image;
                 
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsArray(data)) {
-                    self.model.details = [NSArray arrayWithArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:data]];
-                }
-                
-                [self configHeaderView];
-                [self.tableView reloadData];
-                
-            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-                
+            } failed:^(NSError *error) {
                 [hud hideAnimated:YES];
-                [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
-                
-            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-                
-                [hud hideAnimated:YES];
-                [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
-                
             }];
             
         } failed:^(NSError *error) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"上传失败" inView:self];
+            [MBProgressHUD showTextHUDWithText:@"上传视频失败" inView:self.parentDDViewController.view];
             
         }];
     }
+    self.currentModel = nil;
+    self.isContentImagePicker = NO;
+}
+
+- (void)tz_imagePickerControllerDidCancel:(TZImagePickerController *)picker
+{
+    self.currentModel = nil;
+    self.isContentImagePicker = NO;
 }
 
 - (void)uploadWithPhotos:(NSMutableArray *)details
@@ -1309,20 +2299,6 @@
             [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
             [self sortWithDetails:self.model.details];
             
-            if (self.photoSource.count > 0) {
-                DTieEditModel * firstModel = self.photoSource.firstObject;
-                self.model.postFirstPicture = firstModel.detailsContent;
-                [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:[NSURL URLWithString:self.model.postFirstPicture] options:SDWebImageDownloaderUseNSURLCache progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
-                    
-                } completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
-                    if (image) {
-                        [[SDImageCache sharedImageCache] storeImage:image forKey:self.model.postFirstPicture toDisk:YES completion:nil];
-                        self.firstImage = image;
-                        [self.firstImageView setImage:image];
-                    }
-                }];
-            }
-            
             [self configHeaderView];
             [self.tableView reloadData];
             
@@ -1337,22 +2313,19 @@
         CreateDTieRequest * request = [[CreateDTieRequest alloc] initAddWithPostID:self.model.cid blocks:details];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
+            [hud hideAnimated:YES];
             if (self.model.details.count == 0) {
                 self.model.details = [NSArray arrayWithArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
+                
+                [MBProgressHUD showTextHUDWithText:@"上传成功，首张图片默认为封面图" inView:self];
             }else{
                 NSMutableArray * data = [[NSMutableArray alloc] initWithArray:self.model.details];
                 [data addObjectsFromArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
                 self.model.details = [NSArray arrayWithArray:data];
+                [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
             }
             
-            [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
             [self sortWithDetails:self.model.details];
-            
-            if (self.photoSource.count > 0) {
-                DTieEditModel * model = self.photoSource.firstObject;
-                self.model.postFirstPicture = model.detailsContent;
-            }
             
             [self configHeaderView];
             [self.tableView reloadData];
@@ -1387,6 +2360,42 @@
         make.height.mas_equalTo(.1f);
     }];
     
+    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(72 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    self.titleLabel.numberOfLines = 0;
+    [self.headerView addSubview:self.titleLabel];
+    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(20 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(165 * scale);
+    }];
+    
+    if (self.isSelfFlg) {
+        [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(-90 * scale);
+        }];
+        
+        if (!self.isRemark) {
+            UIButton * editTitleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [editTitleButton setImage:[UIImage imageNamed:@"editTitle"] forState:UIControlStateNormal];
+            [self.headerView addSubview:editTitleButton];
+            [editTitleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerY.mas_equalTo(self.titleLabel);
+                make.right.mas_equalTo(-30 * scale);
+                make.width.height.mas_equalTo(60 * scale);
+            }];
+            [editTitleButton addTarget:self action:@selector(editTitleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        }
+    }
+    
+    UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
+    [self.headerView addSubview:userView];
+    [userView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.right.mas_equalTo(0);
+        make.top.mas_equalTo(self.titleLabel.mas_bottom).offset(20 * scale);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
     if (self.isRemark) {
         self.second = 7;
         
@@ -1406,23 +2415,33 @@
         [self performSelector:@selector(secondNumberChange) withObject:nil afterDelay:1.f];
     }
     
-    self.titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(72 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
-    self.titleLabel.numberOfLines = 0;
-    [self.headerView addSubview:self.titleLabel];
-    [self.titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.firstImageView.mas_bottom).offset(20 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(165 * scale);
+    self.mydzhButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(38 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+    [self.mydzhButton setBackgroundColor:[UIColor whiteColor]];
+    [self.mydzhButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [userView addSubview:self.mydzhButton];
+    [self.mydzhButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-30 * scale);
+        make.height.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(250 * scale);
+        make.centerY.mas_equalTo(0);
     }];
+    [DDViewFactoryTool cornerRadius:50 * scale withView:self.mydzhButton];
+    self.mydzhButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.mydzhButton.layer.borderWidth = 4 * scale;
     
-    UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
-    [self.headerView addSubview:userView];
-    [userView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(0);
-        make.top.mas_equalTo(self.titleLabel.mas_bottom).offset(20 * scale);
-        make.height.mas_equalTo(144 * scale);
+    self.mygxqButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(38 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+    [self.mygxqButton setBackgroundColor:[UIColor whiteColor]];
+    [self.mygxqButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [userView addSubview:self.mygxqButton];
+    [self.mygxqButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(self.mydzhButton.mas_left).offset(-30 * scale);
+        make.height.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(250 * scale);
+        make.centerY.mas_equalTo(0);
     }];
+    [DDViewFactoryTool cornerRadius:50 * scale withView:self.mygxqButton];
+    self.mygxqButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.mygxqButton.layer.borderWidth = 4 * scale;
     
     UIImageView * locationButton = [[UIImageView alloc] init];
     locationButton.userInteractionEnabled = YES;
@@ -1495,60 +2514,6 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    self.dazhaohuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"打招呼"];
-    [userView addSubview:self.dazhaohuButton];
-    [self.dazhaohuButton mas_updateConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-100 * scale);
-        make.width.mas_equalTo(250 * scale);
-        make.height.mas_equalTo(128 * scale);
-        make.centerY.mas_equalTo(0);
-    }];
-    if (self.isSelfFlg) {
-        
-        UIButton * numberButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        numberButton.titleLabel.font = kPingFangRegular(32 * scale);
-        [numberButton addTarget:self action:@selector(dazhaohuButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        numberButton.backgroundColor = UIColorFromRGB(0xDB6283);
-        [userView addSubview:numberButton];
-        [numberButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(self.dazhaohuButton);
-            make.left.mas_equalTo(self.dazhaohuButton.mas_right).offset(5 * scale);
-            make.width.mas_equalTo(42 * scale);
-            make.height.mas_equalTo(42 * scale);
-        }];
-        [DDViewFactoryTool cornerRadius:21 * scale withView:numberButton];
-        
-        if (self.model.dzfCount == 0) {
-            [numberButton setTitle:@"0" forState:UIControlStateNormal];
-        }else if (self.model.dzfCount < 10) {
-            [numberButton setTitle:[NSString stringWithFormat:@"%ld", self.model.dzfCount] forState:UIControlStateNormal];
-        }else if (self.model.dzfCount < 100) {
-            [numberButton setTitle:[NSString stringWithFormat:@"%ld", self.model.dzfCount] forState:UIControlStateNormal];
-            [numberButton mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(80 * scale);
-            }];
-        }else if (self.model.dzfCount > 100) {
-            [numberButton setTitle:@"99+" forState:UIControlStateNormal];
-            [numberButton mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(80 * scale);
-            }];
-        }
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
-        self.dazhaohuButton.alpha = .7f;
-    }else{
-        [self.dazhaohuButton setTitle:@" 打招呼" forState:UIControlStateNormal];
-        [self.dazhaohuButton setImage:[UIImage imageNamed:@"dazhaohuzuozhe"] forState:UIControlStateNormal];
-        
-        BOOL canHandle = [[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model];
-        if (!canHandle) {
-            self.dazhaohuButton.alpha = 0.7f;
-        }
-    }
-    
-    if (self.isRemark) {
-        self.dazhaohuButton.hidden = YES;
-    }
-    
     self.locationLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
     [self.locationButton addSubview:self.locationLabel];
     [self.locationLabel mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -1558,14 +2523,127 @@
         make.centerY.mas_equalTo(0);
     }];
     
+    self.mapBaseView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.mapBaseView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self.headerView addSubview:self.mapBaseView];
+    [self.mapBaseView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.locationButton.mas_bottom).offset(30 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(450 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    self.mapBaseView.layer.cornerRadius = 24 * scale;
+    self.mapBaseView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+    self.mapBaseView.layer.shadowOpacity = .3f;
+    self.mapBaseView.layer.shadowRadius = 24 * scale;
+    self.mapBaseView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+    
+    UIView * mapBGView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.mapBaseView addSubview:mapBGView];
+    [mapBGView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.mas_equalTo(0);
+        make.bottom.mas_equalTo(0 * scale);
+    }];
+    
+    UITapGestureRecognizer * mapTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonDidClicked)];
+    [mapBGView addGestureRecognizer:mapTap];
+    
+    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    
+    self.mapView.delegate = self;
+    //设置定位图层自定义样式
+    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
+    //跟随态旋转角度是否生效
+    userlocationStyle.isRotateAngleValid = NO;
+    //精度圈是否显示
+    userlocationStyle.isAccuracyCircleShow = NO;
+    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
+    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+    [self.mapView updateLocationViewWithParam:userlocationStyle];
+    self.mapView.showsUserLocation = YES;
+    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
+    self.mapView.gesturesEnabled = NO;
+    self.mapView.buildingsEnabled = NO;
+    self.mapView.showMapPoi = NO;
+    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
+    
+    [mapBGView addSubview:self.mapView];
+    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    
+    for (UIView * view in self.mapView.subviews) {
+        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+            for (UIView * tempView in view.subviews) {
+                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+                    tempView.alpha = 0;
+                    break;
+                }
+            }
+        }
+    }
+    
+    if (self.isSelfFlg && !self.isRemark) {
+        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.height.mas_equalTo(570 * scale);
+        }];
+        
+        [mapBGView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-120 * scale);
+        }];
+        
+        UIButton * editTimeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"修改时间"];
+        [self.mapBaseView addSubview:editTimeButton];
+        [editTimeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.bottom.mas_equalTo(0);
+            make.width.mas_equalTo((kMainBoundsWidth - 120 * scale)/2.f);
+            make.height.mas_equalTo(120 * scale);
+        }];
+        [editTimeButton addTarget:self action:@selector(editTimeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        UIView * mapLineView = [[UIView alloc] initWithFrame:CGRectZero];
+        mapLineView.backgroundColor = UIColorFromRGB(0xDB6283);
+        [self.mapBaseView addSubview:mapLineView];
+        [mapLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(editTimeButton);
+            make.height.mas_equalTo(60 * scale);
+            make.width.mas_equalTo(3 * scale);
+            make.centerX.mas_equalTo(0);
+        }];
+        
+        UIButton * editLocationButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"修改地点"];
+        [self.mapBaseView addSubview:editLocationButton];
+        [editLocationButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.right.bottom.mas_equalTo(0);
+            make.width.mas_equalTo((kMainBoundsWidth - 120 * scale)/2.f);
+            make.height.mas_equalTo(120 * scale);
+        }];
+        [editLocationButton addTarget:self action:@selector(editLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        
+        self.addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.addButton setImage:[UIImage imageNamed:@"addEdit"] forState:UIControlStateNormal];
+        [self.headerView addSubview:self.addButton];
+        [self.addButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.bottom.mas_equalTo(-20 * scale);
+            make.centerX.mas_equalTo(0);
+            make.width.height.mas_equalTo(72 * scale);
+        }];
+        [self.addButton addTarget:self action:@selector(addButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    
     [self configHeaderView];
     [self configUserInteractionEnabled];
+    [self configMapRegion];
 }
 
 - (void)configHeaderView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
-    CGFloat height = (550 - 165) * scale;
+    CGFloat height = (1050 - 165) * scale;
+    
+    if (self.isSelfFlg && !self.isRemark) {
+        height = (1270 -165) * scale;
+    }
     
     if (self.firstImage) {
 //        CGFloat imageHeight = [DDTool getHeightWithImage:self.firstImage];
@@ -1578,8 +2656,19 @@
     }
     
     NSString * title = self.model.postSummary;
+    
+    if (isEmptyString(title) && !self.isRemark) {
+        title = DDLocalizedString(@"NoTitle");
+    }
+    
     if (!isEmptyString(title)) {
-        CGFloat tempHeight = [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:title font:kPingFangRegular(72 * scale)];
+        
+        CGFloat tempWidth = kMainBoundsWidth - 120 * scale;
+        if (self.isSelfFlg) {
+            tempWidth = kMainBoundsWidth - 150 * scale;
+        }
+        
+        CGFloat tempHeight = [DDTool getHeightByWidth:tempWidth title:title font:kPingFangRegular(72 * scale)];
         if (tempHeight < 120 * scale) {
             height += 100 * scale;
             [self.titleLabel mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -1599,7 +2688,25 @@
         }];
     }
     
+//    if (self.isRemark) {
+//
+//    }else{
+//
+//    }
+    
     if (self.yaoyueList) {
+        
+        if (self.leftButton.superview) {
+            [self.leftButton removeFromSuperview];
+        }
+        
+        if (self.centerButton.superview) {
+            [self.centerButton removeFromSuperview];
+        }
+        
+        if (self.rightButton.superview) {
+            [self.rightButton removeFromSuperview];
+        }
         
         //约饭帖
         height += 300 * scale;
@@ -1611,7 +2718,7 @@
             make.left.mas_equalTo(60 * scale);
             make.right.mas_equalTo(-60 * scale);
             make.height.mas_equalTo(3 * scale);
-            make.top.mas_equalTo(self.locationButton.mas_bottom).offset(10 * scale);
+            make.top.mas_equalTo(self.mapBaseView.mas_bottom).offset(80 * scale);
         }];
         
         if (self.WYYNumberLabel.superview) {
@@ -1632,10 +2739,25 @@
         if (self.model.authorId == [UserManager shareManager].user.cid) {
             height += 165 * scale;
             
-            UILabel * addPhotonTipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-            addPhotonTipLabel.text = @"允许参与者上传照片";
-            [self.headerView addSubview:addPhotonTipLabel];
-            [addPhotonTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            UIView * tempView = [self.headerView viewWithTag:999];
+            if (tempView) {
+                [tempView removeFromSuperview];
+            }
+            
+            UIView * addPhotoView = [[UIView alloc] initWithFrame:CGRectZero];
+            addPhotoView.tag = 999;
+            [self.headerView addSubview:addPhotoView];
+            [addPhotoView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(lineView.mas_bottom);
+                make.left.mas_equalTo(60 * scale);
+                make.height.mas_equalTo(163 * scale);
+                make.right.mas_equalTo(-60 * scale);
+            }];
+            
+            self.addPhotonTipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+            self.addPhotonTipLabel.text = @"允许参与者上传照片";
+            [addPhotoView addSubview:self.addPhotonTipLabel];
+            [self.addPhotonTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.top.mas_equalTo(lineView.mas_bottom);
                 make.left.mas_equalTo(60 * scale);
                 make.height.mas_equalTo(160 * scale);
@@ -1650,22 +2772,22 @@
                 self.WYYAddPhotoSwitch.on = YES;
             }
             [self.WYYAddPhotoSwitch addTarget:self action:@selector(switcDidChange:) forControlEvents:UIControlEventValueChanged];
-            [self.headerView addSubview:self.WYYAddPhotoSwitch];
+            [addPhotoView addSubview:self.WYYAddPhotoSwitch];
             [self.WYYAddPhotoSwitch mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.centerY.mas_equalTo(addPhotonTipLabel);
-                make.right.mas_equalTo(-60 * scale);
+                make.centerY.mas_equalTo(self.addPhotonTipLabel);
+                make.right.mas_equalTo(-10 * scale);
                 make.width.mas_equalTo(51);
                 make.height.mas_equalTo(31);
             }];
             
             UIView * bottomLineView = [[UIView alloc] initWithFrame:CGRectZero];
             bottomLineView.backgroundColor = UIColorFromRGB(0xefeff4);
-            [self.headerView addSubview:bottomLineView];
+            [addPhotoView addSubview:bottomLineView];
             [bottomLineView mas_makeConstraints:^(MASConstraintMaker *make) {
                 make.left.mas_equalTo(60 * scale);
                 make.right.mas_equalTo(-60 * scale);
                 make.height.mas_equalTo(3 * scale);
-                make.top.mas_equalTo(addPhotonTipLabel.mas_bottom);
+                make.bottom.mas_equalTo(0);
             }];
             
             [self.WYYNumberLabel mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -1719,27 +2841,70 @@
             }
         }
         
-    }else if (self.model.authorId == [UserManager shareManager].user.cid) {
-        
-        if (!self.isRemark) {
-            height += 180 * scale;
-            
-            if (self.uploadButton.superview) {
-                [self.uploadButton removeFromSuperview];
-            }
-            self.uploadButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"UploadPhotos")];
-            [DDViewFactoryTool cornerRadius:60 * scale withView:self.uploadButton];
-            self.uploadButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-            self.uploadButton.layer.borderWidth = 3 * scale;
-            [self.headerView addSubview:self.uploadButton];
-            [self.uploadButton mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(self.locationLabel.mas_bottom).offset(60 * scale);
-                make.height.mas_equalTo(120 * scale);
-                make.right.mas_equalTo(-60 * scale);
-                make.left.mas_equalTo(60 * scale);
+        if (self.isSelfFlg) {
+            [self.leftWYYButton mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.centerX.mas_equalTo(0);
+                make.width.mas_equalTo(kMainBoundsWidth - 120 * scale);
             }];
-            [self.uploadButton addTarget:self action:@selector(uploadButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+            self.rightWYYButton.hidden = YES;
         }
+        
+    }else{
+        height += 180 * scale;
+        
+        if (self.leftButton.superview) {
+            [self.leftButton removeFromSuperview];
+        }
+        
+        if (self.centerButton.superview) {
+            [self.centerButton removeFromSuperview];
+        }
+        
+        if (self.rightButton.superview) {
+            [self.rightButton removeFromSuperview];
+        }
+        CGFloat distance = (kMainBoundsWidth - 3 * 300 * scale) / 4.f;
+        self.leftButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+        [self.leftButton setBackgroundColor:[UIColor whiteColor]];
+        [self.leftButton addTarget:self action:@selector(leftButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.headerView addSubview:self.leftButton];
+        [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(distance);
+            make.height.mas_equalTo(120 * scale);
+            make.width.mas_equalTo(300 * scale);
+            make.top.mas_equalTo(self.mapBaseView.mas_bottom).offset(80 * scale);
+        }];
+        [DDViewFactoryTool cornerRadius:60 * scale withView:self.leftButton];
+        self.leftButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.leftButton.layer.borderWidth = 4 * scale;
+        
+        self.centerButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+        [self.centerButton addTarget:self action:@selector(centerButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.centerButton setBackgroundColor:[UIColor whiteColor]];
+        [self.headerView addSubview:self.centerButton];
+        [self.centerButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.leftButton.mas_right).offset(distance);
+            make.height.mas_equalTo(120 * scale);
+            make.width.mas_equalTo(300 * scale);
+            make.top.mas_equalTo(self.mapBaseView.mas_bottom).offset(80 * scale);
+        }];
+        [DDViewFactoryTool cornerRadius:60 * scale withView:self.centerButton];
+        self.centerButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.centerButton.layer.borderWidth = 4 * scale;
+        
+        self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@""];
+        [self.rightButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+        [self.rightButton setBackgroundColor:[UIColor whiteColor]];
+        [self.headerView addSubview:self.rightButton];
+        [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.centerButton.mas_right).offset(distance);
+            make.height.mas_equalTo(120 * scale);
+            make.width.mas_equalTo(300 * scale);
+            make.top.mas_equalTo(self.mapBaseView.mas_bottom).offset(80 * scale);
+        }];
+        [DDViewFactoryTool cornerRadius:60 * scale withView:self.rightButton];
+        self.rightButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.rightButton.layer.borderWidth = 4 * scale;
     }
     
     self.headerView.frame = CGRectMake(0, 0, kMainBoundsWidth, height);
@@ -1749,6 +2914,52 @@
     self.nameLabel.text = self.model.nickname;
     self.locationLabel.text = self.model.sceneBuilding;
     self.senceTimelabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.sceneTime];
+    
+    [self reloadStatus];
+    [self configMapRegion];
+}
+
+- (void)configMapRegion
+{
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    [self.mapView addAnnotation:annotation];
+    
+    BMKCoordinateRegion viewRegion;
+    
+    if ([DDLocationManager shareManager].userLocation.location) {
+        
+        CLLocationDegrees lng = fabs([DDLocationManager shareManager].userLocation.location.coordinate.longitude - self.model.sceneAddressLng);
+        CLLocationDegrees lat = fabs([DDLocationManager shareManager].userLocation.location.coordinate.latitude - self.model.sceneAddressLat);
+        
+        CLLocationDegrees centerLat;
+        CLLocationDegrees centerLng;
+        if ([DDLocationManager shareManager].userLocation.location.coordinate.longitude > self.model.sceneAddressLng) {
+            centerLng = self.model.sceneAddressLng + lng / 2.f;
+        }else{
+            centerLng = [DDLocationManager shareManager].userLocation.location.coordinate.longitude + lng / 2.f;
+        }
+        
+        if ([DDLocationManager shareManager].userLocation.location.coordinate.latitude > self.model.sceneAddressLat) {
+            centerLat = self.model.sceneAddressLat + lat / 2.f;
+        }else{
+            centerLat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude + lat / 2.f;
+        }
+        
+        if (lng < 0.01) {
+            lng = 0.01;
+        }
+        if (lat < 0.01) {
+            lat = 0.01;
+        }
+        
+        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(centerLat, centerLng), BMKCoordinateSpanMake(lat * 1.5, lng * 1.5));
+    }else{
+        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(.01, .01));
+    }
+    
+    [self.mapView setRegion:viewRegion animated:YES];
 }
 
 //浏览照片和帖子切换
@@ -1756,9 +2967,11 @@
 {
     if (self.WYYTab == 1) {
         self.WYYTab = 2;
+        self.addButton.hidden = YES;
         [self.leftWYYButton setTitle:DDLocalizedString(@"BrowsePost") forState:UIControlStateNormal];
     }else if (self.WYYTab == 2) {
         self.WYYTab = 1;
+        self.addButton.hidden = NO;
         [self.leftWYYButton setTitle:DDLocalizedString(@"BrowsePhotos") forState:UIControlStateNormal];
     }
     [self.tableView reloadData];
@@ -1781,17 +2994,19 @@
     SelectWYYBlockRequest * request =  [[SelectWYYBlockRequest alloc] initSwitchWithPostID:self.model.cid status:sender.isOn];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        if (sender.isOn) {
-            self.model.postClassification = 1;
-        }else{
-            self.model.postClassification = 0;
-        }
-        
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
     }];
+    
+    if (sender.isOn) {
+        self.model.postClassification = 1;
+        self.addPhotonTipLabel.text = @"允许参与者上传照片";
+    }else{
+        self.model.postClassification = 0;
+        self.addPhotonTipLabel.text = @"不允许参与者上传照片";
+    }
 }
 
 - (void)uploadButtonDidClicked
@@ -1807,6 +3022,244 @@
     picker.showSelectedIndex = YES;
     picker.allowCrop = NO;
     [self.parentDDViewController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)reloadStatus
+{
+    NSString * number = @"";
+    if (self.model.wyyCount > 0) {
+        number = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
+        if (self.model.wyyCount > 99) {
+            number = @"99+";
+        }
+    }
+    
+    if (self.isSelfFlg) {
+        
+        if (self.isRemark) {
+            self.mygxqButton.hidden = YES;
+            self.mydzhButton.hidden = YES;
+        }else{
+            if (self.yaoyueList) {
+                self.mygxqButton.hidden = YES;
+                self.mydzhButton.hidden = YES;
+            }else{
+                self.mygxqButton.hidden = NO;
+                self.mydzhButton.hidden = NO;
+            }
+        }
+        
+        NSString * dzhNumber = @"";
+        if (self.model.dzfCount > 0) {
+            dzhNumber = [NSString stringWithFormat:@"%ld", self.model.dzfCount];
+            if (self.model.wyyCount > 99) {
+                dzhNumber = @"99+";
+            }
+        }
+        
+        [self.mydzhButton setTitle:[NSString stringWithFormat:@"%@ %@", DDLocalizedString(@"SayHi"), dzhNumber] forState:UIControlStateNormal];
+        
+        [self.leftButton setTitle:DDLocalizedString(@"Delete") forState:UIControlStateNormal];
+        [self.centerButton setTitle:DDLocalizedString(@"AddPhotos") forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"OrganizeHere") forState:UIControlStateNormal];
+        
+        if (self.model.wyyFlg == 1) {
+            [self.mygxqButton setTitle:[NSString stringWithFormat:@"%@ %@", DDLocalizedString(@"HasInterestedHome"), number] forState:UIControlStateNormal];
+            self.mygxqButton.alpha = .5f;
+        }else{
+            [self.mygxqButton setTitle:DDLocalizedString(@"InterestedHome") forState:UIControlStateNormal];
+            self.mygxqButton.alpha = 1.f;
+        }
+        
+    }else{
+        
+        self.mygxqButton.hidden = YES;
+        self.mydzhButton.hidden = YES;
+        
+        if (self.model.wyyFlg == 1) {
+            [self.leftButton setTitle:[NSString stringWithFormat:@"%@ %@", DDLocalizedString(@"HasInterestedHome"), number] forState:UIControlStateNormal];
+            self.leftButton.alpha = .5f;
+        }else{
+            [self.leftButton setTitle:DDLocalizedString(@"InterestedHome") forState:UIControlStateNormal];
+            self.leftButton.alpha = 1.f;
+        }
+        [self.centerButton setTitle:DDLocalizedString(@"SayHi") forState:UIControlStateNormal];
+        [self.rightButton setTitle:DDLocalizedString(@"OrganizeHere") forState:UIControlStateNormal];
+        
+        if ([[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model]) {
+            self.centerButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+            [self.centerButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
+        }else{
+            self.centerButton.layer.borderColor = UIColorFromRGB(0xefeff4).CGColor;
+            [self.centerButton setTitleColor:UIColorFromRGB(0xefeff4) forState:UIControlStateNormal];
+        }
+    }
+}
+
+- (void)leftButtonDidClicked
+{
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
+    if (self.isSelfFlg) {
+        RDAlertView * alert = [[RDAlertView alloc] initWithTitle:@"删除提示" message:@"是否确定删除该帖子？"];
+        RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+            
+        } bold:NO];
+        RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+            
+            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在删除" inView:self.parentDDViewController.view];
+            
+            DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:self.model.cid];
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"删除成功" inView:self.parentDDViewController.view];
+                [self.parentDDViewController popViewControllerAnimated:YES];
+                
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"删除失败" inView:self.parentDDViewController.view];
+                
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                
+                [hud hideAnimated:YES];
+                [MBProgressHUD showTextHUDWithText:@"删除失败" inView:self.parentDDViewController.view];
+                
+            }];
+            
+        } bold:NO];
+        [alert addActions:@[action1, action2]];
+        [alert show];
+    }else{
+        if (self.model.wyyFlg) {
+            [DTieCancleWYYRequest cancelRequest];
+            DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.cid];
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                self.model.wyyFlg = 0;
+                self.model.wyyCount--;
+                [self reloadStatus];
+                
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                
+            }];
+            
+        }else{
+            [DTieCollectionRequest cancelRequest];
+            DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:1 subType:0 remark:@""];
+            
+            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+                self.model.wyyFlg = 1;
+                self.model.wyyCount++;
+                [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦。" inView:[UIApplication sharedApplication].keyWindow];
+                
+                [self reloadStatus];
+            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                
+            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                
+            }];
+        }
+    }
+}
+
+- (void)centerButtonDidClicked
+{
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        [self uploadButtonDidClicked];
+    }else{
+        if ([[DDLocationManager shareManager] postIsCanDazhaohuWith:self.model]) {
+            DDDazhaohuView * view = [[DDDazhaohuView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+            view.block = ^(NSString *text) {
+                
+                [DTieCollectionRequest cancelRequest];
+                DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:2 subType:1 remark:text];
+                
+                [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                    
+                    self.model.dzfFlg = 1;
+                    self.model.dzfCount++;
+                    [self reloadStatus];
+                    
+                    [MBProgressHUD showTextHUDWithText:@"对方已收到您的信息" inView:[UIApplication sharedApplication].keyWindow];
+                } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                    
+                } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                    
+                }];
+            };
+            [view show];
+        }
+    }
+}
+
+- (void)rightButtonDidClicked
+{
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    poi.pt = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+    poi.address = self.model.sceneAddress;
+    poi.name = self.model.sceneBuilding;
+    
+    YueFanViewController * yuefan = [[YueFanViewController alloc] initWithBMKPoiInfo:poi friendArray:[NSMutableArray new]];
+    
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+    
+    [na pushViewController:yuefan animated:YES];
+}
+
+- (void)handleButtonDidClicked
+{
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
+    if (self.model.wyyFlg) {
+        [DTieCancleWYYRequest cancelRequest];
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.cid];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.wyyFlg = 0;
+            self.model.wyyCount--;
+            [self reloadStatus];
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+        
+    }else{
+        [DTieCollectionRequest cancelRequest];
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:self.model.cid type:1 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            self.model.wyyFlg = 1;
+            self.model.wyyCount++;
+            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦。" inView:[UIApplication sharedApplication].keyWindow];
+            
+            [self reloadStatus];
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+    }
 }
 
 @end

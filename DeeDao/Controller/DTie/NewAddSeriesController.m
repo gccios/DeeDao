@@ -89,28 +89,28 @@
     if (postID == 0) {
         postID = model.cid;
     }
-    if (model.status == 0) {
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-        
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    dtieModel.postId = model.postId;
-                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                    [self.navigationController pushViewController:edit animated:YES];
-                }
-            }
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-        }];
-    }else{
+//    if (model.status == 0) {
+//        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+//
+//        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//
+//            if (KIsDictionary(response)) {
+//                NSDictionary * data = [response objectForKey:@"data"];
+//                if (KIsDictionary(data)) {
+//                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+//                    dtieModel.postId = model.postId;
+//                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+//                    [self.navigationController pushViewController:edit animated:YES];
+//                }
+//            }
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//            [hud hideAnimated:YES];
+//        }];
+//    }else{
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self.view];
         
         DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:postID type:4 start:0 length:10];
@@ -142,7 +142,7 @@
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             [hud hideAnimated:YES];
         }];
-    }
+//    }
 }
 
 - (void)createViews

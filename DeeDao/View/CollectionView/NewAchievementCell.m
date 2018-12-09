@@ -73,7 +73,7 @@
             }
             
             if (code == 4003) {
-                [MBProgressHUD showTextHUDWithText:@"该帖已被作者更改为草稿~" inView:self];
+                [MBProgressHUD showTextHUDWithText:@"该帖已经下线~" inView:self];
                 return;
             }
             

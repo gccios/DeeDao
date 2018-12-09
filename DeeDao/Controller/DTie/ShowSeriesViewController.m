@@ -451,7 +451,7 @@
         
         if (isBozhu && isInstallWX) {
             imageNames = @[@"shareweixin", @"shareFriend", @"sharebozhu"];
-            titles = @[@"微信好友或群", DDLocalizedString(@"Deedao Connections"), @"地到博主"];
+            titles = @[@"微信好友", DDLocalizedString(@"Deedao Connections"), @"地到博主"];
             startTag = 10;
         }else if (isBozhu && !isInstallWX) {
             imageNames = @[@"shareFriend", @"sharebozhu"];
@@ -459,7 +459,7 @@
             startTag = 11;
         }else if (!isBozhu && isInstallWX) {
             imageNames = @[@"shareweixin", @"shareFriend"];
-            titles = @[@"微信好友或群", DDLocalizedString(@"Deedao Connections")];
+            titles = @[@"微信好友", DDLocalizedString(@"Deedao Connections")];
             startTag = 10;
         }
         

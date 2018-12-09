@@ -47,21 +47,21 @@
     }
     
     if (isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"singleShare", @"sharebozhu"];
-        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), @"地到博主"];
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone", @"shareKouling", @"sharebozhu"];
+        titles = @[DDLocalizedString(@"Wechat Groups"), DDLocalizedString(@"Wechat Connections"), DDLocalizedString(@"SinglePost"), @"帖子口令", @"博主码"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
-        imageNames = @[@"sharebozhu"];
-        titles = @[@"地到博主"];
+        imageNames = @[@"shareKouling", @"sharebozhu"];
+        titles = @[@"帖子口令", @"博主码"];
         startTag = 13;
     }else if (!isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"singleShare"];
-        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster")];
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone", @"shareKouling"];
+        titles = @[DDLocalizedString(@"Wechat Groups"), DDLocalizedString(@"Wechat Connections"), DDLocalizedString(@"SinglePost"), @"帖子口令"];
         startTag = 10;
     }else{
-        imageNames = @[@"shareFriend"];
-        titles = @[DDLocalizedString(@"Deedao Connections")];
-        startTag = 12;
+        imageNames = @[@"shareKouling"];
+        titles = @[@"帖子口令"];
+        startTag = 13;
     }
     
     CGFloat width = kMainBoundsWidth / imageNames.count;
@@ -74,10 +74,6 @@
         UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor whiteColor];
         button.tag = startTag + i;
-        
-        if (i == 2) {
-            button.tag = 13;
-        }
         
         [button addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:button];
@@ -124,21 +120,21 @@
     }
     
     if (isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend", @"sharebozhu"];
-        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), DDLocalizedString(@"Deedao Connections"), @"地到博主"];
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone", @"shareKouling", @"sharebozhu"];
+        titles = @[DDLocalizedString(@"Wechat Groups"), DDLocalizedString(@"Wechat Connections"), DDLocalizedString(@"SinglePost"), @"帖子口令", @"博主码"];
         startTag = 10;
     }else if (isBozhu && !isInstallWX) {
-        imageNames = @[@"shareFriend", @"sharebozhu"];
-        titles = @[DDLocalizedString(@"Deedao Connections"), @"地到博主"];
-        startTag = 12;
+        imageNames = @[@"shareKouling", @"sharebozhu"];
+        titles = @[@"帖子口令", @"博主码"];
+        startTag = 13;
     }else if (!isBozhu && isInstallWX) {
-        imageNames = @[@"sharepengyouquan", @"singleShare", @"shareFriend"];
-        titles = @[DDLocalizedString(@"Photo Sharing"), DDLocalizedString(@"Poster"), DDLocalizedString(@"Deedao Connections")];
+        imageNames = @[@"sharepengyouquan", @"shareweixin", @"saveToPhone", @"shareKouling"];
+        titles = @[DDLocalizedString(@"Wechat Groups"), DDLocalizedString(@"Wechat Connections"), DDLocalizedString(@"SinglePost"), @"帖子口令"];
         startTag = 10;
     }else{
-        imageNames = @[@"shareFriend"];
-        titles = @[DDLocalizedString(@"Deedao Connections")];
-        startTag = 12;
+        imageNames = @[@"shareKouling"];
+        titles = @[@"帖子口令"];
+        startTag = 13;
     }
     
     CGFloat width = kMainBoundsWidth / imageNames.count;

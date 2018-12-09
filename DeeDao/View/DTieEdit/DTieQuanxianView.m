@@ -81,7 +81,7 @@
                 SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
                 model2.cid = -2;
                 model2.securitygroupName = DDLocalizedString(@"My Fans");
-                model2.isChoose = YES;
+                model2.isChoose = NO;
                 model2.isNotification = YES;
                 [self.dataSource addObject:model2];
                 
@@ -94,11 +94,11 @@
                 }
                 
                 [self.selectSource addObject:model1];
-                [self.selectSource addObject:model2];
+                
                 [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
                 [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
                 [self configMiquanLabelText:@"好友圈(默认密圈)"];
-                self.landAccountFlg = 4;
+                self.landAccountFlg = 3;
                 self.currentQuanxianButton = self.miquanButton;
                 
                 [self.tableView reloadData];
@@ -204,7 +204,7 @@
     if (self.currentShareButton != button) {
         [self.currentShareButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
         [button setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
-        [self configShareLabelText:@"微信分享（分享到微信好友或群）"];
+        [self configShareLabelText:@"微信分享（分享到微信好友）"];
         self.shareType = 2;
         self.currentShareButton = button;
     }
@@ -386,7 +386,7 @@
     UIButton * weixinButton = [UIButton buttonWithType:UIButtonTypeCustom];
     weixinButton.titleLabel.font = kPingFangRegular(42 * scale);
     [weixinButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
-    [weixinButton setTitle:@"分享到微信好友或群" forState:UIControlStateNormal];
+    [weixinButton setTitle:@"分享到微信好友" forState:UIControlStateNormal];
     [weixinButton setTitleColor:UIColorFromRGB(0x666666) forState:UIControlStateNormal];
     [self.shareView addSubview:weixinButton];
     [weixinButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -492,15 +492,15 @@
     SecurityGroupModel * model2 = [[SecurityGroupModel alloc] init];
     model2.cid = -2;
     model2.securitygroupName = DDLocalizedString(@"My Fans");
-    model2.isChoose = YES;
+    model2.isChoose = NO;
     model2.isNotification = YES;
     [self.dataSource addObject:model2];
     [self.selectSource addObject:model1];
-    [self.selectSource addObject:model2];
+    
     [self.currentQuanxianButton setImage:[UIImage imageNamed:@"singleno"] forState:UIControlStateNormal];
     [self.miquanButton setImage:[UIImage imageNamed:@"singleyes"] forState:UIControlStateNormal];
     [self configMiquanLabelText:@"好友圈(默认密圈)"];
-    self.landAccountFlg = 4;
+    self.landAccountFlg = 3;
     self.currentQuanxianButton = self.miquanButton;
     
     [self.tableView reloadData];

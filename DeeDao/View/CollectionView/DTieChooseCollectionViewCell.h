@@ -12,6 +12,8 @@
 
 - (void)configSelectStatus:(BOOL)selectStaus;
 
+- (void)configSingle;
+
 @property (nonatomic, assign) BOOL isSelect;
 
 @end

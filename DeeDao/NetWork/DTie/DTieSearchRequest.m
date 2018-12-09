@@ -93,6 +93,33 @@
     return self;
 }
 
+- (instancetype)initWithKeyWord:(NSString *)keyWord startDate:(double)startDate endDate:(double)endDate sortType:(NSInteger)sortType dataSources:(NSInteger)dataSources type:(NSInteger)type pageStart:(NSInteger)pageStart pageSize:(NSInteger)pageSize
+{
+    if (self = [super init]) {
+        
+        self.methodName = @"post/search/selectPostBySearch";
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        
+        if (!isEmptyString(keyWord)) {
+            [self setValue:keyWord forParamKey:@"keyword"];
+        }
+        [self setDoubleValue:startDate forParamKey:@"startDate"];
+        [self setDoubleValue:endDate forParamKey:@"endDate"];
+        
+        [self setIntegerValue:sortType forParamKey:@"sortType"];
+        [self setIntegerValue:dataSources forParamKey:@"dataSources"];
+        [self setIntegerValue:type forParamKey:@"type"];
+        [self setIntegerValue:pageStart forParamKey:@"pageStart"];
+        [self setIntegerValue:pageSize forParamKey:@"pageSize"];
+        [self setIntegerValue:pageStart forParamKey:@"start"];
+        [self setIntegerValue:pageSize forParamKey:@"length"];
+        
+        [self setValue:[NSArray new] forParamKey:@"idList"];
+        [self setValue:[NSArray new] forParamKey:@"yearList"];
+    }
+    return self;
+}
+
 - (void)configTimeSort:(NSInteger)type
 {
     if (type == 1) {

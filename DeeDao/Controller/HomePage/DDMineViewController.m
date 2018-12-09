@@ -25,6 +25,8 @@
 #import "DDNotificationViewController.h"
 #import "NewAchievementViewController.h"
 #import "ConverUtil.h"
+#import "DDMailViewController.h"
+#import "DDFriendCardViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -53,22 +55,24 @@
     self.view.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     self.dataSource = [NSMutableArray new];
-    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
+    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_Address],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Private],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
+                            [[MineMenuModel alloc] initWithType:MineMenuType_System]];
     
     if ([UserManager shareManager].user.bloggerFlg == 1) {
-        typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_Address],
+        typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_Address],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Private],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Blogger],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_Achievement],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_AlertList]];
+                      [[MineMenuModel alloc] initWithType:MineMenuType_System]];
     }
     
-    NSArray * sysArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_System]];
     [self.dataSource addObjectsFromArray:typeArray];
-    [self.dataSource addObjectsFromArray:sysArray];
 }
 
 - (void)createViews
@@ -83,11 +87,11 @@
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [UIView new];
     
-    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 700 * scale)];
+    MineHeaderView * headerView = [[MineHeaderView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 600 * scale)];
     [self.view addSubview:headerView];
     [headerView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(700 * scale);
+        make.height.mas_equalTo(600 * scale);
     }];
     
     [self.view addSubview:self.tableView];
@@ -100,32 +104,6 @@
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mineInfoDidClcked)];
     tap.numberOfTapsRequired = 1;
     [headerView addGestureRecognizer:tap];
-    
-    BOOL isInstallWX = [WXApi isWXAppInstalled];
-    BOOL isBozhu = NO;
-    if ([UserManager shareManager].user.bloggerFlg == 1) {
-        isBozhu = YES;
-    }
-    
-    if (isInstallWX || isBozhu) {
-        
-        UIButton * BGButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [headerView addSubview:BGButton];
-        [BGButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(headerView.nameLabel);
-            make.left.mas_equalTo(headerView.nameLabel.mas_right).offset(20 * scale);
-            make.width.height.mas_equalTo(110 * scale);
-        }];
-        [BGButton addTarget:self action:@selector(shareButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        
-        UIImageView * shareImage = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [shareImage setImage:[UIImage imageNamed:@"shareColor"]];
-        [BGButton addSubview:shareImage];
-        [shareImage mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.center.mas_equalTo(0);
-            make.width.height.mas_equalTo(45 * scale);
-        }];
-    }
     
 //    [self createTopViews];
 }
@@ -233,6 +211,14 @@
         }
             break;
             
+        case MineMenuType_FriendCard:
+        {
+            [self hideLeftViewAnimated:nil];
+            DDFriendCardViewController * card = [[DDFriendCardViewController alloc] init];
+            [nav pushViewController:card animated:YES];
+        }
+            break;
+            
         case MineMenuType_HandleGuide:
         {
             UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:@"确定要重新阅读操作提示吗？" preferredStyle:UIAlertControllerStyleAlert];
@@ -260,6 +246,21 @@
             [self hideLeftViewAnimated:nil];
             DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:0];
             [nav pushViewController:notification animated:YES];
+        }
+            break;
+            
+        case MineMenuType_shareMingPian:
+        {
+            [self shareButtonDidClicked];
+        }
+            break;
+            
+        case MineMenuType_hudongMessage:
+        {
+            [self hideLeftViewAnimated:nil];
+            DDMailViewController * mail = [[DDMailViewController alloc] init];
+            [nav pushViewController:mail animated:YES];
+            
         }
             break;
             
@@ -326,17 +327,17 @@
         }
         
         if (isBozhu && isInstallWX) {
-            imageNames = @[@"sharepengyouquan", @"shareweixin", @"shareKouling", @"sharebozhu"];
-            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"好友口令", @"地到博主码"];
-            startTag = 10;
+            imageNames = @[@"shareweixin", @"shareKouling", @"sharebozhu"];
+            titles = @[@"微信好友", @"好友口令", @"地到博主码"];
+            startTag = 11;
         }else if (isBozhu && !isInstallWX) {
             imageNames = @[@"shareKouling", @"sharebozhu"];
             titles = @[@"好友口令", @"地到博主码"];
             startTag = 12;
         }else if (!isBozhu && isInstallWX) {
-            imageNames = @[@"sharepengyouquan", @"shareweixin",  @"shareKouling"];
-            titles = @[DDLocalizedString(@"Wechat Groups"), @"微信好友或群", @"好友口令"];
-            startTag = 10;
+            imageNames = @[@"shareweixin",  @"shareKouling"];
+            titles = @[@"微信好友", @"好友口令"];
+            startTag = 11;
         }
         
         CGFloat width = kMainBoundsWidth / imageNames.count;

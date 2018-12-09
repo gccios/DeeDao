@@ -97,6 +97,20 @@
             
             break;
             
+        case EditMineType_BindMobile:
+            
+        {
+            self.nameLabel.text = @"绑定手机";
+            self.textField.placeholder = @"";
+            if (isEmptyString([UserManager shareManager].user.phone)) {
+                self.textField.text = @"未绑定手机号";
+            }else{
+                self.textField.text = [UserManager shareManager].user.phone;
+            }
+        }
+            
+            break;
+            
         case EditMineType_Sex:
             
         {

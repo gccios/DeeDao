@@ -18,6 +18,8 @@
 
 - (instancetype)initWithSourceType:(NSInteger)sourceType;
 
+@property (nonatomic, strong) UIImage * BGImage;
+
 @property (nonatomic, weak) id<ChooseTypeViewControllerDelegate> delegate;
 
 @end

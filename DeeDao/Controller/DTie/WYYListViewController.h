@@ -10,4 +10,6 @@
 
 @interface WYYListViewController : DDViewController
 
+@property (nonatomic, assign) BOOL isZuju;
+
 @end

@@ -334,7 +334,7 @@
     if (model.status == 0) {
         if (model.authorId != [UserManager shareManager].user.cid) {
             
-            [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"该帖已经下线~" inView:self.view];
             
             return;
         }

@@ -45,7 +45,12 @@ NSString * const DDUserDidLoginWithTelNumberNotification = @"DDUserDidLoginWithT
     //构造SendAuthReq结构体
     SendAuthReq* req =[[SendAuthReq alloc]init];
     req.scope = @"snsapi_userinfo";
-    req.state = @"com.deedao.appstore";
+    
+    NSString * bundleID = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIdentifier"];
+    if (isEmptyString(bundleID)) {
+        bundleID = @"com.deedao.appstore";
+    }
+    req.state = bundleID;
     //第三方向微信终端发送一个SendAuthReq消息结构
     [WXApi sendReq:req];
 }

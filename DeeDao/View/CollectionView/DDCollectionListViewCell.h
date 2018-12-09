@@ -13,6 +13,7 @@
 
 @property (nonatomic, strong) UITableView * tableView;
 @property (nonatomic, copy) void (^tableViewClickHandle)(NSIndexPath * cellIndex);
+@property (nonatomic, copy) void (^deleteClickHandle)(void);
 
 - (void)configWithModel:(DTieModel *)model tag:(NSInteger)tag;
 

@@ -22,6 +22,7 @@
 #import "WeChatManager.h"
 #import "UserManager.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "ConverUtil.h"
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -39,6 +40,8 @@
 @property (nonatomic, strong) UIView * bottomHandleView;
 @property (nonatomic, strong) UIButton * leftHandleButton;
 @property (nonatomic, strong) UIButton * rightHandleButton;
+
+@property (nonatomic, strong) UIView * shareView;
 
 @end
 
@@ -327,32 +330,32 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
+//    DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     
-    if (model.status == 0) {
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-        
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                    [self.navigationController pushViewController:edit animated:YES];
-                }
-            }
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-        }];
-    }else{
+//    if (model.status == 0) {
+//        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+//
+//        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//
+//            if (KIsDictionary(response)) {
+//                NSDictionary * data = [response objectForKey:@"data"];
+//                if (KIsDictionary(data)) {
+//                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+//                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+//                    [self.navigationController pushViewController:edit animated:YES];
+//                }
+//            }
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//            [hud hideAnimated:YES];
+//        }];
+//    }else{
         DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
         [self.navigationController pushViewController:collection animated:YES];
-    }
+//    }
 }
 
 - (void)createTopView
@@ -432,7 +435,8 @@
 
 - (void)shareButtonDidClicked
 {
-    [[WeChatManager shareManager] shareMiniProgramWithUser:self.model];
+//    [[WeChatManager shareManager] shareMiniProgramWithUser:self.model];
+    [[UIApplication sharedApplication].keyWindow addSubview:self.shareView];
 }
 
 - (void)backButtonDidClicked
@@ -494,6 +498,96 @@
 //    }
 //    return _deleteButton;
 //}
+
+- (UIView *)shareView
+{
+    if (!_shareView) {
+        _shareView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        _shareView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
+        UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:_shareView action:@selector(removeFromSuperview)];
+        [_shareView addGestureRecognizer:tap];
+        
+        NSArray * imageNames;
+        NSArray * titles;
+        NSInteger startTag = 10;
+        
+        BOOL isInstallWX = [WXApi isWXAppInstalled];
+        
+        if (isInstallWX) {
+            imageNames = @[@"shareweixin", @"shareKouling"];
+            titles = @[@"微信好友", @"好友口令"];
+            startTag = 11;
+        }else{
+            imageNames = @[@"shareKouling"];
+            titles = @[@"好友口令"];
+            startTag = 12;
+        }
+        
+        CGFloat width = kMainBoundsWidth / imageNames.count;
+        CGFloat height = kMainBoundsWidth / 4.f;
+        if (KIsiPhoneX) {
+            height += 38.f;
+        }
+        CGFloat scale = kMainBoundsWidth / 1080.f;
+        for (NSInteger i = 0; i < imageNames.count; i++) {
+            UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+            button.backgroundColor = [UIColor whiteColor];
+            button.tag = startTag + i;
+            [button addTarget:self action:@selector(buttonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+            [_shareView addSubview:button];
+            [button mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.mas_equalTo(i * width);
+                make.height.mas_equalTo(height);
+                make.bottom.mas_equalTo(0);
+                make.width.mas_equalTo(width);
+            }];
+            
+            UIImageView * imageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:[imageNames objectAtIndex:i]]];
+            [button addSubview:imageView];
+            [imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.centerX.mas_equalTo(0);
+                make.top.mas_equalTo(50 * scale);
+                make.width.height.mas_equalTo(96 * scale);
+            }];
+            
+            UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentCenter];
+            label.text = [titles objectAtIndex:i];
+            [button addSubview:label];
+            [label mas_makeConstraints:^(MASConstraintMaker *make) {
+                make.left.right.mas_equalTo(0);
+                make.height.mas_equalTo(45 * scale);
+                make.top.mas_equalTo(imageView.mas_bottom).offset(20 * scale);
+            }];
+        }
+    }
+    return _shareView;
+}
+
+- (void)buttonDidClicked:(UIButton *)button
+{
+    [self.shareView removeFromSuperview];
+    if (button.tag == 11){
+        
+        [[WeChatManager shareManager] shareMiniProgramWithUser:self.model];
+        
+    }else if(button.tag == 12) {
+        
+        NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+        NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+        
+        NSString * userID = [NSString stringWithFormat:@"%ld", self.model.cid];
+        
+        NSString * string = [NSString stringWithFormat:@"%@+%@", timeString, userID];
+        NSString * result = [ConverUtil base64EncodeString:string];
+        
+        NSString * pasteString = [NSString stringWithFormat:@"【DeeDao地到】%@#复制此消息，打开DeeDao地到查看好友名片", result];
+        
+        UIPasteboard * pasteBoard = [UIPasteboard generalPasteboard];
+        pasteBoard.string = pasteString;
+        [MBProgressHUD showTextHUDWithText:@"口令复制成功，快去发送给好友吧" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

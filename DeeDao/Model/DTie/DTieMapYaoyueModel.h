@@ -25,5 +25,6 @@
 
 @property (nonatomic, copy) NSString * userPortrait;
 @property (nonatomic, copy) NSString * firstPicture;
+@property (nonatomic, assign) NSInteger createTime;
 
 @end

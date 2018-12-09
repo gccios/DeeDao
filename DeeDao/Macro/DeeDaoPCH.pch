@@ -17,13 +17,17 @@
 #if TEST_DEV_TYPE
 #define HOSTURL @"https://portal.deedao.com" //正式地址
 #define QNBucketName @"deedao-test"
-#define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
+#define QNEndPoint @"https://qnpicture.deedao.com"
+#define BMK_KEY @"XgKSkszElR1fMdR2Cnwg4ePgK7jMYZIS"//百度地图的key
 
 #else
 #define HOSTURL @"http://10.93.20.171:8080"  //测试地址
-//#define HOSTURL @"https://portal.deedao.com"
+//#define HOSTURL @"http://39.105.111.191"  //测试地址
 #define QNBucketName @"deedao-test"
-#define QNEndPoint @"http://ow57gfs34.bkt.clouddn.com"
+#define QNEndPoint @"https://qnpicture.deedao.com"
+//#define BMK_KEY @"1gnrpYtISprlqiFzcsLUojzyxNBWC1EC"//百度地图的key
+#define BMK_KEY @"XgKSkszElR1fMdR2Cnwg4ePgK7jMYZIS"//百度地图的key
+
 #endif
 
 // Include any system framework and library headers here that should be included in all compilation units.
@@ -36,11 +40,10 @@
 #define WeChatAPPKey @"wx72955abeea4e44e2"
 #define WeChatAPPSecret @"ecb245a2061fcf39e687e6141f60264f"
 
+#define BaiDuAppKey @"db4120e9f2" //百度appKey
+
 #define QNAccessKeyID @"AkUua6ZyU6aRUlKIUzE3oC-zin8KiJe0GWuuqeM_"
 #define QNAccessKeySecret @"qmhjZQc5PMFyDIs4iarab56l25Fa-1999QvxZMTz"
-
-#define BMK_KEY @"XgKSkszElR1fMdR2Cnwg4ePgK7jMYZIS"//百度地图的key
-#define BaiDuAppKey @"db4120e9f2" //百度appKey
 
 #define kMainBoundsHeight   ([UIScreen mainScreen].bounds).size.height //屏幕的高度
 #define kMainBoundsWidth    ([UIScreen mainScreen].bounds).size.width //屏幕的宽度

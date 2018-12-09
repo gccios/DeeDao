@@ -14,4 +14,8 @@
 
 - (instancetype)initWithTelNumber:(NSString *)telNumber code:(NSString *)code;
 
+- (instancetype)initBindMobile:(NSString *)mobile;
+
+- (instancetype)initCheckMobile:(NSString *)mobile code:(NSString *)code;
+
 @end

@@ -23,16 +23,18 @@
 #import "UserYaoYueBlockModel.h"
 #import "DTieYaoyueBlockView.h"
 #import "ChangeWYYStatusRequest.h"
-#import <BaiduMapAPI_Map/BMKMapView.h>
-#import <BaiduMapAPI_Utils/BMKGeometry.h>
-#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+//#import <BaiduMapAPI_Map/BMKMapView.h>
+//#import <BaiduMapAPI_Utils/BMKGeometry.h>
+//#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 #import "DDLocationManager.h"
 #import "SecurityFriendController.h"
 #import "SelectWYYBlockRequest.h"
 #import "AddUserToWYYRequest.h"
 #import "RDAlertView.h"
+#import "DTieEditRequest.h"
+#import "DTieChooseSecurityView.h"
 
-@interface DTieReadHandleFooterView ()<BMKMapViewDelegate, SecurityFriendDelegate>
+@interface DTieReadHandleFooterView ()<SecurityFriendDelegate>
 
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, strong) NSMutableArray * yaoyueList;
@@ -40,24 +42,28 @@
 
 @property (nonatomic, strong) UILabel * timeLabel;
 @property (nonatomic, strong) UIButton * handleButton;
-@property (nonatomic, strong) UIButton * shoucangButton;
-@property (nonatomic, strong) UIButton * yaoyueButton;
-@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
-@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
-@property (nonatomic, strong) UILabel * shoucangNumberLabel;
+
+@property (nonatomic, strong) UILabel * statusLabel;
+@property (nonatomic, strong) UIButton * statusButton;
 
 @property (nonatomic, strong) UILabel * readLabel;
 @property (nonatomic, strong) UIButton * readButton;
 @property (nonatomic, strong) UIButton * jubaoButton;
 
-@property (nonatomic, strong) UIView * mapBaseView;
-@property (nonatomic, strong) BMKMapView * mapView;
+//@property (nonatomic, strong) UIView * mapBaseView;
+//@property (nonatomic, strong) BMKMapView * mapView;
 
 @property (nonatomic, strong) UISwitch * addUserSwitch;
 
 @property (nonatomic, strong) UIButton * leftButton;
 @property (nonatomic, strong) UIButton * rightButton;
 @property (nonatomic, strong) UIButton * createButton;
+
+@property (nonatomic, strong) UIButton * leftHandleButton;
+@property (nonatomic, strong) UIButton * rightHandleButton;
+
+@property (nonatomic, strong) DTieChooseSecurityView * securityView;
+@property (nonatomic, strong) UILabel * addTipLabel;
 
 @end
 
@@ -73,12 +79,16 @@
 
 - (void)configWithModel:(DTieModel *)model
 {
-    model.readTimes += 1;
     self.model = model;
     
-    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
-    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
-    [self.mapView addAnnotation:annotation];
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.leftHandleButton.hidden = YES;
+    self.rightHandleButton.hidden = YES;
+    
+//    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+//    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
+//    [self.mapView addAnnotation:annotation];
     
     self.timeLabel.text = [NSString stringWithFormat:@"%@：%@", DDLocalizedString(@"Last updated"), [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.createTime]];
     
@@ -86,10 +96,15 @@
         self.handleButton.hidden = NO;
         self.jubaoButton.hidden = YES;
         self.readButton.hidden = NO;
+        self.statusLabel.hidden = NO;
+        self.statusButton.hidden = NO;
+        
     }else{
         self.handleButton.hidden = YES;
-        self.jubaoButton.hidden = NO;
+        self.jubaoButton.hidden = YES;
         self.readButton.hidden = YES;
+        self.statusLabel.hidden = YES;
+        self.statusButton.hidden = YES;
     }
     
     NSString * readText = @"0";
@@ -100,7 +115,20 @@
         readText = @"10000+";
     }
     self.readLabel.text = [NSString stringWithFormat:@"%@：%@", DDLocalizedString(@"# of readers"), readText];
-
+    
+    if (self.model.landAccountFlg == 1) {
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+    }else if (self.model.landAccountFlg == 2) {
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+    }else{
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+    }
+    
+    if (self.model.status == 0) {
+        [self.statusButton setTitle:DDLocalizedString(@"Downline") forState:UIControlStateNormal];
+    }else{
+        [self.statusButton setTitle:DDLocalizedString(@"Online") forState:UIControlStateNormal];
+    }
     
     [self reloadStatus];
 }
@@ -142,8 +170,10 @@
     if ([UserManager shareManager].user.cid == self.model.authorId) {
         if (self.WYYSelectType == 1) {
             [self.leftButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
+            [self.leftButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f]];
         }else{
             [self.leftButton setTitle:DDLocalizedString(@"DeletePhotos") forState:UIControlStateNormal];
+            [self.leftButton setBackgroundColor:UIColorFromRGB(0xffffff)];
         }
         [self addSubview:self.leftButton];
         [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -156,8 +186,10 @@
         
         if (self.WYYSelectType == 2) {
             [self.rightButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
+            [self.rightButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f]];
         }else{
             [self.rightButton setTitle:DDLocalizedString(@"MakeCover") forState:UIControlStateNormal];
+            [self.rightButton setBackgroundColor:UIColorFromRGB(0xffffff)];
         }
         [self addSubview:self.rightButton];
         [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -170,8 +202,10 @@
         
         if (self.WYYSelectType == 3) {
             [self.createButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
+            [self.createButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f]];
         }else{
             [self.createButton setTitle:DDLocalizedString(@"PhotoCreatePostLong") forState:UIControlStateNormal];
+            [self.createButton setBackgroundColor:UIColorFromRGB(0xffffff)];
         }
         [self addSubview:self.createButton];
         [self.createButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -182,16 +216,22 @@
         }];
         [self.createButton addTarget:self action:@selector(createButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
         
-        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.top.mas_equalTo(350 * scale);
-            make.height.mas_equalTo(.1);
+//        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.mas_equalTo(350 * scale);
+//            make.height.mas_equalTo(.1);
+//        }];
+        
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.top.mas_equalTo(350 * scale + 90 * scale);
         }];
     }else{
         if (tempArray.count > 0) {
             if (self.WYYSelectType == 1) {
                 [self.leftButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
+                [self.leftButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f]];
             }else{
                 [self.leftButton setTitle:DDLocalizedString(@"DeletePhotos") forState:UIControlStateNormal];
+                [self.leftButton setBackgroundColor:UIColorFromRGB(0xffffff)];
             }
             [self addSubview:self.leftButton];
             [self.leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -204,8 +244,10 @@
             
             if (self.WYYSelectType == 3) {
                 [self.rightButton setTitle:DDLocalizedString(@"Yes") forState:UIControlStateNormal];
+                [self.rightButton setBackgroundColor:[UIColorFromRGB(0xDB6283) colorWithAlphaComponent:.1f]];
             }else{
                 [self.rightButton setTitle:DDLocalizedString(@"PhotoCreatePostShort") forState:UIControlStateNormal];
+                [self.rightButton setBackgroundColor:UIColorFromRGB(0xffffff)];
             }
             [self addSubview:self.rightButton];
             [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -215,14 +257,21 @@
                 make.centerX.mas_equalTo(kMainBoundsWidth/4.f);
             }];
             [self.rightButton addTarget:self action:@selector(createButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-            [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(170 * scale);
-                make.height.mas_equalTo(.1);
+//            [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//                make.top.mas_equalTo(170 * scale);
+//                make.height.mas_equalTo(.1);
+//            }];
+            
+            [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(170 * scale + 90 * scale);
             }];
         }else{
-            [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.top.mas_equalTo(50 * scale);
-                make.height.mas_equalTo(.1);
+//            [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//                make.top.mas_equalTo(50 * scale);
+//                make.height.mas_equalTo(.1);
+//            }];
+            [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.top.mas_equalTo(50 * scale + 90 * scale);
             }];
         }
     }
@@ -233,6 +282,11 @@
     self.yaoyueList = [[NSMutableArray alloc] initWithArray:models];
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    self.leftHandleButton.hidden = NO;
+    self.rightHandleButton.hidden = NO;
+    self.handleButton.hidden = YES;
+    self.statusButton.hidden = YES;
     
     [self.yaoyueView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     if (!self.yaoyueView.superview) {
@@ -341,7 +395,10 @@
             make.top.mas_equalTo(50 * scale);
             make.height.mas_equalTo(height);
         }];
-        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.mas_equalTo(height + 144 * scale);
+//        }];
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(height + 144 * scale);
         }];
     }else if (models){
@@ -371,16 +428,22 @@
             make.top.mas_equalTo(50 * scale);
             make.height.mas_equalTo(height);
         }];
-        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.mas_equalTo(height + 144 * scale);
+//        }];
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(height + 144 * scale);
         }];
     }
     
+    [self.leftHandleButton setTitle:DDLocalizedString(@"DeleteCurrentPost") forState:UIControlStateNormal];
+    [self.rightHandleButton setTitle:DDLocalizedString(@"InviteWXFriend") forState:UIControlStateNormal];
+    
     if ([UserManager shareManager].user.cid == self.model.authorId) {
-        UILabel * addTipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-        addTipLabel.text = @"允许新参与者主动加入";
-        [self addSubview:addTipLabel];
-        [addTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        self.addTipLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+        self.addTipLabel.text = @"允许新参与者主动加入";
+        [self addSubview:self.addTipLabel];
+        [self.addTipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(45 * scale);
             make.left.mas_equalTo(60 * scale);
             make.height.mas_equalTo(120 * scale);
@@ -398,7 +461,7 @@
         
         [self addSubview:self.addUserSwitch];
         [self.addUserSwitch mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.centerY.mas_equalTo(addTipLabel);
+            make.centerY.mas_equalTo(self.addTipLabel);
             make.right.mas_equalTo(-60 * scale);
             make.width.mas_equalTo(51);
             make.height.mas_equalTo(31);
@@ -411,16 +474,25 @@
             make.left.mas_equalTo(60 * scale);
             make.right.mas_equalTo(-60 * scale);
             make.height.mas_equalTo(3 * scale);
-            make.top.mas_equalTo(addTipLabel.mas_bottom);
+            make.top.mas_equalTo(self.addTipLabel.mas_bottom);
         }];
         
         [self.yaoyueView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(50 * scale + 144 * scale);
         }];
         
-        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//        [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
+//            make.top.mas_equalTo(height + 144 * scale + 144 * scale);
+//        }];
+        [self.readLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(height + 144 * scale + 144 * scale);
         }];
+    }else{
+        [self.rightHandleButton mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.centerX.mas_equalTo(0);
+            make.width.mas_equalTo(kMainBoundsWidth - 120 * scale);
+        }];
+        self.leftHandleButton.hidden = YES;
     }
 }
 
@@ -433,7 +505,7 @@
     
     RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:DDLocalizedString(@"Yes") handler:^{
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在加载" inView:self];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self];
         ChangeWYYStatusRequest * request =  [[ChangeWYYStatusRequest alloc] initRemoveSelfWithPostID:model.postID userID:model.userId];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
@@ -467,75 +539,113 @@
     SelectWYYBlockRequest * request =  [[SelectWYYBlockRequest alloc] initAddUserSwitchWithPostID:self.model.cid status:sender.isOn];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
-        if (sender.isOn) {
-            self.model.postClassification = 1;
-        }else{
-            self.model.postClassification = 0;
-        }
-        
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
     } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
         
     }];
+    
+    if (sender.isOn) {
+        self.model.postClassification = 1;
+        self.addTipLabel.text = @"允许新参与者主动加入";
+    }else{
+        self.model.postClassification = 0;
+        self.addTipLabel.text = @"不允许新参与者主动加入";
+    }
+}
+
+- (void)hiddenWithRemark
+{
+    self.readLabel.hidden = YES;
+    self.readButton.hidden = YES;
+    self.timeLabel.hidden = YES;
+    self.leftHandleButton.hidden = YES;
+    self.rightHandleButton.hidden = YES;
+    self.statusLabel.hidden = YES;
+    self.statusButton.hidden = YES;
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    [self.handleButton removeFromSuperview];
+    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Security Settings")];
+    [self addSubview:self.handleButton];
+    [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(90 * scale);
+        make.width.mas_equalTo(260 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    [self.handleButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:self.handleButton];
+    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.handleButton.layer.borderWidth = 3 * scale;
+    
+    if (self.model.landAccountFlg == 1) {
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+    }else if (self.model.landAccountFlg == 2) {
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+    }else{
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+    }
+    
+//    self.handleButton.enabled = NO;
 }
 
 - (void)createDTieReadHandleView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    self.mapBaseView = [[UIView alloc] initWithFrame:CGRectZero];
-    self.mapBaseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    [self addSubview:self.mapBaseView];
-    [self.mapBaseView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(50 * scale);
-        make.left.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(450 * scale);
-        make.right.mas_equalTo(-60 * scale);
-    }];
-    self.mapBaseView.layer.cornerRadius = 24 * scale;
-    self.mapBaseView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
-    self.mapBaseView.layer.shadowOpacity = .3f;
-    self.mapBaseView.layer.shadowRadius = 24 * scale;
-    self.mapBaseView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
-    
-    UITapGestureRecognizer * mapTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonClicked)];
-    [self.mapBaseView addGestureRecognizer:mapTap];
-    
-    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    
-    self.mapView.delegate = self;
-    //设置定位图层自定义样式
-    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
-    //跟随态旋转角度是否生效
-    userlocationStyle.isRotateAngleValid = NO;
-    //精度圈是否显示
-    userlocationStyle.isAccuracyCircleShow = NO;
-    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
-    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
-    [self.mapView updateLocationViewWithParam:userlocationStyle];
-    self.mapView.showsUserLocation = YES;
-    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
-    self.mapView.gesturesEnabled = NO;
-    self.mapView.buildingsEnabled = NO;
-    self.mapView.showMapPoi = NO;
-    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
-    
-    [self.mapBaseView addSubview:self.mapView];
-    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(0);
-    }];
-    
-    for (UIView * view in self.mapView.subviews) {
-        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
-            for (UIView * tempView in view.subviews) {
-                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
-                    tempView.alpha = 0;
-                    break;
-                }
-            }
-        }
-    }
+//    self.mapBaseView = [[UIView alloc] initWithFrame:CGRectZero];
+//    self.mapBaseView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+//    [self addSubview:self.mapBaseView];
+//    [self.mapBaseView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(50 * scale);
+//        make.left.mas_equalTo(60 * scale);
+//        make.height.mas_equalTo(450 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//    }];
+//    self.mapBaseView.layer.cornerRadius = 24 * scale;
+//    self.mapBaseView.layer.shadowColor = UIColorFromRGB(0x111111).CGColor;
+//    self.mapBaseView.layer.shadowOpacity = .3f;
+//    self.mapBaseView.layer.shadowRadius = 24 * scale;
+//    self.mapBaseView.layer.shadowOffset = CGSizeMake(0, 12 * scale);
+//
+//    UITapGestureRecognizer * mapTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(locationButtonClicked)];
+//    [self.mapBaseView addGestureRecognizer:mapTap];
+//
+//    self.mapView = [[BMKMapView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+//
+//    self.mapView.delegate = self;
+//    //设置定位图层自定义样式
+//    BMKLocationViewDisplayParam *userlocationStyle = [[BMKLocationViewDisplayParam alloc] init];
+//    //跟随态旋转角度是否生效
+//    userlocationStyle.isRotateAngleValid = NO;
+//    //精度圈是否显示
+//    userlocationStyle.isAccuracyCircleShow = NO;
+//    userlocationStyle.locationViewOffsetX = 0;//定位偏移量（经度）
+//    userlocationStyle.locationViewOffsetY = 0;//定位偏移量（纬度）
+//    [self.mapView updateLocationViewWithParam:userlocationStyle];
+//    self.mapView.showsUserLocation = YES;
+//    self.mapView.userTrackingMode = BMKUserTrackingModeNone;
+//    self.mapView.gesturesEnabled = NO;
+//    self.mapView.buildingsEnabled = NO;
+//    self.mapView.showMapPoi = NO;
+//    [self.mapView updateLocationData:[DDLocationManager shareManager].userLocation];
+//
+//    [self.mapBaseView addSubview:self.mapView];
+//    [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.mas_equalTo(0);
+//    }];
+//
+//    for (UIView * view in self.mapView.subviews) {
+//        if ([NSStringFromClass([view class]) isEqualToString:@"BMKInternalMapView"]) {
+//            for (UIView * tempView in view.subviews) {
+//                if ([tempView isKindOfClass:[UIImageView class]] && tempView.frame.size.width == 66) {
+//                    tempView.alpha = 0;
+//                    break;
+//                }
+//            }
+//        }
+//    }
     
     self.yaoyueView = [[UIView alloc] initWithFrame:CGRectZero];
     self.yaoyueView.backgroundColor = UIColorFromRGB(0xEFEFF4);
@@ -550,7 +660,7 @@
     self.readLabel.text = DDLocalizedString(@"# of readers");
     [self addSubview:self.readLabel];
     [self.readLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.mapBaseView.mas_bottom).offset(90 * scale);
+        make.top.mas_equalTo(90 * scale);
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(50 * scale);
     }];
@@ -597,138 +707,129 @@
         make.right.mas_equalTo(-60 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
+    self.jubaoButton.hidden = YES;
     [self.jubaoButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
     
-    self.shoucangButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
-    [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
-//    self.shoucangButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    [self addSubview:self.shoucangButton];
-    [self.shoucangButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(45 * scale);
-        make.centerX.mas_equalTo(-kMainBoundsWidth / 4);
-        make.height.mas_equalTo(120 * scale);
-//        make.width.mas_equalTo(200 * scale);
-    }];
-    [self.shoucangButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    
-    self.shoucangNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    [self addSubview:self.shoucangNumberLabel];
-    [self.shoucangNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
-        make.left.mas_equalTo(self.shoucangButton.mas_right).offset(0 * scale);
-        make.width.mas_equalTo(100 * scale);
-        make.height.mas_equalTo(120 * scale);
+    self.statusLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    self.statusLabel.text = DDLocalizedString(@"Status");
+    [self addSubview:self.statusLabel];
+    [self.statusLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(70 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(50 * scale);
     }];
     
-    self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
-    [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
-    [self addSubview:self.yaoyueButton];
-    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(45 * scale);
-        make.centerX.mas_equalTo(kMainBoundsWidth / 4);
-        make.height.mas_equalTo(120 * scale);
+    self.statusButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Online")];
+    [self addSubview:self.statusButton];
+    [self.statusButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.statusLabel);
+        make.width.mas_equalTo(260 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(72 * scale);
     }];
-    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.statusButton addTarget:self action:@selector(statusButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+    [DDViewFactoryTool cornerRadius:12 * scale withView:self.statusButton];
+    self.statusButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.statusButton.layer.borderWidth = 3 * scale;
     
-    self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-    [self addSubview:self.yaoyueNumberLabel];
-    [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(40 * scale);
-        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
-        make.width.mas_equalTo(120 * scale);
-        make.height.mas_equalTo(120 * scale);
-    }];
-    
-    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
-    self.yaoyueNumberShowLabel.backgroundColor = UIColorFromRGB(0xDB6283);
-    [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
-    [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(30 * scale);
-        make.width.mas_equalTo(42 * scale); 
-        make.height.mas_equalTo(42 * scale);
-    }];
-    [DDViewFactoryTool cornerRadius:21 * scale withView:self.yaoyueNumberShowLabel];
-    self.yaoyueNumberShowLabel.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.yaoyueNumberShowLabel.layer.borderWidth = 2 * scale;
-    
-    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
-    self.yaoyueNumberLabel.userInteractionEnabled = YES;
-    [self.yaoyueNumberLabel addGestureRecognizer:tap];
-    
-    UIButton * backHomeButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"BackList")];
-    [DDViewFactoryTool cornerRadius:60 * scale withView:backHomeButton];
-    backHomeButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    backHomeButton.layer.borderWidth = 3 * scale;
-    [self addSubview:backHomeButton];
-    [backHomeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"BackList")];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:self.leftHandleButton];
+    self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.leftHandleButton.layer.borderWidth = 3 * scale;
+    [self addSubview:self.leftHandleButton];
+    [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(-kMainBoundsWidth/4.f);
         make.height.mas_equalTo(120 * scale);
         make.width.mas_equalTo(444 * scale);
         make.bottom.mas_equalTo(-40 * scale);
     }];
-    [backHomeButton addTarget:self action:@selector(backHomeButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * shareButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SendWXFriend")];
-    [DDViewFactoryTool cornerRadius:60 * scale withView:shareButton];
-    shareButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    shareButton.layer.borderWidth = 3 * scale;
-    [self addSubview:shareButton];
-    [shareButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SendWXFriend")];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:self.rightHandleButton];
+    self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.rightHandleButton.layer.borderWidth = 3 * scale;
+    [self addSubview:self.rightHandleButton];
+    [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(kMainBoundsWidth/4.f);
         make.height.mas_equalTo(120 * scale);
         make.width.mas_equalTo(444 * scale);
         make.bottom.mas_equalTo(-40 * scale);
     }];
-    [shareButton addTarget:self action:@selector(shareButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+    [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
-{
-    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
-    view.annotation = annotation;
-    view.image = [UIImage imageNamed:@"location"];
-    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
-    
-    return view;
-}
+//- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+//{
+//    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+//    view.annotation = annotation;
+//    view.image = [UIImage imageNamed:@"location"];
+//    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:[UIView new]];
+//    
+//    return view;
+//}
+//
+//- (void)mapViewDidFinishLoading:(BMKMapView *)mapView
+//{
+//    BMKCoordinateRegion viewRegion;
+//    
+//    if ([DDLocationManager shareManager].userLocation.location) {
+//        
+//        CLLocationDegrees lng = fabs([DDLocationManager shareManager].userLocation.location.coordinate.longitude - self.model.sceneAddressLng);
+//        CLLocationDegrees lat = fabs([DDLocationManager shareManager].userLocation.location.coordinate.latitude - self.model.sceneAddressLat);
+//        
+//        CLLocationDegrees centerLat;
+//        CLLocationDegrees centerLng;
+//        if ([DDLocationManager shareManager].userLocation.location.coordinate.longitude > self.model.sceneAddressLng) {
+//            centerLng = self.model.sceneAddressLng + lng / 2.f;
+//        }else{
+//            centerLng = [DDLocationManager shareManager].userLocation.location.coordinate.longitude + lng / 2.f;
+//        }
+//        
+//        if ([DDLocationManager shareManager].userLocation.location.coordinate.latitude > self.model.sceneAddressLat) {
+//            centerLat = self.model.sceneAddressLat + lat / 2.f;
+//        }else{
+//            centerLat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude + lat / 2.f;
+//        }
+//        
+//        if (lng < 0.01) {
+//            lng = 0.01;
+//        }
+//        if (lat < 0.01) {
+//            lat = 0.01;
+//        }
+//        
+//        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(centerLat, centerLng), BMKCoordinateSpanMake(lat * 1.5, lng * 1.5));
+//    }else{
+//        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(.01, .01));
+//    }
+//    
+//    [self.mapView setRegion:viewRegion animated:YES];
+//}
 
-- (void)mapViewDidFinishLoading:(BMKMapView *)mapView
+- (void)statusButtonDidTouchUpInside
 {
-    BMKCoordinateRegion viewRegion;
+    [DTieEditRequest cancelRequest];
     
-    if ([DDLocationManager shareManager].userLocation.location) {
-        
-        CLLocationDegrees lng = fabs([DDLocationManager shareManager].userLocation.location.coordinate.longitude - self.model.sceneAddressLng);
-        CLLocationDegrees lat = fabs([DDLocationManager shareManager].userLocation.location.coordinate.latitude - self.model.sceneAddressLat);
-        
-        CLLocationDegrees centerLat;
-        CLLocationDegrees centerLng;
-        if ([DDLocationManager shareManager].userLocation.location.coordinate.longitude > self.model.sceneAddressLng) {
-            centerLng = self.model.sceneAddressLng + lng / 2.f;
-        }else{
-            centerLng = [DDLocationManager shareManager].userLocation.location.coordinate.longitude + lng / 2.f;
-        }
-        
-        if ([DDLocationManager shareManager].userLocation.location.coordinate.latitude > self.model.sceneAddressLat) {
-            centerLat = self.model.sceneAddressLat + lat / 2.f;
-        }else{
-            centerLat = [DDLocationManager shareManager].userLocation.location.coordinate.latitude + lat / 2.f;
-        }
-        
-        if (lng < 0.01) {
-            lng = 0.01;
-        }
-        if (lat < 0.01) {
-            lat = 0.01;
-        }
-        
-        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(centerLat, centerLng), BMKCoordinateSpanMake(lat * 1.5, lng * 1.5));
+    if (self.model.status == 0) {
+        self.model.status = 1;
     }else{
-        viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), BMKCoordinateSpanMake(.01, .01));
+        self.model.status = 0;
+    }
+    if (self.model.status == 0) {
+        [self.statusButton setTitle:DDLocalizedString(@"Downline") forState:UIControlStateNormal];
+    }else{
+        [self.statusButton setTitle:DDLocalizedString(@"Online") forState:UIControlStateNormal];
     }
     
-    [self.mapView setRegion:viewRegion animated:YES];
+    DTieEditRequest * request = [[DTieEditRequest alloc] initWithStaus:self.model.status postID:self.model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)locationButtonClicked
@@ -738,10 +839,16 @@
     }
 }
 
-- (void)backHomeButtonDidClicked
+- (void)leftHandleButtonDidClicked
 {
-    if (self.backButtonDidClicked) {
-        self.backButtonDidClicked();
+    if (self.yaoyueList) {
+        if (self.leftHandleButtonBlock) {
+            self.leftHandleButtonBlock();
+        }
+    }else{
+        if (self.backHandleButtonBlock) {
+            self.backHandleButtonBlock();
+        }
     }
 }
 
@@ -796,85 +903,56 @@
 
 - (void)reloadStatus
 {
-    CGFloat scale = kMainBoundsWidth / 1080.f;
     
-    if (self.model.wyyFlg) {
-        [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
-        [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueyes"] forState:UIControlStateNormal];
-        self.yaoyueButton.alpha = .5f;
-    }else{
-        [self.yaoyueButton setTitle:@"" forState:UIControlStateNormal];
-        [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
-        self.yaoyueButton.alpha = 1.f;
-    }
-    
-    if (self.model.wyyCount <= 0) {
-        self.yaoyueNumberShowLabel.text = @"0";
-        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(42 * scale);
-        }];
-    }else if(self.model.wyyCount < 100){
-        self.yaoyueNumberShowLabel.text = [NSString stringWithFormat:@"%ld", self.model.wyyCount];
-        
-        if (self.model.wyyCount < 10) {
-            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(42 * scale);
-            }];
-        }else {
-            [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.width.mas_equalTo(80 * scale);
-            }];
-        }
-        
-    }else{
-        self.yaoyueNumberShowLabel.text = @"99+";
-        [self.yaoyueNumberShowLabel mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.width.mas_equalTo(80 * scale);
-        }];
-    }
-    
-    if (self.model.authorId == [UserManager shareManager].user.cid) {
-        
-        self.shoucangButton.alpha = 1.f;
-        
-        [self.shoucangButton setImage:[UIImage imageNamed:@"zuozheshoucang"] forState:UIControlStateNormal];
-        
-        if (self.model.collectCount <= 0) {
-            self.shoucangNumberLabel.text = @" 0";
-        }else if(self.model.collectCount < 100){
-            self.shoucangNumberLabel.text = [NSString stringWithFormat:@" %ld", self.model.collectCount];
-        }else{
-            self.shoucangNumberLabel.text = @" 99+";
-        }
-        self.shoucangNumberLabel.hidden = NO;
-        
-    }else{
-        
-        self.shoucangNumberLabel.hidden = YES;
-        
-        if (self.model.collectFlg) {
-            [self.shoucangButton setTitle:@"" forState:UIControlStateNormal];
-            [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangyes"] forState:UIControlStateNormal];
-            self.shoucangButton.alpha = .5f;
-        }else{
-            [self.shoucangButton setTitle:@"" forState:UIControlStateNormal];
-            [self.shoucangButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
-            self.shoucangButton.alpha = 1.f;
-        }
-    }
 }
 
 - (void)handleButtonDidTouchUpInside
 {
+    if (self.model.landAccountFlg == 1) {
+        self.model.landAccountFlg = 2;
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+        
+        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:2 groupList:nil postID:self.model.cid];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+        
+    }else if (self.model.landAccountFlg == 2) {
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+        if (self.model.allowToSeeList.count > 0) {
+            self.model.landAccountFlg = 4;
+        }else{
+            self.model.landAccountFlg = 6;
+        }
+        
+        [self.securityView show];
+    }else{
+        self.model.landAccountFlg = 1;
+        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+        
+        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:1 groupList:nil postID:self.model.cid];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+    }
+    
     if (self.handleButtonDidClicked) {
         self.handleButtonDidClicked();
     }
 }
 
-- (void)shareButtonDidTouchUpInside
+- (void)rightHandleButtonDidTouchUpInside
 {
-    if (self.shareButtonDidClicked) {
-        self.shareButtonDidClicked();
+    if (self.rightHandleButtonBlock) {
+        self.rightHandleButtonBlock();
     }
 }
 
@@ -1005,89 +1083,12 @@
     }];
 }
 
-- (void)shoucangButtonDidClicked
+- (DTieChooseSecurityView *)securityView
 {
-    DTieModel * model = self.model;
-    
-    if (model.authorId == [UserManager shareManager].user.cid) {
-        //        [MBProgressHUD showTextHUDWithText:@"无法对自己的帖子进行该操作" inView:[UIApplication sharedApplication].keyWindow];
-        return;
+    if (!_securityView) {
+        _securityView = [[DTieChooseSecurityView alloc] initWithFrame:[UIScreen mainScreen].bounds model:self.model];
     }
-    
-    self.shoucangButton.enabled = NO;
-    if (model.collectFlg) {
-        
-        DTieCancleCollectRequest * request = [[DTieCancleCollectRequest alloc] initWithPostID:model.cid];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-            model.collectFlg = 0;
-            model.collectCount--;
-            [self reloadStatus];
-            
-            self.shoucangButton.enabled = YES;
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            self.shoucangButton.enabled = YES;
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            self.shoucangButton.enabled = YES;
-        }];
-        
-    }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:0 subType:0 remark:@""];
-        
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-            model.collectFlg = 1;
-            model.collectCount++;
-            [self reloadStatus];
-            
-            self.shoucangButton.enabled = YES;
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            self.shoucangButton.enabled = YES;
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            self.shoucangButton.enabled = YES;
-        }];
-    }
-}
-
-- (void)yaoyueButtonDidClicked
-{
-    DTieModel * model = self.model;
-    
-    self.yaoyueButton.enabled = NO;
-    if (model.wyyFlg) {
-        
-        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.cid];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-            model.wyyFlg = 0;
-            model.wyyCount--;
-            [self reloadStatus];
-            
-            self.yaoyueButton.enabled = YES;
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            self.yaoyueButton.enabled = YES;
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            self.yaoyueButton.enabled = YES;
-        }];
-        
-    }else{
-        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:1 subType:0 remark:@""];
-        
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-            model.wyyFlg = 1;
-            model.wyyCount++;
-            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦。" inView:[UIApplication sharedApplication].keyWindow];
-            
-            [self reloadStatus];
-            
-            self.yaoyueButton.enabled = YES;
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            self.yaoyueButton.enabled = YES;
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            self.yaoyueButton.enabled = YES;
-        }];
-    }
+    return _securityView;
 }
 
 @end

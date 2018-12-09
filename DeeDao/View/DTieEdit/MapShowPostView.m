@@ -10,6 +10,7 @@
 #import <Masonry.h>
 #import "DDViewFactoryTool.h"
 #import "MapYaoyueHeaderView.h"
+#import "MapYaoyueFooterView.h"
 #import "SelectMapYaoyueDetailRequest.h"
 #import "LogoCollectionViewCell.h"
 #import "DTieDetailRequest.h"
@@ -19,9 +20,10 @@
 #import "DDYaoYueViewController.h"
 #import "UserManager.h"
 #import "DTiePOIViewController.h"
-#import "DDCollectionViewController.h"
 #import "DDLGSideViewController.h"
 #import "YueFanViewController.h"
+#import "DTieDeleteRequest.h"
+#import "WYYListViewController.h"
 
 @interface MapShowPostView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -31,6 +33,8 @@
 @property (nonatomic, strong) NSMutableArray * dataSource;
 @property (nonatomic, strong) NSMutableArray * userSource;
 @property (nonatomic, assign) NSInteger index;
+
+@property (nonatomic, strong) UIButton * deleteButton;
 
 @end
 
@@ -85,15 +89,29 @@
     
     UIButton * cancleButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancleButton setTitleColor:UIColorFromRGB(0xDB6283) forState:UIControlStateNormal];
-    [cancleButton setTitle:DDLocalizedString(@"Cancel") forState:UIControlStateNormal];
+    [cancleButton setImage:[UIImage imageNamed:@"cancleDown"] forState:UIControlStateNormal];
     [contenView addSubview:cancleButton];
     [cancleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(10 * scale);
-        make.right.mas_equalTo(-30 * scale);
+        make.top.mas_equalTo(15 * scale);
+        make.right.mas_equalTo(-20 * scale);
         make.width.mas_equalTo(150 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     [cancleButton addTarget:self action:@selector(cancleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    if (self.model.authorId == [UserManager shareManager].user.cid) {
+        self.deleteButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"   删除这个帖子   "];
+        [contenView addSubview:self.deleteButton];
+        [self.deleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(45 * scale);
+            make.top.mas_equalTo(40 * scale);
+            make.height.mas_equalTo(80 * scale);
+        }];
+        self.deleteButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+        self.deleteButton.layer.borderWidth = 3 * scale;
+        [DDViewFactoryTool cornerRadius:40 * scale withView:self.deleteButton];
+        [self.deleteButton addTarget:self action:@selector(deletePost) forControlEvents:UIControlEventTouchUpInside];
+    }
     
     self.layout = [[UICollectionViewFlowLayout alloc] init];
     self.layout.itemSize = CGSizeMake(150 * scale, 150 * scale);
@@ -108,26 +126,43 @@
     self.collectionView.dataSource = self;
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.showsVerticalScrollIndicator = NO;
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, 324 * scale, 0);
+    self.collectionView.contentInset = UIEdgeInsetsMake(20 * scale, 0, 200 * scale, 0);
     [contenView addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(cancleButton.mas_bottom).offset(20 * scale);
+        make.top.mas_equalTo(cancleButton.mas_bottom).offset(60 * scale);
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Book")];
-    [DDViewFactoryTool cornerRadius:24 * scale withView:leftHandleButton];
-    leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    leftHandleButton.layer.borderWidth = 3 * scale;
-    [self addSubview:leftHandleButton];
-    [leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(144 * scale);
-        make.bottom.mas_equalTo(-40 * scale);
-    }];
+    MapYaoyueFooterView * view = [[MapYaoyueFooterView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 200 * scale)];
+    view.backgroundColor = UIColorFromRGB(0xffffff);
     
-    [leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    if (self.model) {
+        [view configWithDTieModel:self.model];
+        
+        __weak typeof(self) weakSelf = self;
+        
+        view.yaoyueHandle = ^() {
+            [weakSelf leftHandleButtonDidClicked];
+        };
+        
+        view.deleteHandle = ^{
+            [weakSelf deletePost];
+        };
+        
+        view.uploadHandle = ^{
+            [weakSelf uploadPhoto];
+        };
+        
+        view.hiddenHandle = ^{
+            [weakSelf cancleButtonDidClicked];
+        };
+    }
+    
+    [self addSubview:view];
+    [view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.height.mas_equalTo(200 * scale);
+    }];
     
     UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cancleButtonDidClicked)];
     UIView * backView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -191,15 +226,44 @@
             view.yaoyueHandle = ^() {
                 [weakSelf reloadWYYStatus];
             };
-            
-            //            view.yaoyueHandle = ^{
-            //                [weakSelf showYaoYue];
-            //            };
         }
         
         return view;
     }
+    
     return nil;
+}
+
+- (void)uploadPhoto
+{
+    if (self.uploadHandle) {
+        self.uploadHandle(self.model);
+    }
+    
+    [self cancleButtonDidClicked];
+}
+
+- (void)deletePost
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+    
+    DTieDeleteRequest * request = [[DTieDeleteRequest alloc] initWithPostId:self.model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [self cancleButtonDidClicked];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [MBProgressHUD showTextHUDWithText:@"删除失败" inView:[UIApplication sharedApplication].keyWindow];
+        [hud hideAnimated:YES];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [MBProgressHUD showTextHUDWithText:@"网络不给力" inView:[UIApplication sharedApplication].keyWindow];
+        [hud hideAnimated:YES];
+        
+    }];
 }
 
 - (void)reloadWYYStatus
@@ -249,7 +313,7 @@
             
             NSInteger code = [[response objectForKey:@"status"] integerValue];
             if (code == 4002) {
-                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
+                [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:[UIApplication sharedApplication].keyWindow];
                 return;
             }
             
@@ -258,7 +322,7 @@
                 DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
                 
                 if (dtieModel.deleteFlg == 1) {
-                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:self];
+                    [MBProgressHUD showTextHUDWithText:DDLocalizedString(@"PageHasDelete") inView:[UIApplication sharedApplication].keyWindow];
                     return;
                 }
                 

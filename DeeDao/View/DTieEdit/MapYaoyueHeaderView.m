@@ -15,6 +15,7 @@
 #import "DTieCollectionRequest.h"
 #import "DTieCancleCollectRequest.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "DDTool.h"
 
 @interface MapYaoyueHeaderView ()
 
@@ -30,9 +31,12 @@
 
 @property (nonatomic, strong) UIButton * collectButton;
 @property (nonatomic, strong) UIButton * yaoyueButton;
-//@property (nonatomic, strong) UILabel * yaoyueNumberLabel;
-//@property (nonatomic, strong) UILabel * yaoyueNumberShowLabel;
 @property (nonatomic, strong) DTieModel * model;
+
+@property (nonatomic, strong) UILabel * nameLabel;
+@property (nonatomic, strong) UILabel * timelabel;
+@property (nonatomic, strong) UILabel * buildLabel;
+@property (nonatomic, strong) UILabel * addressLabel;
 
 @end
 
@@ -139,62 +143,38 @@
         make.height.mas_equalTo(60 * scale);
     }];
     
-    self.collectButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
-    [self.collectButton setImage:[UIImage imageNamed:@"shoucangno"] forState:UIControlStateNormal];
-    [self addSubview:self.collectButton];
-    [self.collectButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.contenImageView).offset(-70 * scale);
-        make.left.mas_equalTo(self.contenImageView.mas_right).offset(200 * scale);
-        make.height.mas_equalTo(120 * scale);
+    self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    [self addSubview:self.nameLabel];
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(20 * scale);
+        make.right.mas_equalTo(-30 * scale);
+        make.top.mas_equalTo(self.contenImageView);
     }];
-    [self.collectButton addTarget:self action:@selector(collectButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    if ([UserManager shareManager].user.cid == self.model.authorId) {
-        self.collectButton.alpha = .5f;
-        self.collectButton.enabled = NO;
-    }
     
-    self.yaoyueButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0xDB6282) title:@""];
-    [self.yaoyueButton setImage:[UIImage imageNamed:@"yaoyueno"] forState:UIControlStateNormal];
-    [self addSubview:self.yaoyueButton];
-    [self.yaoyueButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.contenImageView).offset(70 * scale);
-        make.left.mas_equalTo(self.contenImageView.mas_right).offset(200 * scale);
-        make.height.mas_equalTo(120 * scale);
+    self.timelabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    [self addSubview:self.timelabel];
+    [self.timelabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(20 * scale);
+        make.right.mas_equalTo(-30 * scale);
+        make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(10 * scale);
     }];
-    [self.yaoyueButton addTarget:self action:@selector(yaoyueButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-//    self.yaoyueNumberLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
-//    [self addSubview:self.yaoyueNumberLabel];
-//    [self.yaoyueNumberLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.centerY.mas_equalTo(self.contenImageView);
-//        make.left.mas_equalTo(self.yaoyueButton.mas_right).offset(0 * scale);
-//        make.width.mas_equalTo(100 * scale);
-//        make.height.mas_equalTo(120 * scale);
-//    }];
-//
-//    self.yaoyueNumberShowLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-//    [self.yaoyueNumberLabel addSubview:self.yaoyueNumberShowLabel];
-//    [self.yaoyueNumberShowLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.centerY.mas_equalTo(-5 * scale);
-//        make.left.mas_equalTo(10 * scale);
-//        make.width.mas_equalTo(42 * scale);
-//        make.height.mas_equalTo(42 * scale);
-//    }];
-//    [DDViewFactoryTool cornerRadius:21 * scale withView:self.yaoyueNumberShowLabel];
-//    self.yaoyueNumberShowLabel.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-//    self.yaoyueNumberShowLabel.layer.borderWidth = 2 * scale;
-//
-//    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapDidClicked)];
-//    self.yaoyueNumberLabel.userInteractionEnabled = YES;
-//    [self.yaoyueNumberLabel addGestureRecognizer:tap];
+    self.buildLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    [self addSubview:self.buildLabel];
+    [self.buildLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(20 * scale);
+        make.right.mas_equalTo(-30 * scale);
+        make.top.mas_equalTo(self.timelabel.mas_bottom).offset(10 * scale);
+    }];
+    
+    self.addressLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+    [self addSubview:self.addressLabel];
+    [self.addressLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.contenImageView.mas_right).offset(20 * scale);
+        make.right.mas_equalTo(-30 * scale);
+        make.top.mas_equalTo(self.buildLabel.mas_bottom).offset(10 * scale);
+    }];
 }
-
-//- (void)tapDidClicked
-//{
-//    if (self.yaoyueHandle) {
-//        self.yaoyueHandle();
-//    }
-//}
 
 - (void)yaoyueButtonDidClicked
 {
@@ -363,7 +343,12 @@
         self.markImageView.hidden = YES;
         self.titleView.hidden = NO;
     }
-    [self reloadStatus];
+    self.nameLabel.text = model.nickname;
+    self.timelabel.text = [DDTool getTimeWithFormat:@"yyyy年MM月dd日" time:model.sceneTime];
+    self.buildLabel.text = model.sceneBuilding;
+    self.addressLabel.text = model.sceneAddress;
+    
+//    [self reloadStatus];
 }
 
 @end

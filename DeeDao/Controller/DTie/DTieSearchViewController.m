@@ -157,32 +157,32 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self endEditing];
-    DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
+//    DTieModel * model = [self.dataSource objectAtIndex:indexPath.item];
     
-    if (model.status == 0) {
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-        
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                    [self.navigationController pushViewController:edit animated:YES];
-                }
-            }
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-        }];
-    }else{
+//    if (model.status == 0) {
+//        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+//
+//        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//
+//            if (KIsDictionary(response)) {
+//                NSDictionary * data = [response objectForKey:@"data"];
+//                if (KIsDictionary(data)) {
+//                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+//                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+//                    [self.navigationController pushViewController:edit animated:YES];
+//                }
+//            }
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//            [hud hideAnimated:YES];
+//        }];
+//    }else{
         DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
         [self.navigationController pushViewController:collection animated:YES];
-    }
+//    }
 }
 
 - (void)timeButtonDidClicked
@@ -216,7 +216,7 @@
     }else if (self.sourceType == 9){
         [self.sourceButton setTitle:@"要约" forState:UIControlStateNormal];
     }else if (self.sourceType == -1){
-        [self.sourceButton setTitle:@"草稿" forState:UIControlStateNormal];
+        [self.sourceButton setTitle:@"下线" forState:UIControlStateNormal];
     }
     [self searchRequest];
 }

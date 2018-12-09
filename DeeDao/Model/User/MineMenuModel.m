@@ -66,7 +66,7 @@
                 
             {
                 self.imageName = @"achievement";
-                self.title = @"博主链接";
+                self.title = DDLocalizedString(@"BloggerLink");
             }
                 
                 break;
@@ -85,6 +85,33 @@
             {
                 self.imageName = @"achievement";
                 self.title = @"操作引导";
+            }
+                
+                break;
+                
+            case MineMenuType_shareMingPian:
+                
+            {
+                self.imageName = @"leftMingPian";
+                self.title = DDLocalizedString(@"ShareCard");
+            }
+                
+                break;
+                
+            case MineMenuType_hudongMessage:
+                
+            {
+                self.imageName = @"leftMessage";
+                self.title = DDLocalizedString(@"HudongMessage");
+            }
+                
+                break;
+                
+            case MineMenuType_FriendCard:
+                
+            {
+                self.imageName = @"alertList";
+                self.title = DDLocalizedString(@"InvitesAndCards");
             }
                 
                 break;

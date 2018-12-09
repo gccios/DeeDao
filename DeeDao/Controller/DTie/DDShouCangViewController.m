@@ -421,36 +421,37 @@
     if (model.status == 0) {
         if (model.authorId != [UserManager shareManager].user.cid) {
             
-            [MBProgressHUD showTextHUDWithText:@"该帖已被作者变为草稿状态" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"该帖已经下线~" inView:self.view];
             
             return;
         }
         
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
-        
-        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-            
-            if (KIsDictionary(response)) {
-                NSDictionary * data = [response objectForKey:@"data"];
-                if (KIsDictionary(data)) {
-                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
-                    dtieModel.postId = model.postId;
-                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
-                    [self.navigationController pushViewController:edit animated:YES];
-                }
-            }
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            [hud hideAnimated:YES];
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            [hud hideAnimated:YES];
-        }];
+//        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在获取草稿" inView:self.view];
+//
+//        DTieDetailRequest * request = [[DTieDetailRequest alloc] initWithID:model.postId type:4 start:0 length:10];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//
+//            if (KIsDictionary(response)) {
+//                NSDictionary * data = [response objectForKey:@"data"];
+//                if (KIsDictionary(data)) {
+//                    DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+//                    dtieModel.postId = model.postId;
+//                    DTieNewEditViewController * edit = [[DTieNewEditViewController alloc] initWithDtieModel:dtieModel];
+//                    [self.navigationController pushViewController:edit animated:YES];
+//                }
+//            }
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//            [hud hideAnimated:YES];
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//            [hud hideAnimated:YES];
+//        }];
     }else{
-        DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
-        [self.navigationController pushViewController:collection animated:YES];
+        
     }
+    DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dataSource index:indexPath.row];
+    [self.navigationController pushViewController:collection animated:YES];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section

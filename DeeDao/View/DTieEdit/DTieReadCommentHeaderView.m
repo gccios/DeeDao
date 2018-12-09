@@ -26,6 +26,11 @@
     return self;
 }
 
+- (void)hiddenWithRemark
+{
+    self.titleLabel.hidden = YES;
+}
+
 - (void)createCommentHeaderView
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;

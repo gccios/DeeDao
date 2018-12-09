@@ -73,6 +73,11 @@
     }
 }
 
+- (void)configPostID:(NSInteger)postID
+{
+    _postId = postID;
+}
+
 - (void)handleDetailContenJson
 {
     if (!isEmptyString(self.detailContent)) {

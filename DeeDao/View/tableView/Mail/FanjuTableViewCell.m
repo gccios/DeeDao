@@ -21,6 +21,8 @@
 @property (nonatomic, strong) UILabel * statusLabel;
 @property (nonatomic, strong) UILabel * postTitleLabel;
 
+@property (nonatomic, strong) UILabel * alertLabel;
+
 @property (nonatomic, strong) UILabel * infoLabel;
 
 @end
@@ -46,7 +48,7 @@
         build = @"";
     }
     
-    self.infoLabel.text = [NSString stringWithFormat:@"%@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:model.sceneTime]];
+    self.infoLabel.text = [NSString stringWithFormat:@"%@ %@ %@", [DDTool getTimeWithFormat:@"yyyy年MM月dd日" time:model.sceneTime], [self dateWeekString], [DDTool getTimeWithFormat:@"HH:mm" time:model.sceneTime]];
     self.nameLabel.text = model.nickname;
     self.poiLabel.text = model.sceneBuilding;
     
@@ -58,6 +60,16 @@
         }else if (self.model.subType == 2) {
             self.statusLabel.text = DDLocalizedString(@"OutFollow");
         }
+    }
+    
+    NSInteger currentTime = [[NSDate date] timeIntervalSince1970];
+    NSInteger time = self.model.sceneTime / 1000;
+    NSInteger distance = time - currentTime;
+    NSInteger maxDistance = 48 * 60 * 60;
+    if (distance > 0 && distance <= maxDistance) {
+        self.alertLabel.hidden = NO;
+    }else{
+        self.alertLabel.hidden = YES;
     }
 }
 
@@ -73,8 +85,18 @@
         make.top.mas_equalTo(40 * scale);
         make.left.mas_equalTo(60 * scale);
         make.height.mas_equalTo(50 * scale);
+    }];
+    
+    self.alertLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangMedium(38 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentRight];
+    self.alertLabel.text = @"48小时内";
+    [self.contentView addSubview:self.alertLabel];
+    [self.alertLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(40 * scale);
+        make.left.mas_equalTo(self.infoLabel.mas_right).offset(30 * scale);
+        make.height.mas_equalTo(50 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
+    self.alertLabel.hidden = YES;
     
     UIView * BGView = [[UIView alloc] initWithFrame:CGRectZero];
     BGView.backgroundColor = [UIColor whiteColor];
@@ -176,6 +198,34 @@
     if (self.rightButtonHandle) {
         self.rightButtonHandle();
     }
+}
+
+
+- (NSString *)dateWeekString
+{
+    NSDate *date=[NSDate dateWithTimeIntervalSince1970:self.model.sceneTime/1000];
+    NSCalendar *gregorian = [[NSCalendar alloc]
+                             initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *weekdayComponents =
+    [gregorian components:NSCalendarUnitWeekday fromDate:date];
+    NSInteger _weekday = [weekdayComponents weekday];
+    NSString *weekStr;
+    if (_weekday == 1) {
+        weekStr = @"星期日";
+    }else if (_weekday == 2){
+        weekStr = @"星期一";
+    }else if (_weekday == 3){
+        weekStr = @"星期二";
+    }else if (_weekday == 4){
+        weekStr = @"星期三";
+    }else if (_weekday == 5){
+        weekStr = @"星期四";
+    }else if (_weekday == 6){
+        weekStr = @"星期五";
+    }else if (_weekday == 7){
+        weekStr = @"星期六";
+    }
+    return weekStr;
 }
 
 - (void)awakeFromNib {

@@ -11,6 +11,15 @@
 
 @interface DTieDetailVideoTableViewCell : UITableViewCell
 
+@property (nonatomic, strong) UIButton * addButton;
+
+@property (nonatomic, copy) void (^addButtonHandle)(void);
+@property (nonatomic, copy) void (^upButtonHandle)(void);
+@property (nonatomic, copy) void (^downButtonHandle)(void);
+@property (nonatomic, copy) void (^deleteButtonHandle)(void);
+@property (nonatomic, copy) void (^editButtonHandle)(void);
+@property (nonatomic, copy) void (^shouldUpdateHandle)(void);
+
 //- (void)configWithCanSee:(BOOL)cansee;
 //
 //- (void)configWithModel:(DTieEditModel *)model;

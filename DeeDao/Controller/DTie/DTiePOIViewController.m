@@ -17,6 +17,8 @@
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
 #import <BaiduMapAPI_Map/BMKPointAnnotation.h>
+#import "DTieCancleWYYRequest.h"
+#import "DTieCollectionRequest.h"
 
 @interface DTiePOIViewController () <UICollectionViewDelegate, UICollectionViewDataSource, BMKMapViewDelegate>
 
@@ -28,6 +30,7 @@
 
 @property (nonatomic, strong) NSArray * titleSource;
 @property (nonatomic, strong) NSMutableArray * dataSource;
+@property (nonatomic, strong) UIButton * rightButton;
 
 @end
 
@@ -51,6 +54,49 @@
     [self createViews];
     [self createTopView];
     [self requestPOI];
+    [self reloadRightItem];
+    [self.rightButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)rightButtonDidClicked
+{
+    DTieModel * model = self.model;
+    
+    self.rightButton.enabled = NO;
+    if (model.wyyFlg) {
+        
+        DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:model.cid];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.wyyFlg = 0;
+            model.wyyCount--;
+            [self reloadRightItem];
+            
+            self.rightButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.rightButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.rightButton.enabled = YES;
+        }];
+        
+    }else{
+        DTieCollectionRequest * request = [[DTieCollectionRequest alloc] initWithPostID:model.cid type:1 subType:0 remark:@""];
+        
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            model.wyyFlg = 1;
+            model.wyyCount++;
+            [MBProgressHUD showTextHUDWithText:@"您刚标识了您想约这里。约点越多，被约越多。Deedao好友越多，被约越多。记得常去约饭约玩活地图 组饭局哦。" inView:[UIApplication sharedApplication].keyWindow];
+            
+            [self reloadRightItem];
+            
+            self.rightButton.enabled = YES;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.rightButton.enabled = YES;
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            self.rightButton.enabled = YES;
+        }];
+    }
 }
 
 - (void)requestPOI
@@ -216,6 +262,15 @@
     }];
 }
 
+- (void)reloadRightItem
+{
+    if (self.model.wyyFlg == 1) {
+        [self.rightButton setTitle:@"  取消感兴趣  " forState:UIControlStateNormal];
+    }else{
+        [self.rightButton setTitle:@"  感兴趣  " forState:UIControlStateNormal];
+    }
+}
+
 - (void)backLocationButtonDidClicked
 {
     BMKCoordinateRegion viewRegion = BMKCoordinateRegionMake(CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng), self.mapView.region.span);
@@ -359,6 +414,27 @@
         make.bottom.mas_equalTo(-37 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
+    
+    UIView * bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+    bottomHandleView.backgroundColor = [UIColorFromRGB(0xFFFFFF) colorWithAlphaComponent:.7f];
+    [self.view addSubview:bottomHandleView];
+    [bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.mas_equalTo(0);
+        make.height.mas_equalTo(324 * scale);
+    }];
+    
+    self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@""];
+    [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightButton];
+    self.rightButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    self.rightButton.layer.borderWidth = 3 * scale;
+    [bottomHandleView addSubview:self.rightButton];
+    [self.rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(144 * scale);
+        make.right.mas_equalTo(-60 * scale);
+        make.centerY.mas_equalTo(0);
+    }];
+    [self.rightButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)backButtonDidClicked

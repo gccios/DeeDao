@@ -10,6 +10,7 @@
 #import "DDTabCollectionViewCell.h"
 #import <BaiduMapAPI_Map/BMKMapView.h>
 #import <BaiduMapAPI_Utils/BMKGeometry.h>
+#import <BaiduMapAPI_Map/BMKPointAnnotation.h>
 #import "ChooseLocationCell.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "DTieCreateLocationView.h"
@@ -242,6 +243,34 @@
     }];
     [footerButton addTarget:self action:@selector(addLocationButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     self.tableView.tableFooterView = tableFooterView;
+    
+    UIButton * daidingButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(38 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"地点\n待定"];
+    daidingButton.titleLabel.numberOfLines = 2;
+    daidingButton.backgroundColor = UIColorFromRGB(0xffffff);
+    [self.view addSubview:daidingButton];
+    [daidingButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(-60 * scale);
+        make.bottom.mas_equalTo(-80 * scale);
+        make.width.height.mas_equalTo(160 * scale);
+    }];
+    [DDViewFactoryTool cornerRadius:80 * scale withView:daidingButton];
+    daidingButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    daidingButton.layer.borderWidth = 3 * scale;
+    [daidingButton addTarget:self action:@selector(daidingButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)daidingButtonDidClicked
+{
+    BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
+    double lat = 1;
+    double lng = 1;
+    poi.pt = CLLocationCoordinate2DMake(lat, lng);
+    poi.name = @"待定";
+    poi.address = @"待定";
+    if (self.delegate && [self.delegate respondsToSelector:@selector(chooseLocationDidChoose:)]) {
+        [self.delegate chooseLocationDidChoose:poi];
+    }
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)addLocationButtonDidClicked
@@ -428,6 +457,51 @@
     [[UIApplication sharedApplication].keyWindow endEditing:YES];
 }
 
+- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation
+{
+    BMKAnnotationView * view = [[BMKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"BMKAnnotationView"];
+    view.annotation = annotation;
+    view.image = [UIImage imageNamed:@"annotionLogo"];
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    
+    UIView * infoView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth / 2.f + 120 * scale, 120 * scale)];
+    infoView.backgroundColor = UIColorFromRGB(0xffffff);
+    [DDViewFactoryTool cornerRadius:10 * scale withView:infoView];
+    infoView.layer.borderColor = UIColorFromRGB(0x999999).CGColor;
+    infoView.layer.borderWidth = 2 * scale;
+    
+    NSInteger index = [self.mapView.annotations indexOfObject:view.annotation];
+    if (index < self.dataSource.count) {
+        BMKPoiInfo * info = [self.dataSource objectAtIndex:index];
+        
+        UILabel * titleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectMake(30 * scale, 10 * scale, kMainBoundsWidth / 2.f + 60 * scale, 50 * scale) font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
+        titleLabel.text = info.name;
+        
+        UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectMake(30 * scale, 60 * scale, kMainBoundsWidth / 2.f + 60 * scale, 50 * scale) font:kPingFangRegular(30 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+        
+        BMKMapPoint point1 = BMKMapPointForCoordinate(self.mapView.centerCoordinate);
+        BMKMapPoint point2 = BMKMapPointForCoordinate(info.pt);
+        CLLocationDistance distance = BMKMetersBetweenMapPoints(point1,point2);
+        
+        NSString * distanceStr = @"";
+        if (distance < 1000) {
+            distanceStr = [NSString stringWithFormat:@"%.0lfm", distance];
+        }else{
+            distanceStr = [NSString stringWithFormat:@"%.1lfkm", distance/1000];
+        }
+        
+        detailLabel.text = [NSString stringWithFormat:@"%@ | %@", distanceStr, info.address];
+        
+        [infoView addSubview:titleLabel];
+        [infoView addSubview:detailLabel];
+    }
+    
+    view.paopaoView = [[BMKActionPaopaoView alloc] initWithCustomView:infoView];
+    
+    return view;
+}
+
 #pragma mark ----反向地理编码
 - (void)reverseGeoCodeWith:(CLLocationCoordinate2D)coordinate
 {
@@ -452,8 +526,20 @@
     }
     
     [self.dataSource removeAllObjects];
-    [self.dataSource addObjectsFromArray:result.poiList];
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    
+    NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+    
+    for (BMKPoiInfo * info in result.poiList) {
+        [self.dataSource addObject:info];
+        
+        BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+        annotation.coordinate = info.pt;
+        [annotationArray addObject:annotation];
+    }
+    
     [self.tableView reloadData];
+    [self.mapView addAnnotations:annotationArray];
     
     if (self.dataSource.count == 0) {
         [self searchLocationWithWebAPI];
@@ -543,6 +629,11 @@
                     NSDictionary * result = [responseObject objectForKey:@"result"];
                     NSArray * pois = [result objectForKey:@"pois"];
                     if (KIsArray(pois)) {
+                        
+                        NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+                        
+                        [self.mapView removeAnnotations:self.mapView.annotations];
+                        
                         for (NSDictionary * poi in pois) {
                             BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
                             
@@ -552,9 +643,15 @@
                             resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
                             resultPOI.name = [poi objectForKey:@"name"];
                             resultPOI.address = [poi objectForKey:@"addr"];
+                            
+                            BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                            annotation.coordinate = resultPOI.pt;
+                            [annotationArray addObject:annotation];
+                            
                             [self.dataSource addObject:resultPOI];
-                            [self.tableView reloadData];
                         }
+                        [self.tableView reloadData];
+                        [self.mapView addAnnotations:annotationArray];
                     }
                 }
                 
@@ -583,6 +680,11 @@
             if (status == 0) {
                 NSArray * result = [responseObject objectForKey:@"results"];
                 if (KIsArray(result)) {
+                    
+                    NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+                    
+                    [self.mapView removeAnnotations:self.mapView.annotations];
+                    
                     for (NSDictionary * poi in result) {
                         BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
 
@@ -592,9 +694,15 @@
                         resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
                         resultPOI.name = [poi objectForKey:@"name"];
                         resultPOI.address = [poi objectForKey:@"address"];
+                        
+                        BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                        annotation.coordinate = resultPOI.pt;
+                        [annotationArray addObject:annotation];
+                        
                         [self.dataSource addObject:resultPOI];
-                        [self.tableView reloadData];
                     }
+                    [self.tableView reloadData];
+                    [self.mapView addAnnotations:annotationArray];
                 }
                 if (result.count == 0) {
 //                    [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
@@ -624,6 +732,10 @@
             if (status == 0) {
                 NSArray * result = [responseObject objectForKey:@"results"];
                 if (KIsArray(result)) {
+                    
+                    NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+                    [self.mapView removeAnnotations:annotationArray];
+                    
                     for (NSDictionary * poi in result) {
                         BMKPoiInfo * resultPOI = [[BMKPoiInfo alloc] init];
                         
@@ -633,9 +745,15 @@
                         resultPOI.pt = CLLocationCoordinate2DMake(lat, lng);
                         resultPOI.name = [poi objectForKey:@"name"];
                         resultPOI.address = [poi objectForKey:@"address"];
+                        
+                        BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                        annotation.coordinate = resultPOI.pt;
+                        [annotationArray addObject:annotation];
+                        
                         [self.dataSource addObject:resultPOI];
-                        [self.tableView reloadData];
                     }
+                    [self.tableView reloadData];
+                    [self.mapView addAnnotations:annotationArray];
                 }
                 if (result.count == 0) {
 //                    [MBProgressHUD showTextHUDWithText:@"暂无搜索结果,您可以到\"地到标记\"中看一下" inView:self.view];
@@ -656,6 +774,10 @@
         [self.dataSource removeAllObjects];
         if (KIsDictionary(response)) {
             NSDictionary * data = [response objectForKey:@"data"];
+            
+            NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+            [self.mapView removeAnnotations:annotationArray];
+            
             if (KIsDictionary(data)) {
                 NSArray * poiList = [data objectForKey:@"deedaoPointList"];
                 for (NSDictionary * info in poiList) {
@@ -666,12 +788,17 @@
                     poi.name = [info objectForKey:@"createBuilding"];
                     poi.address = [info objectForKey:@"createAddress"];
                     poi.detailInfo = [info objectForKey:@"remark"];
+                    
+                    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+                    annotation.coordinate = poi.pt;
+                    [annotationArray addObject:annotation];
+                    
                     [self.dataSource addObject:poi];
                 }
+                [self.mapView addAnnotations:annotationArray];
+                [self.tableView reloadData];
             }
         }
-        [self.tableView reloadData];
-        
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
@@ -692,8 +819,20 @@
         }
         
         [self.dataSource removeAllObjects];
-        [self.dataSource addObjectsFromArray:poiResult.poiInfoList];
+        [self.mapView removeAnnotations:self.mapView.annotations];
+        
+        NSMutableArray * annotationArray = [[NSMutableArray alloc] init];
+        
+        for (BMKPoiInfo * info in poiResult.poiInfoList) {
+            [self.dataSource addObject:info];
+            
+            BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
+            annotation.coordinate = info.pt;
+            [annotationArray addObject:annotation];
+        }
+        
         [self.tableView reloadData];
+        [self.mapView addAnnotations:annotationArray];
         
         BMKPoiInfo * poi = poiResult.poiInfoList.firstObject;
         if (isEmptyString(poi.address)) {

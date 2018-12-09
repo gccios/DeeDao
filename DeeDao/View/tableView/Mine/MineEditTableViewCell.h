@@ -12,6 +12,7 @@
 typedef enum : NSUInteger {
     EditMineType_Logo,
     EditMineType_Name,
+    EditMineType_BindMobile,
     EditMineType_Sex,
     EditMineType_Address,
     EditMineType_TelNumber,

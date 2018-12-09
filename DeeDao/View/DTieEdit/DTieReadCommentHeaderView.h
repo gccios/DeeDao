@@ -12,4 +12,6 @@
 
 - (void)configWithTitle:(NSString *)title;
 
+- (void)hiddenWithRemark;
+
 @end
