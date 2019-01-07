@@ -1066,6 +1066,10 @@
     [na popViewControllerAnimated:YES];
     
     NSMutableArray * array = [[NSMutableArray alloc] init];
+    
+//    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"type == 2"];
+//    NSArray * tempArray = [self.modelSources filteredArrayUsingPredicate:predicate];
+    
     for (UserModel * model in selectArray) {
         [array addObject:@(model.cid)];
     }

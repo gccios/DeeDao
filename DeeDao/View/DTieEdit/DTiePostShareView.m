@@ -266,7 +266,7 @@
     locationLabel.font = kPingFangRegular(36 * scale);
     locationLabel.textColor = UIColorFromRGB(0x333333);
     locationLabel.textAlignment = NSTextAlignmentCenter;
-    locationLabel.text = [NSString stringWithFormat:@"地址：%@", self.model.sceneAddress];
+    locationLabel.text = [NSString stringWithFormat:@"地址：%@", self.model.sceneBuilding];
     [locationView addSubview:locationLabel];
     [locationLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
@@ -398,7 +398,8 @@
     [mapView removeFromSuperview];
     if (self.isFinishCode) {
         [self share];
-        [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
+
+    [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow animated:YES];
     }
     self.isFinishMap = YES;
 }

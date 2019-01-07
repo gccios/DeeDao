@@ -6,14 +6,14 @@
   Copyright © 2018年 郭春城. All rights reserved.
 */
 
-"Channel" = "频道";
+"Channel" = "群";
 "Blogger" = "博主";
 "My" = "我的";
 "Other" = "其他";
 "Reminder" = "提醒";
 "Friend" = "好友";
 "D" = "组局";
-"Go to a channel" = "- 选择不同频道，不错过任何精彩 -";
+"Go to a channel" = "- 选择不同群，不错过任何精彩 -";
 "Friends who are interested" = "有兴趣约这的 Deedao 好友";
 "Blogs" = "博主的D帖";
 "D Page" = "我和朋友的及收藏的D帖";
@@ -144,7 +144,7 @@
 "Wechat Connections" = "微信好友";
 "EditDPage" = "编辑";
 "DeleteDPage" = "删除";
-"My Series" = "我的频道";
+"My Series" = "我的系列";
 "CreateSeries" = "新建系列";
 "EditSeries" = "编辑系列";
 "Time" = "时间";

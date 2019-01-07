@@ -9,7 +9,6 @@
 #import "EditSecurityController.h"
 #import "SecurityUserCollectionViewCell.h"
 #import "SecurityHeaderView.h"
-#import "SecurityFooterView.h"
 #import "SelectFriendRequest.h"
 #import "SecurityFriendController.h"
 #import "DDCollectionHandleView.h"

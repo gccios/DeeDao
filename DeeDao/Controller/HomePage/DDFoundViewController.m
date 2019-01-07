@@ -51,6 +51,7 @@
 #import <TZImagePickerController.h>
 #import "QNDDUploadManager.h"
 #import "GCCScreenImage.h"
+#import "DDGroupViewController.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate, BMKGeoCodeSearchDelegate, TZImagePickerControllerDelegate, CAAnimationDelegate>
 
@@ -676,10 +677,23 @@
 
 - (void)typeButtonDidClicked
 {
-    ChooseTypeViewController * type = [[ChooseTypeViewController alloc] initWithSourceType:self.sourceType];
-//    type.BGImage = [GCCScreenImage screenView:self.navigationController.view];
-    type.delegate = self;
-    [self.navigationController presentViewController:type animated:YES completion:nil];
+    DDGroupViewController * group = [[DDGroupViewController alloc] init];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = 0.35;
+    
+    transition.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionDefault];
+    
+    transition.type = kCATransitionPush;
+    
+    transition.subtype = kCATransitionFromTop;
+    
+    transition.delegate = self;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:nil];
+    
+    [self.navigationController pushViewController:group animated:NO];
 }
 
 - (void)shoucangButtonDidClicked
@@ -2026,7 +2040,7 @@
     
     if (pageIndex == 0) {
         if (self.sourceType == 6 || self.sourceType == 666) {
-            [MBProgressHUD showTextHUDWithText:@"该频道暂不支持查看全部时间" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"该群暂不支持查看全部时间" inView:self.view];
             return;
         }
     }

@@ -65,13 +65,13 @@
     UIImageView * logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"DeeDao-logo"]];
     [headerView addSubview:logoImageView];
     [logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(40 * scale);
+        make.top.mas_equalTo(140 * scale);
         make.centerX.mas_equalTo(0);
         make.width.height.mas_equalTo(228 * scale);
     }];
     
     UILabel * aboutLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentCenter];
-    aboutLabel.text = @"关于  DeeDao地到";
+    aboutLabel.text = @"DeeDao地到";
     [headerView addSubview:aboutLabel];
     [aboutLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(logoImageView.mas_bottom).offset(14 * scale);
@@ -81,7 +81,7 @@
     
     UILabel * detailLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     detailLabel.numberOfLines = 0;
-    detailLabel.text = @"Deedao 跟朋友一样靠谱，通过Deedao，您可以分享您的美食奇景体验，收集朋友的分享， 计划你下一次的聚餐和出游，而且，您还可以通过踩到共同的地点，而跟好友互动和拉近关系。地到，比朋友更资源丰富。";
+//    detailLabel.text = @"Deedao 跟朋友一样靠谱，通过Deedao，您可以分享您的美食奇景体验，收集朋友的分享， 计划你下一次的聚餐和出游，而且，您还可以通过踩到共同的地点，而跟好友互动和拉近关系。地到，比朋友更资源丰富。";
     [headerView addSubview:detailLabel];
     [detailLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(aboutLabel.mas_bottom).offset(5 * scale);
