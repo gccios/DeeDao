@@ -7,7 +7,10 @@
 //
 
 #import "DDViewController.h"
+#import "DDGroupModel.h"
 
 @interface DDGroupViewController : DDViewController
+
+@property (nonatomic, strong) DDGroupModel * currentModel;
 
 @end

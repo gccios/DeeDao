@@ -84,6 +84,8 @@
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
+    self.contentView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    
     self.infoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(38 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     [self.contentView addSubview:self.infoLabel];
     [self.infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -174,7 +176,7 @@
     [self.rightButton addTarget:self action:@selector(rightButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     UIView * lineView = [[UIView alloc] initWithFrame:CGRectZero];
-    lineView.backgroundColor = UIColorFromRGB(0xf5f5f5);
+    lineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     [self.contentView addSubview:lineView];
     [lineView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.mas_equalTo(0);

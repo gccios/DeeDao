@@ -76,4 +76,12 @@
     }
 }
 
+- (NSMutableArray *)groupArray
+{
+    if (!_groupArray) {
+        _groupArray = [[NSMutableArray alloc] init];
+    }
+    return _groupArray;
+}
+
 @end

@@ -107,7 +107,7 @@
         [self.loadingView startAnimating];
         
         if (isEmptyString(self.imageURL)) {
-            [MBProgressHUD  showLoadingHUDWithText:@"图片地址错误" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD  showTextHUDWithText:@"图片地址错误" inView:[UIApplication sharedApplication].keyWindow];
             return;
         }
         
@@ -133,7 +133,7 @@
                 
                 [self hiddenLoading];
             }else{
-                [MBProgressHUD  showLoadingHUDWithText:@"图片地址错误" inView:[UIApplication sharedApplication].keyWindow];
+                [MBProgressHUD  showTextHUDWithText:@"图片地址错误" inView:[UIApplication sharedApplication].keyWindow];
                 [self hiddenLoading];
             }
             

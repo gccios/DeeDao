@@ -111,7 +111,7 @@
 
 - (void)backButtonDidClicked
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(DTEditTextDidFinished:)]) {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(DTEditTextDidCancle)]) {
         [self.delegate DTEditTextDidCancle];
     }
     [self dismissViewControllerAnimated:YES completion:nil];

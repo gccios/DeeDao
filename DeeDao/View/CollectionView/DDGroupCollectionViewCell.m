@@ -10,6 +10,7 @@
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
 #import "ChooseTypeButton.h"
+#import <UIImageView+WebCache.h>
 
 @interface DDGroupCollectionViewCell ()
 
@@ -30,6 +31,34 @@
     return self;
 }
 
+- (void)hiddenChooseImageView
+{
+    self.chooseImageView.hidden = YES;
+}
+
+- (void)showChooseImageView
+{
+    self.chooseImageView.hidden = NO;
+}
+
+- (void)configWithModel:(DDGroupModel *)model
+{
+    self.nameLabel.text = model.groupName;
+    if (model.isSystem) {
+        if (model.cid == -1) {
+            [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
+        }else{
+            [self.logoImageView setImage:[UIImage imageNamed:model.groupPic]];
+        }
+    }else{
+        if (isEmptyString(model.groupPic)) {
+            [self.logoImageView setImage:[UIImage imageNamed:@"groupDefault"]];
+        }else{
+            [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
+        }
+    }
+}
+
 - (void)createGroupCollectionCell
 {
     CGFloat scale = kMainBoundsWidth / 360.f;
@@ -38,7 +67,6 @@
     self.contentView.backgroundColor = [UIColor clearColor];
     
     self.groupButton = [ChooseTypeButton buttonWithType:UIButtonTypeCustom];
-    self.groupButton.alpha = .5f;
     [self.groupButton setBackgroundImage:[UIImage imageNamed:@"PDButton"] forState:UIControlStateNormal];
     [self.groupButton setImageEdgeInsets:UIEdgeInsetsMake(0, 0, 25 * scale, 0)];
     self.groupButton.frame = CGRectMake(0, 0, 400 * scale, 400 * scale);
@@ -58,7 +86,6 @@
     }];
     
     self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@""]];
-    self.logoImageView.backgroundColor = [UIColor redColor];
     self.logoImageView.clipsToBounds = YES;
     [self.groupButton addSubview:self.logoImageView];
     [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -76,7 +103,6 @@
         make.right.mas_equalTo(-5 * scale);
         make.height.mas_equalTo(20 * scale);
     }];
-    self.nameLabel.text = @"频道名称";
 }
 
 - (void)buttonDidClicked

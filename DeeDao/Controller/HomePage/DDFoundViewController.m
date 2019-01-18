@@ -52,6 +52,10 @@
 #import "QNDDUploadManager.h"
 #import "GCCScreenImage.h"
 #import "DDGroupViewController.h"
+#import "DDGroupPostListViewController.h"
+#import "DDFoundSearchListController.h"
+#import "DDAuthorGroupDetailController.h"
+#import "DDGroupDetailViewController.h"
 
 @interface DDFoundViewController () <BMKMapViewDelegate, SCSafariPageControllerDelegate, SCSafariPageControllerDataSource, OnlyMapViewControllerDelegate, DTieFoundEditViewDelegate, DTieMapSelecteFriendDelegate, ChooseTypeViewControllerDelegate, BMKGeoCodeSearchDelegate, TZImagePickerControllerDelegate, CAAnimationDelegate>
 
@@ -123,23 +127,17 @@
 
 @property (nonatomic, strong) DTieModel * uploadModel;
 
+@property (nonatomic, strong) UILabel * groupNameLabel;
+
+@property (nonatomic, strong) DDGroupModel * groupModel;
+
 @end
 
 @implementation DDFoundViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSCalendar *gregorian = [[NSCalendar alloc]
-                             initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    // 获取当前日期
-    NSDate* dt = [NSDate date];
-    // 定义一个时间字段的旗标，指定将会获取指定年、月、日、时、分、秒的信息
-    unsigned unitFlags = NSCalendarUnitYear |
-    NSCalendarUnitMonth |  NSCalendarUnitDay;
-    // 获取不同时间字段的信息
-    NSDateComponents* comp = [gregorian components: unitFlags
-                                          fromDate:dt];
-    self.year = comp.year;
+    self.year = -1;
     
     self.isFirst = YES;
     // Do any additional setup after loading the view.
@@ -148,12 +146,15 @@
     self.logoBGName = @"touxiangkuanghui";
     self.logoBGColor = UIColorFromRGB(0x999999);
     
+    self.groupModel = [[DDGroupModel alloc] initWithMy];
+    
     self.geocodesearch = [[BMKGeoCodeSearch alloc] init];
     self.geocodesearch.delegate = self;
     
     [self getMyFriendList];
     [self creatViews];
     [self creatTopView];
+    self.timeLabel.text = @"全部时间";
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         BMKReverseGeoCodeSearchOption *reverseGeocodeSearchOption = [[BMKReverseGeoCodeSearchOption alloc] init];
@@ -162,6 +163,16 @@
         
         [self requestMapViewLocations];
     });
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(postGroupDidChange:) name:@"DDGroupDidChange" object:nil];
+}
+
+- (void)postGroupDidChange:(NSNotification *)notification
+{
+    DDGroupModel * model = (DDGroupModel *)notification.object;
+    self.groupNameLabel.text = model.groupName;
+    self.groupModel = model;
+    [self requestMapViewLocations];
 }
 
 - (void)getMyFriendList
@@ -198,6 +209,21 @@
     [self.yaoyueFriendSource addObjectsFromArray:selectFriend];
     [self.mapView removeAnnotations:self.mapView.annotations];
     [self requestMapViewLocations];
+}
+
+- (void)groupImageViewDidTap
+{
+    if (self.groupModel.isSystem) {
+        return;
+    }
+    
+    if (self.groupModel.groupCreateUser == [UserManager shareManager].user.cid) {
+        DDAuthorGroupDetailController * detail = [[DDAuthorGroupDetailController alloc] initWithModel:self.groupModel];
+        [self.navigationController pushViewController:detail animated:YES];
+    }else{
+        DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:self.groupModel];
+        [self.navigationController pushViewController:detail animated:YES];
+    }
 }
 
 - (void)creatViews
@@ -290,10 +316,10 @@
     self.downView.hidden = YES;
     
     self.pindaoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(44 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentCenter];
-    self.pindaoLabel.text = DDLocalizedString(@"All");
+    self.pindaoLabel.text = DDLocalizedString(@"Group");
     [self.bottomView addSubview:self.pindaoLabel];
     [self.pindaoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(120 * scale);
+        make.centerX.mas_equalTo(0 * scale);
         make.top.mas_equalTo(10 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
@@ -312,7 +338,7 @@
     zujuLabel.text = DDLocalizedString(@"HomeZuju");
     [self.bottomView addSubview:zujuLabel];
     [zujuLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(0 * scale);
+        make.right.mas_equalTo(-120 * scale);
         make.top.mas_equalTo(10 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
@@ -331,7 +357,7 @@
     snapLabel.text = DDLocalizedString(@"Snap");
     [self.bottomView addSubview:snapLabel];
     [snapLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-120 * scale);
+        make.left.mas_equalTo(120 * scale);
         make.top.mas_equalTo(10 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
@@ -369,12 +395,27 @@
     [upButton addTarget:self action:@selector(upImageViewDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
     CGFloat distance = (kMainBoundsWidth - 3 * 300 * scale) / 4.f;
+    
+    UIButton * wodeListButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"DList")];
+    [wodeListButton addTarget:self action:@selector(myButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    [wodeListButton setBackgroundColor:[UIColor whiteColor]];
+    [self.downView addSubview:wodeListButton];
+    [wodeListButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(distance);
+        make.height.mas_equalTo(100 * scale);
+        make.width.mas_equalTo(300 * scale);
+        make.top.mas_equalTo(10 * scale);
+    }];
+    [DDViewFactoryTool cornerRadius:50 * scale withView:wodeListButton];
+    wodeListButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    wodeListButton.layer.borderWidth = 6 * scale;
+    
     UIButton * guanzhuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"InterestedList")];
     [guanzhuButton setBackgroundColor:[UIColor whiteColor]];
     [guanzhuButton addTarget:self action:@selector(shoucangButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.downView addSubview:guanzhuButton];
     [guanzhuButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(distance);
+        make.left.mas_equalTo(wodeListButton.mas_right).offset(distance);
         make.height.mas_equalTo(100 * scale);
         make.width.mas_equalTo(300 * scale);
         make.top.mas_equalTo(10 * scale);
@@ -397,20 +438,6 @@
     zujuListButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     zujuListButton.layer.borderWidth = 6 * scale;
     
-    UIButton * wodeListButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"DList")];
-    [wodeListButton addTarget:self action:@selector(myButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-    [wodeListButton setBackgroundColor:[UIColor whiteColor]];
-    [self.downView addSubview:wodeListButton];
-    [wodeListButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(zujuListButton.mas_right).offset(distance);
-        make.height.mas_equalTo(100 * scale);
-        make.width.mas_equalTo(300 * scale);
-        make.top.mas_equalTo(10 * scale);
-    }];
-    [DDViewFactoryTool cornerRadius:50 * scale withView:wodeListButton];
-    wodeListButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    wodeListButton.layer.borderWidth = 6 * scale;
-    
     self.topAlertView = [[UIView alloc] initWithFrame:CGRectZero];
     [self.view addSubview:self.topAlertView];
 //    self.topAlertView.backgroundColor = [UIColorFromRGB(0x111111) colorWithAlphaComponent:.1f];
@@ -432,7 +459,7 @@
     }];
     [timeButton setBackgroundImage:[UIImage imageNamed:@"homeTimeBG"] forState:UIControlStateNormal];
     
-    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
+    self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentCenter];
     [timeButton addSubview:self.timeLabel];
     [self.timeLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(20 * scale);
@@ -460,6 +487,67 @@
     [self.picButton setImage:[UIImage imageNamed:@"homePicUser"] forState:UIControlStateNormal];
     [self.view addSubview:self.picButton];
     [self.picButton addTarget:self action:@selector(picButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIView * groupView = [[UIView alloc] initWithFrame:CGRectZero];
+    groupView.backgroundColor = UIColorFromRGB(0xDB6283);
+    [DDViewFactoryTool cornerRadius:48 * scale withView:groupView];
+    [self.view addSubview:groupView];
+    [groupView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(timeButton);
+        make.right.mas_equalTo(-50 * scale);
+        make.left.mas_equalTo(timeButton.mas_right).offset(45 * scale);
+        make.height.mas_equalTo(96 * scale);
+    }];
+    
+    UIImageView * groupImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"groupName"]];
+    [groupView addSubview:groupImageView];
+    [groupImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.width.height.mas_equalTo(80 * scale);
+        make.left.mas_equalTo(40 * scale);
+    }];
+    groupImageView.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap1 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(groupImageViewDidTap)];
+    [groupImageView addGestureRecognizer:tap1];
+    
+    UIView * lineView1 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView1.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    [groupView addSubview:lineView1];
+    [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(380 * scale);
+        make.centerY.mas_equalTo(0);
+        make.width.mas_equalTo(4 * scale);
+        make.height.mas_equalTo(40 * scale);
+    }];
+    
+    self.groupNameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0xFFFFFF) alignment:NSTextAlignmentLeft];
+    self.groupNameLabel.text = @"我的";
+    [groupView addSubview:self.groupNameLabel];
+    [self.groupNameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(groupImageView.mas_right).offset(20 * scale);
+        make.height.mas_equalTo(50 * scale);
+        make.right.mas_equalTo(lineView1.mas_left).offset(-20 * scale);
+    }];
+    self.groupNameLabel.userInteractionEnabled = YES;
+    UITapGestureRecognizer * tap2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(groupImageViewDidTap)];
+    [self.groupNameLabel addGestureRecognizer:tap2];
+    
+    UIButton * listButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:@"列表浏览"];
+    [groupView addSubview:listButton];
+    [listButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(lineView1.mas_right).offset(5 * scale);
+        make.height.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-15 * scale);
+    }];
+    [listButton addTarget:self action:@selector(listButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)listButtonDidClicked
+{
+    DDGroupPostListViewController * list = [[DDGroupPostListViewController alloc] initWithModel:self.groupModel];
+    [self.navigationController pushViewController:list animated:YES];
 }
 
 - (void)bottomDidSwipe:(UISwipeGestureRecognizer *)swipe
@@ -472,13 +560,13 @@
             }
             
             CGFloat scale = kMainBoundsWidth / 1080.f;
-            self.backLocationButton.hidden = YES;
-            self.picButton.hidden = YES;
             self.downView.hidden = NO;
             self.upImageView.frame = CGRectMake(0, 450 * scale, kMainBoundsWidth, 70 * scale);
             self.upImageView.transform = CGAffineTransformMakeRotation(M_PI);
             [UIView animateWithDuration:.2f animations:^{
                 self.bottomView.frame = CGRectMake(0, kMainBoundsHeight - 550 * scale, kMainBoundsWidth, 550 * scale);
+                self.backLocationButton.frame = CGRectMake(kMainBoundsWidth - 180 * scale, kMainBoundsHeight - 720 * scale, 120 * scale, 120 * scale);
+                self.picButton.frame = CGRectMake(60 * scale, kMainBoundsHeight - 720 * scale, 120 * scale, 120 * scale);
             }];
             self.bottomIsOpen = YES;
         }
@@ -491,13 +579,13 @@
             }
             
             CGFloat scale = kMainBoundsWidth / 1080.f;
-            self.backLocationButton.hidden = NO;
-            self.picButton.hidden = NO;
             self.downView.hidden = YES;
             self.upImageView.frame = CGRectMake(0, 250 * scale, kMainBoundsWidth, 70 * scale);
             self.upImageView.transform = CGAffineTransformMakeRotation(0);
             [UIView animateWithDuration:.2f animations:^{
                 self.bottomView.frame = CGRectMake(0, kMainBoundsHeight - 350 * scale, kMainBoundsWidth, 550 * scale);
+                self.backLocationButton.frame = CGRectMake(kMainBoundsWidth - 180 * scale, kMainBoundsHeight - 520 * scale, 120 * scale, 120 * scale);
+                self.picButton.frame = CGRectMake(60 * scale, kMainBoundsHeight - 520 * scale, 120 * scale, 120 * scale);
             }];
             self.bottomIsOpen = NO;
         }
@@ -655,8 +743,7 @@
 
 - (void)wyyButtonDidClicked
 {
-    WYYListViewController * list = [[WYYListViewController alloc] init];
-    list.isZuju = YES;
+    WYYListViewController * list = [[WYYListViewController alloc] initWithPageIndex:3];
     
     CATransition *transition = [CATransition animation];
     
@@ -678,6 +765,7 @@
 - (void)typeButtonDidClicked
 {
     DDGroupViewController * group = [[DDGroupViewController alloc] init];
+    group.currentModel = self.groupModel;
     
     CATransition *transition = [CATransition animation];
     
@@ -698,7 +786,7 @@
 
 - (void)shoucangButtonDidClicked
 {
-    WYYListViewController * list = [[WYYListViewController alloc] init];
+    WYYListViewController * list = [[WYYListViewController alloc] initWithPageIndex:2];
     
     CATransition *transition = [CATransition animation];
     
@@ -719,7 +807,7 @@
 
 - (void)myButtonDidClicked
 {
-    DTieNewViewController * dtie = [[DTieNewViewController alloc] init];
+    WYYListViewController * list = [[WYYListViewController alloc] initWithPageIndex:1];
     
     CATransition *transition = [CATransition animation];
     
@@ -735,7 +823,7 @@
     
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
-    [self.navigationController pushViewController:dtie animated:NO];
+    [self.navigationController pushViewController:list animated:NO];
 }
 
 - (void)picButtonDidClicked
@@ -848,7 +936,7 @@
     double lon = poi.pt.longitude;
     double lat = poi.pt.latitude;
     
-    NSInteger landAccountFlg = 2;
+    NSInteger landAccountFlg = 0;
     
     NSMutableArray * allowToSeeList = [[NSMutableArray alloc] init];
     
@@ -1061,7 +1149,17 @@
             self.isNotification = YES;
         }
         
-        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:self.sourceType type:1 pageStart:0 pageSize:5000];
+        NSInteger dataSourceType = 12;
+        if (self.groupModel.cid == -1) {
+            dataSourceType = 1;
+        }else if (self.groupModel.cid == -2) {
+            dataSourceType = 6;
+        }
+        
+        DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:leftUpLati lng1:leftUpLong lat2:rightDownLati lng2:rightDownLong startDate:startDate endDate:endDate sortType:2 dataSources:dataSourceType type:1 pageStart:0 pageSize:5000];
+        if (dataSourceType == 12) {
+            [request configGroupID:self.groupModel.cid];
+        }
         
         if (self.yaoyueFriendSource && self.yaoyueFriendSource.count > 0) {
             NSMutableArray * authorID = [[NSMutableArray alloc] init];
@@ -1822,8 +1920,10 @@
 
 - (void)searchButtonDidClicked
 {
-    self.searchTopView.hidden = NO;
-    self.isSearch = YES;
+//    self.searchTopView.hidden = NO;
+//    self.isSearch = YES;
+    DDFoundSearchListController * search = [[DDFoundSearchListController alloc] initWithModel:self.groupModel];
+    [self.navigationController pushViewController:search animated:YES];
 }
 
 - (void)createSearchTopView
@@ -1872,7 +1972,7 @@
     self.textField.leftViewMode = UITextFieldViewModeAlways;
     [backButton addTarget:self action:@selector(topCloseButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     
-    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 130 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Search")];
+    UIButton * sendButton = [DDViewFactoryTool createButtonWithFrame:CGRectMake(0, 0, 140 * scale, 72 * scale) font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) title:DDLocalizedString(@"Search")];
     self.textField.rightView = sendButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
     [sendButton addTarget:self action:@selector(topSearchButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
@@ -2039,7 +2139,7 @@
     }];
     
     if (pageIndex == 0) {
-        if (self.sourceType == 6 || self.sourceType == 666) {
+        if (self.sourceType == 666) {
             [MBProgressHUD showTextHUDWithText:@"该群暂不支持查看全部时间" inView:self.view];
             return;
         }
@@ -2194,6 +2294,7 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:DDUserLocationDidUpdateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"DDGroupDidChange" object:nil];
     self.mapView.delegate = nil;
 }
 

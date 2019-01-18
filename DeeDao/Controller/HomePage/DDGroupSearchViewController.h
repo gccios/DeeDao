@@ -7,10 +7,13 @@
 //
 
 #import "DDViewController.h"
+#import "DTieModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DDGroupSearchViewController : DDViewController
+
+- (instancetype)initWithAddDtieModel:(DTieModel *)model;
 
 @end
 

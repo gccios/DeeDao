@@ -33,22 +33,27 @@
 #import "RDAlertView.h"
 #import "DTieEditRequest.h"
 #import "DTieChooseSecurityView.h"
+#import <YYText.h>
+#import "DTieGroupViewController.h"
+#import "DDGroupAddSwitch.h"
+#import "DDAuthorGroupDetailController.h"
+#import "DDGroupDetailViewController.h"
 
-@interface DTieReadHandleFooterView ()<SecurityFriendDelegate>
+@interface DTieReadHandleFooterView ()<SecurityFriendDelegate, DTieGroupViewControllerDelegate>
 
 @property (nonatomic, strong) DTieModel * model;
 @property (nonatomic, strong) NSMutableArray * yaoyueList;
 @property (nonatomic, strong) UIView * yaoyueView;
 
 @property (nonatomic, strong) UILabel * timeLabel;
-@property (nonatomic, strong) UIButton * handleButton;
+//@property (nonatomic, strong) UIButton * handleButton;
 
 @property (nonatomic, strong) UILabel * statusLabel;
 @property (nonatomic, strong) UIButton * statusButton;
 
 @property (nonatomic, strong) UILabel * readLabel;
 @property (nonatomic, strong) UIButton * readButton;
-@property (nonatomic, strong) UIButton * jubaoButton;
+//@property (nonatomic, strong) UIButton * jubaoButton;
 
 //@property (nonatomic, strong) UIView * mapBaseView;
 //@property (nonatomic, strong) BMKMapView * mapView;
@@ -64,6 +69,11 @@
 
 @property (nonatomic, strong) DTieChooseSecurityView * securityView;
 @property (nonatomic, strong) UILabel * addTipLabel;
+
+@property (nonatomic, strong) UIView * groupAddView;
+@property (nonatomic, strong) UILabel * groupAddStateLabel;
+@property (nonatomic, strong) UISwitch * groupAddStateSwith;
+@property (nonatomic, strong) YYLabel * groupLabel;
 
 @end
 
@@ -83,8 +93,20 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    if ([UserManager shareManager].user.cid == model.authorId) {
+        self.groupAddView.hidden = NO;
+    }else{
+        self.groupAddView.hidden = YES;
+    }
+    self.groupLabel.hidden = NO;
     self.leftHandleButton.hidden = YES;
     self.rightHandleButton.hidden = YES;
+    
+    if (self.model.isValid == 0) {
+        self.groupAddStateSwith.on = NO;
+        self.groupAddStateLabel.textColor = UIColorFromRGB(0x999999);
+        self.groupAddStateLabel.text = @"不允许";
+    }
     
 //    BMKPointAnnotation * annotation = [[BMKPointAnnotation alloc] init];
 //    annotation.coordinate = CLLocationCoordinate2DMake(self.model.sceneAddressLat, self.model.sceneAddressLng);
@@ -93,15 +115,15 @@
     self.timeLabel.text = [NSString stringWithFormat:@"%@：%@", DDLocalizedString(@"Last updated"), [DDTool getTimeWithFormat:@"yyyy年MM月dd日 HH:mm" time:self.model.createTime]];
     
     if (model.authorId == [UserManager shareManager].user.cid) {
-        self.handleButton.hidden = NO;
-        self.jubaoButton.hidden = YES;
+//        self.handleButton.hidden = NO;
+//        self.jubaoButton.hidden = YES;
         self.readButton.hidden = NO;
         self.statusLabel.hidden = NO;
         self.statusButton.hidden = NO;
         
     }else{
-        self.handleButton.hidden = YES;
-        self.jubaoButton.hidden = YES;
+//        self.handleButton.hidden = YES;
+//        self.jubaoButton.hidden = YES;
         self.readButton.hidden = YES;
         self.statusLabel.hidden = YES;
         self.statusButton.hidden = YES;
@@ -116,13 +138,13 @@
     }
     self.readLabel.text = [NSString stringWithFormat:@"%@：%@", DDLocalizedString(@"# of readers"), readText];
     
-    if (self.model.landAccountFlg == 1) {
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
-    }else if (self.model.landAccountFlg == 2) {
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
-    }else{
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
-    }
+//    if (self.model.landAccountFlg == 1) {
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+//    }else if (self.model.landAccountFlg == 2) {
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+//    }else{
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+//    }
     
     if (self.model.status == 0) {
         [self.statusButton setTitle:DDLocalizedString(@"Downline") forState:UIControlStateNormal];
@@ -130,7 +152,127 @@
         [self.statusButton setTitle:DDLocalizedString(@"Online") forState:UIControlStateNormal];
     }
     
+    NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    
+    if ([UserManager shareManager].user.cid == self.model.authorId) {
+        NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"我的" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+        [groupStr appendAttributedString:spaceStr];
+        if (self.model.landAccountFlg == 1) {
+            NSMutableAttributedString * spaceStr1 = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr1];
+            NSMutableAttributedString * spaceStr2 = [[NSMutableAttributedString alloc] initWithString:@"公开" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+            [groupStr appendAttributedString:spaceStr2];
+            if (self.model.groupArray.count > 0) {
+                NSMutableAttributedString * spaceStr3 = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                [groupStr appendAttributedString:spaceStr3];
+            }else{
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                [groupStr appendAttributedString:spaceStr];
+            }
+        }else{
+            if (self.model.groupArray.count > 0) {
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                [groupStr appendAttributedString:spaceStr];
+            }else{
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                [groupStr appendAttributedString:spaceStr];
+            }
+        }
+    }else  if (self.model.landAccountFlg == 1) {
+        NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"公开" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+        [groupStr appendAttributedString:spaceStr];
+        if (self.model.groupArray.count > 0) {
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }else{
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }
+    }
+    
+    for (NSInteger i = 0; i < self.model.groupArray.count ; i++) {
+        DDGroupModel * group = [self.model.groupArray objectAtIndex:i];
+        NSMutableAttributedString * tempStr;
+        
+        if (group.postFlag == 2) {
+            tempStr = [[NSMutableAttributedString alloc] initWithString:group.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xB721FF)}];
+            [tempStr yy_setTextHighlightRange:NSMakeRange(0, tempStr.length) color:UIColorFromRGB(0xB721FF) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                
+                if (group.groupCreateUser == [UserManager shareManager].user.cid) {
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                    
+                    DDAuthorGroupDetailController * detail = [[DDAuthorGroupDetailController alloc] initWithModel:group];
+                    [na pushViewController:detail animated:YES];
+                }else{
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                    
+                    DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:group];
+                    [na pushViewController:detail animated:YES];
+                }
+                
+            }];
+        }else{
+            tempStr = [[NSMutableAttributedString alloc] initWithString:group.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+            [tempStr yy_setTextHighlightRange:NSMakeRange(0, tempStr.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+                
+                if (group.groupCreateUser == [UserManager shareManager].user.cid) {
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                    
+                    DDAuthorGroupDetailController * detail = [[DDAuthorGroupDetailController alloc] initWithModel:group];
+                    [na pushViewController:detail animated:YES];
+                }else{
+                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                    
+                    DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:group];
+                    [na pushViewController:detail animated:YES];
+                }
+                
+            }];
+        }
+        [groupStr appendAttributedString:tempStr];
+        
+        if (i == self.model.groupArray.count-1) {
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }else{
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }
+    }
+    
+    UIImage * image = [UIImage imageNamed:@"addGroup"];
+    NSMutableAttributedString *attachText = [NSMutableAttributedString yy_attachmentStringWithContent:image contentMode:UIViewContentModeCenter attachmentSize:image.size alignToFont:kPingFangRegular(36 * scale) alignment:YYTextVerticalAlignmentCenter];
+    
+    __weak typeof(self) weakSelf = self;
+    [attachText yy_setTextHighlightRange:NSMakeRange(0, attachText.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+        
+        if (weakSelf.model.isValid == 0 && weakSelf.model.authorId != [UserManager shareManager].user.cid) {
+            [MBProgressHUD showTextHUDWithText:@"非作者不能操作该文章" inView:[UIApplication sharedApplication].keyWindow];
+        }
+        
+        DTieGroupViewController * group = [[DTieGroupViewController alloc] initWithModel:self.model];
+        group.delegate = weakSelf;
+        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+        UINavigationController * na = (UINavigationController *)lg.rootViewController;
+        [na pushViewController:group animated:YES];
+    }];
+    [groupStr appendAttributedString:attachText];
+    
+    self.groupLabel.attributedText = groupStr;
+    
     [self reloadStatus];
+}
+
+- (void)DTieGroupNeedUpdate
+{
+    UITableView * tableView = (UITableView *)self.superview;
+    if ([self.superview isKindOfClass:[UITableView class]]) {
+        [tableView reloadData];
+    }
 }
 
 - (void)configWithWacthPhotos:(NSArray *)models
@@ -283,9 +425,11 @@
     
     CGFloat scale = kMainBoundsWidth / 1080.f;
     
+    self.groupLabel.hidden = YES;
+    self.groupAddView.hidden = YES;
     self.leftHandleButton.hidden = NO;
     self.rightHandleButton.hidden = NO;
-    self.handleButton.hidden = YES;
+//    self.handleButton.hidden = YES;
     self.statusButton.hidden = YES;
     
     [self.yaoyueView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
@@ -369,11 +513,13 @@
         NSArray * tempArray = [models filteredArrayUsingPredicate:predicate];
         if ([UserManager shareManager].user.cid == self.model.authorId) {
             
+            handleButton.hidden = YES;
             [handleButton setTitle:@"拉入DeeDao好友" forState:UIControlStateNormal];
             [handleButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
             
         }else if (tempArray.count == 0) {
             
+            handleButton.hidden = NO;
             if (self.model.wyyPermission == 0) {
                 [handleButton setTitle:@"参与入口已关闭" forState:UIControlStateNormal];
                 [handleButton setBackgroundColor:UIColorFromRGB(0xDDDDDD)];
@@ -384,9 +530,9 @@
             
         }else{
             
+            handleButton.hidden = NO;
             [handleButton setTitle:@"退出参与" forState:UIControlStateNormal];
             [handleButton addTarget:self action:@selector(addButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-            
         }
         
         [self.yaoyueView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -535,22 +681,47 @@
 
 - (void)switcDidChange:(UISwitch *)sender
 {
-    [SelectWYYBlockRequest cancelRequest];
-    SelectWYYBlockRequest * request =  [[SelectWYYBlockRequest alloc] initAddUserSwitchWithPostID:self.model.cid status:sender.isOn];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+    if (sender == self.groupAddStateSwith) {
         
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        NSInteger state = 0;
+        if (sender.isOn) {
+            self.groupAddStateLabel.textColor = UIColorFromRGB(0xDB6283);
+            self.groupAddStateLabel.text = @"允许";
+            state = 1;
+        }else{
+            self.groupAddStateLabel.textColor = UIColorFromRGB(0x999999);
+            self.groupAddStateLabel.text = @"不允许";
+            state = 0;
+        }
         
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        [DDGroupAddSwitch cancelRequest];
+        DDGroupAddSwitch * request  = [[DDGroupAddSwitch alloc] initPostSwitchWithID:self.model.cid state:state];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            self.model.isValid = state;
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
         
-    }];
-    
-    if (sender.isOn) {
-        self.model.postClassification = 1;
-        self.addTipLabel.text = @"允许新参与者主动加入";
     }else{
-        self.model.postClassification = 0;
-        self.addTipLabel.text = @"不允许新参与者主动加入";
+        [SelectWYYBlockRequest cancelRequest];
+        SelectWYYBlockRequest * request =  [[SelectWYYBlockRequest alloc] initAddUserSwitchWithPostID:self.model.cid status:sender.isOn];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+        
+        if (sender.isOn) {
+            self.model.postClassification = 1;
+            self.addTipLabel.text = @"允许新参与者主动加入";
+        }else{
+            self.model.postClassification = 0;
+            self.addTipLabel.text = @"不允许新参与者主动加入";
+        }
     }
 }
 
@@ -564,28 +735,28 @@
     self.statusLabel.hidden = YES;
     self.statusButton.hidden = YES;
     
-    CGFloat scale = kMainBoundsWidth / 1080.f;
-    [self.handleButton removeFromSuperview];
-    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Security Settings")];
-    [self addSubview:self.handleButton];
-    [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(90 * scale);
-        make.width.mas_equalTo(260 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
-    [self.handleButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:self.handleButton];
-    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.handleButton.layer.borderWidth = 3 * scale;
+//    CGFloat scale = kMainBoundsWidth / 1080.f;
+//    [self.handleButton removeFromSuperview];
+//    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Security Settings")];
+//    [self addSubview:self.handleButton];
+//    [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(90 * scale);
+//        make.width.mas_equalTo(260 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//    }];
+//    [self.handleButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+//    [DDViewFactoryTool cornerRadius:12 * scale withView:self.handleButton];
+//    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//    self.handleButton.layer.borderWidth = 3 * scale;
     
-    if (self.model.landAccountFlg == 1) {
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
-    }else if (self.model.landAccountFlg == 2) {
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
-    }else{
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
-    }
+//    if (self.model.landAccountFlg == 1) {
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+//    }else if (self.model.landAccountFlg == 2) {
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+//    }else{
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+//    }
     
 //    self.handleButton.enabled = NO;
 }
@@ -670,13 +841,10 @@
     [self.readButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.readLabel);
         make.width.mas_equalTo(260 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
+        make.left.mas_equalTo(self.readLabel.mas_right).mas_equalTo(20 * scale);
+        make.height.mas_equalTo(50 * scale);
     }];
     [self.readButton addTarget:self action:@selector(readButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:self.readButton];
-    self.readButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.readButton.layer.borderWidth = 3 * scale;
     
     self.timeLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     [self addSubview:self.timeLabel];
@@ -686,36 +854,36 @@
         make.height.mas_equalTo(50 * scale);
     }];
     
-    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Security Settings")];
-    [self addSubview:self.handleButton];
-    [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.timeLabel);
-        make.width.mas_equalTo(260 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
-    [self.handleButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:self.handleButton];
-    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.handleButton.layer.borderWidth = 3 * scale;
+//    self.handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:DDLocalizedString(@"Security Settings")];
+//    [self addSubview:self.handleButton];
+//    [self.handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(self.timeLabel);
+//        make.width.mas_equalTo(260 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//    }];
+//    [self.handleButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+//    [DDViewFactoryTool cornerRadius:12 * scale withView:self.handleButton];
+//    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//    self.handleButton.layer.borderWidth = 3 * scale;
     
-    self.jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:[NSString stringWithFormat:@" %@", DDLocalizedString(@"Report")]];
-    [self.jubaoButton setImage:[UIImage imageNamed:@"jubaoyes"] forState:UIControlStateNormal];
-    [self addSubview:self.jubaoButton];
-    [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(self.timeLabel);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
-    }];
-    self.jubaoButton.hidden = YES;
-    [self.jubaoButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+//    self.jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:[NSString stringWithFormat:@" %@", DDLocalizedString(@"Report")]];
+//    [self.jubaoButton setImage:[UIImage imageNamed:@"jubaoyes"] forState:UIControlStateNormal];
+//    [self addSubview:self.jubaoButton];
+//    [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(self.timeLabel);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.height.mas_equalTo(72 * scale);
+//    }];
+//    self.jubaoButton.hidden = YES;
+//    [self.jubaoButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
     
     self.statusLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.statusLabel.text = DDLocalizedString(@"Status");
+    self.statusLabel.text = [NSString stringWithFormat:@"%@:", DDLocalizedString(@"Status")];
     [self addSubview:self.statusLabel];
     [self.statusLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(70 * scale);
-        make.left.mas_equalTo(60 * scale);
+        make.centerY.mas_equalTo(self.timeLabel);
+        make.left.mas_equalTo(self.timeLabel.mas_right).offset(45 * scale);
         make.height.mas_equalTo(50 * scale);
     }];
     
@@ -723,14 +891,70 @@
     [self addSubview:self.statusButton];
     [self.statusButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.statusLabel);
-        make.width.mas_equalTo(260 * scale);
-        make.right.mas_equalTo(-60 * scale);
-        make.height.mas_equalTo(72 * scale);
+        make.width.mas_equalTo(100 * scale);
+        make.left.mas_equalTo(self.statusLabel.mas_right);
+        make.height.mas_equalTo(50 * scale);
     }];
     [self.statusButton addTarget:self action:@selector(statusButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
-    [DDViewFactoryTool cornerRadius:12 * scale withView:self.statusButton];
-    self.statusButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-    self.statusButton.layer.borderWidth = 3 * scale;
+    
+    self.groupAddView = [[UIView alloc] initWithFrame:CGRectZero];
+    [self addSubview:self.groupAddView];
+    [self.groupAddView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(50 * scale);
+        make.left.right.mas_equalTo(0);
+        make.height.mas_equalTo(145 * scale);
+    }];
+    
+    UILabel * groupTitle = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    groupTitle.text = @"是否允许非作者投递入群";
+    [self.groupAddView addSubview:groupTitle];
+    [groupTitle mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.top.bottom.mas_equalTo(0);
+        make.centerY.mas_equalTo(0);
+    }];
+    
+    self.groupAddStateSwith = [[UISwitch alloc] initWithFrame:CGRectZero];
+    self.groupAddStateSwith.onTintColor = UIColorFromRGB(0xDB6283);
+    self.groupAddStateSwith.on = YES;
+    [self.groupAddStateSwith addTarget:self action:@selector(switcDidChange:) forControlEvents:UIControlEventValueChanged];
+    [self.groupAddView addSubview:self.groupAddStateSwith];
+    [self.groupAddStateSwith mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(-60 * scale);
+        make.width.mas_equalTo(144 * scale);
+        make.height.mas_equalTo(96 * scale);
+    }];
+    [self.groupAddStateSwith addTarget:self action:@selector(switcDidChange:) forControlEvents:UIControlEventValueChanged];
+    
+    self.groupAddStateLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(43 * scale) textColor:UIColorFromRGB(0xDB6283) alignment:NSTextAlignmentLeft];
+    self.groupAddStateLabel.text = @"允许";
+    [self.groupAddView addSubview:self.groupAddStateLabel];
+    [self.groupAddStateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(self.groupAddStateSwith.mas_left).offset(-48 * scale);
+        make.top.bottom.mas_equalTo(0);
+    }];
+    
+    UIView * groupLineView = [[UIView alloc] initWithFrame:CGRectZero];
+    groupLineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+    [self.groupAddView addSubview:groupLineView];
+    [groupLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.bottom.mas_equalTo(0);
+        make.height.mas_equalTo(3 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
+    
+    self.groupLabel = [[YYLabel alloc] init];
+    self.groupLabel.numberOfLines = 0;
+    self.groupLabel.preferredMaxLayoutWidth = kMainBoundsWidth - 120 * scale;
+    [self addSubview:self.groupLabel];
+    [self.groupLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.mas_equalTo(-5 * scale);
+        make.left.mas_equalTo(60 * scale);
+        make.right.mas_equalTo(-60 * scale);
+    }];
     
     self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"BackList")];
     [DDViewFactoryTool cornerRadius:60 * scale withView:self.leftHandleButton];
@@ -906,48 +1130,48 @@
     
 }
 
-- (void)handleButtonDidTouchUpInside
-{
-    if (self.model.landAccountFlg == 1) {
-        self.model.landAccountFlg = 2;
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
-        
-        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:2 groupList:nil postID:self.model.cid];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            
-        }];
-        
-    }else if (self.model.landAccountFlg == 2) {
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
-        if (self.model.allowToSeeList.count > 0) {
-            self.model.landAccountFlg = 4;
-        }else{
-            self.model.landAccountFlg = 6;
-        }
-        
-        [self.securityView show];
-    }else{
-        self.model.landAccountFlg = 1;
-        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
-        
-        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:1 groupList:nil postID:self.model.cid];
-        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-            
-        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-            
-        }];
-    }
-    
-    if (self.handleButtonDidClicked) {
-        self.handleButtonDidClicked();
-    }
-}
+//- (void)handleButtonDidTouchUpInside
+//{
+//    if (self.model.landAccountFlg == 1) {
+//        self.model.landAccountFlg = 2;
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Private")] forState:UIControlStateNormal];
+//
+//        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:2 groupList:nil postID:self.model.cid];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//
+//        }];
+//
+//    }else if (self.model.landAccountFlg == 2) {
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Network")] forState:UIControlStateNormal];
+//        if (self.model.allowToSeeList.count > 0) {
+//            self.model.landAccountFlg = 4;
+//        }else{
+//            self.model.landAccountFlg = 6;
+//        }
+//
+//        [self.securityView show];
+//    }else{
+//        self.model.landAccountFlg = 1;
+//        [self.handleButton setTitle:[NSString stringWithFormat:@"%@:%@", DDLocalizedString(@"ReadSecurity"), DDLocalizedString(@"Open")] forState:UIControlStateNormal];
+//
+//        DTieEditRequest * request = [[DTieEditRequest alloc] initWithAccountFlg:1 groupList:nil postID:self.model.cid];
+//        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//
+//        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//
+//        }];
+//    }
+//
+//    if (self.handleButtonDidClicked) {
+//        self.handleButtonDidClicked();
+//    }
+//}
 
 - (void)rightHandleButtonDidTouchUpInside
 {

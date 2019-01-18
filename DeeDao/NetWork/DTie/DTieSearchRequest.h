@@ -22,4 +22,6 @@
 
 - (void)configWithAuthorID:(NSArray *)authorID;
 
+- (void)configGroupID:(NSInteger)groupID;
+
 @end

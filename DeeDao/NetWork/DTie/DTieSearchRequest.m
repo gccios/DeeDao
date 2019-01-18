@@ -36,10 +36,14 @@
         if (!isEmptyString(keyWord)) {
             [self setValue:keyWord forParamKey:@"keyword"];
         }
-        [self setDoubleValue:lat1 forParamKey:@"lat1"];
-        [self setDoubleValue:lng1 forParamKey:@"lng1"];
-        [self setDoubleValue:lat2 forParamKey:@"lat2"];
-        [self setDoubleValue:lng2 forParamKey:@"lng2"];
+        if (lat1 == 0 && lat2 == 0 && lng1 == 0 && lng2 == 0) {
+            
+        }else{
+            [self setDoubleValue:lat1 forParamKey:@"lat1"];
+            [self setDoubleValue:lng1 forParamKey:@"lng1"];
+            [self setDoubleValue:lat2 forParamKey:@"lat2"];
+            [self setDoubleValue:lng2 forParamKey:@"lng2"];
+        }
 //        [self setValue:startDate forParamKey:@"startDate"];
         [self setDoubleValue:startDate forParamKey:@"startDate"];
         [self setDoubleValue:endDate forParamKey:@"endDate"];
@@ -132,6 +136,11 @@
     if (authorID) {
         [self setValue:authorID forParamKey:@"authorId"];
     }
+}
+
+- (void)configGroupID:(NSInteger)groupID
+{
+    [self setIntegerValue:groupID forParamKey:@"groupId"];
 }
 
 @end

@@ -9,8 +9,14 @@
 #import "DDGroupTableViewCell.h"
 #import "DDViewFactoryTool.h"
 #import <Masonry.h>
+#import "DDGroupRequest.h"
+#import "MBProgressHUD+DDHUD.h"
+#import <UIImageView+WebCache.h>
+#import "DDTool.h"
 
 @interface DDGroupTableViewCell ()
+
+@property (nonatomic, strong) DDGroupModel * model;
 
 @property (nonatomic, strong) UILabel * xinLabel;
 
@@ -36,11 +42,84 @@
     return self;
 }
 
+- (void)configWithMyGroupWithModel:(DDGroupModel *)model
+{
+    self.model = model;
+    
+    self.rightButton.hidden = NO;
+    [self.leftButton mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(148 * kMainBoundsWidth / 360.f);
+    }];
+    [self.leftButton setTitle:@"列表浏览" forState:UIControlStateNormal];
+    [self.leftButton setImage:[UIImage imageNamed:@"listliulan"] forState:UIControlStateNormal];
+    
+    [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"创建于：yyyy年MM月dd日" time:model.groupCreateDate];
+    self.nameLabel.text = model.groupName;
+    self.infoLabel.text = model.remark;
+    
+//    if (model.isSystem) {
+//        self.tagLabel.hidden = NO;
+//        self.tagLabel.text = @"【系统】";
+//    }else{
+//        self.tagLabel.hidden = YES;
+//    }
+}
+
+- (void)configWithOtherPublicWithModel:(DDGroupModel *)model
+{
+    self.model = model;
+    
+    self.rightButton.hidden = YES;
+    
+    [self.leftButton mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(kMainBoundsWidth - 40 * kMainBoundsWidth / 360.f);
+    }];
+    [self.leftButton setTitle:@"申请加入" forState:UIControlStateNormal];
+    [self.leftButton setImage:[UIImage imageNamed:@"applyGroup"] forState:UIControlStateNormal];
+    [self.leftButton addTarget:self action:@selector(applyButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
+    self.timeLabel.text = [DDTool getTimeWithFormat:@"创建于：yyyy年MM月dd日" time:model.groupCreateDate];
+    self.nameLabel.text = model.groupName;
+    self.infoLabel.text = model.remark;
+    
+    self.tagLabel.hidden = NO;
+//    self.tagLabel.text = @"1人参与";
+}
+
+- (void)applyButtonDidClicked
+{
+    DDGroupRequest * request = [[DDGroupRequest alloc] initApplyPeopleWithGroupID:self.model.cid];
+    
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在申请" inView:[UIApplication sharedApplication].keyWindow];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"申请成功" inView:[UIApplication sharedApplication].keyWindow];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        NSString * msg = [response objectForKey:@"msg"];
+        if (isEmptyString(msg)) {
+            msg = @"申请失败";
+        }
+        [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"申请失败" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }];
+}
+
 - (void)createGroupCell
 {
     CGFloat scale = kMainBoundsWidth / 360.f;
     
-    self.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.contentView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     UIView * contentView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -51,23 +130,28 @@
         make.height.mas_equalTo(215 * scale);
     }];
     
-    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
-    self.logoImageView.backgroundColor = [UIColor redColor];
-//    [DDViewFactoryTool cornerRadius:8 * scale withView:self.logoImageView];
-    [contentView addSubview:self.logoImageView];
-    [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIView * BGView = [[UIView alloc] initWithFrame:CGRectZero];
+    BGView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    [contentView addSubview:BGView];
+    [BGView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(53 * scale);
         make.left.mas_equalTo(20 * scale);
         make.width.height.mas_equalTo(80 * scale);
     }];
-    self.logoImageView.layer.cornerRadius = 8;
-    self.logoImageView.layer.shadowColor = [UIColor colorWithRed:17/255.0 green:17/255.0 blue:17/255.0 alpha:0.3].CGColor;
-    self.logoImageView.layer.shadowOffset = CGSizeMake(0,2);
-    self.logoImageView.layer.shadowOpacity = 1;
-    self.logoImageView.layer.shadowRadius = 8;
+    BGView.layer.cornerRadius = 8;
+    BGView.layer.shadowColor = [UIColor colorWithRed:17/255.0 green:17/255.0 blue:17/255.0 alpha:0.3].CGColor;
+    BGView.layer.shadowOffset = CGSizeMake(0,2);
+    BGView.layer.shadowOpacity = 1;
+    BGView.layer.shadowRadius = 8;
+    
+    self.logoImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage new]];
+    [BGView addSubview:self.logoImageView];
+    [self.logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(0);
+    }];
+    [DDViewFactoryTool cornerRadius:8 withView:self.logoImageView];
     
     self.updateLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(14 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.updateLabel.text = @"更新于：2018年12月21日 20:00 星期一";
     [contentView addSubview:self.updateLabel];
     [self.updateLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.mas_equalTo(20 * scale);
@@ -85,9 +169,9 @@
         make.width.mas_equalTo(25 * scale);
         make.height.mas_equalTo(14 * scale);
     }];
+    self.xinLabel.hidden = YES;
     
     self.nameLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(16 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.nameLabel.text = @"群名称";
     [contentView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(61 * scale);
@@ -106,7 +190,7 @@
     }];
     
     self.tagLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(14 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    self.tagLabel.text = @"系统";
+//    self.tagLabel.text = @"系统";
     [contentView addSubview:self.tagLabel];
     [self.tagLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.nameLabel.mas_bottom).offset(9 * scale);
@@ -115,7 +199,6 @@
     }];
     
     self.infoLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(14 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    self.infoLabel.text = @"一个只属于你自己的小天地";
     [contentView addSubview:self.infoLabel];
     [self.infoLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.timeLabel.mas_bottom).offset(3 * scale);
@@ -134,8 +217,10 @@
         make.width.mas_equalTo(148 * scale);
         make.height.mas_equalTo(40 * scale);
     }];
+    [self.leftButton addTarget:self action:@selector(handleButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     self.rightButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(14 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"地图浏览"];
+    [self.rightButton setImage:[UIImage imageNamed:@"mapliulan"] forState:UIControlStateNormal];
     [DDViewFactoryTool cornerRadius:20 * scale withView:self.rightButton];
     self.rightButton.layer.borderWidth = 1;
     self.rightButton.layer.borderColor = [UIColor colorWithRed:219/255.0 green:98/255.0 blue:131/255.0 alpha:1.0].CGColor;
@@ -146,6 +231,20 @@
         make.width.mas_equalTo(148 * scale);
         make.height.mas_equalTo(40 * scale);
     }];
+    [self.rightButton addTarget:self action:@selector(handleButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)handleButtonDidClicked:(UIButton *)button
+{
+    if (button == self.leftButton) {
+        if (self.listButtonHandle) {
+            self.listButtonHandle(self.model);
+        }
+    }else if (button == self.rightButton) {
+        if (self.mapButtonHandle) {
+            self.mapButtonHandle(self.model);
+        }
+    }
 }
 
 - (void)awakeFromNib {

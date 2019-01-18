@@ -25,6 +25,8 @@
 #import "DTieNewDetailViewController.h"
 #import "DDLGSideViewController.h"
 #import "ConverUtil.h"
+#import "DDGroupDetailViewController.h"
+#import "DDGroupRequest.h"
 
 @implementation DDTool
 
@@ -464,7 +466,41 @@
                                 [hud hideAnimated:YES];
                             }];
                             
-                        }else{
+                        }else if ([result hasPrefix:@"group"]){
+                            NSString * groupIDString = [koulingArray lastObject];
+                            NSInteger groupID = [groupIDString integerValue];
+                            
+                            pasteBoard.string = @"";
+                            
+                            MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:[UIApplication sharedApplication].keyWindow];
+                            
+                            DDGroupRequest * request = [[DDGroupRequest alloc] initWithGroupDetail:groupID];
+                            [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                                [hud hideAnimated:YES];
+                                
+                                NSDictionary * data = [response objectForKey:@"data"];
+                                if (KIsDictionary(data)) {
+                                    DDGroupModel * groupModel = [DDGroupModel mj_objectWithKeyValues:data];
+                                    
+                                    DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:groupModel];
+                                    
+                                    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+                                    
+                                    if (lg.isLeftViewShowing) {
+                                        [lg hideLeftViewAnimated];
+                                    }
+                                    
+                                    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+                                    
+                                    [MBProgressHUD showTextHUDWithText:@"通过口令打开群组" inView:[UIApplication sharedApplication].keyWindow];
+                                    [na pushViewController:detail animated:YES];
+                                }
+                            } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+                                [hud hideAnimated:YES];
+                            } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+                                [hud hideAnimated:YES];
+                            }];
+                        } else{
                             NSString * userIDString = [koulingArray lastObject];
                             NSInteger userID = [userIDString integerValue];
                             

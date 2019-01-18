@@ -116,6 +116,22 @@
                 
                 break;
                 
+            case MineMenuType_SystemMnager:
+                
+            {
+                self.imageName = @"managerIcon";
+                self.title = @"平台用户管理";
+            }
+                break;
+                
+            case MineMenuType_MYHome:
+                
+            {
+                self.imageName = @"leftMingPian";
+                self.title = @"我的主页";
+            }
+                break;
+                
             default:
                 break;
         }

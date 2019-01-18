@@ -34,7 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[DDLocalizedString(@"Reminder history"), DDLocalizedString(@"My treasure"), DDLocalizedString(@"HelpAndAdvice"), DDLocalizedString(@"Sign off")]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[DDLocalizedString(@"My treasure"), DDLocalizedString(@"HelpAndAdvice"), DDLocalizedString(@"Sign off")]];
     [self createViews];
 }
 
@@ -133,12 +133,13 @@
 {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
+//    if (indexPath.row == 0) {
+//
+//        DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:0];
+//        [self.navigationController pushViewController:notification animated:YES];
+//
+//    }else
     if (indexPath.row == 0) {
-        
-        DDNotificationViewController * notification = [[DDNotificationViewController alloc] initWithNotificationID:0];
-        [self.navigationController pushViewController:notification animated:YES];
-        
-    }else if (indexPath.row == 1) {
         
         NewAchievementViewController * achievement = [[NewAchievementViewController alloc] init];
         [self.navigationController pushViewController:achievement animated:YES];
@@ -148,12 +149,12 @@
         DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
         [self.navigationController pushViewController:private animated:YES];
         
-    }else if (indexPath.row == 2) {
+    }else if (indexPath.row == 1) {
         
         HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
         [self.navigationController pushViewController:help animated:YES];
         
-    }else if (indexPath.row == 3){
+    }else if (indexPath.row == 2){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:DDLocalizedString(@"BackAlert") preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {

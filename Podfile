@@ -2,6 +2,7 @@ platform:ios, '8.0'
 target 'DeeDao' do
 pod 'PGDatePicker'
 pod 'BGNetwork'
+pod 'YYText', '~> 1.0.7'
 pod 'IQKeyboardManager', '~> 5.0.8'
 pod 'Masonry', '~> 1.1.0'
 pod 'MBProgressHUD', '~> 1.1.0'

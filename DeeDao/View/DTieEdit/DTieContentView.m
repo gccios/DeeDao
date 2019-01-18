@@ -501,6 +501,7 @@
         make.width.mas_equalTo(kMainBoundsWidth);
         make.height.mas_equalTo(144 * scale);
     }];
+    quanxianButton.hidden = YES;
     
     UILabel * label = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x333333) alignment:NSTextAlignmentLeft];
     label.text = DDLocalizedString(@"Security");

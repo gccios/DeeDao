@@ -35,6 +35,7 @@ PODS:
   - SDWebImage/Core (4.3.3)
   - TZImagePickerController (3.0.9)
   - WechatOpenSDK (1.8.2)
+  - YYText (1.0.7)
 
 DEPENDENCIES:
   - BaiduMapKit (~> 4.1.1)
@@ -51,6 +52,7 @@ DEPENDENCIES:
   - SDWebImage
   - TZImagePickerController (~> 3.0.7)
   - WechatOpenSDK
+  - YYText (~> 1.0.7)
 
 SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
@@ -71,6 +73,7 @@ SPEC REPOS:
     - SDWebImage
     - TZImagePickerController
     - WechatOpenSDK
+    - YYText
 
 SPEC CHECKSUMS:
   AFNetworking: a0075feb321559dc78d9d85b55d11caa19eabb93
@@ -90,7 +93,8 @@ SPEC CHECKSUMS:
   SDWebImage: de4d90b5bff3571eae7bd16202b1f43135409fa5
   TZImagePickerController: ea3e906af8caa7088f612ad673feb73cc6aa6bfc
   WechatOpenSDK: 676feec516a11173eafd1fe64b10d27babf28701
+  YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 79b9b6919ae0d0450afb2369b5938862dfbdf0bb
+PODFILE CHECKSUM: 78877ce15330d7fb6579c7178b5654e1522097ec
 
 COCOAPODS: 1.5.0

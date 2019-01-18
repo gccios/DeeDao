@@ -146,7 +146,7 @@
                 }
                 [self.DtieTableView reloadData];
                 
-                self.start = self.length;
+                self.start += self.length;
                 
             }
         }

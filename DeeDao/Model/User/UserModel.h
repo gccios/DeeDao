@@ -30,11 +30,16 @@
 @property (nonatomic, copy) NSString * signature;
 @property (nonatomic, strong) NSArray * postBeanList;
 @property (nonatomic, assign) NSInteger bloggerFlg;
+@property (nonatomic, copy) NSString * backgroundImage;
 
 @property (nonatomic, copy) NSString * firstLetter;
 
 @property (nonatomic, assign) NSInteger concernFlg; //关注
 @property (nonatomic, assign) NSInteger friendFlg; //好友
 @property (nonatomic, assign) NSInteger selfFlg; //本人
+
+//用于群的成员管理
+@property (nonatomic, assign) NSInteger groupID;
+@property (nonatomic, copy) NSString * groupListID;
 
 @end

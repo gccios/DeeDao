@@ -12,6 +12,10 @@
 #import <UIImageView+WebCache.h>
 #import "SaveFriendOrConcernRequest.h"
 #import "MBProgressHUD+DDHUD.h"
+#import <YYText.h>
+#import "UserManager.h"
+#import "DDLGSideViewController.h"
+#import "MineInfoViewController.h"
 
 @interface UserInfoCollectionHeader ()
 
@@ -22,7 +26,7 @@
 @property (nonatomic, strong) UILabel * degressLabel;
 
 @property (nonatomic, strong) UIView * geqianView;
-@property (nonatomic, strong) UILabel * geqianLabel;
+@property (nonatomic, strong) YYLabel * geqianLabel;
 
 @property (nonatomic, assign) BOOL isGuanzhu;
 @property (nonatomic, assign) UserModel * model;
@@ -97,7 +101,7 @@
     }];
     
     UILabel * geqian = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
-    geqian.text = DDLocalizedString(@"Motto");
+    geqian.text = DDLocalizedString(@"已加入的群");
     [self addSubview:geqian];
     [geqian mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -115,9 +119,26 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    self.geqianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+    NSArray * keyWordArray = @[@"群", @"群群群", @"群群群", @"群群", @"群群群群群", @"群群群", @"群群群群", @"群群", @"群群群群群群", @"群群群", @"群群群"];
+    
+    NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    for (NSInteger i = 0; i < keyWordArray.count ; i++) {
+        NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:[keyWordArray objectAtIndex:i] attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+        [tempStr yy_setTextHighlightRange:NSMakeRange(0, tempStr.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+            NSLog(@"第%ld个群", i);
+        }];
+        [groupStr appendAttributedString:tempStr];
+        
+        if ( i != keyWordArray.count - 1) {
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }
+    }
+    
+    self.geqianLabel = [[YYLabel alloc] init];
     self.geqianLabel.numberOfLines = 0;
-    self.geqianLabel.text = @"暂时没有个性签名";
+    self.geqianLabel.attributedText = groupStr;
+    self.geqianLabel.preferredMaxLayoutWidth = kMainBoundsWidth - 120 * scale;
     [self.geqianView addSubview:self.geqianLabel];
     [self.geqianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(24 * scale);
@@ -125,6 +146,17 @@
         make.bottom.mas_equalTo(-24 * scale);
         make.right.mas_equalTo(-60 * scale);
     }];
+    
+//    self.geqianLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
+//    self.geqianLabel.numberOfLines = 0;
+//    self.geqianLabel.text = @"暂时没有个性签名";
+//    [self.geqianView addSubview:self.geqianLabel];
+//    [self.geqianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(24 * scale);
+//        make.left.mas_equalTo(60 * scale);
+//        make.bottom.mas_equalTo(-24 * scale);
+//        make.right.mas_equalTo(-60 * scale);
+//    }];
     
     UILabel * liebiao = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x999999) alignment:NSTextAlignmentLeft];
     liebiao.text = DDLocalizedString(@"Open D Blog");
@@ -213,6 +245,28 @@
             self.isGuanzhu = NO;
         }
     }
+    
+    if (model.cid == [UserManager shareManager].user.cid) {
+        CGFloat scale = kMainBoundsWidth / 375.f;
+        UIButton * editTitleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [editTitleButton setImage:[UIImage imageNamed:@"editTitle"] forState:UIControlStateNormal];
+        [self addSubview:editTitleButton];
+        [editTitleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.nameLabel);
+            make.right.mas_equalTo(-30 * scale);
+            make.width.height.mas_equalTo(60 * scale);
+        }];
+        [editTitleButton addTarget:self action:@selector(editTitleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    }
+}
+
+- (void)editTitleButtonDidClicked
+{
+    DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+    UINavigationController * na = (UINavigationController *)lg.rootViewController;
+    
+    MineInfoViewController * info  =[[MineInfoViewController alloc] init];
+    [na presentViewController:info animated:YES completion:nil];
 }
 
 @end

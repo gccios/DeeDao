@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "DTieEditModel.h"
 #import "UserManager.h"
+#import "DDGroupModel.h"
 
 //typedef enum : NSUInteger {
 //    DTieType_Add,
@@ -72,6 +73,14 @@
 
 @property (nonatomic, assign) NSInteger postClassification;//是否允许用户上传照片
 @property (nonatomic, assign) NSInteger wyyPermission;//是都允许用户主动加入
+
+@property (nonatomic, assign) NSInteger isValid;
+
+//用于群的成员管理
+@property (nonatomic, assign) NSInteger groupID;
+@property (nonatomic, copy) NSString * groupListID;
+
+@property (nonatomic, strong) NSMutableArray * groupArray;
 
 - (void)configWithAuthor:(UserModel *)model;
 

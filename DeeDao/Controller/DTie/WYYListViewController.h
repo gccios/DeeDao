@@ -10,6 +10,6 @@
 
 @interface WYYListViewController : DDViewController
 
-@property (nonatomic, assign) BOOL isZuju;
+- (instancetype)initWithPageIndex:(NSInteger)index;
 
 @end

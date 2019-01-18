@@ -34,11 +34,14 @@
 @property (nonatomic, strong) UIView * topView;
 @property (nonatomic, strong) UIButton * zujuButton;
 @property (nonatomic, strong) UIButton * ganxingquButton;
+@property (nonatomic, strong) UIButton * dakaButton;
 
 @property (nonatomic, strong) NSMutableArray * zujuSource;
 @property (nonatomic, strong) UITableView * zujuTableView;
 @property (nonatomic, strong) NSMutableArray * ganxingquSource;
 @property (nonatomic, strong) UITableView * ganxingquTableView;
+@property (nonatomic, strong) NSMutableArray * dakaSource;
+@property (nonatomic, strong) UITableView * dakaTableView;
 
 @property (nonatomic, assign) NSInteger pageIndex;
 
@@ -46,19 +49,28 @@
 @property (nonatomic, assign) NSInteger zujuSize;
 @property (nonatomic, assign) NSInteger ganxingquStart;
 @property (nonatomic, assign) NSInteger ganxingquSize;
+@property (nonatomic, assign) NSInteger dakaStart;
+@property (nonatomic, assign) NSInteger dakaSize;
 @property (nonatomic, strong) CAGradientLayer *gradientLayer;
 
 @end
 
 @implementation WYYListViewController
 
+- (instancetype)initWithPageIndex:(NSInteger)index
+{
+    if (self = [super init]) {
+        self.pageIndex = index;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.pageIndex = 1;
-    
     self.zujuSource = [[NSMutableArray alloc] init];
+    self.dakaSource = [[NSMutableArray alloc] init];
     self.ganxingquSource = [[NSMutableArray alloc] init];
     
     [self createViews];
@@ -66,10 +78,100 @@
     
     [self requestZujuMessage];
     [self requestGanxingquMessage];
+    [self requestDakaMessage];
     
-    if (self.isZuju) {
+    if (self.pageIndex == 1) {
+        [self tabButtonDidClicked:self.dakaButton];
+    }else if (self.pageIndex == 2) {
+        [self tabButtonDidClicked:self.ganxingquButton];
+    }else if (self.pageIndex == 3) {
         [self tabButtonDidClicked:self.zujuButton];
     }
+        
+}
+
+- (void)requestDakaMessage
+{
+    self.dakaStart = 0;
+    self.dakaSize = 20;
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.dakaStart pageSize:self.dakaSize];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.dakaSource removeAllObjects];
+                
+                for (NSDictionary * dict in data) {
+                    DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                    NSDictionary * postBean = [dict objectForKey:@"postBean"];
+                    [model mj_setKeyValues:postBean];
+                    [self.dakaSource addObject:model];
+                }
+                
+                self.dakaStart += self.dakaSize;
+                
+                if (self.dakaTableView) {
+                    [self.dakaTableView reloadData];
+                    [self.dakaTableView.mj_footer resetNoMoreData];
+                }
+            }
+        }
+        
+        if (self.dakaTableView) {
+            [self.dakaTableView.mj_header endRefreshing];
+        }
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (self.dakaTableView) {
+            [self.dakaTableView.mj_header endRefreshing];
+        }
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        if (self.dakaTableView) {
+            [self.dakaTableView.mj_header endRefreshing];
+        }
+        
+    }];
+}
+
+- (void)loadMoreDakaMessage
+{
+    DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithSortType:1 dataSources:1 type:2 pageStart:self.dakaStart pageSize:self.dakaSize];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        if (KIsDictionary(response)) {
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                if (data.count > 0) {
+                    
+                    for (NSDictionary * dict in data) {
+                        DTieModel * model = [DTieModel mj_objectWithKeyValues:dict];
+                        NSDictionary * postBean = [dict objectForKey:@"postBean"];
+                        [model mj_setKeyValues:postBean];
+                        [self.dakaSource addObject:model];
+                    }
+                    
+                    self.dakaStart += self.dakaSize;
+                    
+                    [self.dakaTableView reloadData];
+                    [self.dakaTableView.mj_footer endRefreshing];
+                    
+                }else{
+                    [self.dakaTableView.mj_footer endRefreshingWithNoMoreData];
+                }
+            }
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.dakaTableView.mj_footer endRefreshing];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [self.dakaTableView.mj_footer endRefreshing];
+        
+    }];
 }
 
 - (void)requestZujuMessage
@@ -241,6 +343,8 @@
         return self.zujuSource.count;
     }else if (tableView == self.ganxingquTableView) {
         return self.ganxingquSource.count;
+    }else if (tableView == self.dakaTableView) {
+        return self.dakaSource.count;
     }
     return 0;
 }
@@ -266,14 +370,22 @@
     }else if (tableView == self.ganxingquTableView) {
         DTieModel * model = [self.ganxingquSource objectAtIndex:indexPath.row];
         
-        WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
+        DTieNewTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
         
         [cell configWithModel:model];
         
         return cell;
+    }else if (tableView == self.dakaTableView) {
+        
+        DTieNewTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
+        
+        DTieModel * model = [self.dakaSource objectAtIndex:indexPath.row];
+        [cell configWithModel:model];
+        return cell;
+        
     }
     
-    WXHistoryTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"WXHistoryTableViewCell" forIndexPath:indexPath];
+    DTieNewTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieNewTableViewCell" forIndexPath:indexPath];
     
     return cell;
 }
@@ -456,6 +568,10 @@
         DDCollectionViewController * collectionVC = [[DDCollectionViewController alloc] initWithDataSource:self.ganxingquSource index:indexPath.row];
         [self.navigationController pushViewController:collectionVC animated:YES];
         return;
+    }else if (tableView == self.dakaTableView) {
+        DDCollectionViewController * collection = [[DDCollectionViewController alloc] initWithDataSource:self.dakaSource index:indexPath.row];
+        [self.navigationController pushViewController:collection animated:YES];
+        return;
     }
     
     DTieModel * model = [self.zujuSource objectAtIndex:indexPath.row];
@@ -576,6 +692,22 @@
     }];
     self.ganxingquTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestGanxingquMessage)];
     self.ganxingquTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreGanxingquMessage)];
+    self.ganxingquTableView.hidden = YES;
+    
+    self.dakaTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+    self.dakaTableView.backgroundColor = self.view.backgroundColor;
+    self.dakaTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.dakaTableView registerClass:[DTieNewTableViewCell class] forCellReuseIdentifier:@"DTieNewTableViewCell"];
+    self.dakaTableView.delegate = self;
+    self.dakaTableView.dataSource = self;
+    [self.view addSubview:self.dakaTableView];
+    [self.dakaTableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo((364 + kStatusBarHeight) * scale);
+        make.left.bottom.right.mas_equalTo(0);
+    }];
+    self.dakaTableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(requestDakaMessage)];
+    self.dakaTableView.mj_footer = [MJRefreshAutoFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreDakaMessage)];
+    self.dakaTableView.hidden = YES;
 }
 
 - (void)creatTopView
@@ -621,7 +753,7 @@
         make.bottom.mas_equalTo(-37 * scale - 144 * scale);
     }];
     
-    CGFloat buttonWidth = kMainBoundsWidth / 2.f;
+    CGFloat buttonWidth = kMainBoundsWidth / 3.f;
     self.zujuButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Appointments")];
     self.zujuButton.alpha = .5f;
     [self.topView addSubview:self.zujuButton];
@@ -635,6 +767,15 @@
     self.ganxingquButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Interested")];
     [self.topView addSubview:self.ganxingquButton];
     [self.ganxingquButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(self.zujuButton.mas_left);
+        make.bottom.mas_equalTo(0);
+        make.width.mas_equalTo(buttonWidth);
+        make.height.mas_equalTo(144 * scale);
+    }];
+    
+    self.dakaButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(48 * scale) titleColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"My D Page")];
+    [self.topView addSubview:self.dakaButton];
+    [self.dakaButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(0);
         make.bottom.mas_equalTo(0);
         make.width.mas_equalTo(buttonWidth);
@@ -644,15 +785,27 @@
     UIView * lineView1 = [[UIView alloc] initWithFrame:CGRectZero];
     lineView1.alpha = .5f;
     lineView1.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    [self.ganxingquButton addSubview:lineView1];
+    [self.topView addSubview:lineView1];
     [lineView1 mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(0);
-        make.centerY.mas_equalTo(0);
+        make.right.mas_equalTo(self.dakaButton);
+        make.centerY.mas_equalTo(self.dakaButton);
+        make.width.mas_equalTo(3 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    
+    UIView * lineView2 = [[UIView alloc] initWithFrame:CGRectZero];
+    lineView2.alpha = .5f;
+    lineView2.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    [self.topView addSubview:lineView2];
+    [lineView2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.mas_equalTo(self.ganxingquButton);
+        make.centerY.mas_equalTo(self.ganxingquButton);
         make.width.mas_equalTo(3 * scale);
         make.height.mas_equalTo(72 * scale);
     }];
     
     [self.zujuButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.dakaButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     [self.ganxingquButton addTarget:self action:@selector(tabButtonDidClicked:) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton * searchButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(10) titleColor:[UIColor whiteColor] title:@""];
@@ -695,10 +848,12 @@
 
 - (void)tabButtonDidClicked:(UIButton *)button
 {
-    if (button == self.zujuButton) {
+    if (button == self.dakaButton) {
         self.pageIndex = 1;
     }else if (button == self.ganxingquButton) {
         self.pageIndex = 2;
+    }else if (button == self.zujuButton) {
+        self.pageIndex = 3;
     }
     [self reloadPageStatus];
 }
@@ -707,37 +862,58 @@
 {
     if (self.pageIndex == 1) {
         
-        self.zujuButton.alpha = 1.f;
+        self.dakaButton.alpha = 1.f;
         self.ganxingquButton.alpha = .5f;
+        self.zujuButton.alpha = .5f;
         
-        self.zujuTableView.hidden = NO;
+        self.dakaTableView.hidden = NO;
         self.ganxingquTableView.hidden = YES;
+        self.zujuTableView.hidden = YES;
         
-        if (self.zujuSource.count == 0) {
-            [self requestZujuMessage];
+        if (self.dakaSource.count == 0) {
+            [self requestDakaMessage];
         }
         
-        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDF6288).CGColor, (__bridge id)UIColorFromRGB(0XFF117E).CGColor];
-        self.topView.layer.shadowColor = UIColorFromRGB(0XFF117E).CGColor;
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0x3023AE).CGColor, (__bridge id)UIColorFromRGB(0x539FFD).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0x4A90E2).CGColor;
         self.topView.layer.shadowOpacity = .24;
         self.topView.layer.shadowOffset = CGSizeMake(0, 4);
         
     }else if (self.pageIndex == 2) {
         
-        self.zujuButton.alpha = .5f;
+        self.dakaButton.alpha = .5f;
         self.ganxingquButton.alpha = 1.f;
+        self.zujuButton.alpha = .5f;
         
-        self.zujuTableView.hidden = YES;
+        self.dakaTableView.hidden = YES;
         self.ganxingquTableView.hidden = NO;
+        self.zujuTableView.hidden = YES;
         
         if (self.ganxingquSource.count == 0) {
             [self requestGanxingquMessage];
         }
-        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xDB6283).CGColor, (__bridge id)UIColorFromRGB(0XB721FF).CGColor];
-        self.topView.layer.shadowColor = UIColorFromRGB(0XB721FF).CGColor;
+        
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0x539FFD).CGColor, (__bridge id)UIColorFromRGB(0xB721FF).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0x4A4A4A).CGColor;
         self.topView.layer.shadowOpacity = .24;
         self.topView.layer.shadowOffset = CGSizeMake(0, 4);
+    }else if (self.pageIndex == 3) {
+        self.dakaButton.alpha = .5f;
+        self.ganxingquButton.alpha = .5f;
+        self.zujuButton.alpha = 1.f;
         
+        self.dakaTableView.hidden = YES;
+        self.ganxingquTableView.hidden = YES;
+        self.zujuTableView.hidden = NO;
+        
+        if (self.zujuSource.count == 0) {
+            [self requestZujuMessage];
+        }
+        
+        self.gradientLayer.colors = @[(__bridge id)UIColorFromRGB(0xB721FF).CGColor, (__bridge id)UIColorFromRGB(0xDB6283).CGColor];
+        self.topView.layer.shadowColor = UIColorFromRGB(0xB721FF).CGColor;
+        self.topView.layer.shadowOpacity = .24;
+        self.topView.layer.shadowOffset = CGSizeMake(0, 4);
     }
 }
 

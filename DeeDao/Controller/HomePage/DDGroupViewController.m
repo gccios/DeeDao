@@ -12,10 +12,19 @@
 #import "DDGroupTitleReusableView.h"
 #import "DDBackWidow.h"
 #import "DDGroupSearchViewController.h"
+#import "DDGroupRequest.h"
+#import "DDCreateGroupViewController.h"
+#import "UserManager.h"
+#import "DDAuthorGroupDetailController.h"
+#import "DDGroupDetailViewController.h"
+#import "MBProgressHUD+DDHUD.h"
 
-@interface DDGroupViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CAAnimationDelegate>
+@interface DDGroupViewController () <UICollectionViewDelegate, UICollectionViewDataSource, CAAnimationDelegate, DDCreateGroupViewControllerDelegate, DDAuthorGroupDetailControllerDelegate, DDGroupDetailViewControllerDelegate>
 
 @property (nonatomic, strong) UICollectionView * collectionView;
+
+@property (nonatomic, strong) NSMutableArray * mySource;
+@property (nonatomic, strong) NSMutableArray * otherSource;
 
 @end
 
@@ -25,7 +34,54 @@
 {
     [super viewDidLoad];
     
+    DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
+    [self.mySource addObject:myModel];
+    
+    DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
+    [self.mySource addObject:otherModel];
+    
+    DDGroupModel * createModel = [[DDGroupModel alloc] initWithCreate];
+    [self.mySource addObject:createModel];
+    
     [self createViews];
+    
+    [self setupData];
+}
+
+- (void)setupData
+{
+    DDGroupRequest * request = [[DDGroupRequest alloc] initWithSelectGroupList];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.mySource removeAllObjects];
+        [self.otherSource removeAllObjects];
+        
+        DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
+        [self.mySource addObject:myModel];
+        
+        DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
+        [self.mySource addObject:otherModel];
+        
+        NSDictionary * data = [response objectForKey:@"data"];
+        if (KIsDictionary(data)) {
+            
+            NSArray * myGroupList = [data objectForKey:@"myGroupList"];
+            [self.mySource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:myGroupList]];
+            
+            NSArray * publicGroupList = [data objectForKey:@"publicGroupList"];
+            [self.otherSource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:publicGroupList]];
+        }
+        
+        DDGroupModel * createModel = [[DDGroupModel alloc] initWithCreate];
+        [self.mySource addObject:createModel];
+        
+        [self.collectionView reloadData];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)createViews
@@ -118,14 +174,83 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return 9;
+    if (section == 0) {
+        return self.mySource.count;
+    }else{
+        return self.otherSource.count;
+    }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     DDGroupCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DDGroupCollectionViewCell" forIndexPath:indexPath];
     
+    if (indexPath.section == 0) {
+        DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+        [cell configWithModel:model];
+        if (model.cid == self.currentModel.cid) {
+            [cell showChooseImageView];
+        }else{
+            [cell hiddenChooseImageView];
+        }
+    }else if (indexPath.section == 1) {
+        DDGroupModel * model = [self.otherSource objectAtIndex:indexPath.row];
+        [cell configWithModel:model];
+        if (model.cid == self.currentModel.cid) {
+            [cell showChooseImageView];
+        }else{
+            [cell hiddenChooseImageView];
+        }
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    cell.groupDidChooseHandle = ^{
+        [weakSelf didSelectItemAtIndexPath:indexPath];
+    };
+    
     return cell;
+}
+
+- (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == 0) {
+        if (indexPath.row == self.mySource.count-1) {
+            DDCreateGroupViewController * create = [[DDCreateGroupViewController alloc] init];
+            create.delegate = self;
+            [self.navigationController pushViewController:create animated:YES];
+        }else{
+            DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:model];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+    }else{
+        DDGroupModel * model = [self.otherSource objectAtIndex:indexPath.row];
+        
+        if (model.groupCreateUser == [UserManager shareManager].user.cid) {
+            DDAuthorGroupDetailController * detail = [[DDAuthorGroupDetailController alloc] initWithModel:model];
+            detail.delegate = self;
+            [self.navigationController pushViewController:detail animated:YES];
+        }else{
+            DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:model];
+            detail.delegate = self;
+            [self.navigationController pushViewController:detail animated:YES];
+        }
+    }
+}
+
+- (void)authorNeedUpdateGroupList
+{
+    [self setupData];
+}
+
+- (void)userNeedUpdateGroupList
+{
+    [self setupData];
+}
+
+- (void)groupDidCreate
+{
+    [self setupData];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -175,6 +300,22 @@
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
     return UIStatusBarStyleDefault;
+}
+
+- (NSMutableArray *)mySource
+{
+    if (!_mySource) {
+        _mySource = [[NSMutableArray alloc] init];
+    }
+    return _mySource;
+}
+
+- (NSMutableArray *)otherSource
+{
+    if (!_otherSource) {
+        _otherSource = [[NSMutableArray alloc] init];
+    }
+    return _otherSource;
 }
 
 @end

@@ -8,8 +8,18 @@
 
 #import "DDGroupSearchViewController.h"
 #import "DDGroupTableViewCell.h"
+#import "DDGroupDetailViewController.h"
+#import "DDGroupPostListViewController.h"
+#import "DDGroupSearchRequest.h"
+#import "DTieAddGroupTableViewCell.h"
+#import <MJRefresh.h>
+#import "MBProgressHUD+DDHUD.h"
+#import "DDGroupRequest.h"
 
 @interface DDGroupSearchViewController () <UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, CAAnimationDelegate>
+
+@property (nonatomic, strong) DTieModel * model;
+@property (nonatomic, assign) BOOL isAddPostSearch;
 
 @property (nonatomic, strong) UIView * topView;
 
@@ -27,6 +37,15 @@
 
 @implementation DDGroupSearchViewController
 
+- (instancetype)initWithAddDtieModel:(DTieModel *)model
+{
+    if (self = [super init]) {
+        self.isAddPostSearch = YES;
+        self.model = model;
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -35,15 +54,74 @@
     [self createViews];
 }
 
+- (void)refresh
+{
+    [self searchWithKeyWord:nil];
+}
+
+- (void)searchWithKeyWord:(NSString *)keyWord
+{
+    if (isEmptyString(keyWord)) {
+        keyWord = self.textField.text;
+        if (isEmptyString(keyWord)) {
+            [self.tableView.mj_header endRefreshing];
+            return;
+        }
+    }
+    
+    if (self.type == 1) {
+        DDGroupSearchRequest * request = [[DDGroupSearchRequest alloc] initSearchGroupWithKeyWord:keyWord];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                
+                [self.dataSource removeAllObjects];
+                
+                [self.dataSource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:data]];
+                
+                [self.tableView reloadData];
+            }
+            
+            [self.tableView.mj_header endRefreshing];
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [self.tableView.mj_header endRefreshing];
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            [self.tableView.mj_header endRefreshing];
+        }];
+        
+    }else{
+        DDGroupSearchRequest * request = [[DDGroupSearchRequest alloc] initSearchPublicWithKeyWord:keyWord];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            NSArray * data = [response objectForKey:@"data"];
+            if (KIsArray(data)) {
+                [self.dataSource removeAllObjects];
+                
+                [self.dataSource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:data]];
+                
+                [self.tableView reloadData];
+            }
+            
+            [self.tableView.mj_header endRefreshing];
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            [self.tableView.mj_header endRefreshing];
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            [self.tableView.mj_header endRefreshing];
+        }];
+    }
+}
+
 - (void)createViews
 {
     CGFloat scale = kMainBoundsWidth / 360.f;
     
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.tableView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+    self.tableView.backgroundColor = UIColorFromRGB(0xEFEFF4);
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.rowHeight = 230 * scale;
     [self.tableView registerClass:[DDGroupTableViewCell class] forCellReuseIdentifier:@"DDGroupTableViewCell"];
+    [self.tableView registerClass:[DTieAddGroupTableViewCell class] forCellReuseIdentifier:@"DTieAddGroupTableViewCell"];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.view addSubview:self.tableView];
@@ -51,21 +129,141 @@
         make.top.mas_equalTo((364 + kStatusBarHeight) * kMainBoundsWidth / 1080.f);
         make.left.bottom.right.mas_equalTo(0);
     }];
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(refresh)];
     
     [self createTopView];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 20;
+    return self.dataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (self.isAddPostSearch) {
+        DTieAddGroupTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DTieAddGroupTableViewCell" forIndexPath:indexPath];
+        
+        DDGroupModel * model = [self.dataSource objectAtIndex:indexPath.row];
+        [cell configWithModel:model DtieModel:self.model];
+        
+        __weak typeof(self) weakSelf = self;
+        cell.addButtonHandle = ^(DDGroupModel * _Nonnull model) {
+            [weakSelf addWithGroup:model];
+        };
+        cell.cancleButtonHandle = ^(DDGroupModel * _Nonnull model) {
+            [weakSelf cancleWithGroup:model];
+        };
+        
+        return cell;
+    }
+    
     DDGroupTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"DDGroupTableViewCell" forIndexPath:indexPath];
+    
+    DDGroupModel * group = [self.dataSource objectAtIndex:indexPath.row];
+    
+    if (self.type == 1) {
+        [cell configWithMyGroupWithModel:group];
+        
+        __weak typeof(self) weakSelf = self;
+        cell.listButtonHandle = ^(DDGroupModel * _Nonnull model) {
+            [weakSelf listDidClickedWithModel:model];
+        };
+        cell.mapButtonHandle = ^(DDGroupModel * _Nonnull model) {
+            [weakSelf mapDidClickedWithModel:model];
+        };
+        
+    }else{
+        [cell configWithOtherPublicWithModel:group];
+    }
     
     return cell;
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    DDGroupModel * model = [self.dataSource objectAtIndex:indexPath.row];
+    DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:model];
+    [self.navigationController pushViewController:detail animated:YES];
+}
+
+- (void)addWithGroup:(DDGroupModel *)model
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在申请关联" inView:self.view];
+    DDGroupRequest * request = [[DDGroupRequest alloc] initAddPost:self.model.cid toGroup:model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"关联申请已发出" inView:self.view];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        NSString * msg = [response objectForKey:@"msg"];
+        if (isEmptyString(msg)) {
+            msg = @"关联失败";
+        }
+        [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"关联失败" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }];
+}
+
+- (void)cancleWithGroup:(DDGroupModel *)model
+{
+    MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在取消关联" inView:self.view];
+    DDGroupRequest * request = [[DDGroupRequest alloc] initRemovePost:self.model.cid fromGroup:model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"取消关联" inView:self.view];
+        model.postFlag = 0;
+        [self.tableView reloadData];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [hud hideAnimated:YES];
+        NSString * msg = [response objectForKey:@"msg"];
+        if (isEmptyString(msg)) {
+            msg = @"取消失败";
+        }
+        [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+        [hud hideAnimated:YES];
+        [MBProgressHUD showTextHUDWithText:@"取消失败" inView:[UIApplication sharedApplication].keyWindow];
+        
+    }];
+}
+
+- (void)listDidClickedWithModel:(DDGroupModel *)model
+{
+    DDGroupPostListViewController * list = [[DDGroupPostListViewController alloc] initWithModel:model];
+    [self.navigationController pushViewController:list animated:YES];
+}
+
+- (void)mapDidClickedWithModel:(DDGroupModel *)model
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:model];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+//- (void)listDidClicked
+//{
+//    DDGroupPostListViewController * list = [[DDGroupPostListViewController alloc] initWithModel:self.model];
+//    [self.navigationController pushViewController:list animated:YES];
+//}
+//
+//- (void)mapDidClicked
+//{
+//    [self.navigationController popToRootViewControllerAnimated:YES];
+//}
+
 
 - (void)createTopView
 {
@@ -126,7 +324,6 @@
     [self.myButton addTarget:self action:@selector(myButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.myButton];
     [self.myButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
         make.left.mas_equalTo(0);
         make.bottom.mas_equalTo(-10 * scale);
         make.width.mas_equalTo(kMainBoundsWidth / 2.f);
@@ -146,7 +343,6 @@
     [self.otherButton addTarget:self action:@selector(otherButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     [self.topView addSubview:self.otherButton];
     [self.otherButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.textField.mas_bottom).offset(10 * scale);
         make.right.mas_equalTo(0 * scale);
         make.bottom.mas_equalTo(-10 * scale);
         make.width.mas_equalTo(kMainBoundsWidth / 2.f);
@@ -160,7 +356,10 @@
         self.type = 1;
         self.otherButton.alpha = .5f;
         self.myButton.alpha = 1.f;
+        
+        [self.dataSource removeAllObjects];
         [self.tableView reloadData];
+        [self searchWithKeyWord:nil];
     }
 }
 
@@ -170,15 +369,25 @@
         self.type = 2;
         self.otherButton.alpha = 1.f;
         self.myButton.alpha = .5f;
+        
+        [self.dataSource removeAllObjects];
         [self.tableView reloadData];
+        [self searchWithKeyWord:nil];
     }
 }
 
 - (void)searchButtonDidClicked
 {
+    NSString * keyWord = self.textField.text;
+    if (isEmptyString(keyWord)) {
+        return;
+    }
+    
     if (self.textField.isFirstResponder) {
         [self.textField resignFirstResponder];
     }
+    
+    [self searchWithKeyWord:keyWord];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -190,6 +399,11 @@
 
 - (void)backButtonDidClicked
 {
+    if (self.isAddPostSearch) {
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+    
     CATransition *transition = [CATransition animation];
     
     transition.duration = 0.35;
@@ -205,6 +419,14 @@
     [self.navigationController.view.layer addAnimation:transition forKey:nil];
     
     [self.navigationController popViewControllerAnimated:NO];
+}
+
+- (NSMutableArray *)dataSource
+{
+    if (!_dataSource) {
+        _dataSource = [[NSMutableArray alloc] init];
+    }
+    return _dataSource;
 }
 
 /*

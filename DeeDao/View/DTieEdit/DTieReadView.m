@@ -70,6 +70,8 @@
 #import "DTieChooseLocationController.h"
 #import "DTieChooseDTieController.h"
 #import "DTieEditRequest.h"
+#import <YYText.h>
+#import "DDGroupRequest.h"
 
 @interface DTieReadView () <UITableViewDelegate, UITableViewDataSource, LiuyanDidComplete, TZImagePickerControllerDelegate, DTEditTextViewControllerDelegate, BMKMapViewDelegate, PGDatePickerDelegate, ChooseLocationDelegate, DTieChooseDTieControllerDelegate>
 
@@ -136,6 +138,8 @@
 @property (nonatomic, assign) BOOL isEditTitle;
 @property (nonatomic, assign) BOOL isContentImagePicker;
 
+@property (nonatomic, strong) NSMutableArray * groupSource;
+
 @end
 
 @implementation DTieReadView
@@ -192,8 +196,28 @@
         [self createChooseView];
         
         [self checkWYYBlock];
+        [self getGroupList];
     }
     return self;
+}
+
+- (void)getGroupList
+{
+    DDGroupRequest * request = [[DDGroupRequest alloc] initGetPostGroupListWithPostID:self.model.cid];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.model.groupArray removeAllObjects];
+        NSArray * data = [response objectForKey:@"data"];
+        if (KIsArray(data)) {
+            [self.model.groupArray addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:data]];
+        }
+        [self.tableView reloadData];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)createChooseView
@@ -1694,10 +1718,81 @@
             }
             
         }else{
+            
+            NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            
             if ([UserManager shareManager].user.cid == self.model.authorId) {
-                return 350 * scale + 150 * scale;
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"我的" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+                [groupStr appendAttributedString:spaceStr];
+                if (self.model.landAccountFlg == 1) {
+                    NSMutableAttributedString * spaceStr1 = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                    [groupStr appendAttributedString:spaceStr1];
+                    NSMutableAttributedString * spaceStr2 = [[NSMutableAttributedString alloc] initWithString:@"公开" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+                    [groupStr appendAttributedString:spaceStr2];
+                    if (self.model.groupArray.count > 0) {
+                        NSMutableAttributedString * spaceStr3 = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                        [groupStr appendAttributedString:spaceStr3];
+                    }else{
+                        NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                        [groupStr appendAttributedString:spaceStr];
+                    }
+                }else{
+                    if (self.model.groupArray.count > 0) {
+                        NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                        [groupStr appendAttributedString:spaceStr];
+                    }else{
+                        NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                        [groupStr appendAttributedString:spaceStr];
+                    }
+                }
+            }else  if (self.model.landAccountFlg == 1) {
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"公开" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x999999)}];
+                [groupStr appendAttributedString:spaceStr];
+                if (self.model.groupArray.count > 0) {
+                    NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                    [groupStr appendAttributedString:spaceStr];
+                }else{
+                    NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                    [groupStr appendAttributedString:spaceStr];
+                }
             }
-            return 350 * scale;
+            
+            for (NSInteger i = 0; i < self.model.groupArray.count ; i++) {
+                DDGroupModel * group = [self.model.groupArray objectAtIndex:i];
+                if (group.postFlag == 2) {
+                    NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:group.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xB721FF)}];
+                    [groupStr appendAttributedString:tempStr];
+                }else{
+                    NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:group.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+                    [groupStr appendAttributedString:tempStr];
+                }
+                
+                if (i == self.model.groupArray.count-1) {
+                    NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                    [groupStr appendAttributedString:spaceStr];
+                }else{
+                    NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                    [groupStr appendAttributedString:spaceStr];
+                }
+            }
+            
+            UIImage * image = [UIImage imageNamed:@"addGroup"];
+            NSMutableAttributedString *attachText = [NSMutableAttributedString yy_attachmentStringWithContent:image contentMode:UIViewContentModeCenter attachmentSize:image.size alignToFont:kPingFangRegular(36 * scale) alignment:YYTextVerticalAlignmentCenter];
+            [groupStr appendAttributedString:attachText];
+            
+            //计算文本尺寸
+            YYTextLayout *layout = [YYTextLayout layoutWithContainerSize:CGSizeMake(kMainBoundsWidth - 120 * scale, 10000) text:groupStr];
+            YYLabel * groupLabel = [[YYLabel alloc] init];
+            groupLabel.numberOfLines = 0;
+            groupLabel.attributedText = groupStr;
+            groupLabel.preferredMaxLayoutWidth = kMainBoundsWidth - 120 * scale;
+            groupLabel.textLayout = layout;
+            CGFloat introHeight = layout.textBoundingSize.height;
+            
+            if ([UserManager shareManager].user.cid == self.model.authorId) {
+                return 350 * scale + 150 * scale + introHeight;
+            }
+            return 350 * scale + introHeight;
         }
     }
     return .1f;
@@ -1978,6 +2073,7 @@
                     
                     editModel.detailContent = url;
                     editModel.image = photos.firstObject;
+                    editModel.postId = self.model.cid;
                     [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:editIndex inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
                     
                     [self sortCurrentDetails];
@@ -2019,6 +2115,7 @@
                         model.textInformation = @"";
                         model.authorID = [UserManager shareManager].user.cid;
                         model.detailNumber = i+1;
+                        model.postId = self.model.cid;
                         [tempDetails addObject:model];
                         count++;
                         
@@ -2083,6 +2180,7 @@
                         model.authorID = [UserManager shareManager].user.cid;
                         model.detailNumber = i+1;
                         model.pFlag = 0;
+                        model.postId = self.model.cid;
                         
                         [manager uploadPHAsset:asset progress:^(NSString *key, float percent) {
                             
@@ -2288,10 +2386,23 @@
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             if (self.model.details.count == 0) {
-                self.model.details = [NSArray arrayWithArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
+                NSMutableArray * data = [[NSMutableArray alloc] init];
+                
+                for (NSInteger i = 0; i < details.count; i++) {
+                    NSDictionary * dict = [details objectAtIndex:i];
+                    DTieEditModel * editModel = [DTieEditModel mj_objectWithKeyValues:dict];
+                    editModel.postId = self.model.cid;
+                    [data addObject:editModel];
+                }
+                self.model.details = [NSArray arrayWithArray:data];
             }else{
                 NSMutableArray * data = [[NSMutableArray alloc] initWithArray:self.model.details];
-                [data addObjectsFromArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
+                for (NSInteger i = 0; i < details.count; i++) {
+                    NSDictionary * dict = [details objectAtIndex:i];
+                    DTieEditModel * editModel = [DTieEditModel mj_objectWithKeyValues:dict];
+                    editModel.postId = self.model.cid;
+                    [data addObject:editModel];
+                }
                 self.model.details = [NSArray arrayWithArray:data];
             }
             
@@ -2315,12 +2426,27 @@
             
             [hud hideAnimated:YES];
             if (self.model.details.count == 0) {
-                self.model.details = [NSArray arrayWithArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
+                NSMutableArray * data = [[NSMutableArray alloc] init];
+                
+                for (NSInteger i = 0; i < details.count; i++) {
+                    NSDictionary * dict = [details objectAtIndex:i];
+                    DTieEditModel * editModel = [DTieEditModel mj_objectWithKeyValues:dict];
+                    editModel.postId = self.model.cid;
+                    [data addObject:editModel];
+                }
+                self.model.details = [NSArray arrayWithArray:data];
                 
                 [MBProgressHUD showTextHUDWithText:@"上传成功，首张图片默认为封面图" inView:self];
             }else{
                 NSMutableArray * data = [[NSMutableArray alloc] initWithArray:self.model.details];
-                [data addObjectsFromArray:[DTieEditModel mj_objectArrayWithKeyValuesArray:details]];
+                
+                for (NSInteger i = 0; i < details.count; i++) {
+                    NSDictionary * dict = [details objectAtIndex:i];
+                    DTieEditModel * editModel = [DTieEditModel mj_objectWithKeyValues:dict];
+                    editModel.postId = self.model.cid;
+                    [data addObject:editModel];
+                }
+                
                 self.model.details = [NSArray arrayWithArray:data];
                 [MBProgressHUD showTextHUDWithText:@"上传成功" inView:self];
             }
@@ -2436,7 +2562,7 @@
     [self.mygxqButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.mas_equalTo(self.mydzhButton.mas_left).offset(-30 * scale);
         make.height.mas_equalTo(100 * scale);
-        make.width.mas_equalTo(250 * scale);
+        make.width.mas_equalTo(200 * scale);
         make.centerY.mas_equalTo(0);
     }];
     [DDViewFactoryTool cornerRadius:50 * scale withView:self.mygxqButton];

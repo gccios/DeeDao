@@ -23,6 +23,7 @@
 #import "UserManager.h"
 #import "MBProgressHUD+DDHUD.h"
 #import "ConverUtil.h"
+#import <YYText.h>
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -122,8 +123,6 @@
     }];
 }
 
-
-
 - (void)getData
 {
     UserInfoRequest * request = [[UserInfoRequest alloc] initWithUserId:self.userId];
@@ -193,11 +192,40 @@
 {
     CGFloat scale = kMainBoundsWidth / 1080.f;
     CGFloat height = 630 * scale;
-    if (isEmptyString(self.model.signature)) {
+    
+    NSArray * keyWordArray = @[@"群", @"群群群", @"群群群", @"群群", @"群群群群群", @"群群群", @"群群群群", @"群群", @"群群群群群群", @"群群群", @"群群群"];
+    
+    if (keyWordArray.count == 0) {
         height += 45 * scale;
     }else{
-        height += [DDTool getHeightByWidth:kMainBoundsWidth - 120 * scale title:self.model.signature font:kPingFangRegular(48 * scale)];
+        
+        NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+        for (NSInteger i = 0; i < keyWordArray.count ; i++) {
+            NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:[keyWordArray objectAtIndex:i] attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+            [groupStr appendAttributedString:tempStr];
+            
+            if ( i != keyWordArray.count - 1) {
+                NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+                [groupStr appendAttributedString:spaceStr];
+            }
+        }
+        
+        UIImage * image = [UIImage imageNamed:@"addFriendColor"];
+        NSMutableAttributedString *attachText = [NSMutableAttributedString yy_attachmentStringWithContent:image contentMode:UIViewContentModeCenter attachmentSize:image.size alignToFont:kPingFangRegular(36 * scale) alignment:YYTextVerticalAlignmentCenter];
+        [groupStr appendAttributedString:attachText];
+        
+        //计算文本尺寸
+        YYTextLayout *layout = [YYTextLayout layoutWithContainerSize:CGSizeMake(kMainBoundsWidth - 120 * scale, 10000) text:groupStr];
+        YYLabel * groupLabel = [[YYLabel alloc] init];
+        groupLabel.numberOfLines = 0;
+        groupLabel.attributedText = groupStr;
+        groupLabel.preferredMaxLayoutWidth = kMainBoundsWidth - 120 * scale;
+        groupLabel.textLayout = layout;
+        CGFloat introHeight = layout.textBoundingSize.height;
+        
+        height = height + introHeight + 10 * scale;
     }
+    
     self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, height);
     
     [self.collectionView reloadData];

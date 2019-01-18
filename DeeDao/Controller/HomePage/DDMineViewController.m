@@ -27,6 +27,8 @@
 #import "ConverUtil.h"
 #import "DDMailViewController.h"
 #import "DDFriendCardViewController.h"
+#import "DDManagerViewController.h"
+#import "UserInfoViewController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -55,24 +57,32 @@
     self.view.backgroundColor = UIColorFromRGB(0xFFFFFF);
     
     self.dataSource = [NSMutableArray new];
-    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Address],
+    NSArray * typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_MYHome],
+//                            [[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
+//                            [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
+//                            [[MineMenuModel alloc] initWithType:MineMenuType_Address],
                             [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
                             [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+                            [[MineMenuModel alloc] initWithType:MineMenuType_AlertList],
                             [[MineMenuModel alloc] initWithType:MineMenuType_System]];
     
     if ([UserManager shareManager].user.bloggerFlg == 1) {
-        typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_Address],
+        typeArray = @[[[MineMenuModel alloc] initWithType:MineMenuType_MYHome],
+//                      [[MineMenuModel alloc] initWithType:MineMenuType_shareMingPian],
+//                      [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
+//                      [[MineMenuModel alloc] initWithType:MineMenuType_Address],
                       [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Private],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Blogger],
+                      [[MineMenuModel alloc] initWithType:MineMenuType_AlertList],
                       [[MineMenuModel alloc] initWithType:MineMenuType_System]];
     }
     
     [self.dataSource addObjectsFromArray:typeArray];
+    
+    if ([[UserManager shareManager].user.signature isEqualToString:@"S"]) {
+        [self.dataSource addObject:[[MineMenuModel alloc] initWithType:MineMenuType_SystemMnager]];
+    }
 }
 
 - (void)createViews
@@ -163,6 +173,14 @@
     UINavigationController * nav = (UINavigationController *)self.sideMenuController.rootViewController;
     
     switch (model.type) {
+        case MineMenuType_MYHome:
+        {
+            [self hideLeftViewAnimated:nil];
+            UserInfoViewController * info = [[UserInfoViewController alloc] initWithUserId:[UserManager shareManager].user.cid];
+            [nav pushViewController:info animated:YES];
+        }
+            break;
+            
         case MineMenuType_Wallet:
         {
             [self hideLeftViewAnimated:nil];
@@ -208,6 +226,14 @@
             [self hideLeftViewAnimated:nil];
             BloggerLinkViewController * blogger = [[BloggerLinkViewController alloc] init];
             [nav pushViewController:blogger animated:YES];
+        }
+            break;
+            
+        case MineMenuType_SystemMnager:
+        {
+            [self hideLeftViewAnimated:nil];
+            DDManagerViewController * manager = [[DDManagerViewController alloc] init];
+            [nav pushViewController:manager animated:YES];
         }
             break;
             

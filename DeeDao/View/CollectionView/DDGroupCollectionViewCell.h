@@ -7,8 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DDGroupModel.h"
 
 @interface DDGroupCollectionViewCell : UICollectionViewCell
+
+- (void)configWithModel:(DDGroupModel *)model;
+
+- (void)hiddenChooseImageView;
+- (void)showChooseImageView;
 
 @property (nonatomic, copy) void (^groupDidChooseHandle)(void);
 
