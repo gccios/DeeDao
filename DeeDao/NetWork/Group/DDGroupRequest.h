@@ -54,6 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initEditPost:(NSInteger)postID accountFlg:(NSInteger)accountFlg;
 
+- (instancetype)initEditVIPWithID:(NSInteger)listID groupId:(NSInteger)groupId userId:(NSInteger)userId authority:(NSInteger)authority state:(NSInteger)state;
+
+- (instancetype)initCheckGroupNew;
+
 @end
 
 NS_ASSUME_NONNULL_END

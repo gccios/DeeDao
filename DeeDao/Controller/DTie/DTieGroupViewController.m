@@ -37,8 +37,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
-    [self.dataSource addObject:myModel];
+//    DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
+//    [self.dataSource addObject:myModel];
     
     DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
     [self.dataSource addObject:otherModel];
@@ -58,8 +58,8 @@
         if (KIsArray(data)) {
             [self.dataSource removeAllObjects];
             
-            DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
-            [self.dataSource addObject:myModel];
+//            DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
+//            [self.dataSource addObject:myModel];
             
             DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
             [self.dataSource addObject:otherModel];
@@ -122,12 +122,12 @@
 {
     if (model.cid == -2) {
         
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在申请关联" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在投放" inView:self.view];
         DDGroupRequest * request = [[DDGroupRequest alloc] initEditPost:self.model.cid accountFlg:1];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"已关联公开群" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"已投放至公开群" inView:self.view];
             self.model.landAccountFlg = 1;
             [self.tableView reloadData];
             if (self.delegate && [self.delegate respondsToSelector:@selector(DTieGroupNeedUpdate)]) {
@@ -139,24 +139,24 @@
             [hud hideAnimated:YES];
             NSString * msg = [response objectForKey:@"msg"];
             if (isEmptyString(msg)) {
-                msg = @"关联失败";
+                msg = @"投放失败";
             }
             [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
             
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"关联失败" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"投放失败" inView:[UIApplication sharedApplication].keyWindow];
             
         }];
         
     }else{
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在申请关联" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在申请投放" inView:self.view];
         DDGroupRequest * request = [[DDGroupRequest alloc] initAddPost:self.model.cid toGroup:model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"关联申请已发出" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"投放申请已发出" inView:self.view];
             
             NSDictionary * data = [response objectForKey:@"data"];
             if (KIsDictionary(data)) {
@@ -178,14 +178,14 @@
             [hud hideAnimated:YES];
             NSString * msg = [response objectForKey:@"msg"];
             if (isEmptyString(msg)) {
-                msg = @"关联失败";
+                msg = @"投放失败";
             }
             [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
             
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"关联失败" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"投放失败" inView:[UIApplication sharedApplication].keyWindow];
             
         }];
     }
@@ -193,13 +193,18 @@
 
 - (void)cancleWithGroup:(DDGroupModel *)model
 {
+    if (self.model.authorId != [UserManager shareManager].user.cid) {
+        [MBProgressHUD showTextHUDWithText:@"只有作者才可取消投放" inView:self.view];
+        return;
+    }
+    
     if (model.cid == -2) {
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在取消关联" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在取消投放" inView:self.view];
         DDGroupRequest * request = [[DDGroupRequest alloc] initEditPost:self.model.cid accountFlg:0];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"已取消关联公开群" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"已取消投放公开群" inView:self.view];
             self.model.landAccountFlg = 0;
             [self.tableView reloadData];
             if (self.delegate && [self.delegate respondsToSelector:@selector(DTieGroupNeedUpdate)]) {
@@ -211,23 +216,23 @@
             [hud hideAnimated:YES];
             NSString * msg = [response objectForKey:@"msg"];
             if (isEmptyString(msg)) {
-                msg = @"关联失败";
+                msg = @"取消投放失败";
             }
             [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
             
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"关联失败" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"取消投放失败" inView:[UIApplication sharedApplication].keyWindow];
             
         }];
     }else{
-        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在取消关联" inView:self.view];
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在取消投放" inView:self.view];
         DDGroupRequest * request = [[DDGroupRequest alloc] initRemovePost:self.model.cid fromGroup:model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"取消关联" inView:self.view];
+            [MBProgressHUD showTextHUDWithText:@"已取消投放" inView:self.view];
             model.postFlag = 0;
             
             NSPredicate* predicate = [NSPredicate predicateWithFormat:@"cid == %d", model.cid];
@@ -246,14 +251,14 @@
             [hud hideAnimated:YES];
             NSString * msg = [response objectForKey:@"msg"];
             if (isEmptyString(msg)) {
-                msg = @"取消失败";
+                msg = @"取消投放失败";
             }
             [MBProgressHUD showTextHUDWithText:msg inView:[UIApplication sharedApplication].keyWindow];
             
         } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
             
             [hud hideAnimated:YES];
-            [MBProgressHUD showTextHUDWithText:@"取消失败" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"取消投放失败" inView:[UIApplication sharedApplication].keyWindow];
             
         }];
         

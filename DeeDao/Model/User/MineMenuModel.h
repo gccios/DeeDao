@@ -21,7 +21,8 @@ typedef enum : NSUInteger {
     MineMenuType_hudongMessage,
     MineMenuType_FriendCard,
     MineMenuType_SystemMnager,
-    MineMenuType_MYHome
+    MineMenuType_MYHome,
+    MineMenuType_JubaoMnager
 } MineMenuType;
 
 @interface MineMenuModel : NSObject

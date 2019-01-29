@@ -33,4 +33,28 @@
     return self;
 }
 
+- (instancetype)initJubaoWithPageStart:(NSInteger)pageStart pageSize:(NSInteger)pageSize
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"super/reportPostList";
+        
+        [self setIntegerValue:pageStart forParamKey:@"pageStart"];
+        [self setIntegerValue:pageSize forParamKey:@"pageSize"];
+    }
+    return self;
+}
+
+- (instancetype)initOnlinePost:(NSInteger)postID onlineFlag:(NSInteger)onlineFlag
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"super/onlineOrNot";
+        
+        [self setIntegerValue:postID forParamKey:@"postId"];
+        [self setIntegerValue:onlineFlag forParamKey:@"onlineFlag"];
+    }
+    return self;
+}
+
 @end

@@ -19,6 +19,7 @@
 @property (nonatomic, copy) void (^locationButtonDidClicked)(void);
 @property (nonatomic, copy) void (^rightHandleButtonBlock)(void);
 @property (nonatomic, copy) void (^backHandleButtonBlock)(void);
+@property (nonatomic, copy) void (^jubaoButtonBlock)(void);
 @property (nonatomic, copy) void (^selectButtonDidClicked)(NSInteger type);
 
 - (void)configWithModel:(DTieModel *)model;

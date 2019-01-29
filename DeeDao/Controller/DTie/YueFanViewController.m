@@ -425,67 +425,67 @@
         make.height.mas_equalTo(24 * scale);
     }];
     
-    UIView * friendView = [[UIView alloc] initWithFrame:CGRectZero];
-    [baseView addSubview:friendView];
-    [friendView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(titleLineView.mas_bottom);
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(144 * scale);
-    }];
-    UITapGestureRecognizer * friendTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseFriend)];
-    [friendView addGestureRecognizer:friendTap];
-    
-    UILabel * friendTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
-    friendTitleLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Invite Friends")];
-    [friendView addSubview:friendTitleLabel];
-    [friendTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(0 * scale);
-        make.centerY.mas_equalTo(0);
-        make.height.mas_equalTo(56 * scale);
-        make.width.mas_equalTo(240 * scale);
-    }];
-    
-    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
-    layout.itemSize = CGSizeMake(96 * scale, 96 * scale);
-    layout.minimumLineSpacing = 24 * scale;
-    layout.minimumInteritemSpacing = 24 * scale;
-    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-
-    self.friendCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
-    [self.friendCollectionView registerClass:[OnlyLogoCollectionViewCell class] forCellWithReuseIdentifier:@"OnlyLogoCollectionViewCell"];
-    self.friendCollectionView.backgroundColor = UIColorFromRGB(0xFFFFFF);
-    self.friendCollectionView.delegate = self;
-    self.friendCollectionView.dataSource = self;
-    self.friendCollectionView.scrollEnabled = NO;
-    [friendView addSubview:self.friendCollectionView];
-    [self.friendCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.height.mas_equalTo(96 * scale);
-        make.left.mas_equalTo(friendTitleLabel.mas_right).offset(12 * scale);
-        make.right.mas_equalTo(-180 * scale);
-    }];
-    
-    UIImageView * friendImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"addFriendColor"]];
-    [friendView addSubview:friendImageView];
-    [friendImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerY.mas_equalTo(0);
-        make.right.mas_equalTo(-60 * scale);
-        make.width.height.mas_equalTo(72 * scale);
-    }];
-    
-    UIView * friendLineView = [[UIView alloc] initWithFrame:CGRectZero];
-    friendLineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
-    [baseView addSubview:friendLineView];
-    [friendLineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(friendView.mas_bottom);
-        make.left.right.mas_equalTo(0);
-        make.height.mas_equalTo(3 * scale);
-    }];
+//    UIView * friendView = [[UIView alloc] initWithFrame:CGRectZero];
+//    [baseView addSubview:friendView];
+//    [friendView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(titleLineView.mas_bottom);
+//        make.left.right.mas_equalTo(0);
+//        make.height.mas_equalTo(144 * scale);
+//    }];
+//    UITapGestureRecognizer * friendTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(chooseFriend)];
+//    [friendView addGestureRecognizer:friendTap];
+//
+//    UILabel * friendTitleLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentRight];
+//    friendTitleLabel.text = [NSString stringWithFormat:@"%@：", DDLocalizedString(@"Invite Friends")];
+//    [friendView addSubview:friendTitleLabel];
+//    [friendTitleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.mas_equalTo(0 * scale);
+//        make.centerY.mas_equalTo(0);
+//        make.height.mas_equalTo(56 * scale);
+//        make.width.mas_equalTo(240 * scale);
+//    }];
+//
+//    UICollectionViewFlowLayout * layout = [[UICollectionViewFlowLayout alloc] init];
+//    layout.itemSize = CGSizeMake(96 * scale, 96 * scale);
+//    layout.minimumLineSpacing = 24 * scale;
+//    layout.minimumInteritemSpacing = 24 * scale;
+//    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+//
+//    self.friendCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+//    [self.friendCollectionView registerClass:[OnlyLogoCollectionViewCell class] forCellWithReuseIdentifier:@"OnlyLogoCollectionViewCell"];
+//    self.friendCollectionView.backgroundColor = UIColorFromRGB(0xFFFFFF);
+//    self.friendCollectionView.delegate = self;
+//    self.friendCollectionView.dataSource = self;
+//    self.friendCollectionView.scrollEnabled = NO;
+//    [friendView addSubview:self.friendCollectionView];
+//    [self.friendCollectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(0);
+//        make.height.mas_equalTo(96 * scale);
+//        make.left.mas_equalTo(friendTitleLabel.mas_right).offset(12 * scale);
+//        make.right.mas_equalTo(-180 * scale);
+//    }];
+//
+//    UIImageView * friendImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"addFriendColor"]];
+//    [friendView addSubview:friendImageView];
+//    [friendImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.centerY.mas_equalTo(0);
+//        make.right.mas_equalTo(-60 * scale);
+//        make.width.height.mas_equalTo(72 * scale);
+//    }];
+//
+//    UIView * friendLineView = [[UIView alloc] initWithFrame:CGRectZero];
+//    friendLineView.backgroundColor = UIColorFromRGB(0xEFEFF4);
+//    [baseView addSubview:friendLineView];
+//    [friendLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.mas_equalTo(friendView.mas_bottom);
+//        make.left.right.mas_equalTo(0);
+//        make.height.mas_equalTo(3 * scale);
+//    }];
     
     UIView * remarkView = [[UIView alloc] initWithFrame:CGRectZero];
     [baseView addSubview:remarkView];
     [remarkView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(friendLineView.mas_bottom);
+        make.top.mas_equalTo(titleLineView.mas_bottom);
         make.left.right.mas_equalTo(0);
         make.height.mas_equalTo(144 * scale);
     }];

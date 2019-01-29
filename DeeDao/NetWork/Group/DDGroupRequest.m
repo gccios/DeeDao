@@ -246,4 +246,28 @@
     return self;
 }
 
+- (instancetype)initEditVIPWithID:(NSInteger)listID groupId:(NSInteger)groupId userId:(NSInteger)userId authority:(NSInteger)authority state:(NSInteger)state
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPPost;
+        self.methodName = @"deedaoGroup/manager/editGroupMember";
+        
+        [self setIntegerValue:listID forParamKey:@"id"];
+        [self setIntegerValue:groupId forParamKey:@"groupId"];
+        [self setIntegerValue:userId forParamKey:@"userId"];
+        [self setIntegerValue:authority forParamKey:@"authority"];
+        [self setIntegerValue:state forParamKey:@"state"];
+    }
+    return self;
+}
+
+- (instancetype)initCheckGroupNew
+{
+    if (self = [super init]) {
+        self.httpMethod = BGNetworkRequestHTTPGet;
+        self.methodName = @"deedaoGroup/selectDeedaoGroupNewFlag";
+    }
+    return self;
+}
+
 @end

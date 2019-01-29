@@ -80,7 +80,13 @@
 @property (nonatomic, assign) NSInteger groupID;
 @property (nonatomic, copy) NSString * groupListID;
 
+@property (nonatomic, assign) NSInteger commonCollectionCount;
+
 @property (nonatomic, strong) NSMutableArray * groupArray;
+
+@property (nonatomic, assign) NSInteger onlineFlag;
+
+@property (nonatomic, copy) NSString * reporterName;
 
 - (void)configWithAuthor:(UserModel *)model;
 

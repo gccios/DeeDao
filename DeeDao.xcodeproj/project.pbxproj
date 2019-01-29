@@ -311,6 +311,9 @@
 		06BB78FD20A9C9290049F28F /* MailBigTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BB78FC20A9C9290049F28F /* MailBigTableViewCell.m */; };
 		06BBF91E20B71A220065B8C0 /* DDCollectionHandleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */; };
 		06BDF54E20E0AF7E005AB920 /* DTieQuanXianViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06BDF54D20E0AF7E005AB920 /* DTieQuanXianViewController.m */; };
+		06C3AA7F21F9C291007F1162 /* DDJubaoManagerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C3AA7E21F9C291007F1162 /* DDJubaoManagerController.m */; };
+		06C3AA8221F9C3A5007F1162 /* DTieJubaoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C3AA8121F9C3A5007F1162 /* DTieJubaoTableViewCell.m */; };
+		06C3AA8521F9FA49007F1162 /* DDShakeRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C3AA8421F9FA49007F1162 /* DDShakeRequest.m */; };
 		06C6022820C432870009E536 /* RDAlertAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022420C432870009E536 /* RDAlertAction.m */; };
 		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
 		06D0A49521DF0F4900D7A1F6 /* DDGroupTitleReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D0A49421DF0F4900D7A1F6 /* DDGroupTitleReusableView.m */; };
@@ -978,6 +981,12 @@
 		06BBF91D20B71A220065B8C0 /* DDCollectionHandleView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDCollectionHandleView.m; sourceTree = "<group>"; };
 		06BDF54C20E0AF7E005AB920 /* DTieQuanXianViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieQuanXianViewController.h; sourceTree = "<group>"; };
 		06BDF54D20E0AF7E005AB920 /* DTieQuanXianViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieQuanXianViewController.m; sourceTree = "<group>"; };
+		06C3AA7D21F9C291007F1162 /* DDJubaoManagerController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDJubaoManagerController.h; sourceTree = "<group>"; };
+		06C3AA7E21F9C291007F1162 /* DDJubaoManagerController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDJubaoManagerController.m; sourceTree = "<group>"; };
+		06C3AA8021F9C3A5007F1162 /* DTieJubaoTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieJubaoTableViewCell.h; sourceTree = "<group>"; };
+		06C3AA8121F9C3A5007F1162 /* DTieJubaoTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieJubaoTableViewCell.m; sourceTree = "<group>"; };
+		06C3AA8321F9FA49007F1162 /* DDShakeRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDShakeRequest.h; sourceTree = "<group>"; };
+		06C3AA8421F9FA49007F1162 /* DDShakeRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDShakeRequest.m; sourceTree = "<group>"; };
 		06C6022420C432870009E536 /* RDAlertAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDAlertAction.m; sourceTree = "<group>"; };
 		06C6022520C432870009E536 /* RDAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertView.h; sourceTree = "<group>"; };
 		06C6022620C432870009E536 /* RDAlertAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDAlertAction.h; sourceTree = "<group>"; };
@@ -1351,6 +1360,8 @@
 			children = (
 				0641497520AAEACE00460CB3 /* CreateDTieRequest.h */,
 				0641497620AAEACE00460CB3 /* CreateDTieRequest.m */,
+				06C3AA8321F9FA49007F1162 /* DDShakeRequest.h */,
+				06C3AA8421F9FA49007F1162 /* DDShakeRequest.m */,
 				060F004720ABE94600C810A1 /* DTieListRequest.h */,
 				060F004820ABE94600C810A1 /* DTieListRequest.m */,
 				060F006020AC493A00C810A1 /* DTieDetailRequest.h */,
@@ -1524,6 +1535,8 @@
 				0616EDA4219AB45900D3C075 /* DDFriendCardViewController.m */,
 				068C066721ECCD7E00245129 /* DDManagerViewController.h */,
 				068C066821ECCD7E00245129 /* DDManagerViewController.m */,
+				06C3AA7D21F9C291007F1162 /* DDJubaoManagerController.h */,
+				06C3AA7E21F9C291007F1162 /* DDJubaoManagerController.m */,
 			);
 			path = Mine;
 			sourceTree = "<group>";
@@ -2115,6 +2128,8 @@
 			children = (
 				064F0B3D20A48233007C0A4F /* MineHeaderView.h */,
 				064F0B3E20A48233007C0A4F /* MineHeaderView.m */,
+				06C3AA8021F9C3A5007F1162 /* DTieJubaoTableViewCell.h */,
+				06C3AA8121F9C3A5007F1162 /* DTieJubaoTableViewCell.m */,
 				064F0B4120A4898C007C0A4F /* MainTableViewCell.h */,
 				064F0B4220A4898C007C0A4F /* MainTableViewCell.m */,
 				064F0B4C20A49A59007C0A4F /* MineEditTableViewCell.h */,
@@ -2583,6 +2598,7 @@
 				066033D320B2BDC800A54D81 /* SCParallaxPageLayouter.m in Sources */,
 				06102AD420B46D2700FF3278 /* LiuYanTableViewCell.m in Sources */,
 				067A4F8320FDF5AC00869D80 /* BMKClusterAlgorithm.m in Sources */,
+				06C3AA7F21F9C291007F1162 /* DDJubaoManagerController.m in Sources */,
 				0614E79D21084A9F002F8FC5 /* DTieChooseDTieController.m in Sources */,
 				0689250E212BEF35006E2031 /* UserYaoYueBlockModel.m in Sources */,
 				066033D520B2BDC800A54D81 /* SCCardsPageLayouter.m in Sources */,
@@ -2781,6 +2797,7 @@
 				06E5556F20C930B300C0CE9D /* JubaoRequest.m in Sources */,
 				06EE1BC3219D5EC40003A7D9 /* DTieEditRequest.m in Sources */,
 				064F0B4620A489BB007C0A4F /* MineMenuModel.m in Sources */,
+				06C3AA8521F9FA49007F1162 /* DDShakeRequest.m in Sources */,
 				066D5E932122C9EE00A7AD27 /* DaoDiAlertView.m in Sources */,
 				066033D620B2BDC800A54D81 /* SCPageLayouter.m in Sources */,
 				06FE0B3A2195803700840566 /* DDAddressBookReuqest.m in Sources */,
@@ -2869,6 +2886,7 @@
 				0647F33420B6DD51009B7C27 /* SecurityFriendController.m in Sources */,
 				064CF28F2126C27B00AC2F42 /* SelectNotificationDeatilRequest.m in Sources */,
 				0676836E212146FA007B5E9B /* ForwardSeriesRequest.m in Sources */,
+				06C3AA8221F9C3A5007F1162 /* DTieJubaoTableViewCell.m in Sources */,
 				06733F3420A28BD9007875A7 /* AppDelegate.m in Sources */,
 				06102ADB20B4790400FF3278 /* CommentModel.m in Sources */,
 				06BDF54E20E0AF7E005AB920 /* DTieQuanXianViewController.m in Sources */,
@@ -3102,7 +3120,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.deedao.appstore;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "824375db-9d7b-4a68-b78d-792970ca28c8";
-				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreADHoc;
+				PROVISIONING_PROFILE_SPECIFIER = DeeDaoForAppstoreDistribution;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

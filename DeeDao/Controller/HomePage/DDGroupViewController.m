@@ -23,7 +23,9 @@
 
 @property (nonatomic, strong) UICollectionView * collectionView;
 
+@property (nonatomic, strong) NSMutableArray * defaultSource;
 @property (nonatomic, strong) NSMutableArray * mySource;
+@property (nonatomic, strong) NSMutableArray * addSource;
 @property (nonatomic, strong) NSMutableArray * otherSource;
 
 @end
@@ -34,14 +36,23 @@
 {
     [super viewDidLoad];
     
+    DDGroupModel * homeModel = [[DDGroupModel alloc] initWithMyHome];
+    [self.defaultSource addObject:homeModel];
+    
     DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
-    [self.mySource addObject:myModel];
+    [self.defaultSource addObject:myModel];
+    
+    DDGroupModel * collectModel = [[DDGroupModel alloc] initWithMyCollect];
+    [self.defaultSource addObject:collectModel];
+    
+    DDGroupModel * wyyModel = [[DDGroupModel alloc] initWithMyWYY];
+    [self.defaultSource addObject:wyyModel];
     
     DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
-    [self.mySource addObject:otherModel];
+    [self.defaultSource addObject:otherModel];
     
     DDGroupModel * createModel = [[DDGroupModel alloc] initWithCreate];
-    [self.mySource addObject:createModel];
+    [self.defaultSource addObject:createModel];
     
     [self createViews];
     
@@ -54,26 +65,24 @@
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [self.mySource removeAllObjects];
+        [self.addSource removeAllObjects];
         [self.otherSource removeAllObjects];
-        
-        DDGroupModel * myModel = [[DDGroupModel alloc] initWithMy];
-        [self.mySource addObject:myModel];
-        
-        DDGroupModel * otherModel = [[DDGroupModel alloc] initWithPublic];
-        [self.mySource addObject:otherModel];
         
         NSDictionary * data = [response objectForKey:@"data"];
         if (KIsDictionary(data)) {
             
-            NSArray * myGroupList = [data objectForKey:@"myGroupList"];
+            NSArray * myGroupList = [data objectForKey:@"myFoundGroupList"];
             [self.mySource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:myGroupList]];
+            
+            NSArray * foundGroupList = [data objectForKey:@"myGroupList"];
+            [self.addSource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:foundGroupList]];
             
             NSArray * publicGroupList = [data objectForKey:@"publicGroupList"];
             [self.otherSource addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:publicGroupList]];
         }
         
-        DDGroupModel * createModel = [[DDGroupModel alloc] initWithCreate];
-        [self.mySource addObject:createModel];
+//        DDGroupModel * createModel = [[DDGroupModel alloc] initWithCreate];
+//        [self.mySource addObject:createModel];
         
         [self.collectionView reloadData];
         
@@ -169,13 +178,17 @@
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return 2;
+    return 4;
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == 0) {
+        return self.defaultSource.count;
+    }else if (section == 1) {
         return self.mySource.count;
+    }else if (section == 2) {
+        return self.addSource.count;
     }else{
         return self.otherSource.count;
     }
@@ -186,7 +199,7 @@
     DDGroupCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"DDGroupCollectionViewCell" forIndexPath:indexPath];
     
     if (indexPath.section == 0) {
-        DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+        DDGroupModel * model = [self.defaultSource objectAtIndex:indexPath.row];
         [cell configWithModel:model];
         if (model.cid == self.currentModel.cid) {
             [cell showChooseImageView];
@@ -194,6 +207,22 @@
             [cell hiddenChooseImageView];
         }
     }else if (indexPath.section == 1) {
+        DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+        [cell configWithModel:model];
+        if (model.cid == self.currentModel.cid) {
+            [cell showChooseImageView];
+        }else{
+            [cell hiddenChooseImageView];
+        }
+    }else if (indexPath.section == 2) {
+        DDGroupModel * model = [self.addSource objectAtIndex:indexPath.row];
+        [cell configWithModel:model];
+        if (model.cid == self.currentModel.cid) {
+            [cell showChooseImageView];
+        }else{
+            [cell hiddenChooseImageView];
+        }
+    }else if (indexPath.section == 3) {
         DDGroupModel * model = [self.otherSource objectAtIndex:indexPath.row];
         [cell configWithModel:model];
         if (model.cid == self.currentModel.cid) {
@@ -214,27 +243,28 @@
 - (void)didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == 0) {
-        if (indexPath.row == self.mySource.count-1) {
+        if (indexPath.row == self.defaultSource.count-1) {
             DDCreateGroupViewController * create = [[DDCreateGroupViewController alloc] init];
             create.delegate = self;
             [self.navigationController pushViewController:create animated:YES];
         }else{
-            DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+            DDGroupModel * model = [self.defaultSource objectAtIndex:indexPath.row];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:model];
             [self.navigationController popToRootViewControllerAnimated:YES];
         }
+    }else if (indexPath.section == 1) {
+        DDGroupModel * model = [self.mySource objectAtIndex:indexPath.row];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:model];
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }else if (indexPath.section == 2) {
+        DDGroupModel * model = [self.addSource objectAtIndex:indexPath.row];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:model];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }else{
         DDGroupModel * model = [self.otherSource objectAtIndex:indexPath.row];
-        
-        if (model.groupCreateUser == [UserManager shareManager].user.cid) {
-            DDAuthorGroupDetailController * detail = [[DDAuthorGroupDetailController alloc] initWithModel:model];
-            detail.delegate = self;
-            [self.navigationController pushViewController:detail animated:YES];
-        }else{
-            DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:model];
-            detail.delegate = self;
-            [self.navigationController pushViewController:detail animated:YES];
-        }
+        DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:model];
+        detail.delegate = self;
+        [self.navigationController pushViewController:detail animated:YES];
     }
 }
 
@@ -259,7 +289,11 @@
         DDGroupTitleReusableView * view = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"DDGroupTitleReusableView" forIndexPath:indexPath];
         
         if (indexPath.section == 0) {
-            [view configWithTitle:@"-  已 有 群  -"];
+            [view configWithTitle:@"-  默 认 群  -"];
+        }else if (indexPath.section == 1) {
+            [view configWithTitle:@"-  我 创 建 的 群  -"];
+        }else if (indexPath.section == 2){
+            [view configWithTitle:@"-  我 加 入 的 群  -"];
         }else{
             [view configWithTitle:@"-  其 他 公 开 群  -"];
         }
@@ -304,6 +338,14 @@
 
 - (NSMutableArray *)mySource
 {
+    if (!_defaultSource) {
+        _defaultSource = [[NSMutableArray alloc] init];
+    }
+    return _defaultSource;
+}
+
+- (NSMutableArray *)defaultSource
+{
     if (!_mySource) {
         _mySource = [[NSMutableArray alloc] init];
     }
@@ -317,5 +359,14 @@
     }
     return _otherSource;
 }
+
+- (NSMutableArray *)addSource
+{
+    if (!_addSource) {
+        _addSource = [[NSMutableArray alloc] init];
+    }
+    return _addSource;
+}
+
 
 @end

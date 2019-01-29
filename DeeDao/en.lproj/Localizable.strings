@@ -195,8 +195,11 @@
 "InterestedHome" = "Interested";
 "HasInterestedHome" = "Has interested";
 "InterestedList" = "Interested";
+"InterestedListTie" = "Interested";
 "AppointmentsList" = "Appointments";
+"AppointmentsListTie" = "Appointments";
 "DList" = "D Pages";
+"DListTie" = "D Pages";
 "AddPhotos" = "Add photos";
 "OrganizeHere" = "Organize here";
 "SayHi" = "Say Hi";

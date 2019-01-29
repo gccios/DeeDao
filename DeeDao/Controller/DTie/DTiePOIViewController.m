@@ -265,9 +265,9 @@
 - (void)reloadRightItem
 {
     if (self.model.wyyFlg == 1) {
-        [self.rightButton setTitle:@"  取消感兴趣  " forState:UIControlStateNormal];
+        [self.rightButton setTitle:@"  取消收藏  " forState:UIControlStateNormal];
     }else{
-        [self.rightButton setTitle:@"  感兴趣  " forState:UIControlStateNormal];
+        [self.rightButton setTitle:@"  收藏  " forState:UIControlStateNormal];
     }
 }
 

@@ -16,6 +16,8 @@
 #import "UserManager.h"
 #import "DDLGSideViewController.h"
 #import "MineInfoViewController.h"
+#import "DDAuthorGroupDetailController.h"
+#import "DDGroupDetailViewController.h"
 
 @interface UserInfoCollectionHeader ()
 
@@ -30,6 +32,8 @@
 
 @property (nonatomic, assign) BOOL isGuanzhu;
 @property (nonatomic, assign) UserModel * model;
+
+@property (nonatomic, strong) NSMutableArray * groupList;
 
 @end
 
@@ -119,25 +123,8 @@
         make.bottom.mas_equalTo(-90 * scale);
     }];
     
-    NSArray * keyWordArray = @[@"群", @"群群群", @"群群群", @"群群", @"群群群群群", @"群群群", @"群群群群", @"群群", @"群群群群群群", @"群群群", @"群群群"];
-    
-    NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
-    for (NSInteger i = 0; i < keyWordArray.count ; i++) {
-        NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:[keyWordArray objectAtIndex:i] attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
-        [tempStr yy_setTextHighlightRange:NSMakeRange(0, tempStr.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
-            NSLog(@"第%ld个群", i);
-        }];
-        [groupStr appendAttributedString:tempStr];
-        
-        if ( i != keyWordArray.count - 1) {
-            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
-            [groupStr appendAttributedString:spaceStr];
-        }
-    }
-    
     self.geqianLabel = [[YYLabel alloc] init];
     self.geqianLabel.numberOfLines = 0;
-    self.geqianLabel.attributedText = groupStr;
     self.geqianLabel.preferredMaxLayoutWidth = kMainBoundsWidth - 120 * scale;
     [self.geqianView addSubview:self.geqianLabel];
     [self.geqianLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -224,7 +211,7 @@
     }];
 }
 
-- (void)configWithModel:(UserModel *)model
+- (void)configWithModel:(UserModel *)model groupList:(NSMutableArray *)groupList
 {
     self.model = model;
     self.nameLabel.text = model.nickname;
@@ -258,6 +245,36 @@
         }];
         [editTitleButton addTarget:self action:@selector(editTitleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     }
+    
+    CGFloat scale = kMainBoundsWidth / 1080.f;
+    NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+    for (NSInteger i = 0; i < groupList.count ; i++) {
+        
+        DDGroupModel * groupModel = [groupList objectAtIndex:i];
+        
+        NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:groupModel.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+        [tempStr yy_setTextHighlightRange:NSMakeRange(0, tempStr.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
+            
+            DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+            UINavigationController * na = (UINavigationController *)lg.rootViewController;
+            
+            if (groupModel.groupCreateUser == [UserManager shareManager].user.cid) {
+                DDAuthorGroupDetailController * author = [[DDAuthorGroupDetailController alloc] initWithModel:groupModel];
+                [na pushViewController:author animated:YES];
+            }else{
+                DDGroupDetailViewController * detail = [[DDGroupDetailViewController alloc] initWithModel:groupModel];
+                [na pushViewController:detail animated:YES];
+            }
+            
+        }];
+        [groupStr appendAttributedString:tempStr];
+        
+        if ( i != groupList.count - 1) {
+            NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
+            [groupStr appendAttributedString:spaceStr];
+        }
+    }
+    self.geqianLabel.attributedText = groupStr;
 }
 
 - (void)editTitleButtonDidClicked

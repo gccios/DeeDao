@@ -41,5 +41,6 @@
 //用于群的成员管理
 @property (nonatomic, assign) NSInteger groupID;
 @property (nonatomic, copy) NSString * groupListID;
+@property (nonatomic, assign) NSInteger authority;
 
 @end

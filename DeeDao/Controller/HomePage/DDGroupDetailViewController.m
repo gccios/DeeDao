@@ -37,6 +37,8 @@
 
 @property (nonatomic, strong) UIView * footerView;
 
+@property (nonatomic, strong) UIImageView * tagView;
+
 @end
 
 @implementation DDGroupDetailViewController
@@ -228,6 +230,17 @@
         make.left.mas_equalTo(20 * scale);
         make.height.mas_equalTo(15 * scale);
     }];
+    
+    if (self.model.newFlag == 1) {
+        self.tagView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"NEW"]];
+        [self.headerView addSubview:self.tagView];
+        [self.tagView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.updateLabel.mas_right).offset(8 * scale);
+            make.centerY.mas_equalTo(self.updateLabel);
+            make.width.mas_equalTo(22 * scale);
+            make.height.mas_equalTo(12 * scale);
+        }];
+    }
     
     if (self.model.userFlag == 1) {
         UIButton * leftButton = [DDViewFactoryTool createButtonWithFrame: CGRectZero font:kPingFangRegular(14 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"列表浏览"];
@@ -464,6 +477,12 @@
         
         [hud hideAnimated:YES];
         [MBProgressHUD showTextHUDWithText:@"申请成功" inView:[UIApplication sharedApplication].keyWindow];
+        
+        [self.applyButton setTitleColor:UIColorFromRGB(0xCCCCCC) forState:UIControlStateNormal];
+        self.applyButton.layer.borderColor = UIColorFromRGB(0xCCCCCC).CGColor;
+        [self.applyButton setImage:[UIImage new] forState:UIControlStateNormal];
+        [self.applyButton setTitle:@"已申请加入" forState:UIControlStateNormal];
+        self.applyButton.enabled = NO;
         
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         

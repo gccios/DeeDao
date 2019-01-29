@@ -19,6 +19,8 @@
 #import "DDGroupPostManagerController.h"
 #import "DDGroupGiveViewController.h"
 #import "RDAlertView.h"
+#import "DDGroupPostListViewController.h"
+#import "ConverUtil.h"
 
 @interface DDAuthorGroupDetailController () <DTEditTextViewControllerDelegate, TZImagePickerControllerDelegate>
 
@@ -43,6 +45,8 @@
 @property (nonatomic, strong) UILabel * editLabel;
 
 @property (nonatomic, strong) UIView * footerView;
+
+@property (nonatomic, strong) UIImageView * tagView;
 
 @end
 
@@ -136,6 +140,23 @@
     }];
 }
 
+- (void)shareButtonDidClicked
+{
+    NSTimeInterval time = [[NSDate date] timeIntervalSince1970] * 1000;
+    NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+    
+    NSString * groupID = [NSString stringWithFormat:@"%ld", self.model.cid];
+    
+    NSString * string = [NSString stringWithFormat:@"group:%@+%@", timeString, groupID];
+    NSString * result = [ConverUtil base64EncodeString:string];
+    
+    NSString * pasteString = [NSString stringWithFormat:@"【DeeDao地到】%@#复制此消息，打开DeeDao地到查看群组详情", result];
+    
+    UIPasteboard * pasteBoard = [UIPasteboard generalPasteboard];
+    pasteBoard.string = pasteString;
+    [MBProgressHUD showTextHUDWithText:@"已拷贝口令。在微博或电邮粘贴口令并发出。对方拷贝，并打开Deedao, 便可打开群组" inView:[UIApplication sharedApplication].keyWindow];
+}
+
 - (void)leftButtonDidClicked
 {
     DDGroupPeopleManagerController * people = [[DDGroupPeopleManagerController alloc] initWithModel:self.model];
@@ -189,7 +210,7 @@
 {
     CGFloat scale = kMainBoundsWidth / 360.f;
     
-    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 700 * scale)];
+    self.headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 760 * scale)];
     
     self.coverImageview = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"groupFirstImage.png"]];
     
@@ -300,6 +321,45 @@
         make.height.mas_equalTo(15 * scale);
     }];
     
+    if (self.model.newFlag == 1) {
+        self.tagView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFill image:[UIImage imageNamed:@"NEW"]];
+        [self.headerView addSubview:self.tagView];
+        [self.tagView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.mas_equalTo(self.updateLabel.mas_right).offset(8 * scale);
+            make.centerY.mas_equalTo(self.updateLabel);
+            make.width.mas_equalTo(22 * scale);
+            make.height.mas_equalTo(12 * scale);
+        }];
+    }
+    
+    UIButton * listButton = [DDViewFactoryTool createButtonWithFrame: CGRectZero font:kPingFangRegular(14 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"列表浏览"];
+    [listButton setImage:[UIImage imageNamed:@"listliulan"] forState:UIControlStateNormal];
+    [DDViewFactoryTool cornerRadius:20 * scale withView:listButton];
+    listButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    listButton.layer.borderWidth = 1.f;
+    [self.headerView addSubview:listButton];
+    [listButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.updateLabel.mas_bottom).offset(20 * scale);
+        make.left.mas_equalTo(20 * scale);
+        make.width.mas_equalTo(148 * scale);
+        make.height.mas_equalTo(40 * scale);
+    }];
+    [listButton addTarget:self action:@selector(listButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * mapButton = [DDViewFactoryTool createButtonWithFrame: CGRectZero font:kPingFangRegular(14 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"地图浏览"];
+    [mapButton setImage:[UIImage imageNamed:@"mapliulan"] forState:UIControlStateNormal];
+    [DDViewFactoryTool cornerRadius:20 * scale withView:mapButton];
+    mapButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    mapButton.layer.borderWidth = 1.f;
+    [self.headerView addSubview:mapButton];
+    [mapButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.updateLabel.mas_bottom).offset(20 * scale);
+        make.right.mas_equalTo(-20 * scale);
+        make.width.mas_equalTo(148 * scale);
+        make.height.mas_equalTo(40 * scale);
+    }];
+    [mapButton addTarget:self action:@selector(mapButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
     UIButton * leftButton = [DDViewFactoryTool createButtonWithFrame: CGRectZero font:kPingFangRegular(14 * scale) titleColor:UIColorFromRGB(0xDB6283) title:@"群员管理"];
     [leftButton setImage:[UIImage imageNamed:@"groupPeople"] forState:UIControlStateNormal];
     [DDViewFactoryTool cornerRadius:20 * scale withView:leftButton];
@@ -307,7 +367,7 @@
     leftButton.layer.borderWidth = 1.f;
     [self.headerView addSubview:leftButton];
     [leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.updateLabel.mas_bottom).offset(20 * scale);
+        make.top.mas_equalTo(listButton.mas_bottom).offset(20 * scale);
         make.left.mas_equalTo(20 * scale);
         make.width.mas_equalTo(148 * scale);
         make.height.mas_equalTo(40 * scale);
@@ -321,7 +381,7 @@
     rightButton.layer.borderWidth = 1.f;
     [self.headerView addSubview:rightButton];
     [rightButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.updateLabel.mas_bottom).offset(20 * scale);
+        make.top.mas_equalTo(listButton.mas_bottom).offset(20 * scale);
         make.right.mas_equalTo(-20 * scale);
         make.width.mas_equalTo(148 * scale);
         make.height.mas_equalTo(40 * scale);
@@ -590,6 +650,19 @@
         make.height.mas_equalTo(20 * scale);
     }];
     [yijiaoButton addTarget:self action:@selector(yijiaoButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)listButtonDidClicked
+{
+    DDGroupPostListViewController * list = [[DDGroupPostListViewController alloc] initWithModel:self.model];
+    [self.navigationController pushViewController:list animated:YES];
+}
+
+- (void)mapButtonDidClicked
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DDGroupDidChange" object:self.model];
+    [self.navigationController popToRootViewControllerAnimated:YES];
+    
 }
 
 - (void)deleteButtonDidClicked

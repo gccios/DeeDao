@@ -34,7 +34,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.dataSource = [[NSMutableArray alloc] initWithArray:@[DDLocalizedString(@"My treasure"), DDLocalizedString(@"HelpAndAdvice"), DDLocalizedString(@"Sign off")]];
+    self.dataSource = [[NSMutableArray alloc] initWithArray:@[DDLocalizedString(@"HelpAndAdvice"), DDLocalizedString(@"Sign off")]];
     [self createViews];
 }
 
@@ -67,14 +67,15 @@
     [logoImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(140 * scale);
         make.centerX.mas_equalTo(0);
-        make.width.height.mas_equalTo(228 * scale);
+        make.width.height.mas_equalTo(160 * scale);
     }];
+    [DDViewFactoryTool cornerRadius:16 * scale withView:logoImageView];
     
     UILabel * aboutLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(48 * scale) textColor:UIColorFromRGB(0x000000) alignment:NSTextAlignmentCenter];
     aboutLabel.text = @"DeeDao地到";
     [headerView addSubview:aboutLabel];
     [aboutLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(logoImageView.mas_bottom).offset(14 * scale);
+        make.top.mas_equalTo(logoImageView.mas_bottom).offset(34 * scale);
         make.left.right.mas_equalTo(0);
         make.height.mas_equalTo(50 * scale);
     }];
@@ -139,22 +140,23 @@
 //        [self.navigationController pushViewController:notification animated:YES];
 //
 //    }else
+//    if (indexPath.row == 0) {
+//
+//        NewAchievementViewController * achievement = [[NewAchievementViewController alloc] init];
+//        [self.navigationController pushViewController:achievement animated:YES];
+//
+//    }else if (indexPath.row == 100) {
+//
+//        DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
+//        [self.navigationController pushViewController:private animated:YES];
+//
+//    }else
     if (indexPath.row == 0) {
-        
-        NewAchievementViewController * achievement = [[NewAchievementViewController alloc] init];
-        [self.navigationController pushViewController:achievement animated:YES];
-        
-    }else if (indexPath.row == 100) {
-        
-        DDPrivateViewController * private = [[DDPrivateViewController alloc] init];
-        [self.navigationController pushViewController:private animated:YES];
-        
-    }else if (indexPath.row == 1) {
-        
+    
         HelpAndAdviceController * help = [[HelpAndAdviceController alloc] init];
         [self.navigationController pushViewController:help animated:YES];
         
-    }else if (indexPath.row == 2){
+    }else if (indexPath.row == 1){
         UIAlertController * alert = [UIAlertController alertControllerWithTitle:DDLocalizedString(@"Information") message:DDLocalizedString(@"BackAlert") preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction * action1 = [UIAlertAction actionWithTitle:DDLocalizedString(@"Cancel") style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {

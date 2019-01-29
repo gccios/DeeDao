@@ -118,7 +118,7 @@
     self.deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
     [baseView addSubview:self.deedaoButton];
     [self.deedaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.mas_equalTo(-60 * scale);
+        make.centerX.mas_equalTo(0 * scale);
         make.bottom.mas_equalTo(0);
         make.width.mas_equalTo(240 * scale);
         make.height.mas_equalTo(120 * scale);
@@ -170,6 +170,8 @@
         make.left.mas_equalTo(self.shareLabel.mas_right).offset(5 * scale);
         make.width.height.mas_equalTo(60 * scale);
     }];
+    
+    self.shareButton.hidden = YES;
     
 //    UIButton * alertButton = [UIButton buttonWithType:UIButtonTypeCustom];
 //    [alertButton setImage:[UIImage imageNamed:@"alertEdit"] forState:UIControlStateNormal];

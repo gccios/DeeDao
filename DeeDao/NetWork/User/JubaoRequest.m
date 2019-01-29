@@ -14,11 +14,9 @@
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPPost;
-        self.methodName = @"post/complaint/addPostComplaint";
+        self.methodName = @"post/reportPost";
         
-        [self setIntegerValue:postViewId forParamKey:@"postViewId"];
-        [self setValue:postComplaintContent forParamKey:@"postComplaintContent"];
-        [self setIntegerValue:complaintOwner forParamKey:@"complaintOwner"];
+        [self setIntegerValue:postViewId forParamKey:@"postId"];
     }
     return self;
 }

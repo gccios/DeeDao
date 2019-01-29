@@ -11,11 +11,15 @@
 #import <Masonry.h>
 #import "UIView+LayerCurve.h"
 #import <UIImageView+WebCache.h>
+#import "DDGroupRequest.h"
+#import "UserManager.h"
+#import "MBProgressHUD+DDHUD.h"
 
 @interface DDGroupPeopleTableViewCell ()
 
 @property (nonatomic, strong) UserModel * model;
 
+@property (nonatomic, strong) UIImageView * vipImageView;
 @property (nonatomic, strong) UIImageView * logoImageview;
 @property (nonatomic, strong) UILabel * nameLabel;
 
@@ -47,6 +51,11 @@
     
     [self.logoImageview sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     self.nameLabel.text = model.nickname;
+    
+    self.vipImageView.hidden = YES;
+    [self.vipImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(-25 * kMainBoundsWidth / 375.f);
+    }];
 }
 
 - (void)configPeopleWithModel:(UserModel *)model
@@ -59,6 +68,16 @@
     
     [self.logoImageview sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     self.nameLabel.text = model.nickname;
+    
+    self.vipImageView.hidden = NO;
+    [self.vipImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(20 * kMainBoundsWidth / 375.f);
+    }];
+    if (model.authority == 0) {
+        [self.vipImageView setImage:[UIImage imageNamed:@"VIPYes"]];
+    }else{
+        [self.vipImageView setImage:[UIImage imageNamed:@"VIPDefault"]];
+    }
 }
 
 - (void)configGiveWithModel:(UserModel *)model
@@ -71,6 +90,43 @@
     
     [self.logoImageview sd_setImageWithURL:[NSURL URLWithString:model.portraituri]];
     self.nameLabel.text = model.nickname;
+    
+    self.vipImageView.hidden = YES;
+    [self.vipImageView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(-25 * kMainBoundsWidth / 375.f);
+    }];
+}
+
+- (void)VIPImageViewDidTap
+{
+    NSInteger authority = 0;
+    if (self.model.authority == 0) {
+        authority = 1;
+    }
+    
+    NSInteger state = 0;
+    if ([UserManager shareManager].user.cid == self.model.cid) {
+        state = 1;
+    }
+    
+    [DDGroupRequest cancelRequest];
+    DDGroupRequest * request = [[DDGroupRequest alloc] initEditVIPWithID:[self.model.groupListID integerValue] groupId:self.model.groupID userId:self.model.cid authority:authority state:state];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        self.model.authority = authority;
+        if (self.model.authority == 0) {
+            [self.vipImageView setImage:[UIImage imageNamed:@"VIPYes"]];
+            [MBProgressHUD showTextHUDWithText:@"超级群成员帖子无需审批" inView:[UIApplication sharedApplication].keyWindow];
+        }else{
+            [self.vipImageView setImage:[UIImage imageNamed:@"VIPDefault"]];
+            [MBProgressHUD showTextHUDWithText:@"普通群成员帖子需要审批" inView:[UIApplication sharedApplication].keyWindow];
+        }
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)createGroupPeopleCell
@@ -79,6 +135,17 @@
     
     self.contentView.backgroundColor = UIColorFromRGB(0xFFFFFF);
     self.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    self.vipImageView = [DDViewFactoryTool createImageViewWithFrame:CGRectZero contentModel:UIViewContentModeScaleAspectFit image:[UIImage imageNamed:@"VIPDefault"]];
+    [self.contentView addSubview:self.vipImageView];
+    [self.vipImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(0);
+        make.left.mas_equalTo(20 * scale);
+        make.width.height.mas_equalTo(32 * scale);
+    }];
+    UITapGestureRecognizer * tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(VIPImageViewDidTap)];
+    self.vipImageView.userInteractionEnabled = YES;
+    [self.vipImageView addGestureRecognizer:tap];
     
     UIView * logoView = [[UIView alloc] initWithFrame:CGRectZero];
     logoView.backgroundColor = UIColorFromRGB(0xFFFFFF);
@@ -90,7 +157,7 @@
     [self.contentView addSubview:logoView];
     [logoView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(0);
-        make.left.mas_equalTo(20 * scale);
+        make.left.mas_equalTo(self.vipImageView.mas_right).offset(8 * scale);
         make.width.height.mas_equalTo(36 * scale);
     }];
     

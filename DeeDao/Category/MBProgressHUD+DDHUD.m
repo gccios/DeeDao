@@ -74,7 +74,16 @@
         backView.alpha = 1.f;
     }];
     
-    [UIView animateWithDuration:0.5f delay:1.f options:UIViewAnimationOptionCurveEaseInOut animations:^{
+    CGFloat delay = 1.f;
+    if (text.length > 20) {
+        delay = 5.f;
+    }else if (text.length > 15) {
+        delay = 2.f;
+    }else if (text.length > 10) {
+        delay = 1.5f;
+    }
+    
+    [UIView animateWithDuration:0.5f delay:delay options:UIViewAnimationOptionCurveEaseInOut animations:^{
         backView.alpha = 0.f;
     } completion:^(BOOL finished) {
         [backView removeFromSuperview];

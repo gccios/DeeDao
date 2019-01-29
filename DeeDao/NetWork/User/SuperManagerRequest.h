@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initFreezeUser:(NSInteger)userID;
 
+- (instancetype)initJubaoWithPageStart:(NSInteger)pageStart pageSize:(NSInteger)pageSize;
+
+- (instancetype)initOnlinePost:(NSInteger)postID onlineFlag:(NSInteger)onlineFlag;
+
 @end
 
 NS_ASSUME_NONNULL_END

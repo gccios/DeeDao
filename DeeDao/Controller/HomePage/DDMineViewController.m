@@ -29,6 +29,7 @@
 #import "DDFriendCardViewController.h"
 #import "DDManagerViewController.h"
 #import "UserInfoViewController.h"
+#import "DDJubaoManagerController.h"
 
 @interface DDMineViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -62,7 +63,7 @@
 //                            [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
 //                            [[MineMenuModel alloc] initWithType:MineMenuType_Address],
                             [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
-                            [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+//                            [[MineMenuModel alloc] initWithType:MineMenuType_Private],
                             [[MineMenuModel alloc] initWithType:MineMenuType_AlertList],
                             [[MineMenuModel alloc] initWithType:MineMenuType_System]];
     
@@ -72,7 +73,7 @@
 //                      [[MineMenuModel alloc] initWithType:MineMenuType_FriendCard],
 //                      [[MineMenuModel alloc] initWithType:MineMenuType_Address],
                       [[MineMenuModel alloc] initWithType:MineMenuType_hudongMessage],
-                      [[MineMenuModel alloc] initWithType:MineMenuType_Private],
+//                      [[MineMenuModel alloc] initWithType:MineMenuType_Private],
                       [[MineMenuModel alloc] initWithType:MineMenuType_Blogger],
                       [[MineMenuModel alloc] initWithType:MineMenuType_AlertList],
                       [[MineMenuModel alloc] initWithType:MineMenuType_System]];
@@ -82,6 +83,7 @@
     
     if ([[UserManager shareManager].user.signature isEqualToString:@"S"]) {
         [self.dataSource addObject:[[MineMenuModel alloc] initWithType:MineMenuType_SystemMnager]];
+        [self.dataSource addObject:[[MineMenuModel alloc] initWithType:MineMenuType_JubaoMnager]];
     }
 }
 
@@ -287,6 +289,14 @@
             DDMailViewController * mail = [[DDMailViewController alloc] init];
             [nav pushViewController:mail animated:YES];
             
+        }
+            break;
+            
+        case MineMenuType_JubaoMnager:
+        {
+            [self hideLeftViewAnimated:nil];
+            DDJubaoManagerController * jubao = [[DDJubaoManagerController alloc] init];
+            [nav pushViewController:jubao animated:YES];
         }
             break;
             

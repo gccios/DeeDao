@@ -39,12 +39,17 @@
     if (self = [super init]) {
         self.model = model;
         
+        self.dataSourceType = 12;
         if (model.cid == -1) {
             self.dataSourceType = 1;
         }else if (model.cid == -2) {
             self.dataSourceType = 6;
-        }else{
-            self.dataSourceType = 12;
+        }else if (model.cid == -4) {
+            self.dataSourceType = 9;
+        }else if (model.cid == -5) {
+            self.dataSourceType = 14;
+        }else if (model.cid == -6) {
+            self.dataSourceType = 15;
         }
     }
     return self;
@@ -52,7 +57,7 @@
 
 - (void)setUpData
 {
-    [DTieSearchRequest cancelRequest];
+//    [DTieSearchRequest cancelRequest];
     [self.dataSource removeAllObjects];
     [self.tableView reloadData];
     
@@ -95,7 +100,7 @@
 
 - (void)loadMoreDataSource
 {
-    [DTieSearchRequest cancelRequest];
+//    [DTieSearchRequest cancelRequest];
     
     DTieSearchRequest * request = [[DTieSearchRequest alloc] initWithKeyWord:@"" lat1:0 lng1:0 lat2:0 lng2:0 startDate:0 endDate:(NSInteger)[DDTool getTimeCurrentWithDouble] sortType:1 dataSources:self.dataSourceType type:2 pageStart:self.start pageSize:self.length];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -176,6 +181,9 @@
                 
                 DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                 [self.navigationController pushViewController:detail animated:YES];
+            }else{
+                NSString * msg = [response objectForKey:@"msg"];
+                [MBProgressHUD showTextHUDWithText:msg inView:self.view];
             }
         }
     } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

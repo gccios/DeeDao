@@ -132,6 +132,14 @@
             }
                 break;
                 
+            case MineMenuType_JubaoMnager:
+                
+            {
+                self.imageName = @"jubaoManager";
+                self.title = @"平台举报管理";
+            }
+                break;
+                
             default:
                 break;
         }

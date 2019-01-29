@@ -11,6 +11,6 @@
 
 @interface UserInfoCollectionHeader : UICollectionReusableView
 
-- (void)configWithModel:(UserModel *)model;
+- (void)configWithModel:(UserModel *)model groupList:(NSMutableArray *)groupList;
 
 @end

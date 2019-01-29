@@ -21,8 +21,8 @@
 #define BMK_KEY @"XgKSkszElR1fMdR2Cnwg4ePgK7jMYZIS"//百度地图的key
 
 #else
-#define HOSTURL @"http://10.93.22.16:8080"  //测试地址
-//#define HOSTURL @"http://39.105.111.191"  //测试地址
+//#define HOSTURL @"http://10.93.22.16:8080"  //测试地址
+#define HOSTURL @"http://39.105.111.191"  //测试地址
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"https://qnpicture.deedao.com"
 //#define BMK_KEY @"1gnrpYtISprlqiFzcsLUojzyxNBWC1EC"//百度地图的key

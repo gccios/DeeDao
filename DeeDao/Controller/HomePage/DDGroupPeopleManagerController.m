@@ -66,6 +66,7 @@
                     model.nickname = [dict objectForKey:@"nickname"];
                     model.portraituri = [dict objectForKey:@"portraitUri"];
                     model.cid = [[dict objectForKey:@"userId"] integerValue];
+                    model.authority = [[dict objectForKey:@"authority"] integerValue];
                     [self.dataSource addObject:model];
                 }
                 [self.tableView reloadData];
@@ -92,6 +93,7 @@
                     model.nickname = [dict objectForKey:@"nickname"];
                     model.portraituri = [dict objectForKey:@"portraitUri"];
                     model.cid = [[dict objectForKey:@"userId"] integerValue];
+                    model.authority = [[dict objectForKey:@"authority"] integerValue];
                     [self.dataSource addObject:model];
                 }
                 [self.tableView reloadData];

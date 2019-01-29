@@ -24,6 +24,7 @@
 #import "MBProgressHUD+DDHUD.h"
 #import "ConverUtil.h"
 #import <YYText.h>
+#import "DDGroupRequest.h"
 
 @interface UserInfoViewController ()<UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -43,6 +44,8 @@
 @property (nonatomic, strong) UIButton * rightHandleButton;
 
 @property (nonatomic, strong) UIView * shareView;
+
+@property (nonatomic, strong) NSMutableArray * groupList;
 
 @end
 
@@ -64,6 +67,36 @@
     [self createViews];
     
     [self getData];
+    
+    [self getGroupList];
+}
+
+- (void)getGroupList
+{
+    DDGroupRequest * request = [[DDGroupRequest alloc] initWithSelectGroupList];
+    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+        [self.groupList removeAllObjects];
+        NSDictionary * data = [response objectForKey:@"data"];
+        if (KIsDictionary(data)) {
+            
+            NSArray * myArray = [data objectForKey:@"myFoundGroupList"];
+            if (KIsArray(myArray)) {
+                [self.groupList addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:myArray]];
+            }
+            
+            NSArray * array = [data objectForKey:@"myGroupList"];
+            if (KIsArray(array)) {
+                [self.groupList addObjectsFromArray:[DDGroupModel mj_objectArrayWithKeyValuesArray:array]];
+            }
+        }
+        [self createHeaderView];
+        
+    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+        
+    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+        
+    }];
 }
 
 - (void)leftHandleButtonDidClicked
@@ -89,7 +122,7 @@
         self.model.concernFlg = !self.model.concernFlg;
         
         [self reloadBottomViewStatus];
-        [self.header configWithModel:self.model];
+        [self.header configWithModel:self.model groupList:self.groupList];
         
         self.rightHandleButton.enabled = YES;
         
@@ -193,18 +226,19 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     CGFloat height = 630 * scale;
     
-    NSArray * keyWordArray = @[@"群", @"群群群", @"群群群", @"群群", @"群群群群群", @"群群群", @"群群群群", @"群群", @"群群群群群群", @"群群群", @"群群群"];
-    
-    if (keyWordArray.count == 0) {
+    if (self.groupList.count == 0) {
         height += 45 * scale;
     }else{
         
         NSMutableAttributedString * groupStr = [[NSMutableAttributedString alloc] initWithString:@"群归属：" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
-        for (NSInteger i = 0; i < keyWordArray.count ; i++) {
-            NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:[keyWordArray objectAtIndex:i] attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
+        for (NSInteger i = 0; i < self.groupList.count ; i++) {
+            
+            DDGroupModel * model = [self.groupList objectAtIndex:i];
+            
+            NSMutableAttributedString * tempStr = [[NSMutableAttributedString alloc] initWithString:model.groupName attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0xDB6283)}];
             [groupStr appendAttributedString:tempStr];
             
-            if ( i != keyWordArray.count - 1) {
+            if ( i != self.groupList.count - 1) {
                 NSMutableAttributedString * spaceStr = [[NSMutableAttributedString alloc] initWithString:@" 、" attributes:@{NSFontAttributeName:kPingFangRegular(36 * scale), NSForegroundColorAttributeName:UIColorFromRGB(0x666666)}];
                 [groupStr appendAttributedString:spaceStr];
             }
@@ -262,43 +296,43 @@
         make.left.bottom.right.mas_equalTo(0);
     }];
     
-    if ([UserManager shareManager].user.cid != self.userId) {
-        self.bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
-        self.bottomHandleView.backgroundColor = [UIColorFromRGB(0xEEEEF4) colorWithAlphaComponent:.7f];
-        [self.view addSubview:self.bottomHandleView];
-        [self.bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.bottom.right.mas_equalTo(0);
-            make.height.mas_equalTo(324 * scale);
-        }];
-        
-        self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Disconnect")];
-        [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
-        self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-        self.leftHandleButton.layer.borderWidth = 3 * scale;
-        [self.bottomHandleView addSubview:self.leftHandleButton];
-        [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(60 * scale);
-            make.width.mas_equalTo(444 * scale);
-            make.height.mas_equalTo(144 * scale);
-            make.centerY.mas_equalTo(0);
-        }];
-        
-        self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"AddFollow")];
-        [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
-        self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
-        self.rightHandleButton.layer.borderWidth = 3 * scale;
-        [self.bottomHandleView addSubview:self.rightHandleButton];
-        [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(-60 * scale);
-            make.width.mas_equalTo(444 * scale);
-            make.height.mas_equalTo(144 * scale);
-            make.centerY.mas_equalTo(0);
-        }];
-        
-        [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        [self.collectionView setContentInset:UIEdgeInsetsMake(0, 0, 350 * scale, 0)];
-    }
+//    if ([UserManager shareManager].user.cid != self.userId) {
+//        self.bottomHandleView = [[UIView alloc] initWithFrame:CGRectZero];
+//        self.bottomHandleView.backgroundColor = [UIColorFromRGB(0xEEEEF4) colorWithAlphaComponent:.7f];
+//        [self.view addSubview:self.bottomHandleView];
+//        [self.bottomHandleView mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.bottom.right.mas_equalTo(0);
+//            make.height.mas_equalTo(324 * scale);
+//        }];
+//
+//        self.leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"Disconnect")];
+//        [DDViewFactoryTool cornerRadius:24 * scale withView:self.leftHandleButton];
+//        self.leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//        self.leftHandleButton.layer.borderWidth = 3 * scale;
+//        [self.bottomHandleView addSubview:self.leftHandleButton];
+//        [self.leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.left.mas_equalTo(60 * scale);
+//            make.width.mas_equalTo(444 * scale);
+//            make.height.mas_equalTo(144 * scale);
+//            make.centerY.mas_equalTo(0);
+//        }];
+//
+//        self.rightHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"AddFollow")];
+//        [DDViewFactoryTool cornerRadius:24 * scale withView:self.rightHandleButton];
+//        self.rightHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+//        self.rightHandleButton.layer.borderWidth = 3 * scale;
+//        [self.bottomHandleView addSubview:self.rightHandleButton];
+//        [self.rightHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.right.mas_equalTo(-60 * scale);
+//            make.width.mas_equalTo(444 * scale);
+//            make.height.mas_equalTo(144 * scale);
+//            make.centerY.mas_equalTo(0);
+//        }];
+//
+//        [self.leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//        [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+//        [self.collectionView setContentInset:UIEdgeInsetsMake(0, 0, 350 * scale, 0)];
+//    }
     
     [self createTopView];
 }
@@ -349,7 +383,7 @@
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         UserInfoCollectionHeader * header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"UserInfoCollectionHeader" forIndexPath:indexPath];
         self.header = header;
-        [header configWithModel:self.model];
+        [header configWithModel:self.model groupList:self.groupList];
         
         return header;
     }
@@ -615,6 +649,14 @@
         [MBProgressHUD showTextHUDWithText:@"口令复制成功，快去发送给好友吧" inView:[UIApplication sharedApplication].keyWindow];
         
     }
+}
+
+- (NSMutableArray *)groupList
+{
+    if (!_groupList) {
+        _groupList = [[NSMutableArray alloc] init];
+    }
+    return _groupList;
 }
 
 - (void)didReceiveMemoryWarning {

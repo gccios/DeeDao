@@ -53,7 +53,7 @@
 
 @property (nonatomic, strong) UILabel * readLabel;
 @property (nonatomic, strong) UIButton * readButton;
-//@property (nonatomic, strong) UIButton * jubaoButton;
+@property (nonatomic, strong) UIButton * jubaoButton;
 
 //@property (nonatomic, strong) UIView * mapBaseView;
 //@property (nonatomic, strong) BMKMapView * mapView;
@@ -116,14 +116,14 @@
     
     if (model.authorId == [UserManager shareManager].user.cid) {
 //        self.handleButton.hidden = NO;
-//        self.jubaoButton.hidden = YES;
+        self.jubaoButton.hidden = YES;
         self.readButton.hidden = NO;
         self.statusLabel.hidden = NO;
         self.statusButton.hidden = NO;
         
     }else{
 //        self.handleButton.hidden = YES;
-//        self.jubaoButton.hidden = YES;
+        self.jubaoButton.hidden = NO;
         self.readButton.hidden = YES;
         self.statusLabel.hidden = YES;
         self.statusButton.hidden = YES;
@@ -251,14 +251,14 @@
     [attachText yy_setTextHighlightRange:NSMakeRange(0, attachText.length) color:UIColorFromRGB(0xDB6283) backgroundColor:[UIColor clearColor] tapAction:^(UIView * _Nonnull containerView, NSAttributedString * _Nonnull text, NSRange range, CGRect rect) {
         
         if (weakSelf.model.isValid == 0 && weakSelf.model.authorId != [UserManager shareManager].user.cid) {
-            [MBProgressHUD showTextHUDWithText:@"非作者不能操作该文章" inView:[UIApplication sharedApplication].keyWindow];
+            [MBProgressHUD showTextHUDWithText:@"作者不允许他人投放" inView:[UIApplication sharedApplication].keyWindow];
+        }else{
+            DTieGroupViewController * group = [[DTieGroupViewController alloc] initWithModel:self.model];
+            group.delegate = weakSelf;
+            DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
+            UINavigationController * na = (UINavigationController *)lg.rootViewController;
+            [na pushViewController:group animated:YES];
         }
-        
-        DTieGroupViewController * group = [[DTieGroupViewController alloc] initWithModel:self.model];
-        group.delegate = weakSelf;
-        DDLGSideViewController * lg = (DDLGSideViewController *)[UIApplication sharedApplication].keyWindow.rootViewController;
-        UINavigationController * na = (UINavigationController *)lg.rootViewController;
-        [na pushViewController:group animated:YES];
     }];
     [groupStr appendAttributedString:attachText];
     
@@ -867,16 +867,15 @@
 //    self.handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
 //    self.handleButton.layer.borderWidth = 3 * scale;
     
-//    self.jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:[NSString stringWithFormat:@" %@", DDLocalizedString(@"Report")]];
-//    [self.jubaoButton setImage:[UIImage imageNamed:@"jubaoyes"] forState:UIControlStateNormal];
-//    [self addSubview:self.jubaoButton];
-//    [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.centerY.mas_equalTo(self.timeLabel);
-//        make.right.mas_equalTo(-60 * scale);
-//        make.height.mas_equalTo(72 * scale);
-//    }];
-//    self.jubaoButton.hidden = YES;
-//    [self.jubaoButton addTarget:self action:@selector(handleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+    self.jubaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0XDB6283) title:[NSString stringWithFormat:@" %@", DDLocalizedString(@"Report")]];
+    [self.jubaoButton setImage:[UIImage imageNamed:@"jubaoyes"] forState:UIControlStateNormal];
+    [self addSubview:self.jubaoButton];
+    [self.jubaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.timeLabel);
+        make.right.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(72 * scale);
+    }];
+    [self.jubaoButton addTarget:self action:@selector(jubaoButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
     
     self.statusLabel = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(36 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
     self.statusLabel.text = [NSString stringWithFormat:@"%@:", DDLocalizedString(@"Status")];
@@ -906,7 +905,7 @@
     }];
     
     UILabel * groupTitle = [DDViewFactoryTool createLabelWithFrame:CGRectZero font:kPingFangRegular(42 * scale) textColor:UIColorFromRGB(0x666666) alignment:NSTextAlignmentLeft];
-    groupTitle.text = @"是否允许非作者投递入群";
+    groupTitle.text = @"其他人投放权限";
     [self.groupAddView addSubview:groupTitle];
     [groupTitle mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.mas_equalTo(60 * scale);
@@ -981,6 +980,13 @@
         make.bottom.mas_equalTo(-40 * scale);
     }];
     [self.rightHandleButton addTarget:self action:@selector(rightHandleButtonDidTouchUpInside) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)jubaoButtonDidTouchUpInside
+{
+    if (self.jubaoButtonBlock) {
+        self.jubaoButtonBlock();
+    }
 }
 
 //- (BMKAnnotationView *)mapView:(BMKMapView *)mapView viewForAnnotation:(id<BMKAnnotation>)annotation

@@ -32,8 +32,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) NSInteger type;
 @property (nonatomic, assign) NSInteger userFlag;
 
+@property (nonatomic, assign) NSInteger newFlag;
+
 - (instancetype)initWithMy;
 - (instancetype)initWithPublic;
+- (instancetype)initWithMyWYY;
+- (instancetype)initWithMyCollect;
+- (instancetype)initWithMyHome;
+
 - (instancetype)initWithCreate;
 
 @end

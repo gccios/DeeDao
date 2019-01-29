@@ -19,6 +19,8 @@
 @property (nonatomic, strong) UIImageView * logoImageView;
 @property (nonatomic, strong) UILabel * nameLabel;
 
+@property (nonatomic, strong) UIView * tagView;
+
 @end
 
 @implementation DDGroupCollectionViewCell
@@ -43,12 +45,17 @@
 
 - (void)configWithModel:(DDGroupModel *)model
 {
+    if (model.newFlag == 0) {
+        self.tagView.hidden = YES;
+    }else{
+        self.tagView.hidden = NO;
+    }
     self.nameLabel.text = model.groupName;
     if (model.isSystem) {
-        if (model.cid == -1) {
-            [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
-        }else{
+        if (model.cid == -2 || model.cid == -3) {
             [self.logoImageView setImage:[UIImage imageNamed:model.groupPic]];
+        }else{
+            [self.logoImageView sd_setImageWithURL:[NSURL URLWithString:model.groupPic]];
         }
     }else{
         if (isEmptyString(model.groupPic)) {
@@ -99,9 +106,20 @@
     [self.contentView addSubview:self.nameLabel];
     [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.bottom.mas_equalTo(0);
-        make.left.mas_equalTo(5 * scale);
-        make.right.mas_equalTo(-5 * scale);
+        make.centerX.mas_equalTo(5 * scale);
         make.height.mas_equalTo(20 * scale);
+    }];
+    
+    self.tagView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.tagView.backgroundColor = UIColorFromRGB(0xFC6E60);
+    [DDViewFactoryTool cornerRadius:5.5 withView:self.tagView];
+    self.tagView.layer.borderColor = UIColorFromRGB(0xFFFFFF).CGColor;
+    self.tagView.layer.borderWidth = .5f;
+    [self.contentView addSubview:self.tagView];
+    [self.tagView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(self.nameLabel.mas_right).offset(3);
+        make.centerY.mas_equalTo(self.nameLabel);
+        make.width.height.mas_equalTo(11);
     }];
 }
 

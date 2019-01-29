@@ -725,6 +725,10 @@
 
 - (void)editTitleButtonDidClicked
 {
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
     self.isEditTitle = YES;
     DTieEditTextViewController * edit = [[DTieEditTextViewController alloc] initWithText:self.model.postSummary placeholder:@"请输入D帖标题"];
     edit.delegate = self;
@@ -733,6 +737,10 @@
 
 - (void)editTimeButtonDidClicked
 {
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
     PGDatePickManager *datePickManager = [[PGDatePickManager alloc]init];
     datePickManager.view.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:.5f];
     datePickManager.confirmButtonTextColor = UIColorFromRGB(0xDB6283);
@@ -772,6 +780,10 @@
 
 - (void)editLocationButtonDidClicked
 {
+    if (self.isRemark) {
+        self.secondNumberLabel.hidden = YES;
+        [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
+    }
     DTieChooseLocationController * chosse = [[DTieChooseLocationController alloc] init];
     
     BMKPoiInfo * poi = [[BMKPoiInfo alloc] init];
@@ -1458,6 +1470,10 @@
 //            };
 //        }
         
+        footer.jubaoButtonBlock = ^{
+            [weakSelf jubaoButtonDidClicked];
+        };
+        
         if (!self.isPreRead) {
             footer.leftHandleButtonBlock = ^{
                 [weakSelf leftButtonDidClicked];
@@ -1577,6 +1593,16 @@
         }
         NSInteger postId = [[data objectForKey:@"postId"] integerValue];
         
+        DTieCollectionRequest * collectRequest = [[DTieCollectionRequest alloc] initWithPostID:postId type:1 subType:0 remark:@""];
+        
+        [collectRequest sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+        }];
+        
         MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:DDLocalizedString(@"Loading") inView:self];
         DTieDetailRequest * detailRequest = [[DTieDetailRequest alloc] initWithID:postId type:4 start:0 length:10];
         [detailRequest sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
@@ -1586,6 +1612,8 @@
                 NSDictionary * data = [response objectForKey:@"data"];
                 if (KIsDictionary(data)) {
                     DTieModel * dtieModel = [DTieModel mj_objectWithKeyValues:data];
+                    dtieModel.wyyFlg = 1;
+                    dtieModel.wyyCount = 1;
                     
                     DTieNewDetailViewController * detail = [[DTieNewDetailViewController alloc] initWithDTie:dtieModel];
                     
@@ -2501,17 +2529,15 @@
             make.right.mas_equalTo(-90 * scale);
         }];
         
-        if (!self.isRemark) {
-            UIButton * editTitleButton = [UIButton buttonWithType:UIButtonTypeCustom];
-            [editTitleButton setImage:[UIImage imageNamed:@"editTitle"] forState:UIControlStateNormal];
-            [self.headerView addSubview:editTitleButton];
-            [editTitleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-                make.centerY.mas_equalTo(self.titleLabel);
-                make.right.mas_equalTo(-30 * scale);
-                make.width.height.mas_equalTo(60 * scale);
-            }];
-            [editTitleButton addTarget:self action:@selector(editTitleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
-        }
+        UIButton * editTitleButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [editTitleButton setImage:[UIImage imageNamed:@"editTitle"] forState:UIControlStateNormal];
+        [self.headerView addSubview:editTitleButton];
+        [editTitleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.centerY.mas_equalTo(self.titleLabel);
+            make.right.mas_equalTo(-30 * scale);
+            make.width.height.mas_equalTo(60 * scale);
+        }];
+        [editTitleButton addTarget:self action:@selector(editTitleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
     }
     
     UIView * userView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, kMainBoundsWidth, 144 * scale)];
@@ -2709,7 +2735,7 @@
         }
     }
     
-    if (self.isSelfFlg && !self.isRemark) {
+    if (self.isSelfFlg) {
         [self.mapBaseView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(570 * scale);
         }];
@@ -2767,7 +2793,7 @@
     CGFloat scale = kMainBoundsWidth / 1080.f;
     CGFloat height = (1050 - 165) * scale;
     
-    if (self.isSelfFlg && !self.isRemark) {
+    if (self.isSelfFlg) {
         height = (1270 -165) * scale;
     }
     
@@ -2783,7 +2809,7 @@
     
     NSString * title = self.model.postSummary;
     
-    if (isEmptyString(title) && !self.isRemark) {
+    if (isEmptyString(title)) {
         title = DDLocalizedString(@"NoTitle");
     }
     
@@ -3354,7 +3380,7 @@
         self.secondNumberLabel.hidden = YES;
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(secondNumberChange) object:nil];
     }
-    if (self.model.wyyFlg) {
+    if (self.model.wyyFlg == 1) {
         [DTieCancleWYYRequest cancelRequest];
         DTieCancleWYYRequest * request = [[DTieCancleWYYRequest alloc] initWithPostID:self.model.cid];
         [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {

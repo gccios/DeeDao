@@ -126,7 +126,7 @@
     UIButton * deedaoButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(36 * scale) titleColor:UIColorFromRGB(0x333333) title:@""];
     [self.authorView addSubview:deedaoButton];
     [deedaoButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.centerX.mas_equalTo(180 * scale);
+        make.centerX.mas_equalTo(0 * scale);
         make.top.mas_equalTo(20 * scale);
         make.width.mas_equalTo(240 * scale);
         make.height.mas_equalTo(120 * scale);
@@ -174,6 +174,8 @@
         make.left.mas_equalTo(self.shareImageView.mas_right).offset(5 * scale);
         make.height.mas_equalTo(60 * scale);
     }];
+    
+    shareButton.hidden = YES;
     
     UIView * authorHandleView = [[UIView alloc] initWithFrame:CGRectZero];
     authorHandleView.backgroundColor = UIColorFromRGB(0xf5f5f5);

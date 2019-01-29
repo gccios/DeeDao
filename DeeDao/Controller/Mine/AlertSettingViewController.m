@@ -46,9 +46,9 @@
     
     self.firstSource = [[NSMutableArray alloc] init];
     [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Follow") status:YES type:11]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:YES type:12]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Interested POI") status:YES type:13]];
-    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:YES type:14]];
+//    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:YES type:12]];
+    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:YES type:13]];
+//    [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:YES type:14]];
     
     self.secondSource = [[NSMutableArray alloc] init];
     BOOL xiangling = [DDUserDefaultsGet(@"xiangling") boolValue];
@@ -80,9 +80,9 @@
                 NSInteger ifWyy = [[data objectForKey:@"ifWyy"] integerValue];
                 NSInteger ifFriend = [[data objectForKey:@"ifFriend"] integerValue];
                 [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Follow") status:ifConcern type:11]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:ifCollection type:12]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Interested POI") status:ifWyy type:13]];
-                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:ifFriend type:14]];
+//                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:ifCollection type:12]];
+                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"POI Collection") status:ifWyy type:13]];
+//                [self.firstSource addObject:[[AlertModel alloc] initWithTitle:DDLocalizedString(@"Friend’s D Page") status:ifFriend type:14]];
                 
                 NSInteger remindInterval = [[data objectForKey:@"remindInterval"] integerValue];
                 if (remindInterval == 0) {
@@ -283,8 +283,8 @@
 {
     AlertModel * model1 = [self.firstSource objectAtIndex:0];
     AlertModel * model2 = [self.firstSource objectAtIndex:1];
-    AlertModel * model3 = [self.firstSource objectAtIndex:2];
-    AlertModel * model4 = [self.firstSource objectAtIndex:3];
+//    AlertModel * model3 = [self.firstSource objectAtIndex:2];
+//    AlertModel * model4 = [self.firstSource objectAtIndex:3];
     
     NSInteger remindInterval = 0;
     if (self.forthChooseIndex == 0) {
@@ -298,7 +298,7 @@
     }
     
     MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在保存" inView:self.view];
-    SaveRemindStatusRequest * request = [[SaveRemindStatusRequest alloc] initWithId:self.remindID concern:model1.openStatus collection:model2.openStatus wyy:model3.openStatus friend:model4.openStatus remindInterval:remindInterval];
+    SaveRemindStatusRequest * request = [[SaveRemindStatusRequest alloc] initWithId:self.remindID concern:model1.openStatus collection:0 wyy:model2.openStatus friend:0 remindInterval:remindInterval];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         [hud hideAnimated:YES];
