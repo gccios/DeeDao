@@ -429,7 +429,7 @@
                     NSArray * koulingArray = [result componentsSeparatedByString:@"+"];
                     if (koulingArray.count == 2) {
                         if ([result hasPrefix:@"post"]) {
-                            
+                            //帖子口令
                             NSString * postIDString = [koulingArray lastObject];
                             NSInteger postID = [postIDString integerValue];
                             
@@ -467,6 +467,7 @@
                             }];
                             
                         }else if ([result hasPrefix:@"group"]){
+                            //群组口令
                             NSString * groupIDString = [koulingArray lastObject];
                             NSInteger groupID = [groupIDString integerValue];
                             
@@ -501,6 +502,7 @@
                                 [hud hideAnimated:YES];
                             }];
                         } else{
+                            //名片口令
                             NSString * userIDString = [koulingArray lastObject];
                             NSInteger userID = [userIDString integerValue];
                             

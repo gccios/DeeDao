@@ -265,18 +265,36 @@
     }];
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 350 * scale, 0);
     
-    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:DDLocalizedString(@"SaveBack")];
-    [DDViewFactoryTool cornerRadius:24 * scale withView:handleButton];
+    UIButton * leftHandleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"清除所有提醒记录"];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:leftHandleButton];
+    leftHandleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
+    leftHandleButton.layer.borderWidth = 3 * scale;
+    [self.view addSubview:leftHandleButton];
+    [leftHandleButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.mas_equalTo(60 * scale);
+        make.height.mas_equalTo(120 * scale);
+        make.width.mas_equalTo(444 * scale);
+        make.bottom.mas_equalTo(-150 * scale);
+    }];
+    [leftHandleButton addTarget:self action:@selector(leftHandleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIButton * handleButton = [DDViewFactoryTool createButtonWithFrame:CGRectZero font:kPingFangRegular(42 * scale) titleColor:UIColorFromRGB(0xDB6283) backgroundColor:UIColorFromRGB(0xFFFFFF) title:@"保存并退出"];
+    [DDViewFactoryTool cornerRadius:60 * scale withView:handleButton];
     handleButton.layer.borderColor = UIColorFromRGB(0xDB6283).CGColor;
     handleButton.layer.borderWidth = 3 * scale;
     [self.view addSubview:handleButton];
     [handleButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.mas_equalTo(60 * scale);
-        make.height.mas_equalTo(144 * scale);
         make.right.mas_equalTo(-60 * scale);
-        make.bottom.mas_equalTo(-60 * scale);
+        make.height.mas_equalTo(120 * scale);
+        make.width.mas_equalTo(444 * scale);
+        make.bottom.mas_equalTo(-150 * scale);
     }];
     [handleButton addTarget:self action:@selector(handleButtonDidClicked) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)leftHandleButtonDidClicked
+{
+    
 }
 
 - (void)handleButtonDidClicked
