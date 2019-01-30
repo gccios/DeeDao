@@ -13,6 +13,8 @@
 #import "SelectRemindStatusRequest.h"
 #import "SaveRemindStatusRequest.h"
 #import "MBProgressHUD+DDHUD.h"
+#import "ClearNotificationRequest.h"
+#import "RDAlertView.h"
 
 @interface AlertSettingViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -294,7 +296,38 @@
 
 - (void)leftHandleButtonDidClicked
 {
+    RDAlertView * alert = [[RDAlertView alloc] initWithTitle:@"删除" message:@"是否确认清空您的提醒记录？"];
     
+    RDAlertAction * action1 = [[RDAlertAction alloc] initWithTitle:@"取消" handler:^{
+        
+    } bold:NO];
+    
+    RDAlertAction * action2 = [[RDAlertAction alloc] initWithTitle:@"确定" handler:^{
+        
+        MBProgressHUD * hud = [MBProgressHUD showLoadingHUDWithText:@"正在删除" inView:self.view];
+        ClearNotificationRequest * request = [[ClearNotificationRequest alloc] init];
+        [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"删除成功" inView:[UIApplication sharedApplication].keyWindow];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+            
+        } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+            
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"删除失败" inView:[UIApplication sharedApplication].keyWindow];
+            
+        } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+            
+            [hud hideAnimated:YES];
+            [MBProgressHUD showTextHUDWithText:@"删除失败" inView:[UIApplication sharedApplication].keyWindow];
+            
+        }];
+        
+    } bold:NO];
+    
+    [alert addActions:@[action1, action2]];
+    [alert show];
 }
 
 - (void)handleButtonDidClicked

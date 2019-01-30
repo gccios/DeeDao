@@ -318,6 +318,7 @@
 		06C6022920C432870009E536 /* RDAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06C6022720C432870009E536 /* RDAlertView.m */; };
 		06D0A49521DF0F4900D7A1F6 /* DDGroupTitleReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D0A49421DF0F4900D7A1F6 /* DDGroupTitleReusableView.m */; };
 		06D1488D20C6DDDB00DB010A /* DTieShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D1488C20C6DDDB00DB010A /* DTieShareView.m */; };
+		06D9E9FC22018A2200AA127D /* ClearNotificationRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 06D9E9FB22018A2200AA127D /* ClearNotificationRequest.m */; };
 		06DA97602192EE3000B16037 /* DDAddressBookViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DA975F2192EE3000B16037 /* DDAddressBookViewController.m */; };
 		06DAB76520A34C880055FA60 /* DDFoundViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76420A34C880055FA60 /* DDFoundViewController.m */; };
 		06DAB76820A3539A0055FA60 /* DDMailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 06DAB76720A3539A0055FA60 /* DDMailViewController.m */; };
@@ -995,6 +996,8 @@
 		06D0A49421DF0F4900D7A1F6 /* DDGroupTitleReusableView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDGroupTitleReusableView.m; sourceTree = "<group>"; };
 		06D1488B20C6DDDB00DB010A /* DTieShareView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTieShareView.h; sourceTree = "<group>"; };
 		06D1488C20C6DDDB00DB010A /* DTieShareView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTieShareView.m; sourceTree = "<group>"; };
+		06D9E9FA22018A2200AA127D /* ClearNotificationRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ClearNotificationRequest.h; sourceTree = "<group>"; };
+		06D9E9FB22018A2200AA127D /* ClearNotificationRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClearNotificationRequest.m; sourceTree = "<group>"; };
 		06DA975E2192EE3000B16037 /* DDAddressBookViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDAddressBookViewController.h; sourceTree = "<group>"; };
 		06DA975F2192EE3000B16037 /* DDAddressBookViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDAddressBookViewController.m; sourceTree = "<group>"; };
 		06DAB76320A34C880055FA60 /* DDFoundViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDFoundViewController.h; sourceTree = "<group>"; };
@@ -1457,6 +1460,8 @@
 				064CF28E2126C27B00AC2F42 /* SelectNotificationDeatilRequest.m */,
 				064CF2962126D9F700AC2F42 /* UpdateNotificationStatusRequest.h */,
 				064CF2972126D9F700AC2F42 /* UpdateNotificationStatusRequest.m */,
+				06D9E9FA22018A2200AA127D /* ClearNotificationRequest.h */,
+				06D9E9FB22018A2200AA127D /* ClearNotificationRequest.m */,
 			);
 			path = Notification;
 			sourceTree = "<group>";
@@ -2712,6 +2717,7 @@
 				06180B442109D11B007D402C /* DTiePostCollectionViewCell.m in Sources */,
 				060B4A4420D9FAAA0023E18B /* DTieVideoCollectionViewCell.m in Sources */,
 				0650A9FC20AD6DEC005A5E76 /* DTieDetailImageTableViewCell.m in Sources */,
+				06D9E9FC22018A2200AA127D /* ClearNotificationRequest.m in Sources */,
 				06733F8D20A2C423007875A7 /* DesUtil.m in Sources */,
 				064CF28921267F0500AC2F42 /* SelectNotificationRequest.m in Sources */,
 				067EB5A420DB94AA0021E71B /* DTieReadCommentHeaderView.m in Sources */,
