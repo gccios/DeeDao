@@ -10,13 +10,15 @@
 
 @implementation SelectMapYaoyueDetailRequest
 
-- (instancetype)initWithAddress:(NSString *)address
+- (instancetype)initWithAddress:(NSString *)address groupId:(NSInteger)groupId postId:(NSInteger)postId
 {
     if (self = [super init]) {
         self.httpMethod = BGNetworkRequestHTTPPost;
         self.methodName = @"post/collection/selectWYYFriendsMapDetail";
         
         [self setValue:address forParamKey:@"sceneAddress"];
+        [self setIntegerValue:groupId forParamKey:@"groupId"];
+        [self setIntegerValue:postId forParamKey:@"postId"];
     }
     return self;
 }

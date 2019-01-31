@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "DTieModel.h"
+#import "DDGroupModel.h"
 
 @interface MapShowPostView : UIView
 
 @property (nonatomic, copy) void (^uploadHandle)(DTieModel * dtieModel);
 
-- (instancetype)initWithModel:(DTieModel *)model source:(NSArray *)source index:(NSInteger)index;
+- (instancetype)initWithModel:(DTieModel *)model source:(NSArray *)source index:(NSInteger)index groupModel:(DDGroupModel *)groupModel;
 
 - (void)show;
 

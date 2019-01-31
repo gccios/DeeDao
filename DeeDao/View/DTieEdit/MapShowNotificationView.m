@@ -134,36 +134,36 @@
     }];
     [backView addGestureRecognizer:tap];
     
-    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress];
-    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-        if (KIsDictionary(response)) {
-            NSDictionary * data = [response objectForKey:@"data"];
-            if (KIsDictionary(data)) {
-                NSArray * friendsList = [data objectForKey:@"friendsList"];
-                if (KIsArray(friendsList)) {
-                    [self.userSource removeAllObjects];
-                    for (NSDictionary * dict in friendsList) {
-                        UserYaoYueModel * model = [UserYaoYueModel mj_objectWithKeyValues:dict];
-                        [self.userSource addObject:model];
-                    }
-                }
-            }
-            
-        }
-        
-        if (self.model.wyyFlg == 1) {
-            [self.userSource insertObject:[UserManager shareManager].user atIndex:0];
-        }
-        
-        self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, 430 * scale);
-        [self.collectionView reloadData];
-        
-    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
-        
-    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
-        
-    }];
+//    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress];
+//    [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//        
+//        if (KIsDictionary(response)) {
+//            NSDictionary * data = [response objectForKey:@"data"];
+//            if (KIsDictionary(data)) {
+//                NSArray * friendsList = [data objectForKey:@"friendsList"];
+//                if (KIsArray(friendsList)) {
+//                    [self.userSource removeAllObjects];
+//                    for (NSDictionary * dict in friendsList) {
+//                        UserYaoYueModel * model = [UserYaoYueModel mj_objectWithKeyValues:dict];
+//                        [self.userSource addObject:model];
+//                    }
+//                }
+//            }
+//            
+//        }
+//        
+//        if (self.model.wyyFlg == 1) {
+//            [self.userSource insertObject:[UserManager shareManager].user atIndex:0];
+//        }
+//        
+//        self.layout.headerReferenceSize = CGSizeMake(kMainBoundsWidth, 430 * scale);
+//        [self.collectionView reloadData];
+//        
+//    } businessFailure:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
+//        
+//    } networkFailure:^(BGNetworkRequest * _Nonnull request, NSError * _Nullable error) {
+//        
+//    }];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

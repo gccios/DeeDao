@@ -10,6 +10,6 @@
 
 @interface SelectMapYaoyueDetailRequest : BGNetworkRequest
 
-- (instancetype)initWithAddress:(NSString *)address;
+- (instancetype)initWithAddress:(NSString *)address groupId:(NSInteger)groupId postId:(NSInteger)postId;
 
 @end

@@ -28,6 +28,7 @@
 @interface MapShowPostView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) DTieModel * model;
+@property (nonatomic, strong) DDGroupModel * groupModel;
 @property (nonatomic, strong) UICollectionViewFlowLayout * layout;
 @property (nonatomic, strong) UICollectionView * collectionView;
 @property (nonatomic, strong) NSMutableArray * dataSource;
@@ -40,13 +41,14 @@
 
 @implementation MapShowPostView
 
-- (instancetype)initWithModel:(DTieModel *)model source:(NSArray *)source index:(NSInteger)index
+- (instancetype)initWithModel:(DTieModel *)model source:(NSArray *)source index:(NSInteger)index groupModel:(DDGroupModel *)groupModel
 {
     if (self = [super initWithFrame:[UIScreen mainScreen].bounds]) {
         
         self.model = model;
         self.dataSource = [[NSMutableArray alloc] initWithArray:source];
         self.index = index;
+        self.groupModel = groupModel;
         [self createMapSelectFriendView];
         
     }
@@ -173,7 +175,7 @@
     }];
     [backView addGestureRecognizer:tap];
     
-    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress];
+    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress groupId:self.groupModel.cid postId:self.model.cid];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {

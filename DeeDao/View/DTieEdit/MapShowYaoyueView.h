@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "DTieMapYaoyueModel.h"
+#import "DDGroupModel.h"
 
 @interface MapShowYaoyueView : UIView
 
-- (instancetype)initWithModel:(DTieMapYaoyueModel *)model;
+- (instancetype)initWithModel:(DTieMapYaoyueModel *)model groupModel:(DDGroupModel *)groupModel;
 
 - (void)show;
 

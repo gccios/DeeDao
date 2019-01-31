@@ -12,7 +12,7 @@
 /*
  服务器地址
  */
-#define TEST_DEV_TYPE 0 //测试环境切换宏，1代表线上环境，0代表测试环境
+#define TEST_DEV_TYPE 1 //测试环境切换宏，1代表线上环境，0代表测试环境
 
 #if TEST_DEV_TYPE
 #define HOSTURL @"https://portal.deedao.com" //正式地址
@@ -21,8 +21,8 @@
 #define BMK_KEY @"XgKSkszElR1fMdR2Cnwg4ePgK7jMYZIS"//百度地图的key
 
 #else
-//#define HOSTURL @"http://10.93.22.16:8080"  //测试地址
-#define HOSTURL @"http://39.105.111.191"  //测试地址
+#define HOSTURL @"http://10.93.22.16:8080"  //测试地址
+//#define HOSTURL @"http://39.105.111.191"  //测试地址
 #define QNBucketName @"deedao-test"
 #define QNEndPoint @"https://qnpicture.deedao.com"
 //#define BMK_KEY @"1gnrpYtISprlqiFzcsLUojzyxNBWC1EC"//百度地图的key

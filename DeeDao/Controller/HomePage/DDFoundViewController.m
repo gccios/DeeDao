@@ -1701,7 +1701,7 @@
             NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
             index = [tempArray indexOfObject:tieModel];
             
-            MapShowPostView * view = [[MapShowPostView alloc] initWithModel:tieModel source:tempArray index:index];
+            MapShowPostView * view = [[MapShowPostView alloc] initWithModel:tieModel source:tempArray index:index groupModel:self.groupModel];
             
             __weak typeof(self) weakSelf = self;
             view.uploadHandle = ^(DTieModel *dtieModel) {
@@ -1735,7 +1735,7 @@
             NSArray * tempArray = [[self.mapSource reverseObjectEnumerator] allObjects];
             index = [tempArray indexOfObject:model];
             
-            MapShowPostView * view = [[MapShowPostView alloc] initWithModel:model source:tempArray index:index];
+            MapShowPostView * view = [[MapShowPostView alloc] initWithModel:model source:tempArray index:index groupModel:self.groupModel];
             
             __weak typeof(self) weakSelf = self;
             view.uploadHandle = ^(DTieModel *dtieModel) {

@@ -25,6 +25,7 @@
 @interface MapShowYaoyueView () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (nonatomic, strong) DTieModel * dtieModel;
+@property (nonatomic, strong) DDGroupModel * groupModel;
 @property (nonatomic, strong) UICollectionViewFlowLayout * layout;
 @property (nonatomic, strong) UICollectionView * collectionView;
 @property (nonatomic, strong) NSMutableArray * userSource;
@@ -34,11 +35,12 @@
 
 @implementation MapShowYaoyueView
 
-- (instancetype)initWithModel:(DTieMapYaoyueModel *)model
+- (instancetype)initWithModel:(DTieMapYaoyueModel *)model groupModel:(DDGroupModel *)groupModel
 {
     if (self = [super initWithFrame:[UIScreen mainScreen].bounds]) {
         
         self.model = model;
+        self.groupModel = groupModel;
         [self createMapSelectFriendView];
     }
     return self;
@@ -133,7 +135,7 @@
     }];
     [backView addGestureRecognizer:tap];
     
-    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress];
+    SelectMapYaoyueDetailRequest * request = [[SelectMapYaoyueDetailRequest alloc] initWithAddress:self.model.sceneAddress groupId:self.groupModel.cid postId:self.model.cid];
     [request sendRequestWithSuccess:^(BGNetworkRequest * _Nonnull request, id  _Nullable response) {
         
         if (KIsDictionary(response)) {
